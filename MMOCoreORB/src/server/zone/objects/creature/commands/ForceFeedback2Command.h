@@ -29,14 +29,6 @@ public:
 			return NOJEDIARMOR;
 		}
 
-		uint32 buffcrc1 = BuffCRC::JEDI_FORCE_FEEDBACK_1;
-		uint32 buffcrc2 = BuffCRC::JEDI_FORCE_FEEDBACK_2;
-
-		if(creature->hasBuff(buffcrc1) || creature->hasBuff(buffcrc2)) {
-			creature->sendSystemMessage("@jedi_spam:force_buff_present");
-			return GENERALERROR;
-		}
-
 		// Force cost of skill.
 		int forceCost = 100;
 
@@ -47,6 +39,13 @@ public:
 			creature->sendSystemMessage("@jedi_spam:no_force_power"); //"You do not have enough Force Power to peform that action.
 
 			return GENERALERROR;
+		}
+
+		uint32 buffcrc1 = BuffCRC::JEDI_FORCE_FEEDBACK_1;
+		uint32 buffcrc2 = BuffCRC::JEDI_FORCE_FEEDBACK_2;
+
+		if (creature->hasBuff(buffcrc1)) {
+			creature->removeBuff(buffcrc1);
 		}
 
 		playerObject->setForcePower(playerObject->getForcePower() - forceCost);
@@ -72,15 +71,6 @@ public:
 		creature->playEffect("clienteffect/pl_force_feedback_self.cef", "");
 
 		return SUCCESS;
-	}
-
-	void handleBuff(SceneObject* creature, ManagedObject* object, int64 param) {
-		ManagedReference<CreatureObject*> creo = cast<CreatureObject*>( creature);
-		if (creo == NULL)
-			return;
-
-		// Client Effect upon hit (needed)
-		creo->playEffect("clienteffect/pl_force_feedback_block.cef", "");
 	}
 
 };

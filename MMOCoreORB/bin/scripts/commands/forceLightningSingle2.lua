@@ -42,32 +42,34 @@
 --true = 1, false = 0
 
 ForceLightningSingle2Command = {
-        name = "forcelightningsingle2",
-        
-	damage = 3000,
+	name = "forcelightningsingle2",
+
+	minDamage = 1500,
+	maxDamage = 2000,
 	speed = 4.0,
 	forceCost = 150,
 	accuracySkillMod = "forcelightning_accuracy";
 
 	stateEffects = {
-	  StateEffect( 
-		STUN_EFFECT, 
-		{}, 
-		{}, 
-		{ "jedi_state_defense" }, 
-		30, 
-		0, 
-		10 
+	  StateEffect(
+		STUN_EFFECT,
+		{},
+		{},
+		{ "jedi_state_defense" },
+		30,
+		0,
+		10
 	  )
 	},
 
 	animationCRC = hashCode("force_lightning_1_particle_level_3_light"),
 
 	combatSpam = "forcelightningsingle2",
-	
+
 	poolsToDamage = RANDOM_ATTRIBUTE,
-	
+
 	attackType = FORCEATTACK,
+	damageType = ELECTRICITY_DAMAGE,
 
 	range = 32
 }

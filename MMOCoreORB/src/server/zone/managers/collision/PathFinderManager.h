@@ -20,7 +20,9 @@ namespace server {
    }
 
    namespace creature {
+    namespace ai {
     	class AiAgent;
+    }
    }
   }
  }
@@ -32,11 +34,8 @@ using namespace server::zone::objects::cell;
 class FloorMesh;
 
 class PathFinderManager : public Singleton<PathFinderManager>, public Logger, public Object {
-
 public:
-	PathFinderManager() : Logger("PathFinderManager") {
-
-	}
+	PathFinderManager();
 
 	Vector<WorldCoordinates>* findPath(const WorldCoordinates& pointA, const WorldCoordinates& pointB);
 

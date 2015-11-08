@@ -16,18 +16,17 @@ SithShadowEncounter = Encounter:new {
 	-- Encounter properties
 	--minimumTimeUntilEncounter = 12 * 60 * 60 * 1000, -- 12 hours
 	--maximumTimeUntilEncounter = 24 * 60 * 60 * 1000, -- 24 hours
-	minimumTimeUntilEncounter = 1 * 60 * 1000, -- 12 hours
-	maximumTimeUntilEncounter = 1 * 60 * 1000, -- 24 hours
-	--encounterDespawnTime = 5 * 60 * 1000, -- 5 minutes
+	minimumTimeUntilEncounter = 5 * 60 * 1000, -- 12 hours
+	maximumTimeUntilEncounter = 10 * 60 * 1000, -- 24 hours
 	encounterDespawnTime = 5 * 60 * 1000, -- 5 minutes
 	spawnObjectList = {
-		{ template = "sith_shadow", minimumDistance = 64, maximumDistance = 96, referencePoint = 0, followPlayer = true, setNotAttackable = false },
-		{ template = "sith_shadow", minimumDistance = 4, maximumDistance = 8, referencePoint = 1, followPlayer = true, setNotAttackable = false }
+		{ template = "sith_shadow_outlaw_mission", minimumDistance = 64, maximumDistance = 96, referencePoint = 0, followPlayer = true, setNotAttackable = false, runOnDespawn = false },
+		{ template = "sith_shadow_outlaw_mission", minimumDistance = 4, maximumDistance = 8, referencePoint = 1, followPlayer = true, setNotAttackable = false, runOnDespawn = false }
 	},
 	onEncounterSpawned = nil,
 	isEncounterFinished = nil,
-	onEncounterClosingIn = nil,
-	onEncounterAtPlayer = nil
+	onEncounterInRange = nil,
+	inRangeValue = 26,
 }
 
 -- Check if the sith shadow is the first one spawned for the player.
@@ -71,7 +70,7 @@ function SithShadowEncounter:onLoot(pLootedCreature, pLooter, nothing)
 		if self:isTheFirstSithShadowOfThePlayer(pLootedCreature, pLooter) then
 			self:addWaypointDatapadAsLoot(pLootedCreature)
 			QuestManager.completeQuest(pLooter, QuestManager.quests.TwO_MILITARY)
-			QuestManager.completeQuest(pLooter, QuestManager.quests.GOT_DATAPAD_1)
+			QuestManager.completeQuest(pLooter, QuestManager.quests.GOT_DATAPAD)
 			CreatureObject(pLooter):sendSystemMessage("@quest/quests:quest_journal_updated")
 			return 1
 		end
@@ -97,7 +96,7 @@ function SithShadowEncounter:onPlayerKilled(pCreatureObject, pKiller, nothing)
 		OldManEncounter:start(pCreatureObject)
 		QuestManager.resetQuest(pCreatureObject, QuestManager.quests.TwO_MILITARY)
 		QuestManager.resetQuest(pCreatureObject, QuestManager.quests.LOOT_DATAPAD_1)
-		QuestManager.resetQuest(pCreatureObject, QuestManager.quests.GOT_DATAPAD_1)
+		QuestManager.resetQuest(pCreatureObject, QuestManager.quests.GOT_DATAPAD)
 
 		CreatureObject(pCreatureObject):sendSystemMessage("@quest/quests:task_failure")
 		CreatureObject(pCreatureObject):sendSystemMessage("@quest/quests:quest_journal_updated")
@@ -122,11 +121,11 @@ function SithShadowEncounter:onEncounterSpawned(pCreatureObject, spawnedObjects)
 	QuestManager.activateQuest(pCreatureObject, QuestManager.quests.TwO_MILITARY)
 end
 
--- Handling of the encounter closing in event.
+-- Handling of the encounter in range event.
 -- Send a spatial chat from the first sith shadow.
 -- @param pCreatureObject pointer to the creature object of the player who has this encounter.
 -- @param spawnedObjects list of pointers to the spawned sith shadows.
-function SithShadowEncounter:onEncounterClosingIn(pCreatureObject, spawnedObjects)
+function SithShadowEncounter:onEncounterInRange(pCreatureObject, spawnedObjects)
 	if (pCreatureObject == nil or spawnedObjects == nil or spawnedObjects[1] == nil) then
 		return
 	end
@@ -136,6 +135,12 @@ function SithShadowEncounter:onEncounterClosingIn(pCreatureObject, spawnedObject
 	threatenString:setTT(CreatureObject(pCreatureObject):getFirstName())
 	spatialChat(spawnedObjects[1], threatenString:_getObject())
 	QuestManager.activateQuest(pCreatureObject, QuestManager.quests.LOOT_DATAPAD_1)
+	
+	foreach(spawnedObjects, function(pMobile)
+		if (pMobile ~= nil) then
+			AiAgent(pMobile):setDefender(pCreatureObject)
+		end
+	end)
 end
 
 -- Check if the sith shadow encounter is finished or not.
@@ -146,7 +151,7 @@ function SithShadowEncounter:isEncounterFinished(pCreatureObject)
 		return false
 	end
 
-	return QuestManager.hasCompletedQuest(pCreatureObject, QuestManager.quests.GOT_DATAPAD_1)
+	return QuestManager.hasCompletedQuest(pCreatureObject, QuestManager.quests.GOT_DATAPAD)
 end
 
 -- Handling of the activation of the looted datapad.
@@ -154,7 +159,7 @@ end
 -- @param pCreatureObject pointer to the creature object who activated the datapad.
 function SithShadowEncounter:useWaypointDatapad(pSceneObject, pCreatureObject)
 	Logger:log("Player used the looted waypoint datapad.", LT_INFO)
-	if QuestManager.hasCompletedQuest(pCreatureObject, QuestManager.quests.GOT_DATAPAD_1) then
+	if QuestManager.hasCompletedQuest(pCreatureObject, QuestManager.quests.GOT_DATAPAD) then
 		SithShadowIntroTheater:start(pCreatureObject)
 
 		CreatureObject(pCreatureObject):sendSystemMessage(READ_DISK_1_STRING)

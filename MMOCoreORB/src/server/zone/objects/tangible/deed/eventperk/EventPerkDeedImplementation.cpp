@@ -128,11 +128,11 @@ int EventPerkDeedImplementation::handleObjectMenuSelect(CreatureObject* player, 
 			return 1;
 		}
 
-		SortedVector<ManagedReference<QuadTreeEntry* > > closeObjects;
+		SortedVector<QuadTreeEntry*> closeObjects;
 		vec->safeCopyTo(closeObjects);
 
 		for (int i = 0; i < closeObjects.size(); ++i) {
-			SceneObject* obj = cast<SceneObject*>(closeObjects.get(i).get());
+			SceneObject* obj = cast<SceneObject*>(closeObjects.get(i));
 
 			if (obj == NULL) {
 				continue;
@@ -190,7 +190,7 @@ int EventPerkDeedImplementation::handleObjectMenuSelect(CreatureObject* player, 
 			return 1;
 		}
 
-		if (perkType != EventPerkDeedTemplate::STATIC) {
+		if (perkType != EventPerkDeedTemplate::STATIC && perkType != EventPerkDeedTemplate::GAME) {
 			player->sendSystemMessage("This type of event perk deed is not functional yet.");
 			return 1;
 		}

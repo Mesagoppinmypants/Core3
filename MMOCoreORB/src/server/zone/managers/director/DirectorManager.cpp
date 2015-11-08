@@ -43,7 +43,7 @@
 #include "server/zone/objects/creature/CreatureAttribute.h"
 #include "server/zone/objects/creature/CreatureState.h"
 #include "server/zone/objects/creature/CreaturePosture.h"
-#include "server/zone/objects/creature/LuaAiAgent.h"
+#include "server/zone/objects/creature/ai/LuaAiAgent.h"
 #include "server/zone/objects/creature/ai/bt/Behavior.h"
 #include "server/zone/objects/area/LuaActiveArea.h"
 #include "server/zone/templates/mobile/ConversationScreen.h"
@@ -70,6 +70,10 @@
 #include "server/db/ServerDatabase.h"
 #include "server/zone/objects/player/sui/SuiWindowType.h"
 #include "server/zone/packets/scene/PlayClientEffectLocMessage.h"
+#include "server/zone/managers/player/BadgeList.h"
+#include "server/zone/managers/player/LuaQuestInfo.h"
+#include "server/zone/objects/tangible/misc/FsPuzzlePack.h"
+#include "server/zone/objects/tangible/misc/CustomIngredient.h"
 
 int DirectorManager::DEBUG_MODE = 0;
 int DirectorManager::ERROR_CODE = NO_ERROR;
@@ -276,6 +280,8 @@ void DirectorManager::initializeLuaEngine(Lua* luaEngine) {
 	lua_register(luaEngine->getLuaState(), "getContainerObjectByTemplate", getContainerObjectByTemplate);
 	lua_register(luaEngine->getLuaState(), "updateCellPermission", updateCellPermission);
 	lua_register(luaEngine->getLuaState(), "updateCellPermissionGroup", updateCellPermissionGroup);
+	lua_register(luaEngine->getLuaState(), "getQuestInfo", getQuestInfo);
+	lua_register(luaEngine->getLuaState(), "getPlayerQuestID", getPlayerQuestID);
 
 	// call for createLoot(SceneObject* container, const String& lootGroup, int level)
 	lua_register(luaEngine->getLuaState(), "createLoot", createLoot);
@@ -285,6 +291,7 @@ void DirectorManager::initializeLuaEngine(Lua* luaEngine) {
 	lua_register(luaEngine->getLuaState(), "getRegion", getRegion);
 	lua_register(luaEngine->getLuaState(), "writeScreenPlayData", writeScreenPlayData);
 	lua_register(luaEngine->getLuaState(), "readScreenPlayData", readScreenPlayData);
+	lua_register(luaEngine->getLuaState(), "deleteScreenPlayData", deleteScreenPlayData);
 	lua_register(luaEngine->getLuaState(), "clearScreenPlayData", clearScreenPlayData);
 	lua_register(luaEngine->getLuaState(), "getObjectTemplatePathByCRC", getObjectTemplatePathByCRC);
 	lua_register(luaEngine->getLuaState(), "getTimestamp", getTimestamp);
@@ -355,6 +362,8 @@ void DirectorManager::initializeLuaEngine(Lua* luaEngine) {
 	luaEngine->setGlobalInt("WASLISTENEDTO", ObserverEventType::WASLISTENEDTO);
 	luaEngine->setGlobalInt("WASWATCHED", ObserverEventType::WASWATCHED);
 	luaEngine->setGlobalInt("PARENTCHANGED", ObserverEventType::PARENTCHANGED);
+	luaEngine->setGlobalInt("LOGGEDIN", ObserverEventType::LOGGEDIN);
+	luaEngine->setGlobalInt("LOGGEDOUT", ObserverEventType::LOGGEDOUT);
 
 	luaEngine->setGlobalInt("UPRIGHT", CreaturePosture::UPRIGHT);
 	luaEngine->setGlobalInt("PRONE", CreaturePosture::PRONE);
@@ -405,6 +414,7 @@ void DirectorManager::initializeLuaEngine(Lua* luaEngine) {
 	luaEngine->setGlobalInt("MOVEIN", ContainerPermissions::MOVEIN);
 	luaEngine->setGlobalInt("MOVEOUT", ContainerPermissions::MOVEOUT);
 	luaEngine->setGlobalInt("WALKIN", ContainerPermissions::WALKIN);
+	luaEngine->setGlobalInt("MOVECONTAINER", ContainerPermissions::MOVECONTAINER);
 
 	// Transfer Error Codes
 	luaEngine->setGlobalInt("TRANSFERCANADD", TransferErrorCode::SUCCESS);
@@ -421,146 +431,13 @@ void DirectorManager::initializeLuaEngine(Lua* luaEngine) {
 	luaEngine->setGlobalInt("REACTION_MEAN", ReactionManager::MEAN);
 
 	// Badges
-	luaEngine->setGlobalInt("COUNT_5", Badge::COUNT_5);
-	luaEngine->setGlobalInt("COUNT_10", Badge::COUNT_10);
-	luaEngine->setGlobalInt("COUNT_25", Badge::COUNT_25);
-	luaEngine->setGlobalInt("COUNT_50", Badge::COUNT_50);
-	luaEngine->setGlobalInt("COUNT_75", Badge::COUNT_75);
-	luaEngine->setGlobalInt("COUNT_100", Badge::COUNT_100);
-	luaEngine->setGlobalInt("COUNT_125", Badge::COUNT_125);
-	luaEngine->setGlobalInt("POI_RABIDBEAST", Badge::POI_RABIDBEAST);
-	luaEngine->setGlobalInt("POI_PRISONBREAK", Badge::POI_PRISONBREAK);
-	luaEngine->setGlobalInt("POI_TWOLIARS", Badge::POI_TWOLIARS);
-	luaEngine->setGlobalInt("POI_FACTORYLIBERATION", Badge::POI_FACTORYLIBERATION);
-	luaEngine->setGlobalInt("POI_FACTORYLIBERATION", Badge::POI_FACTORYLIBERATION);
-	luaEngine->setGlobalInt("POI_HEROMARK", Badge::POI_HEROMARK);
-	luaEngine->setGlobalInt("EXP_TAT_BENS_HUT", Badge::EXP_TAT_BENS_HUT);
-	luaEngine->setGlobalInt("EXP_TAT_TUSKEN_POOL", Badge::EXP_TAT_TUSKEN_POOL);
-	luaEngine->setGlobalInt("EXP_TAT_KRAYT_SKELETON", Badge::EXP_TAT_KRAYT_SKELETON);
-	luaEngine->setGlobalInt("EXP_TAT_ESCAPE_POD", Badge::EXP_TAT_ESCAPE_POD);
-	luaEngine->setGlobalInt("EXP_TAT_SARLACC_PIT", Badge::EXP_TAT_SARLACC_PIT);
-	luaEngine->setGlobalInt("EXP_TAT_LARS_HOMESTEAD", Badge::EXP_TAT_LARS_HOMESTEAD);
-	luaEngine->setGlobalInt("EXP_TAT_KRAYT_GRAVEYARD", Badge::EXP_TAT_KRAYT_GRAVEYARD);
-	luaEngine->setGlobalInt("EXP_NAB_GUNGAN_SACRED_PLACE", Badge::EXP_NAB_GUNGAN_SACRED_PLACE);
-	luaEngine->setGlobalInt("EXP_COR_AGRILAT_SWAMP", Badge::EXP_COR_AGRILAT_SWAMP);
-	luaEngine->setGlobalInt("EXP_YAV_TEMPLE_WOOLAMANDER", Badge::EXP_YAV_TEMPLE_WOOLAMANDER);
-	luaEngine->setGlobalInt("EXP_YAV_TEMPLE_BLUELEAF", Badge::EXP_YAV_TEMPLE_BLUELEAF);
-	luaEngine->setGlobalInt("EXP_YAV_TEMPLE_EXAR_KUN", Badge::EXP_YAV_TEMPLE_EXAR_KUN);
-	luaEngine->setGlobalInt("EXP_LOK_VOLCANO", Badge::EXP_LOK_VOLCANO);
-	luaEngine->setGlobalInt("EXP_DAT_TARPIT", Badge::EXP_DAT_TARPIT);
-	luaEngine->setGlobalInt("EXP_DAT_SARLACC", Badge::EXP_DAT_SARLACC);
-	luaEngine->setGlobalInt("EXP_DAT_ESCAPE_POD", Badge::EXP_DAT_ESCAPE_POD);
-	luaEngine->setGlobalInt("EXP_DAT_MISTY_FALLS_1", Badge::EXP_DAT_MISTY_FALLS_1);
-	luaEngine->setGlobalInt("EXP_DAT_MISTY_FALLS_2", Badge::EXP_DAT_MISTY_FALLS_2);
-	luaEngine->setGlobalInt("EXP_DAN_JEDI_TEMPLE", Badge::EXP_DAN_JEDI_TEMPLE);
-	luaEngine->setGlobalInt("EXP_DAN_REBEL_BASE", Badge::EXP_DAN_REBEL_BASE);
-	luaEngine->setGlobalInt("EVENT_PROJECT_DEAD_EYE_1", Badge::EVENT_PROJECT_DEAD_EYE_1);
-	luaEngine->setGlobalInt("ACC_GOOD_SAMARITAN", Badge::ACC_GOOD_SAMARITAN);
-	luaEngine->setGlobalInt("ACC_FASCINATING_BACKGROUND", Badge::ACC_FASCINATING_BACKGROUND);
-	luaEngine->setGlobalInt("ACC_BRAVE_SOLDIER", Badge::ACC_BRAVE_SOLDIER);
-	luaEngine->setGlobalInt("ACC_INTERESTING_PERSONAGE", Badge::ACC_INTERESTING_PERSONAGE);
-	luaEngine->setGlobalInt("ACC_PROFESSIONAL_DEMEANOR", Badge::ACC_PROFESSIONAL_DEMEANOR);
-	luaEngine->setGlobalInt("WARREN_COMPASSION", Badge::WARREN_COMPASSION);
-	luaEngine->setGlobalInt("WARREN_HERO", Badge::WARREN_HERO);
-	luaEngine->setGlobalInt("EVENT_COA2_REBEL", Badge::EVENT_COA2_REBEL);
-	luaEngine->setGlobalInt("EVENT_COA2_IMPERIAL", Badge::EVENT_COA2_IMPERIAL);
-	luaEngine->setGlobalInt("COMBAT_1HSWORD_MASTER", Badge::COMBAT_1HSWORD_MASTER);
-	luaEngine->setGlobalInt("COMBAT_2HSWORD_MASTER", Badge::COMBAT_2HSWORD_MASTER);
-	luaEngine->setGlobalInt("COMBAT_BOUNTYHUNTER_MASTER", Badge::COMBAT_BOUNTYHUNTER_MASTER);
-	luaEngine->setGlobalInt("COMBAT_BRAWLER_MASTER", Badge::COMBAT_BRAWLER_MASTER);
-	luaEngine->setGlobalInt("COMBAT_CARBINE_MASTER", Badge::COMBAT_CARBINE_MASTER);
-	luaEngine->setGlobalInt("COMBAT_COMMANDO_MASTER", Badge::COMBAT_COMMANDO_MASTER);
-	luaEngine->setGlobalInt("COMBAT_MARKSMAN_MASTER", Badge::COMBAT_MARKSMAN_MASTER);
-	luaEngine->setGlobalInt("COMBAT_PISTOL_MASTER", Badge::COMBAT_PISTOL_MASTER);
-	luaEngine->setGlobalInt("COMBAT_POLEARM_MASTER", Badge::COMBAT_POLEARM_MASTER);
-	luaEngine->setGlobalInt("COMBAT_RIFLEMAN_MASTER", Badge::COMBAT_RIFLEMAN_MASTER);
-	luaEngine->setGlobalInt("COMBAT_SMUGGLER_MASTER", Badge::COMBAT_SMUGGLER_MASTER);
-	luaEngine->setGlobalInt("COMBAT_UNARMED_MASTER", Badge::COMBAT_UNARMED_MASTER);
-	luaEngine->setGlobalInt("CRAFTING_ARCHITECT_MASTER", Badge::CRAFTING_ARCHITECT_MASTER);
-	luaEngine->setGlobalInt("CRAFTING_ARMORSMITH_MASTER", Badge::CRAFTING_ARMORSMITH_MASTER);
-	luaEngine->setGlobalInt("CRAFTING_ARTISAN_MASTER", Badge::CRAFTING_ARTISAN_MASTER);
-	luaEngine->setGlobalInt("CRAFTING_CHEF_MASTER", Badge::CRAFTING_CHEF_MASTER);
-	luaEngine->setGlobalInt("CRAFTING_DROIDENGINEER_MASTER", Badge::CRAFTING_DROIDENGINEER_MASTER);
-	luaEngine->setGlobalInt("CRAFTING_MERCHANT_MASTER", Badge::CRAFTING_MERCHANT_MASTER);
-	luaEngine->setGlobalInt("CRAFTING_TAILOR_MASTER", Badge::CRAFTING_TAILOR_MASTER);
-	luaEngine->setGlobalInt("CRAFTING_WEAPONSMITH_MASTER", Badge::CRAFTING_WEAPONSMITH_MASTER);
-	luaEngine->setGlobalInt("OUTDOORS_BIOENGINEER_MASTER", Badge::OUTDOORS_BIOENGINEER_MASTER);
-	luaEngine->setGlobalInt("OUTDOORS_CREATUREHANDLER_MASTER", Badge::OUTDOORS_CREATUREHANDLER_MASTER);
-	luaEngine->setGlobalInt("OUTDOORS_RANGER_MASTER", Badge::OUTDOORS_RANGER_MASTER);
-	luaEngine->setGlobalInt("OUTDOORS_SCOUT_MASTER", Badge::OUTDOORS_SCOUT_MASTER);
-	luaEngine->setGlobalInt("OUTDOORS_SQUADLEADER_MASTER", Badge::OUTDOORS_SQUADLEADER_MASTER);
-	luaEngine->setGlobalInt("SCIENCE_COMBATMEDIC_MASTER", Badge::SCIENCE_COMBATMEDIC_MASTER);
-	luaEngine->setGlobalInt("SCIENCE_DOCTOR_MASTER", Badge::SCIENCE_DOCTOR_MASTER);
-	luaEngine->setGlobalInt("SCIENCE_MEDIC_MASTER", Badge::SCIENCE_MEDIC_MASTER);
-	luaEngine->setGlobalInt("SOCIAL_DANCER_MASTER", Badge::SOCIAL_DANCER_MASTER);
-	luaEngine->setGlobalInt("SOCIAL_ENTERTAINER_MASTER", Badge::SOCIAL_ENTERTAINER_MASTER);
-	luaEngine->setGlobalInt("SOCIAL_IMAGEDESIGNER_MASTER", Badge::SOCIAL_IMAGEDESIGNER_MASTER);
-	luaEngine->setGlobalInt("SOCIAL_MUSICIAN_MASTER", Badge::SOCIAL_MUSICIAN_MASTER);
-	luaEngine->setGlobalInt("SOCIAL_POLITICIAN_MASTER", Badge::SOCIAL_POLITICIAN_MASTER);
-	luaEngine->setGlobalInt("BDG_EXP_NAB_THEED_FALLS_BOTTOM", Badge::BDG_EXP_NAB_THEED_FALLS_BOTTOM);
-	luaEngine->setGlobalInt("BDG_EXP_NAB_DEEJA_FALLS_TOP", Badge::BDG_EXP_NAB_DEEJA_FALLS_TOP);
-	luaEngine->setGlobalInt("BDG_EXP_NAB_AMIDALAS_SANDY_BEACH", Badge::BDG_EXP_NAB_AMIDALAS_SANDY_BEACH);
-	luaEngine->setGlobalInt("BDG_EXP_COR_REBEL_HIDEOUT", Badge::BDG_EXP_COR_REBEL_HIDEOUT);
-	luaEngine->setGlobalInt("BDG_EXP_COR_ROGUE_CORSEC_BASE", Badge::BDG_EXP_COR_ROGUE_CORSEC_BASE);
-	luaEngine->setGlobalInt("BDG_EXP_COR_TYRENA_THEATER", Badge::BDG_EXP_COR_TYRENA_THEATER);
-	luaEngine->setGlobalInt("BDG_EXP_COR_BELA_VISTAL_FOUNTAIN", Badge::BDG_EXP_COR_BELA_VISTAL_FOUNTAIN);
-	luaEngine->setGlobalInt("BDG_EXP_DAT_CRASHED_SHIP", Badge::BDG_EXP_DAT_CRASHED_SHIP);
-	luaEngine->setGlobalInt("BDG_EXP_DAT_IMP_PRISON", Badge::BDG_EXP_DAT_IMP_PRISON);
-	luaEngine->setGlobalInt("BDG_EXP_DAN_DANTARI_VILLAGE1", Badge::BDG_EXP_DAN_DANTARI_VILLAGE1);
-	luaEngine->setGlobalInt("BDG_EXP_DAN_DANTARI_VILLAGE2", Badge::BDG_EXP_DAN_DANTARI_VILLAGE2);
-	luaEngine->setGlobalInt("BDG_EXP_END_EWOK_TREE_VILLAGE", Badge::BDG_EXP_END_EWOK_TREE_VILLAGE);
-	luaEngine->setGlobalInt("BDG_EXP_END_EWOK_LAKE_VILLAGE", Badge::BDG_EXP_END_EWOK_LAKE_VILLAGE);
-	luaEngine->setGlobalInt("BDG_EXP_END_DULOK_VILLAGE", Badge::BDG_EXP_END_DULOK_VILLAGE);
-	luaEngine->setGlobalInt("BDG_EXP_END_IMP_OUTPOST", Badge::BDG_EXP_END_IMP_OUTPOST);
-	luaEngine->setGlobalInt("BDG_EXP_TAL_CREATURE_VILLAGE", Badge::BDG_EXP_TAL_CREATURE_VILLAGE);
-	luaEngine->setGlobalInt("BDG_EXP_TAL_IMP_BASE", Badge::BDG_EXP_TAL_IMP_BASE);
-	luaEngine->setGlobalInt("BDG_EXP_TAL_IMP_VS_REB_BATTLE", Badge::BDG_EXP_TAL_IMP_VS_REB_BATTLE);
-	luaEngine->setGlobalInt("BDG_EXP_TAL_AQUALISH_CAVE", Badge::BDG_EXP_TAL_AQUALISH_CAVE);
-	luaEngine->setGlobalInt("BDG_EXP_ROR_KOBALA_SPICE_MINE", Badge::BDG_EXP_ROR_KOBALA_SPICE_MINE);
-	luaEngine->setGlobalInt("BDG_EXP_ROR_REBEL_OUTPOST", Badge::BDG_EXP_ROR_REBEL_OUTPOST);
-	luaEngine->setGlobalInt("BDG_EXP_ROR_IMP_CAMP", Badge::BDG_EXP_ROR_IMP_CAMP);
-	luaEngine->setGlobalInt("BDG_EXP_ROR_IMP_HYPERDRIVE_FAC", Badge::BDG_EXP_ROR_IMP_HYPERDRIVE_FAC);
-	luaEngine->setGlobalInt("BDG_EXP_LOK_KIMOGILA_SKELETON", Badge::BDG_EXP_LOK_KIMOGILA_SKELETON);
-	luaEngine->setGlobalInt("BDG_EXP_10_BADGES", Badge::BDG_EXP_10_BADGES);
-	luaEngine->setGlobalInt("BDG_EXP_20_BADGES", Badge::BDG_EXP_20_BADGES);
-	luaEngine->setGlobalInt("BDG_EXP_30_BADGES", Badge::BDG_EXP_30_BADGES);
-	luaEngine->setGlobalInt("BDG_EXP_40_BADGES", Badge::BDG_EXP_40_BADGES);
-	luaEngine->setGlobalInt("BDG_EXP_45_BADGES", Badge::BDG_EXP_45_BADGES);
-	luaEngine->setGlobalInt("BDG_THM_PARK_JABBA_BADGE", Badge::BDG_THM_PARK_JABBA_BADGE);
-	luaEngine->setGlobalInt("BDG_THM_PARK_IMPERIAL_BADGE", Badge::BDG_THM_PARK_IMPERIAL_BADGE);
-	luaEngine->setGlobalInt("BDG_THM_PARK_REBEL_BADGE", Badge::BDG_THM_PARK_REBEL_BADGE);
-	luaEngine->setGlobalInt("BDG_THM_PARK_NYM_BADGE", Badge::BDG_THM_PARK_NYM_BADGE);
-	luaEngine->setGlobalInt("EVENT_COA3_REBEL", Badge::EVENT_COA3_REBEL);
-	luaEngine->setGlobalInt("EVENT_COA3_IMPERIAL", Badge::EVENT_COA3_IMPERIAL);
-	luaEngine->setGlobalInt("BDG_LIBRARY_TRIVIA", Badge::BDG_LIBRARY_TRIVIA);
-	luaEngine->setGlobalInt("BDG_CORVETTE_IMP_DESTROY", Badge::BDG_CORVETTE_IMP_DESTROY);
-	luaEngine->setGlobalInt("BDG_CORVETTE_IMP_RESCUE", Badge::BDG_CORVETTE_IMP_RESCUE);
-	luaEngine->setGlobalInt("BDG_CORVETTE_IMP_ASSASSIN", Badge::BDG_CORVETTE_IMP_ASSASSIN);
-	luaEngine->setGlobalInt("BDG_CORVETTE_NEUTRAL_DESTROY", Badge::BDG_CORVETTE_NEUTRAL_DESTROY);
-	luaEngine->setGlobalInt("BDG_CORVETTE_NEUTRAL_RESCUE", Badge::BDG_CORVETTE_NEUTRAL_RESCUE);
-	luaEngine->setGlobalInt("BDG_CORVETTE_NEUTRAL_ASSASSIN", Badge::BDG_CORVETTE_NEUTRAL_ASSASSIN);
-	luaEngine->setGlobalInt("BDG_CORVETTE_REB_DESTROY", Badge::BDG_CORVETTE_REB_DESTROY);
-	luaEngine->setGlobalInt("BDG_CORVETTE_REB_RESCUE", Badge::BDG_CORVETTE_REB_RESCUE);
-	luaEngine->setGlobalInt("BDG_CORVETTE_REB_ASSASSIN", Badge::BDG_CORVETTE_REB_ASSASSIN);
-	luaEngine->setGlobalInt("BDG_RACING_AGRILAT_SWAMP", Badge::BDG_RACING_AGRILAT_SWAMP);
-	luaEngine->setGlobalInt("BDG_RACING_KEREN_CITY", Badge::BDG_RACING_KEREN_CITY);
-	luaEngine->setGlobalInt("BDG_RACING_MOS_ESPA", Badge::BDG_RACING_MOS_ESPA);
-	luaEngine->setGlobalInt("BDG_ACCOLADE_LIVE_EVENT", Badge::BDG_ACCOLADE_LIVE_EVENT);
-	luaEngine->setGlobalInt("BDG_RACING_LOK_MARATHON", Badge::BDG_RACING_LOK_MARATHON);
-	luaEngine->setGlobalInt("BDG_RACING_NARMLE_MEMORIAL", Badge::BDG_RACING_NARMLE_MEMORIAL);
-	luaEngine->setGlobalInt("BDG_RACING_NASHAL_RIVER", Badge::BDG_RACING_NASHAL_RIVER);
-	luaEngine->setGlobalInt("DESTROY_DEATHSTAR", Badge::DESTROY_DEATHSTAR);
-	luaEngine->setGlobalInt("CRAFTING_SHIPWRIGHT", Badge::CRAFTING_SHIPWRIGHT);
-	luaEngine->setGlobalInt("PILOT_REBEL_NAVY_NABOO", Badge::PILOT_REBEL_NAVY_NABOO);
-	luaEngine->setGlobalInt("PILOT_REBEL_NAVY_CORELLIA", Badge::PILOT_REBEL_NAVY_CORELLIA);
-	luaEngine->setGlobalInt("PILOT_REBEL_NAVY_TATOOINE", Badge::PILOT_REBEL_NAVY_TATOOINE);
-	luaEngine->setGlobalInt("PILOT_IMPERIAL_NAVY_NABOO", Badge::PILOT_IMPERIAL_NAVY_NABOO);
-	luaEngine->setGlobalInt("PILOT_IMPERIAL_NAVY_CORELLIA", Badge::PILOT_IMPERIAL_NAVY_CORELLIA);
-	luaEngine->setGlobalInt("PILOT_IMPERIAL_NAVY_TATOOINE", Badge::PILOT_IMPERIAL_NAVY_TATOOINE);
-	luaEngine->setGlobalInt("PILOT_NEUTRAL_NABOO", Badge::PILOT_NEUTRAL_NABOO);
-	luaEngine->setGlobalInt("PILOT_CORELLIA", Badge::PILOT_CORELLIA);
-	luaEngine->setGlobalInt("PILOT_TATOOINE", Badge::PILOT_TATOOINE);
-	luaEngine->setGlobalInt("BDG_ACCOLATE_HOME_SHOW", Badge::BDG_ACCOLATE_HOME_SHOW);
+	VectorMap<unsigned int, const Badge*>* badges = BadgeList::instance()->getMap();
+	const int vectorSize = badges->size();
+	for (int i = 0; i < vectorSize;i++) {
+		const Badge* badge = badges->get(i);
+		String val = badge->getKey().toUpperCase();
+		luaEngine->setGlobalInt(val, badge->getIndex());
+	}
 
 	// SUI Window Types (WIP)
 	luaEngine->setGlobalInt("NEWSNET_INFO", SuiWindowType::NEWSNET_INFO);
@@ -585,6 +462,10 @@ void DirectorManager::initializeLuaEngine(Lua* luaEngine) {
 	Luna<LuaCityRegion>::Register(luaEngine->getLuaState());
 	Luna<LuaStringIdChatParameter>::Register(luaEngine->getLuaState());
 	Luna<LuaTicketObject>::Register(luaEngine->getLuaState());
+	Luna<LuaQuestInfo>::Register(luaEngine->getLuaState());
+	Luna<LuaFsPuzzlePack>::Register(luaEngine->getLuaState());
+	Luna<LuaResourceSpawn>::Register(luaEngine->getLuaState());
+	Luna<LuaCustomIngredient>::Register(luaEngine->getLuaState());
 }
 
 int DirectorManager::loadScreenPlays(Lua* luaEngine) {
@@ -618,6 +499,12 @@ int DirectorManager::writeScreenPlayData(lua_State* L) {
 	}
 
 	Reference<PlayerObject*> ghost = player->getSlottedObject("ghost").castTo<PlayerObject*>();
+
+	if (ghost == NULL) {
+		DirectorManager::instance()->error("Attempted to write screen play data for a null ghost in screen play: " + screenPlay + ".");
+		return 0;
+	}
+
 	ghost->setScreenPlayData(screenPlay, variable, data);
 
 	return 0;
@@ -728,16 +615,55 @@ int DirectorManager::readScreenPlayData(lua_State* L) {
 
 	if (player == NULL || !player->isPlayerCreature()) {
 		DirectorManager::instance()->error("Attempted to read screen play data from a non-player Scene Object in screen play: " + screenPlay + ".");
-		return 0;
+
+		lua_pushstring(L, "");
+
+		return 1;
 	}
 
 	Reference<PlayerObject*> ghost = player->getSlottedObject("ghost").castTo<PlayerObject*>();
+
+	if (ghost == NULL) {
+		DirectorManager::instance()->error("Attempted to read screen play data for a null ghost in screen play: " + screenPlay + ".");
+
+		lua_pushstring(L, "");
+
+		return 1;
+	}
 
 	//readScreenPlayData(player, screenPlay, variable)
 
 	lua_pushstring(L, ghost->getScreenPlayData(screenPlay, variable).toCharArray());
 
 	return 1;
+}
+
+int DirectorManager::deleteScreenPlayData(lua_State* L) {
+	if (checkArgumentCount(L, 3) == 1) {
+		instance()->error("incorrect number of arguments passed to DirectorManager::deleteScreenPlayData");
+		ERROR_CODE = INCORRECT_ARGUMENTS;
+		return 0;
+	}
+
+	String variable = lua_tostring(L, -1);
+	String screenPlay = lua_tostring(L, -2);
+	SceneObject* player = (SceneObject*) lua_touserdata(L, -3);
+
+	if (player == NULL || !player->isPlayerCreature()) {
+		DirectorManager::instance()->error("Attempted to delete screen play data from a non-player Scene Object in screen play: " + screenPlay + ".");
+		return 0;
+	}
+
+	Reference<PlayerObject*> ghost = player->getSlottedObject("ghost").castTo<PlayerObject*>();
+
+	if (ghost == NULL) {
+		DirectorManager::instance()->error("Attempted to delete screen play data for a null ghost in screen play: " + screenPlay + ".");
+		return 0;
+	}
+
+	ghost->deleteScreenPlayData(screenPlay, variable);
+
+	return 0;
 }
 
 int DirectorManager::clearScreenPlayData(lua_State* L) {
@@ -756,6 +682,11 @@ int DirectorManager::clearScreenPlayData(lua_State* L) {
 	}
 
 	Reference<PlayerObject*> ghost = player->getSlottedObject("ghost").castTo<PlayerObject*>();
+
+	if (ghost == NULL) {
+		DirectorManager::instance()->error("Attempted to clear screen play data for a null ghost in screen play: " + screenPlay + ".");
+		return 0;
+	}
 
 	ghost->clearScreenPlayData(screenPlay);
 
@@ -989,7 +920,7 @@ int DirectorManager::createEvent(lua_State* L) {
 	if (parameterCount > 4) {
 		bool save = lua_toboolean(L, -5);
 
-		if (save) {
+		if (save && obj != NULL) {
 			Time expireTime;
 			uint64 currentTime = expireTime.getMiliTime();
 
@@ -1548,15 +1479,28 @@ int DirectorManager::addStartingWeaponsInto(lua_State* L) {
 }
 
 int DirectorManager::giveItem(lua_State* L) {
-	if (checkArgumentCount(L, 3) == 1) {
+	int numberOfArguments = lua_gettop(L);
+	if (numberOfArguments != 3 && numberOfArguments != 4) {
 		instance()->error("incorrect number of arguments passed to DirectorManager::giveItem");
 		ERROR_CODE = INCORRECT_ARGUMENTS;
 		return 0;
 	}
 
-	SceneObject* obj = (SceneObject*) lua_touserdata(L, -3);
-	String objectString = lua_tostring(L, -2);
-	int slot = lua_tointeger(L, -1);
+	SceneObject* obj;
+	String objectString;
+	int slot = -1;
+	bool overload = false;
+
+	if (numberOfArguments == 3) {
+		obj = (SceneObject*) lua_touserdata(L, -3);
+		objectString = lua_tostring(L, -2);
+		slot = lua_tointeger(L, -1);
+	} else {
+		obj = (SceneObject*) lua_touserdata(L, -4);
+		objectString = lua_tostring(L, -3);
+		slot = lua_tointeger(L, -2);
+		bool overload = lua_toboolean(L, -1);
+	}
 
 	if (obj == NULL)
 		return 0;
@@ -1566,7 +1510,7 @@ int DirectorManager::giveItem(lua_State* L) {
 	ManagedReference<SceneObject*> item = zoneServer->createObject(objectString.hashCode(), 1);
 
 	if (item != NULL && obj != NULL) {
-		if (obj->transferObject(item, slot, true)) {
+		if (obj->transferObject(item, slot, true, overload)) {
 			item->_setUpdated(true); //mark updated so the GC doesnt delete it while in LUA
 
 			ManagedReference<SceneObject*> parent = item->getParentRecursively(SceneObjectType::PLAYERCREATURE);
@@ -1673,7 +1617,7 @@ int DirectorManager::giveControlDevice(lua_State* L) {
 	controlDevice->setControlledObject(controlledObject);
 	StringId s;
 	s.setStringId(controlledObject->getObjectName()->getFullPath());
-	controlDevice->setObjectName(s);
+	controlDevice->setObjectName(s, false);
 
 	PetControlDevice* petControlDevice = cast<PetControlDevice*>(controlDevice.get());
 	if( petControlDevice != NULL ){
@@ -1954,6 +1898,12 @@ int DirectorManager::spawnSceneObject(lua_State* L) {
 		object->initializePosition(x, z, y);
 		object->setDirection(dw, dx, dy, dz);
 
+		if (object->isBuildingObject()) {
+			BuildingObject* building = object->asBuildingObject();
+
+			building->createCellObjects();
+		}
+
 		Reference<SceneObject*> cellParent = NULL;
 
 		if (parentID != 0) {
@@ -1967,8 +1917,9 @@ int DirectorManager::spawnSceneObject(lua_State* L) {
 
 		if (cellParent != NULL) {
 			cellParent->transferObject(object, -1);
-		} else
+		} else {
 			zone->transferObject(object, -1, true);
+		}
 
 		object->createChildObjects();
 
@@ -1976,6 +1927,7 @@ int DirectorManager::spawnSceneObject(lua_State* L) {
 
 		lua_pushlightuserdata(L, object.get());
 	} else {
+		instance()->error("could not spawn template " + script);
 		lua_pushnil(L);
 	}
 
@@ -2087,26 +2039,55 @@ int DirectorManager::createObserver(lua_State* L) {
 }
 
 int DirectorManager::dropObserver(lua_State* L) {
-	if (checkArgumentCount(L, 2) > 0) {
+	int numberOfArguments = lua_gettop(L);
+	if (numberOfArguments != 2 && numberOfArguments != 4) {
 		instance()->error("incorrect number of arguments passed to DirectorManager::dropObserver");
 		ERROR_CODE = INCORRECT_ARGUMENTS;
 		return 0;
 	}
 
-	SceneObject* sceneObject = (SceneObject*) lua_touserdata(L, -1);
-	uint32 eventType = lua_tonumber(L, -2);
+	SceneObject* sceneObject = NULL;
+	uint32 eventType = 0;
 
-	if (sceneObject == NULL)
-		return 0;
+	if (numberOfArguments == 2) {
+		sceneObject = (SceneObject*) lua_touserdata(L, -1);
+		eventType = lua_tointeger(L, -2);
 
-	SortedVector<ManagedReference<Observer* > > observers = sceneObject->getObservers(eventType);
-	for (int i = 0; i < observers.size(); i++) {
-		Observer* observer = observers.get(i).get();
-		if (observer != NULL && observer->isObserverType(ObserverType::SCREENPLAY)) {
-			sceneObject->dropObserver(eventType, observer);
+		if (sceneObject == NULL)
+			return 0;
 
-			if (observer->isPersistent())
-				ObjectManager::instance()->destroyObjectFromDatabase(observer->_getObjectID());
+		SortedVector<ManagedReference<Observer* > > observers = sceneObject->getObservers(eventType);
+		for (int i = 0; i < observers.size(); i++) {
+			Observer* observer = observers.get(i).get();
+			if (observer != NULL && observer->isObserverType(ObserverType::SCREENPLAY)) {
+				sceneObject->dropObserver(eventType, observer);
+
+				if (observer->isPersistent())
+					ObjectManager::instance()->destroyObjectFromDatabase(observer->_getObjectID());
+			}
+		}
+	} else {
+		sceneObject = (SceneObject*) lua_touserdata(L, -1);
+		String key = lua_tostring(L, -2);
+		String play = lua_tostring(L, -3);
+		eventType = lua_tointeger(L, -4);
+
+		if (sceneObject == NULL)
+			return 0;
+
+		SortedVector<ManagedReference<Observer* > > observers = sceneObject->getObservers(eventType);
+		for (int i = 0; i < observers.size(); i++) {
+			Observer* observer = observers.get(i).get();
+			if (observer != NULL && observer->isObserverType(ObserverType::SCREENPLAY)) {
+				ManagedReference<ScreenPlayObserver*> spObserver = dynamic_cast<ScreenPlayObserver*>(observer);
+
+				if (spObserver->getScreenPlay() == play && spObserver->getScreenKey() == key) {
+					sceneObject->dropObserver(eventType, observer);
+
+					if (observer->isPersistent())
+						ObjectManager::instance()->destroyObjectFromDatabase(observer->_getObjectID());
+				}
+			}
 		}
 	}
 
@@ -2197,7 +2178,7 @@ ConversationScreen* DirectorManager::runScreenHandlers(const String& luaClass, C
 }
 
 void DirectorManager::activateEvent(ScreenPlayTask* task) {
-	Reference<SceneObject*> obj = task->getSceneObject();
+	ManagedReference<SceneObject*> obj = task->getSceneObject();
 	String play = task->getScreenPlay();
 	String key = task->getTaskKey();
 
@@ -2431,7 +2412,7 @@ Vector3 DirectorManager::generateSpawnPoint(String zoneName, float x, float y, f
 int DirectorManager::getSpawnPoint(lua_State* L) {
     int numberOfArguments = lua_gettop(L);
     if (numberOfArguments != 5 && numberOfArguments != 6) {
-		instance()->error("incorrect number of arguments passed to DirectorManager::getSpawnArea");
+		instance()->error("incorrect number of arguments passed to DirectorManager::getSpawnPoint");
 		ERROR_CODE = INCORRECT_ARGUMENTS;
 		return 0;
 	}
@@ -2487,19 +2468,18 @@ int DirectorManager::getSpawnArea(lua_State* L) {
 
     float maximumHeightDifference, areaSize, maximumDistance, minimumDistance, y, x;
     Zone* zone = NULL;
+    bool forceSpawn = false;
+    CreatureObject* creatureObject = NULL;
 
     if (numberOfArguments == 8) {
-    	String zoneName = lua_tostring(L, -1);
+    	forceSpawn = lua_toboolean(L, -1);
     	maximumHeightDifference = lua_tonumber(L, -2);
     	areaSize = lua_tonumber(L, -3);
     	maximumDistance = lua_tonumber(L, -4);
     	minimumDistance = lua_tonumber(L, -5);
     	y = lua_tonumber(L, -6);
     	x = lua_tonumber(L, -7);
-    	CreatureObject* creatureObject = (CreatureObject*) lua_touserdata(L, -8);
-
-    	ZoneServer* zoneServer = ServerCore::getZoneServer();
-    	zone = zoneServer->getZone(zoneName);
+    	creatureObject = (CreatureObject*) lua_touserdata(L, -8);
     } else {
     	maximumHeightDifference = lua_tonumber(L, -1);
     	areaSize = lua_tonumber(L, -2);
@@ -2507,25 +2487,23 @@ int DirectorManager::getSpawnArea(lua_State* L) {
     	minimumDistance = lua_tonumber(L, -4);
     	y = lua_tonumber(L, -5);
     	x = lua_tonumber(L, -6);
-    	CreatureObject* creatureObject = (CreatureObject*) lua_touserdata(L, -7);
-
-    	if (creatureObject == NULL) {
-    		return 0;
-    	}
-
-    	zone = creatureObject->getZone();
+    	creatureObject = (CreatureObject*) lua_touserdata(L, -7);
     }
 
-	if (zone == NULL) {
+	if (creatureObject == NULL)
 		return 0;
-	}
+
+	zone = creatureObject->getZone();
+
+	if (zone == NULL)
+		return 0;
 
 	bool found = false;
 	Vector3 position;
 	int retries = 40;
 
 	while (!found && retries > 0) {
-		position = generateSpawnPoint(zone->getZoneName(), x, y, minimumDistance, maximumDistance, areaSize + 5.0, areaSize + 20);
+		position = generateSpawnPoint(zone->getZoneName(), x, y, minimumDistance, maximumDistance, areaSize + 5.0, areaSize + 20, forceSpawn);
 
 		int x0 = position.getX() - areaSize;
 		int x1 = position.getX() + areaSize;
@@ -2576,13 +2554,15 @@ int DirectorManager::getGCWDiscount(lua_State* L){
 	}
 
 	CreatureObject* creature = (CreatureObject*)lua_touserdata(L, -1);
-
-	if(creature == NULL || creature->getZone() == NULL)
+	if (creature == NULL)
 		return 0;
 
-	GCWManager* gcwMan = creature->getZone()->getGCWManager();
+	Zone* zone = creature->getZone();
+	if (zone == NULL)
+		return 0;
 
-	if(gcwMan == 0)
+	GCWManager* gcwMan = zone->getGCWManager();
+	if (gcwMan == NULL)
 		return 0;
 
 	lua_pushnumber(L, gcwMan->getGCWDiscount(creature));
@@ -2745,18 +2725,18 @@ int DirectorManager::getControllingFaction(lua_State* L) {
 	String zoneName = lua_tostring(L, -1);
 
 	Zone* zone = ServerCore::getZoneServer()->getZone(zoneName);
-
 	if (zone == NULL) {
 		lua_pushnil(L);
-	} else {
-		GCWManager* gcwMan = zone->getGCWManager();
-
-		if (gcwMan == NULL) {
-			lua_pushnil(L);
-		} else {
-			lua_pushinteger(L, gcwMan->getWinningFaction());
-		}
+		return 1;
 	}
+
+	GCWManager* gcwMan = zone->getGCWManager();
+	if (gcwMan == NULL) {
+		lua_pushnil(L);
+	} else {
+		lua_pushinteger(L, gcwMan->getWinningFaction());
+	}
+
 	return 1;
 }
 
@@ -2778,6 +2758,52 @@ int DirectorManager::playClientEffectLoc(lua_State* L) {
 
 	PlayClientEffectLoc* effectLoc = new PlayClientEffectLoc(effect, zone, x, z, y, cell);
 	creature->broadcastMessage(effectLoc, true);
+
+	return 1;
+}
+
+int DirectorManager::getPlayerQuestID(lua_State* L) {
+	if (checkArgumentCount(L, 1) == 1) {
+		instance()->error("incorrect number of arguments passed to DirectorManager::getPlayerQuestID");
+		ERROR_CODE = INCORRECT_ARGUMENTS;
+		return 0;
+	}
+
+	ManagedReference<PlayerManager*> playerManager = ServerCore::getZoneServer()->getPlayerManager();
+	String questName = lua_tostring(L, -1);
+	int questID = playerManager->getPlayerQuestID(questName);
+
+	if (questID >= 0)
+		lua_pushinteger(L, questID);
+	else
+		lua_pushnil(L);
+
+	return 1;
+}
+
+int DirectorManager::getQuestInfo(lua_State* L) {
+	if (checkArgumentCount(L, 1) == 1) {
+		instance()->error("incorrect number of arguments passed to DirectorManager::getQuestInfo");
+		ERROR_CODE = INCORRECT_ARGUMENTS;
+		return 0;
+	}
+
+	int questID = 0;
+	ManagedReference<PlayerManager*> playerManager = ServerCore::getZoneServer()->getPlayerManager();
+
+	if (lua_isnumber(L, -1)) {
+		questID = lua_tointeger(L, -1);
+	} else {
+		String questName = lua_tostring(L, -1);
+		questID = playerManager->getPlayerQuestID(questName);
+	}
+
+	QuestInfo* questInfo = playerManager->getQuestInfo(questID);
+
+	if (questInfo == NULL)
+		lua_pushnil(L);
+	else
+		lua_pushlightuserdata(L, questInfo);
 
 	return 1;
 }

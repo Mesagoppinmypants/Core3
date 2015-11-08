@@ -23,15 +23,14 @@ import engine.util.Observable;
 import server.zone.objects.player.PlayerObject;
 import server.zone.objects.structure.StructureObject;
 import engine.util.u3d.Vector3;
-import server.zone.objects.creature.AiAgent;
-import server.zone.objects.creature.Creature;
+import server.zone.objects.creature.ai.AiAgent;
+import server.zone.objects.creature.ai.Creature;
 import server.zone.objects.tangible.tool.CraftingStation;
 include server.zone.managers.player.StartingLocationList;
 include server.zone.managers.player.StartingLocation;
 include server.zone.objects.player.ValidatedPosition;
 import server.zone.objects.tangible.threat.ThreatMap;
 include server.zone.objects.creature.CreatureObject;
-include server.zone.managers.player.PlayerMap;
 include server.zone.managers.player.CharacterNameMap;
 include server.zone.managers.player.PermissionLevelList;
 import server.login.account.Account;
@@ -42,6 +41,8 @@ import engine.util.u3d.CloseObjectsVector;
 include server.zone.managers.collision.IntersectionResults;
 include server.zone.managers.player.VeteranRewardList;
 include server.zone.managers.player.JukeboxSong;
+include server.zone.managers.player.QuestInfo;
+include server.zone.objects.player.badges.Badge;
 
 class PlayerManager extends Observer implements Logger {
 	transient ZoneProcessServer processor;
@@ -66,14 +67,8 @@ class PlayerManager extends Observer implements Logger {
 	@dereferenced 
 	private VeteranRewardList veteranRewards;
 
-	@dereferenced
-	private transient VectorMap<int, string> badgeMap;
-
-	private int highestBadgeIndex;
-
 	private ZoneServer server;
 
-	transient PlayerMap playerMap;
 	transient CharacterNameMap nameMap;
 	private float globalExpMultiplier;
 	private float groupExpMultiplier;
@@ -85,6 +80,9 @@ class PlayerManager extends Observer implements Logger {
 	protected transient Vector<Reference<JukeboxSong> > jukeboxSongs;
 
 	@dereferenced
+	protected transient Vector<Reference<QuestInfo> > questInfo;
+
+	@dereferenced
 	private transient OnlineZoneClientMap onlineZoneClientMap;
 
 	public transient static int MAX_CHAR_ONLINE_COUNT;
@@ -94,12 +92,8 @@ class PlayerManager extends Observer implements Logger {
 
 	private native void loadLuaConfig();
 	private native void loadStartingLocations();
-	private native void loadBadgeMap();
 	private native void loadPermissionLevels();
-
-	public int getHighestBadgeIndex() {
-		return highestBadgeIndex;
-	}
+	private native void loadQuestInfo();
 
 	public native void finalize();
 
@@ -161,6 +155,8 @@ class PlayerManager extends Observer implements Logger {
 	public native void applyEncumbrancies(CreatureObject player, ArmorObject armor);
 	public native void removeEncumbrancies(CreatureObject player, ArmorObject armor);
 	public native void awardBadge(PlayerObject ghost, unsigned int badge);
+	@local
+	public native void awardBadge(PlayerObject ghost, final Badge badge);
 
 	public native void setExperienceMultiplier(float globalMultiplier);
 	public native void awardExperience(CreatureObject player, final string xpType, int amount, boolean sendSystemMessage = true, float localMultiplier = 1.0f);
@@ -356,8 +352,9 @@ class PlayerManager extends Observer implements Logger {
 	public void removePlayer(string playerName) {
 		nameMap.remove(playerName);
 	}
-	
-	public native string getBadgeKey(int idx);
+
+	public native void sendAdminJediList(CreatureObject player);
+	public native void sendAdminList(CreatureObject player);
 
 	public native CraftingStation getNearbyCraftingStation(CreatureObject player, int type);
 
@@ -383,6 +380,18 @@ class PlayerManager extends Observer implements Logger {
 
 	public native void fixHAM(CreatureObject player);
 	public native void fixBuffSkillMods(CreatureObject player);
+
+	public native int getPlayerQuestID(final string name);
+	public native string getPlayerQuestParent(int questID);
+
+	public int getTotalPlayerQuests(){
+		return questInfo.size();
+	}
+
+	@local
+	public native QuestInfo getQuestInfo(int questID) {
+		return questInfo.get(questID);
+	}
 
 	/**
 	 * Sends a confirmation box to the student asking if they want to learn the skill.

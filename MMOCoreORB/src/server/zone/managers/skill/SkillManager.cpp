@@ -18,6 +18,8 @@
 #include "server/zone/managers/crafting/schematicmap/SchematicMap.h"
 #include "server/zone/packets/creature/CreatureObjectDeltaMessage4.h"
 #include "../../packets/creature/CreatureObjectDeltaMessage6.h"
+#include "server/zone/objects/tangible/weapon/WeaponObject.h"
+#include "server/zone/objects/tangible/wearables/RobeObject.h"
 
 SkillManager::SkillManager()
 : Logger("SkillManager") {
@@ -108,6 +110,14 @@ void SkillManager::loadClientData() {
 	//If the admin ability isn't in the ability map, then we want to add it manually.
 	if (!abilityMap.containsKey("admin"))
 		abilityMap.put("admin", new Ability("admin"));
+
+	// These are not listed in skills.iff and need to be added manually
+	if (!abilityMap.containsKey("startMusic+western"))
+		abilityMap.put("startMusic+western", new Ability("startMusic+western"));
+	if (!abilityMap.containsKey("startDance+theatrical"))
+		abilityMap.put("startDance+theatrical", new Ability("startDance+theatrical"));
+	if (!abilityMap.containsKey("startDance+theatrical2"))
+		abilityMap.put("startDance+theatrical2", new Ability("startDance+theatrical2"));
 
 	loadXpLimits();
 
@@ -301,18 +311,26 @@ bool SkillManager::awardSkill(const String& skillName, CreatureObject* creature,
 		// Update Force Power Max and Regen.
 		ghost->setForcePowerMax(creature->getSkillMod("jedi_force_power_max"), true);
 		ghost->setForcePowerRegen(creature->getSkillMod("jedi_force_power_regen"));
+		SceneObject* item = creature->getSlottedObject("chest1");
+		if (item != NULL && item->isRobeObject()) {
+			RobeObject* robeObject = cast<RobeObject*>(item);
+			if (robeObject->getSkillRequired() != "") {
+				if (!creature->getWeapon()->isJediWeapon()) {
+					ghost->setForcePowerRegen(creature->getSkillMod("jedi_force_power_regen") - robeObject->getTemplateSkillMods()->get("jedi_force_power_regen"));
+				}
+			}
+		}
 
 		if (skillName.contains("master")) {
-			uint32 badge = Badge::getID(skillName);
+			ManagedReference<PlayerManager*> playerManager = creature->getZoneServer()->getPlayerManager();
+			if (playerManager != NULL) {
+				const Badge* badge = BadgeList::instance()->get(skillName);
 
-			if (badge == -1 && skillName == "crafting_shipwright_master") {
-				badge = Badge::getID("crafting_shipwright");
-			}
+				if (badge == NULL && skillName == "crafting_shipwright_master") {
+					badge = BadgeList::instance()->get("crafting_shipwright");
+				}
 
-			if (badge != -1) {
-				ManagedReference<PlayerManager*> playerManager = creature->getZoneServer()->getPlayerManager();
-
-				if (playerManager != NULL) {
+				if (badge != NULL) {
 					playerManager->awardBadge(ghost, badge);
 				}
 			}
@@ -365,6 +383,15 @@ bool SkillManager::surrenderSkill(const String& skillName, CreatureObject* creat
 
 	SkillList* skillList = creature->getSkillList();
 
+	if(skillName == "force_title_jedi_novice" && getForceSensitiveSkillCount(creature, true) > 0) {
+		return false;
+	}
+
+	if(skillName.beginsWith("force_sensitive_") &&
+		getForceSensitiveSkillCount(creature, false) <= 24 &&
+		creature->hasSkill("force_title_jedi_rank_01"))
+		return false;
+
 	for (int i = 0; i < skillList->size(); ++i) {
 		Skill* checkSkill = skillList->get(i);
 
@@ -372,7 +399,11 @@ bool SkillManager::surrenderSkill(const String& skillName, CreatureObject* creat
 			return false;
 	}
 
-	//If they already have the skill, then return true.
+	if(creature->hasSkill("force_title_jedi_rank_03") && skillName.contains("force_discipline_") && !knightPrereqsMet(creature, skillName)) {
+		return false;
+	}
+
+	//If they have already surrendered the skill, then return true.
 	if (!creature->hasSkill(skill->getSkillName()))
 		return true;
 
@@ -393,9 +424,31 @@ bool SkillManager::surrenderSkill(const String& skillName, CreatureObject* creat
 		//Give the player the used skill points back.
 		ghost->addSkillPoints(skill->getSkillPointsRequired());
 
-		//Remove abilities
-		Vector<String>* abilityNames = skill->getAbilities();
-		removeAbilities(ghost, *abilityNames, notifyClient);
+		//Remove abilities but only if the creature doesn't still have a skill that grants the
+		//ability.  Some abilities are granted by multiple skills. For example Dazzle for dancers
+		//and musicians.
+		Vector<String>* skillAbilities = skill->getAbilities();
+		if (skillAbilities->size() > 0) {
+			SortedVector<String> abilitiesLost;
+			for (int i = 0; i < skillAbilities->size(); i++) {
+				abilitiesLost.put(skillAbilities->get(i));
+			}
+			for (int i = 0; i < skillList->size(); i++) {
+				Skill* remainingSkill = skillList->get(i);
+				Vector<String>* remainingAbilities = remainingSkill->getAbilities();
+				for(int j = 0; j < remainingAbilities->size(); j++) {
+					if (abilitiesLost.contains(remainingAbilities->get(j))) {
+						abilitiesLost.drop(remainingAbilities->get(j));
+						if (abilitiesLost.size() == 0) {
+							break;
+						}
+					}
+				}
+			}
+			if (abilitiesLost.size() > 0) {
+				removeAbilities(ghost, abilitiesLost, notifyClient);
+			}
+		}
 
 		//Remove draft schematic groups
 		Vector<String>* schematicsGranted = skill->getSchematicsGranted();
@@ -407,6 +460,15 @@ bool SkillManager::surrenderSkill(const String& skillName, CreatureObject* creat
 		/// Update Force Power Max and Regen
 		ghost->setForcePowerMax(creature->getSkillMod("jedi_force_power_max"), true);
 		ghost->setForcePowerRegen(creature->getSkillMod("jedi_force_power_regen"));
+		SceneObject* item = creature->getSlottedObject("chest1");
+		if (item != NULL && item->isRobeObject()) {
+			RobeObject* robeObject = cast<RobeObject*>(item);
+			if (robeObject->getSkillRequired() != "") {
+				if (!creature->getWeapon()->isJediWeapon()) {
+					ghost->setForcePowerRegen(creature->getSkillMod("jedi_force_power_regen") - robeObject->getTemplateSkillMods()->get("jedi_force_power_regen"));
+				}
+			}
+		}
 
 		SkillList* list = creature->getSkillList();
 
@@ -631,7 +693,6 @@ bool SkillManager::fullfillsSkillPrerequisites(const String& skillName, Creature
 		}
 	}
 
-
 	//Check for required skills.
 	Vector<String>* requiredSkills = skill->getSkillsRequired();
 	for (int i = 0; i < requiredSkills->size(); ++i) {
@@ -647,5 +708,75 @@ bool SkillManager::fullfillsSkillPrerequisites(const String& skillName, Creature
 		}
 	}
 
+	PlayerObject* ghost = creature->getPlayerObject();
+	if(ghost == NULL || ghost->getJediState() < skill->getJediStateRequired()) {
+		return false;
+	}
+
+	if (skillName.beginsWith("force_sensitive")) { // Check for Force Sensitive boxes.
+		int index = skillName.indexOf("0");
+		if (index != -1) {
+			String skillNameFinal = skillName.subString(0, skillName.length() - 3);
+			if (creature->getScreenPlayState("VillageUnlockScreenPlay:" + skillNameFinal) < 2) {
+				return false;
+			}
+		}
+	}
+
+	if(skillName == "force_title_jedi_rank_01" && getForceSensitiveSkillCount(creature, false) < 24) {
+		return false;
+	}
+
+	if(skillName == "force_title_jedi_rank_03" && !knightPrereqsMet(creature, "")) {
+		return false;
+	}
+
 	return true;
+}
+
+int SkillManager::getForceSensitiveSkillCount(CreatureObject* creature, bool includeNoviceMasterBoxes) {
+	SkillList* skills =  creature->getSkillList();
+	int forceSensitiveSkillCount = 0;
+
+	for(int i = 0; i < skills->size(); ++i) {
+		String skillName = skills->get(i)->getSkillName();
+		if(skillName.contains("force_sensitive") && (includeNoviceMasterBoxes || skillName.indexOf("0") != -1)) {
+			forceSensitiveSkillCount++;
+		}
+	}
+
+	return forceSensitiveSkillCount;
+}
+
+bool SkillManager::knightPrereqsMet(CreatureObject* creature, const String& skillNameBeingDropped) {
+	SkillList* skillList = creature->getSkillList();
+
+	int fullTrees = 0;
+	int totalJediPoints = 0;
+
+	for(int i = 0; i < skillList->size(); ++i) {
+		Skill* skill = skillList->get(i);
+
+		String skillName = skill->getSkillName();
+		if(skillName.contains("force_discipline_") &&
+			(skillName.indexOf("0") != -1 || skillName.contains("novice") || skillName.contains("master") )) {
+			totalJediPoints += skill->getSkillPointsRequired();
+
+			if(skillName.indexOf("4") != -1) {
+				fullTrees++;
+			}
+		}
+	}
+
+	if(!skillNameBeingDropped.isEmpty()) {
+		Skill* skillBeingDropped = skillMap.get(skillNameBeingDropped.hashCode());
+
+		if(skillNameBeingDropped.indexOf("4") != -1) {
+			fullTrees--;
+		}
+
+		totalJediPoints -= skillBeingDropped->getSkillPointsRequired();
+	}
+
+	return fullTrees >= 2 && totalJediPoints >= 206;
 }

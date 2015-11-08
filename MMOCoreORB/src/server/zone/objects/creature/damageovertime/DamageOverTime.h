@@ -51,14 +51,16 @@ public:
 
 	void activate();
 	uint32 applyDot(CreatureObject* victim);
-	uint32 initDot(CreatureObject* victim);
+	uint32 initDot(CreatureObject* victim, CreatureObject* attacker);
 	float reduceTick(float reduction);
+	void expireTick() { expires.updateToCurrentTime(); }
 
 	// damage methods
 	inline uint32 doBleedingTick(CreatureObject* victim, CreatureObject* attacker);
 	inline uint32 doFireTick(CreatureObject* victim, CreatureObject* attacker);
 	inline uint32 doPoisonTick(CreatureObject* victim, CreatureObject* attacker);
-	inline uint32 doDiseaseTick(CreatureObject* victim);
+	inline uint32 doDiseaseTick(CreatureObject* victim, CreatureObject* attacker);
+	inline uint32 doForceChokeTick(CreatureObject* victim, CreatureObject* attacker);
 
 	// Setters
 	inline void setAttackerID(uint64 value) {

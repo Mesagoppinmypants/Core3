@@ -11,7 +11,7 @@ nightsister_protector = Creature:new {
 	baseHAM = 50000,
 	baseHAMmax = 61000,
 	armor = 2,
-	resists = {55,100,55,100,100,100,100,100,-1},
+	resists = {15,200,15,200,200,200,200,200,-1},
 	meatType = "",
 	meatAmount = 0,
 	hideType = "",
@@ -30,10 +30,9 @@ nightsister_protector = Creature:new {
 	lootGroups = {
 		{
 			groups = {
-				{group = "nightsister_rare", chance = 25000},
 				{group = "crystals_select", chance = 500000},
 				{group = "color_crystals", chance = 500000},
-				{group = "nightsister_common", chance = 2275000},
+				{group = "nightsister_common", chance = 2300000},
 				{group = "armor_attachments", chance = 350000},
 				{group = "clothing_attachments", chance = 350000},
 				{group = "melee_weapons", chance = 2000000},

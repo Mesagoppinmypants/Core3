@@ -20,13 +20,18 @@ class SpawnGroup : public Object {
 protected:
 	String templateName;
 
+	int minLevelCeiling;
+
 	Vector<Reference<LairSpawn*> > spawnList;
 
 public:
-	SpawnGroup() {}
+	SpawnGroup() {
+		minLevelCeiling = 20;
+	}
 
 	SpawnGroup(const String& tempName, LuaObject& group) {
 		templateName = tempName;
+		minLevelCeiling = group.getIntField("minLevelCeiling");
 
 		LuaObject lairSpawns = group.getObjectField("lairSpawns");
 
@@ -51,6 +56,7 @@ public:
 	SpawnGroup(const SpawnGroup& gr) : Object() {
 		templateName = gr.templateName;
 		spawnList = gr.spawnList;
+		minLevelCeiling = gr.minLevelCeiling;
 	}
 
 	virtual ~SpawnGroup() {}
@@ -61,6 +67,7 @@ public:
 
 		templateName = gr.templateName;
 		spawnList = gr.spawnList;
+		minLevelCeiling = gr.minLevelCeiling;
 
 		return *this;
 	}
@@ -77,6 +84,9 @@ public:
 		this->templateName = templateName;
 	}
 
+	int getMinLevelCeiling() {
+		return minLevelCeiling;
+	}
 };
 
 }

@@ -33,11 +33,12 @@ public:
 			return;
 		}
 
-		prototype->setPersistent(1);
+		ObjectManager* objectManager = crafter->getZoneServer()->getObjectManager();
+		objectManager->persistSceneObjectsRecursively(prototype, 1);
 
 		ManagedReference<SceneObject*> inventory = crafter->getSlottedObject("inventory");
 
-		if (inventory != NULL && !inventory->isContainerFull()) {
+		if (inventory != NULL && !inventory->isContainerFullRecursive()) {
 
 			if(inventory->transferObject(prototype, -1, true)) {
 				crafter->sendSystemMessage("@system_msg:prototype_transferred");

@@ -155,7 +155,12 @@ void GroupObjectImplementation::removeMember(SceneObject* member) {
 			PlayerObject* ghost = playerCreature->getPlayerObject();
 			ghost->removeWaypointBySpecialType(WaypointObject::SPECIALTYPE_NEARESTMISSIONFORGROUP);
 		}
-		scheduleUpdateNearestMissionForGroup(playerCreature->getPlanetCRC());
+
+		Zone* zone = playerCreature->getZone();
+
+		if (zone != NULL) {
+			scheduleUpdateNearestMissionForGroup(zone->getPlanetCRC());
+		}
 	}
 
 	calcGroupLevel();
@@ -407,19 +412,28 @@ float GroupObjectImplementation::getGroupHarvestModifier(CreatureObject* player)
 }
 
 void GroupObjectImplementation::calcGroupLevel() {
+	int highestPlayer = 0;
 	groupLevel = 0;
 
 	for (int i = 0; i < getGroupSize(); i++) {
-		SceneObject* member = getGroupMember(i);
+		Reference<SceneObject*> member = getGroupMember(i);
 
-		if (member->isCreatureObject()) {
-			CreatureObject* creature = cast<CreatureObject*>(member);
+		if (member->isPet()) {
+			CreatureObject* creature = cast<CreatureObject*>(member.get());
 
-			int currentlevel = groupLevel - getGroupSize();
-			int memberlevel = creature->getLevel();
+			groupLevel += creature->getLevel() / 5;
 
-			if (memberlevel > currentlevel)
-				groupLevel = memberlevel + getGroupSize();
+		} else if (member->isPlayerCreature()) {
+			CreatureObject* creature = cast<CreatureObject*>(member.get());
+
+			int memberLevel = creature->getLevel();
+
+			if (memberLevel > highestPlayer) {
+				groupLevel += (memberLevel - highestPlayer + (highestPlayer / 5));
+				highestPlayer = memberLevel;
+			} else {
+				groupLevel += memberLevel / 5;
+			}
 		}
 	}
 
@@ -429,6 +443,20 @@ void GroupObjectImplementation::calcGroupLevel() {
 	msg->close();
 
 	broadcastMessage(msg);
+}
+
+int GroupObjectImplementation::getNumberOfPlayerMembers() {
+	int playerCount = 0;
+
+	for (int i = 0; i < getGroupSize(); i++) {
+		Reference<SceneObject*> member = getGroupMember(i);
+
+		if (member->isPlayerCreature()) {
+			playerCount++;
+		}
+	}
+
+	return playerCount;
 }
 
 void GroupObjectImplementation::sendSystemMessage(StringIdChatParameter& param, bool sendLeader) {
@@ -460,6 +488,22 @@ void GroupObjectImplementation::sendSystemMessage(const String& fullPath, bool s
 
 		CreatureObject* creature = cast<CreatureObject*>(obj.get());
 		creature->sendSystemMessage(fullPath);
+	}
+}
+
+void GroupObjectImplementation::sendSystemMessage(StringIdChatParameter& param, CreatureObject* excluded) {
+	Locker lock(_this.getReferenceUnsafeStaticCast());
+
+	for (int i = 0; i < groupMembers.size(); ++i) {
+		GroupMember* member = &groupMembers.get(i);
+
+		ManagedReference<SceneObject*> obj = member->get();
+
+		if (obj == NULL || !obj->isPlayerCreature() || obj == excluded)
+			continue;
+
+		CreatureObject* creature = cast<CreatureObject*>(obj.get());
+		creature->sendSystemMessage(param);
 	}
 }
 

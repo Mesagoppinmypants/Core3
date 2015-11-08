@@ -200,8 +200,16 @@ public:
 				dv = normalize(d->getSaber(),d->isSpecialResist(type),any);
 				ev = normalize(e->getSaber(),e->isSpecialResist(type),any);
 				break;
+			case WeaponObject::STUN:
+				any = hasASpecial(a,b,c,d,e,type)|| hasVulnerability(a->getStun(),b->getStun(),c->getStun(), d->getStun(), e->getStun());
+				av = normalize(a->getStun(),a->isSpecialResist(type),any);
+				bv = normalize(b->getStun(),b->isSpecialResist(type),any);
+				cv = normalize(c->getStun(),c->isSpecialResist(type),any);
+				dv = normalize(d->getStun(),d->isSpecialResist(type),any);
+				ev = normalize(e->getStun(),e->isSpecialResist(type),any);
+				break;
 		}
-		float value = ceil((av * 0.41) + (bv *0.25) + (cv * 0.04) + (dv * 0.04) + (ev * 0.25));
+		float value = ceil((av * 0.40) + (bv *0.25) + (cv * 0.05) + (dv * 0.05) + (ev * 0.25));
 		return value > max ? max : value;
 	}
 
@@ -260,8 +268,8 @@ public:
 
 	// convert diet to value
 	static int dietToValue(int diet, int quality) {
-		int min = 0.1;
-		int max = 9.3;
+		/*int min = 0.1;
+		int max = 9.3;*///these are not used, also 9.3 is not an int
 		int base = 0;
 		double level = 0;
 		if (diet != CreatureFlag::HERBIVORE) {

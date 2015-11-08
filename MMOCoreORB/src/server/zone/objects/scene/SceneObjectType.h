@@ -156,6 +156,8 @@ public:
 	const static int REVIVEPACK = 0x2033;
 	const static int STATICLOOTCONTAINER = 0x2034;
 	const static int PLAYERLOOTCRATE = 0x2035;
+	const static int FSPUZZLEPACK = 0x2036;
+	const static int GROWABLEPLANT = 0x2037;
 	/// End Not in client **************
 
 	const static int TERMINAL = 0x4000;
@@ -182,6 +184,7 @@ public:
 	const static int CITYVOTETERMINAL = 0x4016;
 	const static int GAMBLINGTERMINAL = 0x4017;
 	const static int JUKEBOX = 0x4018;
+	const static int FLAGGAME = 0x4019;
 	/// end not in client ***************
 
 	const static int TOOL = 0x8000;
@@ -270,7 +273,7 @@ public:
 	const static int ORGANICFOOD = 0x400009;
 	const static int ORGANICHIDE = 0x40000A;
 	const static int ORGANICSTRUCTURAL = 0x40000B;
-	const static int QUESTREOURCE = 0x40000C; // Resource Container?
+	const static int QUESTRESOURCE = 0x40000C; // Resource Container?
 
 	// Not in client ************
 	const static int RESOURCESPAWN = 0x410000;

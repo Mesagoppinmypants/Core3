@@ -13,7 +13,7 @@ import server.zone.managers.objectcontroller.ObjectController;
 import server.zone.objects.building.BuildingObject;
 import server.zone.objects.creature.commands.QueueCommand;
 import server.zone.objects.creature.CreatureObject;
-import server.zone.objects.creature.AiAgent;
+import server.zone.objects.creature.ai.AiAgent;
 import server.zone.objects.intangible.IntangibleObject;
 import server.zone.objects.player.events.PlayerDisconnectEvent;
 import server.zone.objects.player.events.PlayerRecoveryEvent;
@@ -34,6 +34,7 @@ import system.util.SynchronizedSortedVector;
 include server.zone.objects.creature.variables.Skill;
 include server.zone.objects.draftschematic.DraftSchematic;
 include server.zone.objects.manufactureschematic.ManufactureSchematic;
+include server.zone.objects.player.badges.Badge;
 include server.zone.objects.player.badges.Badges;
 include server.zone.objects.player.events.BountyHunterTefRemovalTaskMap;
 include server.zone.objects.player.sui.SuiBox;
@@ -49,7 +50,6 @@ include server.zone.objects.player.variables.PlayerQuestData;
 include server.zone.objects.scene.variables.DeltaVector;
 include server.zone.objects.scene.variables.DeltaVectorMap;
 include server.zone.objects.scene.variables.DeltaBitArray;
-
 
 class PlayerObject extends IntangibleObject {	
 	protected unsigned int characterBitmask;
@@ -91,18 +91,12 @@ class PlayerObject extends IntangibleObject {
 	protected string mutedReason;
 
 	@dereferenced
-	protected Vector<string> fsEligibleBranches;
-
-	@dereferenced
 	protected SortedVector<unsigned long> ownedStructures;
 	
 	@dereferenced
 	protected SortedVector<unsigned long> ownedVendors;
 	
 	protected byte maximumLots;
-
-	@dereferenced
-	protected Vector<string> fsEligibleExperiences;
 	
 	protected int jediState;
 	protected unsigned int adminLevel;
@@ -135,8 +129,9 @@ class PlayerObject extends IntangibleObject {
 	
 	@dereferenced
 	protected SchematicList schematicList;
-	
-	protected byte incapacitationCounter; //TODO: Convert this to a session!
+
+	@dereferenced
+	protected Vector<unsigned int> incapacitationTimes;
 	
 	protected unsigned int suiBoxNextID;
 	
@@ -199,9 +194,7 @@ class PlayerObject extends IntangibleObject {
 	protected int pvpRating;
 
 	protected int factionStatus;
-	
-	protected transient boolean spawnedBlueFrog; //TODO: Remove when admin permissions are implemented.
-	
+
 	@dereferenced
 	protected Vector<byte> hologrindProfessions;
 	
@@ -214,9 +207,7 @@ class PlayerObject extends IntangibleObject {
 	protected ValidatedPosition lastValidatedPosition;
 	
 	protected unsigned int accountID;
-	
-	protected byte raceID; //TODO: Deprecate. This should be referenced from the ObjectTemplate instead.
-	
+
 	@dereferenced
 	protected VectorMap<string, string> screenPlayData;
 	
@@ -276,11 +267,7 @@ class PlayerObject extends IntangibleObject {
 	public static final int LD = 0x100;
 	public static final int FACTIONRANK = 0x200;
 	public static final int ANONYMOUS = 0x80000000;
-	
-	public static final int NORMALPLAYER = 0;
-	public static final int CSR = 1;
-	public static final int DEV = 2;
-	
+
 	public static final int ONLINE = 1;
 	public static final int OFFLINE = 2;
 	public static final int LINKDEAD = 3;
@@ -333,17 +320,13 @@ class PlayerObject extends IntangibleObject {
 		accountID = 0;		
 		
 		factionStatus = 0;
-		
-		raceID = 0;
-		
+
 		clientLastMovementStamp = 0;
 		
 		maximumLots = 10;
 		
 		debugOutput = false;
-		
-		spawnedBlueFrog = false;
-		
+
 		adminLevel = 0;
 		
 		languageID = 0;
@@ -370,8 +353,7 @@ class PlayerObject extends IntangibleObject {
 		
 		drinkFilling = 0;
 		drinkFillingMax = 0;
-		
-		incapacitationCounter = 0;
+
 		suiBoxNextID = 0;
 		
 		reactionFines = 0;
@@ -632,6 +614,9 @@ class PlayerObject extends IntangibleObject {
 	// Used when character is deleted
 	public native void removeAllFriends();
 
+	//Used when a character is renamed
+	public native void removeAllReverseFriends(final string oldName);
+
 	/**
 	 * Adds a player to the ignore list
 	 * @pre { this is locked}
@@ -670,23 +655,29 @@ class PlayerObject extends IntangibleObject {
 		screenPlayData.put(screenPlay + "_" + variable, data);
 	}
 	
+	public void deleteScreenPlayData(final string screenPlay, final string variable) {
+		screenPlayData.drop(screenPlay + "_" + variable);
+	}
+
 	@dirty
 	public string getScreenPlayData(final string screenPlay, final string variable) {
 		return screenPlayData.get(screenPlay + "_" + variable);
 	}
 	
 	public native void clearScreenPlayData(final string screenPlay);
-	
+
 	public native void activateRecovery();
 
 	public native void activateForcePowerRegen();
-	
-	public native void doRecovery();
-	
+
+	public native void doRecovery(int latency);
+
+	private native void checkForNewSpawns();
+
 	public native void disconnect(boolean closeClient, boolean doLock);
-	
+
 	public native void reload(ZoneClientSession client);
-	
+
 	public void setOffline() {
 		if (isLinkDead()) {
 			// clear LD flag
@@ -720,6 +711,11 @@ class PlayerObject extends IntangibleObject {
 	public void clearActiveQuestsBit(int bitIndex, boolean notifyClient = true) {
 		setActiveQuestsBit(bitIndex, (byte)0, notifyClient);
 	}
+
+	@dirty
+	public native boolean canActivateQuest(int questID);
+
+	public native void activateQuest(int questID);
 	
 	@dirty
 	public boolean hasActiveQuestBitSet(int bitIndex) {
@@ -1047,33 +1043,18 @@ class PlayerObject extends IntangibleObject {
 	public SortedVector<string> getPermissionGroups() {
 		return permissionGroups;
 	}
-	
-	@dirty
-	public native boolean isFirstIncapacitationExpired();
 
-	public void resetIncapacitationCounter() {
-		incapacitationCounter = 0;
-	}
-
-	public native void resetFirstIncapacitationTime();
-
-	public void updateIncapacitationCounter() {
-		incapacitationCounter++;
-
-		if (isFirstIncapacitation() || isFirstIncapacitationExpired())
-			resetFirstIncapacitationTime();
-	}
-
-	@read
-	public boolean isFirstIncapacitation() {
-		return incapacitationCounter == 1;
-	}
+	public native void addIncapacitationTime();
 
 	@read
 	public byte getIncapacitationCounter() {
-		return incapacitationCounter;
+		return incapacitationTimes.size();
 	}
-	
+
+	public void resetIncapacitationTimes() {
+		incapacitationTimes.removeAll();
+	}
+
 	//Duel list manipulation methods
 	public void addToDuelList(CreatureObject targetPlayer) {
 		duelList.put(targetPlayer);
@@ -1160,7 +1141,7 @@ class PlayerObject extends IntangibleObject {
 	}
 	
 	@dirty
-	public int getBadgeTypeCount(byte type) {
+	public int getBadgeTypeCount(unsigned int type) {
 		return badges.getTypeCount(type);
 	}
 	
@@ -1186,7 +1167,7 @@ class PlayerObject extends IntangibleObject {
 	public void removeReverseFriend(final string name) {
 		friendList.removeReversePlayer(name);
 	}
-	
+
 	public native void sendFriendLists();
 
 	/**
@@ -1227,20 +1208,20 @@ class PlayerObject extends IntangibleObject {
 	public void setBiography(final unicode bio) {
 		biography = bio;
 	}
-	
-	@read
-	public boolean isDeveloper() {
-		return adminLevel == DEV;
-	}
-	
-	@read
-	public boolean isCSR() {
-		return adminLevel == CSR;
-	}
 
 	@dirty
 	public boolean isPrivileged() {
 		return (adminLevel > 0 && hasAbility("admin"));
+	}
+
+	@dirty
+	public boolean isStaff() {
+		return (adminLevel > 10 && hasAbility("admin"));
+	}
+
+	@dirty
+	public boolean isAdmin() {
+		return (adminLevel == 15 && hasAbility("admin"));
 	}
 
 	public void setCharacterBitmask(unsigned int bitmask) {
@@ -1417,11 +1398,7 @@ class PlayerObject extends IntangibleObject {
 	}
 	
 	public native void clearDisconnectEvent();
-	
-	public native void clearRecoveryEvent();
 
-	public native void clearForceRegenerationEvent();
-	
 	@read
 	public boolean isOnline() {
 		return onlineStatus != OFFLINE && onlineStatus != LINKDEAD;
@@ -1486,15 +1463,6 @@ class PlayerObject extends IntangibleObject {
 		serverLastMovementStamp.updateToCurrentTime();
 	}
 
-	public void setSpawnedBlueFrog() {
-		spawnedBlueFrog = true;
-	}
-	
-	@read
-	public boolean hasSpawnedBlueFrog() {
-		return spawnedBlueFrog;
-	}
-	
 	@read
 	public unsigned int getAccountID() {
 		return accountID;
@@ -1543,16 +1511,7 @@ class PlayerObject extends IntangibleObject {
 	public Vector<byte> getHologrindProfessions() {
 		return hologrindProfessions;
 	}
-	
-	@read
-	public byte getRaceID() {
-		return raceID;
-	}
-	
-	public void setRaceID(byte race) {
-		raceID = race;
-	}
-	
+
 	public void setMaximumLots(byte lots) {
 		maximumLots = lots;
 	}
@@ -1731,33 +1690,6 @@ class PlayerObject extends IntangibleObject {
 			chosenVeteranRewards.drop( milestone );
 	}
 
-	@local
-	public Vector<string> getForceSensitiveElegibleBranches() {
-		return fsEligibleBranches;
-	}
-
-	public void addForceSensitiveElegibleBranch(string branch){
-		fsEligibleBranches.add(branch);
-	}
-
-	public void removeForceSensitiveElegibleBranches(){
-		fsEligibleBranches.removeAll();
-	}
-
-	public native void updateForceSensitiveElegibleExperiences(int type);
-
-	@local
-	public Vector<string> getForceSensitiveElegibleExperiences() {
-		return fsEligibleExperiences;
-	}
-
-	@dirty
-	public string getForceSensitiveElegibleExperienceType(int type) {
-		return fsEligibleExperiences.get(type);
-	}
-	
-	public native string getForceSensitiveExperienceRatio(final string type);
-
 	public void addEventPerk(SceneObject deed) {
 		currentEventPerks.put(deed.getObjectID());
 	}
@@ -1800,6 +1732,18 @@ class PlayerObject extends IntangibleObject {
 	@local
 	public Time getReactionFineMailTimestamp() {
 		return reactionFineMailTimestamp;
+	}
+
+	public int getXpCap(final string type) {
+		return xpTypeCapList.get(type);
+	}
+
+	@dirty
+	public native int getSpentJediSkillPoints();
+
+	@dirty
+	public native boolean hasSchematic(DraftSchematic schematic) {
+		return schematicList.contains(schematic);
 	}
 }
 

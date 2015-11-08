@@ -17,6 +17,24 @@
 #include "server/ServerCore.h"
 #include "events/RemoveNoSpawnAreaTask.h"
 
+void SpawnAreaImplementation::buildSpawnList(Vector<uint32>* groupCRCs) {
+	CreatureTemplateManager* ctm = CreatureTemplateManager::instance();
+
+	for (int i = 0; i < groupCRCs->size(); i++) {
+		SpawnGroup* group = ctm->getSpawnGroup(groupCRCs->get(i));
+
+		Vector<Reference<LairSpawn*> >* spawnList = group->getSpawnList();
+
+		for (int j = 0; j < spawnList->size(); j++) {
+			Reference<LairSpawn*> spawn = spawnList->get(j);
+
+			possibleSpawns.add(spawn);
+
+			totalWeighting += spawn->getWeighting();
+		}
+	}
+}
+
 Vector3 SpawnAreaImplementation::getRandomPosition(SceneObject* player) {
 	Vector3 position;
 	bool positionFound = false;
@@ -46,7 +64,7 @@ Vector3 SpawnAreaImplementation::getRandomPosition(SceneObject* player) {
 
 int SpawnAreaImplementation::notifyObserverEvent(unsigned int eventType, Observable* observable, ManagedObject* arg1, int64 arg2) {
 	if (eventType != ObserverEventType::OBJECTREMOVEDFROMZONE)
-		return 1;
+		return 0;
 
 	SceneObject* sceno = dynamic_cast<SceneObject*>(observable);
 
@@ -88,134 +106,47 @@ int SpawnAreaImplementation::notifyObserverEvent(unsigned int eventType, Observa
 	return 1;
 }
 
-SpawnGroup* SpawnAreaImplementation::getSpawnGroup() {
-	if (spawnGroup == NULL && spawnGroupTemplateCRC != 0)
-		spawnGroup = CreatureTemplateManager::instance()->getSpawnGroup(spawnGroupTemplateCRC);
-
-	return spawnGroup;
-}
-
-void SpawnAreaImplementation::notifyEnter(SceneObject* object) {
-	if (!(tier & SpawnAreaMap::SPAWNAREA)) {
-		ActiveAreaImplementation::notifyEnter(object);
-		return;
-	}
-
-	if (!object->isPlayerCreature())
-		return;
-
-	CreatureObject* creo = cast<CreatureObject*>(object);
-	if (creo->isInvisible()) {
-		return;
-	}
-
-	ManagedReference<SceneObject*> parent = object->getParent();
-
-	if (parent != NULL && parent->isCellObject())
-		return;
-
-	if (object->getCityRegion() != NULL)
-		return;
-
-	ManagedReference<SpawnArea*> spawnArea = _this.getReferenceUnsafeStaticCast();
-	ManagedReference<SceneObject*> obj = object;
-
-	EXECUTE_TASK_2(spawnArea, obj, {
-			spawnArea_p->tryToSpawn(obj_p);
-	});
-
-}
-
-void SpawnAreaImplementation::notifyPositionUpdate(QuadTreeEntry* obj) {
-	if (!(tier & SpawnAreaMap::SPAWNAREA))
-		return;
-
-	CreatureObject* creature = dynamic_cast<CreatureObject*>(obj);
-
-	if (creature == NULL)
-		return;
-
-	if (!creature->isPlayerCreature() || creature->isInvisible())
-		return;
-
-	ManagedReference<SceneObject*> parent = creature->getParent();
-
-	if (parent != NULL && parent->isCellObject())
-		return;
-
-	if (System::random(25) == 1) {
-		ManagedReference<SpawnArea*> spawnArea = _this.getReferenceUnsafeStaticCast();
-		ManagedReference<SceneObject*> object = cast<SceneObject*>(obj);
-
-		EXECUTE_TASK_2(spawnArea, object, {
-				spawnArea_p->tryToSpawn(object_p);
-		});
-	}
-}
-
-void SpawnAreaImplementation::notifyExit(SceneObject* object) {
-	if (!(tier & SpawnAreaMap::SPAWNAREA))
-		ActiveAreaImplementation::notifyExit(object);
-}
-
-int SpawnAreaImplementation::tryToSpawn(SceneObject* object) {
+void SpawnAreaImplementation::tryToSpawn(SceneObject* object) {
 	Locker _locker(_this.getReferenceUnsafeStaticCast());
-
-	if (spawnGroup == NULL && spawnGroupTemplateCRC != 0)
-		spawnGroup = CreatureTemplateManager::instance()->getSpawnGroup(spawnGroupTemplateCRC);
-
-	if (spawnGroup == NULL) {
-		error("spawnGroup is NULL (crc = " + String::valueOf(spawnGroupTemplateCRC) + ") in spawn area " + getObjectName()->getStringID() + " on planet " + (getZone() != NULL ? getZone()->getZoneName() : "NULL"));
-		return 1;
-	}
-
-	Vector<Reference<LairSpawn*> >* lairs = spawnGroup->getSpawnList();
-
-	int totalSize = lairs->size();
-
-	if (totalSize == 0) {
-		error("totalSize is NULL");
-		return 2;
-	}
 
 	Zone* zone = getZone();
 
 	if (zone == NULL) {
 		error("zone is NULL");
-		return 3;
+		return;
 	}
 
 	if (totalSpawnCount >= maxSpawnLimit)
-		return 4;
+		return;
 
 	if (lastSpawn.miliDifference() < MINSPAWNINTERVAL)
-		return 5;
+		return;
 
-	//Lets choose 3 random spawns;
-	LairSpawn* firstSpawn = lairs->get(System::random(totalSize - 1));
-	LairSpawn* secondSpawn = lairs->get(System::random(totalSize - 1));
-	LairSpawn* thirdSpawn = lairs->get(System::random(totalSize - 1));
+	int choice = System::random(totalWeighting - 1);
+	int counter = 0;
 
 	LairSpawn* finalSpawn = NULL;
 
-	int totalWeights = firstSpawn->getWeighting() + secondSpawn->getWeighting() + thirdSpawn->getWeighting();
+	for (int i = 0; i < possibleSpawns.size(); i++) {
+		LairSpawn* spawn = possibleSpawns.get(i);
 
-	int finalChoice = System::random(totalWeights);
+		counter += spawn->getWeighting();
 
-	if (finalChoice <= firstSpawn->getWeighting()) {
-		finalSpawn = firstSpawn;
-	} else if (finalChoice <= firstSpawn->getWeighting() + secondSpawn->getWeighting()) {
-		finalSpawn = secondSpawn;
-	} else {
-		finalSpawn = thirdSpawn;
+		if (choice < counter) {
+			finalSpawn = spawn;
+			break;
+		}
 	}
+
+	if (finalSpawn == NULL)
+		return;
 
 	ManagedReference<PlanetManager*> planetManager = zone->getPlanetManager();
 
 	Vector3 randomPosition = getRandomPosition(object);
 
 	if (randomPosition.getX() == 0 && randomPosition.getY() == 0) {
-		return 6;
+		return;
 	}
 
 	float spawnZ = zone->getHeight(randomPosition.getX(), randomPosition.getY());
@@ -224,11 +155,11 @@ int SpawnAreaImplementation::tryToSpawn(SceneObject* object) {
 
 	//lets check if we intersect with some object (buildings, etc..)
 	//if (CollisionManager::checkSphereCollision(randomPosition, 64.f + finalSpawn->getSize(), zone))
-	//	return 7;
+	//	return;
 
 	// Check the spot to see if spawning is allowed
 	if (!planetManager->isSpawningPermittedAt(randomPosition.getX(), randomPosition.getY(), finalSpawn->getSize() + 64.f)) {
-		return 9;
+		return;
 	}
 
 	int spawnLimit = finalSpawn->getSpawnLimit();
@@ -242,7 +173,7 @@ int SpawnAreaImplementation::tryToSpawn(SceneObject* object) {
 
 	if (spawnLimit != -1) {
 		if (currentSpawnCount >= spawnLimit)
-			return 10;
+			return;
 	}
 
 	int maxDiff = finalSpawn->getMaxDifficulty();
@@ -266,7 +197,7 @@ int SpawnAreaImplementation::tryToSpawn(SceneObject* object) {
 	} else {
 		error("could not spawn lair " + lairTemplate);
 
-		return 11;
+		return;
 	}
 
 	Locker _locker2(_this.getReferenceUnsafeStaticCast());
@@ -286,5 +217,5 @@ int SpawnAreaImplementation::tryToSpawn(SceneObject* object) {
 
 	spawnCountByType.put(lairTemplate.hashCode(), currentSpawnCount);
 
-	return 0;
+	return;
 }

@@ -10,7 +10,6 @@ registerScreenPlay("NabooStaticSpawnsSouthScreenPlay", true)
 function NabooStaticSpawnsSouthScreenPlay:start()
 	if (isZoneEnabled("naboo")) then
 		self:spawnMobiles()
-
 	end
 end
 
@@ -33,13 +32,13 @@ function NabooStaticSpawnsSouthScreenPlay:spawnMobiles()
 	spawnMobile("naboo", "commoner_naboo", 180, 1014.5, 185.3, -3461.2, -145.0, 0)
 
 		--Statues + Fire (-1637,-4032)
-	spawnMobile("naboo", "gungan_priest", 300, -1638.6, 14.0, -4033.7, 90, 0)
+	spawnMobile("naboo", "lesser_prophet_of_the_dark_side", 300, -1638.6, 14.0, -4033.7, 90, 0)
 
-		--Small Rebel Outpost (-4767,-3975)
-	spawnMobile("naboo", "rebel_warrant_officer_i", 300, -4773.3, 333.3, -3985.2, -90.0, 0)
-	spawnMobile("naboo", "rebel_commando", 300, -4773.3, 333.3, -3979.4, -90.0, 0)
-	spawnMobile("naboo", "rebel_commando", 300, -4767.3, 333.3, -3976.5, 0.0, 0)
-	spawnMobile("naboo", "rebel_commando", 300, 4.3, 0.5, 3.0, 180, 9525590)
+		--Small Imperial Outpost (-4767,-3975)
+	spawnMobile("naboo", "imperial_warrant_officer_i", 300, -4773.3, 333.3, -3985.2, -90.0, 0)
+	spawnMobile("naboo", "storm_commando", 300, -4773.3, 333.3, -3979.4, -90.0, 0)
+	spawnMobile("naboo", "storm_commando", 300, -4767.3, 333.3, -3976.5, 0.0, 0)
+	spawnMobile("naboo", "shadowy_figure", 300, 4.3, 0.5, 3.0, 180, 9525590)
 
 		--Arch & Debris (-6592,-2682)
 	spawnMobile("naboo", "gungan_hermit", 300, -6597.2, 152.4, -2679.5, 78.0, 0)
@@ -76,6 +75,5 @@ function NabooStaticSpawnsSouthScreenPlay:spawnMobiles()
 	spawnMobile("naboo", "naboo_pirate", 300, -1769.5, 33.2, -495.6, -45.0, 0)
 
 		--Ruined Walls (-3586,-880)
-
 
 end

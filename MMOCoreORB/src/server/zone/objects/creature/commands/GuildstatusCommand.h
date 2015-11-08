@@ -61,13 +61,13 @@ public:
 		StringIdChatParameter params;
 		params.setTU(targetCreature->getDisplayedName());
 
-		if (!creature->isInGuild()) {
+		if (!targetCreature->isInGuild()) {
 			params.setStringId("@base_player:guildstatus_not_in_guild"); //%TU is not in a guild.
 			player->sendSystemMessage(params);
 			return GENERALERROR;
 		}
 
-		ManagedReference<GuildObject*> guild = targetCreature->getGuildObject();
+		ManagedReference<GuildObject*> guild = targetCreature->getGuildObject().get();
 		uint64 objid = targetCreature->getObjectID();
 
 		if (guild == NULL)

@@ -5,8 +5,8 @@
 
 #include "server/zone/managers/creature/LairObserver.h"
 #include "server/zone/objects/scene/ObserverEventType.h"
-#include "server/zone/objects/creature/NonPlayerCreatureObject.h"
-#include "server/zone/objects/creature/Creature.h"
+#include "server/zone/objects/creature/ai/NonPlayerCreatureObject.h"
+#include "server/zone/objects/creature/ai/Creature.h"
 #include "server/zone/packets/object/PlayClientEffectObjectMessage.h"
 #include "server/zone/packets/scene/PlayClientEffectLocMessage.h"
 #include "server/zone/managers/player/PlayerManager.h"
@@ -22,7 +22,6 @@
 #include "server/zone/managers/creature/DisseminateExperienceTask.h"
 
 int LairObserverImplementation::notifyObserverEvent(unsigned int eventType, Observable* observable, ManagedObject* arg1, int64 arg2) {
-	int ret = 1;
 	int i = 0;
 
 	Reference<LairAggroTask*> task = NULL;

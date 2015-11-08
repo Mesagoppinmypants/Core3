@@ -176,18 +176,13 @@ void SurveySessionImplementation::startSample(const String& resname) {
 		return;
 	}
 
-	if (surveyer->isSwimming()) {
+	if (surveyer->isSwimming() || (surveyer->isRidingMount() && surveyer->isInWater())) {
 		surveyer->sendSystemMessage("@error_message:survey_swimming");
 		return;
 	}
 
-	if (surveyer->getParent() != NULL && surveyer->getParent().get()->isVehicleObject() ) {
-		surveyer->sendSystemMessage("You cannot perform that action while driving a vehicle.");
-		return;
-	}
-
 	// Force dismount from creature pets
-	if (surveyer->getParent() != NULL && surveyer->getParent().get()->isPet() ) {
+	if (surveyer->isRidingMount()) {
 		surveyer->executeObjectControllerAction(STRING_HASHCODE("dismount"));
 	}
 
@@ -199,11 +194,10 @@ void SurveySessionImplementation::startSample(const String& resname) {
 
 	//Get actual cost based upon player's Quickness
 	int actionCost = 124 - (int)(surveyer->getHAM(CreatureAttribute::QUICKNESS)/12.5f);
-	int mindCost = 124 - (int)(surveyer->getHAM(CreatureAttribute::FOCUS)/12.5f);
 
-	if (surveyer->getHAM(CreatureAttribute::ACTION) < actionCost || surveyer->getHAM(CreatureAttribute::MIND) < mindCost) {
+	if (surveyer->getHAM(CreatureAttribute::ACTION) < actionCost) {
 		surveyer->setPosture(CreaturePosture::UPRIGHT, true);
-		surveyer->sendSystemMessage("@error_message:sample_mind"); //You are exhausted. You nee to clear your head before you can sample again.
+		surveyer->sendSystemMessage("@error_message:sample_mind"); //You are exhausted. You need to clear your head before you can sample again.
 		return;
 	}
 

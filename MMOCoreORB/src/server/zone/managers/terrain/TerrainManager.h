@@ -14,6 +14,10 @@
 #include "server/zone/objects/scene/SceneObject.h"
 #include "server/zone/objects/creature/CreatureObject.h"
 
+#include "engine/util/lru/SynchronizedLRUCache.h"
+
+#include "TerrainCache.h"
+
 namespace server {
  namespace zone {
   class Zone;
@@ -29,9 +33,18 @@ class TerrainManager : public Logger, public Object {
 
 	Zone* zone;
 
+	TerrainCache* heightCache;
+
+	float min, max;
+
+protected:
+	void clearCache(TerrainGenerator* generator);
+
 public:
 	TerrainManager(Zone* planet);
 	TerrainManager(ManagedWeakReference<Zone*> planet);
+
+	~TerrainManager();
 
 	bool initialize(const String& terrainFile);
 
@@ -57,20 +70,53 @@ public:
 
 	ProceduralTerrainAppearance* getProceduralTerrainAppearance();
 
-	float getHeight(float x, float y) {
-		return terrainData->getHeight(x, y);
-	}
+	float getCachedHeight(float x, float y);
+	float getUnCachedHeight(float x, float y);
+
+	float getHeight(float x, float y);
 
 	float getMin() {
-		return terrainData->getSize() / 2 * -1;
+		if (terrainData) {
+			return terrainData->getSize() / 2 * -1;
+		} else {
+			return -256;
+		}
 	}
 
 	float getMax() {
-		return terrainData->getSize() / 2;
+		if (terrainData) {
+			return terrainData->getSize() / 2;
+		} else {
+			return 256;
+		}
 	}
 
 	float getSize() {
 		return terrainData->getSize();
+	}
+
+	int getCacheHitCount() {
+		return heightCache->getHitCount();
+	}
+
+	int getCacheMissCount() {
+		return heightCache->getMissCount();
+	}
+
+	int getCacheClearCount() {
+		return heightCache->getClearCount();
+	}
+
+	int getCacheClearHeightsCount() {
+		return heightCache->getClearHeightsCount();
+	}
+
+	int getCachedValuesCount() {
+		return heightCache->getSize();
+	}
+
+	int getCacheEvictCount() {
+		return heightCache->getEvictCount();
 	}
 };
 

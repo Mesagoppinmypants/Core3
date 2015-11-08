@@ -25,7 +25,7 @@
 #include "server/zone/objects/group/GroupObject.h"
 #include "server/zone/objects/guild/GuildObject.h"
 #include "server/zone/objects/player/PlayerObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/intangible/PetControlDevice.h"
 #include "server/chat/StringIdChatParameter.h"
 #include "server/chat/PersistentMessage.h"
@@ -421,7 +421,7 @@ void ChatManagerImplementation::handleSocialInternalMessage(CreatureObject* send
 
 	CloseObjectsVector* vec = (CloseObjectsVector*) sender->getCloseObjects();
 
-	SortedVector<ManagedReference<QuadTreeEntry*> > closeEntryObjects(200, 50);
+	SortedVector<QuadTreeEntry* > closeEntryObjects(200, 50);
 
 	if (vec != NULL) {
 		vec->safeCopyTo(closeEntryObjects);
@@ -433,7 +433,7 @@ void ChatManagerImplementation::handleSocialInternalMessage(CreatureObject* send
 	float range = defaultSpatialChatDistance;
 
 	for (int i = 0; i < closeEntryObjects.size(); ++i) {
-		SceneObject* object = cast<SceneObject*>(closeEntryObjects.get(i).get());
+		SceneObject* object = cast<SceneObject*>(closeEntryObjects.get(i));
 
 		if (object->isPlayerCreature()) {
 			CreatureObject* creature = cast<CreatureObject*>(object);
@@ -588,7 +588,7 @@ void ChatManagerImplementation::broadcastMessage(CreatureObject* player, const U
 
 	CloseObjectsVector* closeObjects = (CloseObjectsVector*) player->getCloseObjects();
 
-	SortedVector<ManagedReference<QuadTreeEntry*> > closeEntryObjects(200, 50);
+	SortedVector<QuadTreeEntry*> closeEntryObjects(200, 50);
 
 	if (closeObjects != NULL) {
 		closeObjects->safeCopyTo(closeEntryObjects);
@@ -606,7 +606,7 @@ void ChatManagerImplementation::broadcastMessage(CreatureObject* player, const U
 
 	try {
 		for (int i = 0; i < closeEntryObjects.size(); ++i) {
-			SceneObject* object = cast<SceneObject*>(closeEntryObjects.get(i).get());
+			SceneObject* object = cast<SceneObject*>(closeEntryObjects.get(i));
 
 			if (player->isInRange(object, range)) {
 
@@ -720,18 +720,18 @@ void ChatManagerImplementation::broadcastMessage(CreatureObject* player, StringI
 
 	CloseObjectsVector* closeObjects = (CloseObjectsVector*) player->getCloseObjects();
 
-	SortedVector<ManagedReference<QuadTreeEntry*> > closeEntryObjects(200, 50);
+	SortedVector<QuadTreeEntry*> closeEntryObjects(200, 50);
 
 	if (closeObjects != NULL) {
 		closeObjects->safeCopyTo(closeEntryObjects);
 	} else {
 		player->info("Null closeobjects vector in ChatManager::broadcastMessage(StringId)", true);
-		zone->getInRangeObjects(player->getWorldPositionX(), player->getWorldPositionY(), 192, &closeEntryObjects, true);
+		zone->getInRangeObjects(player->getWorldPositionX(), player->getWorldPositionY(), ZoneServer::CLOSEOBJECTRANGE, &closeEntryObjects, true);
 	}
 
 	try {
 		for (int i = 0; i < closeEntryObjects.size(); ++i) {
-			SceneObject* object = cast<SceneObject*>(closeEntryObjects.get(i).get());
+			SceneObject* object = cast<SceneObject*>(closeEntryObjects.get(i));
 
 			if (player->isInRange(object, 128)) {
 
@@ -825,7 +825,13 @@ void ChatManagerImplementation::handleSpatialChatInternalMessage(CreatureObject*
 
 //TODO: Refactor into a sendInstantMessage() method that returns a returnCode.
 void ChatManagerImplementation::handleChatInstantMessageToCharacter(ChatInstantMessageToCharacter* message) {
-	ManagedReference<CreatureObject*> sender = cast<CreatureObject*>(message->getClient()->getPlayer().get().get());
+	ManagedReference<SceneObject*> scene = message->getClient()->getPlayer();
+
+	if (scene == NULL)
+		return;
+
+	CreatureObject* sender = cast<CreatureObject*>(scene.get());
+
 	bool privileged = false;
 
 	if (sender == NULL)
@@ -1032,7 +1038,7 @@ void ChatManagerImplementation::handleGuildChat(CreatureObject* sender, const Un
 		}
 	}
 
-	ManagedReference<GuildObject*> guild = sender->getGuildObject();
+	ManagedReference<GuildObject*> guild = sender->getGuildObject().get();
 	if (guild == NULL) {
 		sender->sendSystemMessage("@error_message:not_in_guild"); // You are not in a guild.
 		return;
@@ -1237,8 +1243,9 @@ int ChatManagerImplementation::sendMail(const String& sendername, const UnicodeS
 	}
 
 	CreatureObject* receiver = cast<CreatureObject*>(obj.get());
+	PlayerObject* receiverPlayerObject = receiver->getPlayerObject();
 
-	if (receiver->getPlayerObject()->isIgnoring(sendername) && !privileged)
+	if ((receiverPlayerObject == NULL) || (receiverPlayerObject->isIgnoring(sendername) && !privileged))
 		return IM_IGNORED;
 
 	ManagedReference<PersistentMessage*> mail = new PersistentMessage();
@@ -1309,7 +1316,10 @@ int ChatManagerImplementation::sendMail(const String& sendername, const UnicodeS
 		}
 	}
 
-	if (receiver->getPlayerObject()->isIgnoring(sendername) && !privileged)
+	PlayerObject* ghost = receiver->getPlayerObject();
+
+	if (ghost == NULL ||
+			(ghost->isIgnoring(sendername) && !privileged))
 		return IM_IGNORED;
 
 	ManagedReference<PersistentMessage*> mail = new PersistentMessage();

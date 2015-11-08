@@ -9,14 +9,44 @@ registerScreenPlay("NabooMoeniaScreenPlay", true)
 function NabooMoeniaScreenPlay:start()
 	if (isZoneEnabled("naboo")) then
 		self:spawnMobiles()
+		self:spawnSceneObjects()
 	end
+end
+
+function NabooMoeniaScreenPlay:spawnSceneObjects()
+
+	--outside starport
+	spawnSceneObject("naboo", "object/tangible/crafting/station/public_space_station.iff", 4805.93, 4.17, -4685.56, 0, math.rad(125) )
+	spawnSceneObject("naboo", "object/tangible/crafting/station/public_space_station.iff", 4789.74, 4.17, -4709.03, 0, math.rad(125) )
+
 end
 
 function NabooMoeniaScreenPlay:spawnMobiles()
 
 	--Anything dashed out will need to be added here and removed from spawn manager once the spawnMobiles command is extended.
 
+	--starport interior
+	local pNpc = spawnMobile("naboo", "pilot",60,-5.7,0.6,67.4,0,4215410)
+	self:setMoodString(pNpc, "sad")
+	pNpc = spawnMobile("naboo", "chassis_dealer",60,-4.3,0.6,67.6,-99,4215410)
+	self:setMoodString(pNpc, "conversation")
+	pNpc = spawnMobile("naboo", "commoner_naboo",60,52.8,-0.5,42.3,70,4215413)
+	self:setMoodString(pNpc, "sad")
+	pNpc = spawnMobile("naboo", "medic",60,54.4,-0.5,42.7,-120,4215413)
+	self:setMoodString(pNpc, "npc_consoling")
+	--relocated sw trainer from originally bugged exterior placement
+	pNpc = spawnMobile("naboo", "trainer_shipwright",60,-0.4,0.6,67.1,-177,4215410)
+	self:setMoodString(pNpc, "neutral")
+
 	--Outside
+	spawnMobile("naboo", "mummer_thug", 300, getRandomNumber(10) + 4856.8, 4.2, getRandomNumber(10) + -4701.5, getRandomNumber(360), 0)
+	spawnMobile("naboo", "mummer_thug", 300, getRandomNumber(10) + 4856.8, 4.2, getRandomNumber(10) + -4701.5, getRandomNumber(360), 0)
+	spawnMobile("naboo", "mummer_punk", 300, getRandomNumber(10) + 4856.8, 4.2, getRandomNumber(10) + -4701.5, getRandomNumber(360), 0)
+	spawnMobile("naboo", "mummer_punk", 300, getRandomNumber(10) + 4856.8, 4.2, getRandomNumber(10) + -4701.5, getRandomNumber(360), 0)
+	spawnMobile("naboo", "commoner",60,4667.6,3.8,-4785.3,-20,0)
+	spawnMobile("naboo", "bounty_hunter",60,4667.9,3.8,-4783.4,170,0)
+	pNpc = spawnMobile("naboo", "commoner_old",60,4646.5,3.2,-4796.9,-179,0)
+	self:setMoodString(pNpc, "fishing")
 	spawnMobile("naboo", "informant_npc_lvl_1",0,4652,3.8,-4749,0,0)
 	spawnMobile("naboo", "informant_npc_lvl_1",0,4744,3.8,-4847,0,0)
 	spawnMobile("naboo", "informant_npc_lvl_1",0,4825,3.8,-4829,0,0)
@@ -46,13 +76,32 @@ function NabooMoeniaScreenPlay:spawnMobiles()
 	spawnMobile("naboo", "trainer_merchant",0,4819,4.17,-4704,81,0)
 	spawnMobile("naboo", "trainer_musician",0,4740,3.8,-4886,0,0)
 	spawnMobile("naboo", "trainer_scout",0,4836.08,4.17,-4703.96,94,0)
-	--{"trainer_shipwright",0,4727,4.3,-4649,0,0, "", "a shipwright trainer"},
 	spawnMobile("naboo", "trainer_squadleader",0,4701,3.75,-4939,0,0)
 	spawnMobile("naboo", "trainer_tailor",0,4858,3.8,-4799,180,0)
+
+	--rebel 'stronghold' spawns
+	spawnMobile("naboo", "specforce_marine",300,4794.6,4.2,-4700,50,0)
+	spawnMobile("naboo", "specforce_marine",300,4799.2,4.2,-4693,-150,0)
+	spawnMobile("naboo", "specforce_infiltrator",300,4835.9,4.1,-4732.2,-20,0)
+	spawnMobile("naboo", "specforce_infiltrator",300,4841.1,4.1,-4730.3,-20,0)
+	spawnMobile("naboo", "rebel_specforce_pathfinder",300,4829.9,4.2,-4578.6,-13,0)
+	spawnMobile("naboo", "rebel_specforce_pathfinder",300,4832.0,4.2,-4572.0,80,0)
+	spawnMobile("naboo", "specforce_infiltrator",300,4864.0,3.8,-4788.6,160,0)
+	spawnMobile("naboo", "specforce_infiltrator",300,4858.2,3.8,-4790.8,160,0)
+	spawnMobile("naboo", "specforce_marine",300,4826.3,4.3,-4866.8,80,0)
+	spawnMobile("naboo", "specforce_marine",300,4825.2,4.3,-4861.2,80,0)
+	spawnMobile("naboo", "specforce_infiltrator",300,4804.7,4.3,-4844.9,-2,0)
+	spawnMobile("naboo", "specforce_infiltrator",300,4799.1,4.3,-4845.6,-12,0)
+	spawnMobile("naboo", "specforce_marine",300,4695.3,3.8,-4873.9,0,0)
+	spawnMobile("naboo", "specforce_marine",300,4695.7,3.8,-4913.5,180,0)
+	spawnMobile("naboo", "rebel_specforce_pathfinder",300,4707.1,3.8,-4894.6,90,0)
 
 	--Cantina
 	spawnMobile("naboo", "rebel_recruiter",0,-29,-0.89,-1.2,74,119)
 	spawnMobile("naboo", "informant_npc_lvl_2",0,-2.2226,-0.894992,5.90785,90,111)
+	--hotel
+	pNpc = spawnMobile("naboo", "bartender",60,20.2,1.6,12.3,-180,1717470)
+	self:setMoodString(pNpc, "conversation")
 
 	--Guild Hall 4923 -4783
 	spawnMobile("naboo", "trainer_artisan",0,-0.0177415,1.13306,-13.3088,0,1717546)
@@ -76,5 +125,27 @@ function NabooMoeniaScreenPlay:spawnMobiles()
 	spawnMobile("naboo", "trainer_doctor",0,-25,0.26,-4,180,1717506)
 	spawnMobile("naboo", "trainer_medic",0,-17.2255,0.26,-1.2311,150,1717506)
 	spawnMobile("naboo", "trainer_medic",0,16.6671,0.26,5.91467,177,1717502)
+
+	--newb grind starter spawns
+	spawnMobile("naboo", "diseased_nuna", 300, getRandomNumber(10) + 4599.2, 5.0, getRandomNumber(10) + -4806.4, getRandomNumber(360), 0)
+	spawnMobile("naboo", "diseased_nuna", 300, getRandomNumber(10) + 4599.2, 5.0, getRandomNumber(10) + -4806.4, getRandomNumber(360), 0)
+	spawnMobile("naboo", "diseased_nuna", 300, getRandomNumber(10) + 4599.2, 5.0, getRandomNumber(10) + -4806.4, getRandomNumber(360), 0)
+	spawnMobile("naboo", "gungan_hermit", 300, getRandomNumber(10) + 4782, 4.2, getRandomNumber(10) + -4526, getRandomNumber(360), 0)
+	spawnMobile("naboo", "gungan_hermit", 300, getRandomNumber(10) + 4782, 4.2, getRandomNumber(10) + -4526, getRandomNumber(360), 0)
+	spawnMobile("naboo", "gungan_hermit", 300, getRandomNumber(10) + 4782, 4.2, getRandomNumber(10) + -4526, getRandomNumber(360), 0)
+	spawnMobile("naboo", "gungan_hermit", 300, getRandomNumber(10) + 4782, 4.2, getRandomNumber(10) + -4526, getRandomNumber(360), 0)
+	spawnMobile("naboo", "hermit_spider", 300, getRandomNumber(10) + 4635, 5.4, getRandomNumber(10) + -4542, getRandomNumber(360), 0)
+	spawnMobile("naboo", "hermit_spider", 300, getRandomNumber(10) + 4635, 5.4, getRandomNumber(10) + -4542, getRandomNumber(360), 0)
+	spawnMobile("naboo", "hermit_spider", 300, getRandomNumber(10) + 4635, 5.4, getRandomNumber(10) + -4542, getRandomNumber(360), 0)
+	spawnMobile("naboo", "hermit_spider", 300, getRandomNumber(10) + 4635, 5.4, getRandomNumber(10) + -4542, getRandomNumber(360), 0)
+	spawnMobile("naboo", "hermit_spider", 300, getRandomNumber(10) + 4635, 5.4, getRandomNumber(10) + -4542, getRandomNumber(360), 0)
+	spawnMobile("naboo", "mott", 300, getRandomNumber(10) + 4577, 6.5, getRandomNumber(10) + -4622, getRandomNumber(360), 0)
+	spawnMobile("naboo", "mott", 300, getRandomNumber(10) + 4577, 6.5, getRandomNumber(10) + -4622, getRandomNumber(360), 0)
+	spawnMobile("naboo", "mott", 300, getRandomNumber(10) + 4577, 6.5, getRandomNumber(10) + -4622, getRandomNumber(360), 0)
+	spawnMobile("naboo", "mott", 300, getRandomNumber(10) + 4577, 6.5, getRandomNumber(10) + -4622, getRandomNumber(360), 0)
+	spawnMobile("naboo", "mott", 300, getRandomNumber(10) + 4577, 6.5, getRandomNumber(10) + -4622, getRandomNumber(360), 0)
+	spawnMobile("naboo", "mummer_thug", 300, getRandomNumber(10) + 4681, 4.0, getRandomNumber(10) + -4730, getRandomNumber(360), 0)
+	spawnMobile("naboo", "mummer_thug", 300, getRandomNumber(10) + 4681, 4.0, getRandomNumber(10) + -4730, getRandomNumber(360), 0)
+	spawnMobile("naboo", "mummer_thug", 300, getRandomNumber(10) + 4681, 4.0, getRandomNumber(10) + -4730, getRandomNumber(360), 0)
 
 end

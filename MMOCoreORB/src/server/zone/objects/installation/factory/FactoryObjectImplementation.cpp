@@ -48,39 +48,38 @@ void FactoryObjectImplementation::loadTemplateData(SharedObjectTemplate* templat
 	craftingTabsSupported = factory->getCraftingTabsSupported();
 }
 
-void FactoryObjectImplementation::initializeTransientMembers() {
-	InstallationObjectImplementation::initializeTransientMembers();
-
-	/*if(operating)
-		startFactory();*/
+void FactoryObjectImplementation::notifyLoadFromDatabase() {
+	InstallationObjectImplementation::notifyLoadFromDatabase();
 
 	setLoggingName("FactoryObject");
 
+	if (operating) {
+		startFactory();
+	}
 
+	hopperObserver = new FactoryHopperObserver(_this.getReferenceUnsafeStaticCast());
 	ManagedReference<SceneObject*> inputHopper = getSlottedObject("ingredient_hopper");
 	ManagedReference<SceneObject*> outputHopper = getSlottedObject("output_hopper");
 
-	if(inputHopper != NULL && outputHopper != NULL) {
-		hopperObserver = new FactoryHopperObserver(_this.getReferenceUnsafeStaticCast());
+	if(inputHopper != NULL) {
 		inputHopper->registerObserver(ObserverEventType::OPENCONTAINER, hopperObserver);
 		inputHopper->registerObserver(ObserverEventType::CLOSECONTAINER, hopperObserver);
+	}
 
+	 if (outputHopper != NULL) {
 		outputHopper->registerObserver(ObserverEventType::OPENCONTAINER, hopperObserver);
 		outputHopper->registerObserver(ObserverEventType::CLOSECONTAINER, hopperObserver);
-	} else {
-		createChildObjects();
 	}
 }
 
 void FactoryObjectImplementation::createChildObjects() {
-
 	String ingredientHopperName = "object/tangible/hopper/manufacture_installation_ingredient_hopper_1.iff";
-	ManagedReference<SceneObject*> ingredientHopper = server->getZoneServer()->createObject(ingredientHopperName.hashCode(), 1);
+	ManagedReference<SceneObject*> ingredientHopper = server->getZoneServer()->createObject(ingredientHopperName.hashCode(), getPersistenceLevel());
 
 	transferObject(ingredientHopper, 4);
 
 	String outputHopperName = "object/tangible/hopper/manufacture_installation_output_hopper_1.iff";
-	ManagedReference<SceneObject*> outputHopper = server->getZoneServer()->createObject(outputHopperName.hashCode(), 1);
+	ManagedReference<SceneObject*> outputHopper = server->getZoneServer()->createObject(outputHopperName.hashCode(), getPersistenceLevel());
 
 	transferObject(outputHopper, 4);
 
@@ -547,7 +546,7 @@ void FactoryObjectImplementation::createNewObject() {
 
 		float elapsedTime = (currentTime.getTime() - lastMaintenanceTime.getTime());
 
-		float energyAmount = (elapsedTime / 3600.0) * basePowerRate;
+		float energyAmount = (elapsedTime / 3600.0) * getBasePowerRate();
 		if (energyAmount > surplusPower) {
 			stopFactory("manf_no_power", getDisplayedName(), "", -1);
 			return;

@@ -16,8 +16,8 @@ SithShadowIntroTheater = GoToTheater:new {
 	theater = "object/building/poi/anywhere_fs_intro_camp.iff",
 	waypointDescription = "@quest/force_sensitive/intro:theater_sum",
 	mobileList = {
-		{ template = "sith_shadow", minimumDistance = 12, maximumDistance = 24, referencePoint = 0 },
-		{ template = "sith_shadow", minimumDistance = 12, maximumDistance = 24, referencePoint = 0 }
+		{ template = "sith_shadow_outlaw_mission", minimumDistance = 12, maximumDistance = 24, referencePoint = 0 },
+		{ template = "sith_shadow_outlaw_mission", minimumDistance = 12, maximumDistance = 24, referencePoint = 0 }
 	},
 	despawnTime = 2 * 60* 60* 1000, -- 2 hours
 	activeAreaRadius = 64,
@@ -86,7 +86,7 @@ function SithShadowIntroTheater:onEnteredActiveArea(pCreatureObject, spawnedSith
 
 	foreach(spawnedSithShadowsList, function(pMobile)
 		if (pMobile ~= nil) then
-			AiAgent(pMobile):setFollowObject(pCreatureObject)
+			AiAgent(pMobile):setDefender(pCreatureObject)
 		end
 	end)
 	QuestManager.activateQuest(pCreatureObject, QuestManager.quests.LOOT_DATAPAD_2)
@@ -123,7 +123,7 @@ function SithShadowIntroTheater:onPlayerKilled(pCreatureObject, pKiller, nothing
 		OldManEncounter:start(pCreatureObject)
 		QuestManager.resetQuest(pCreatureObject, QuestManager.quests.TWO_MILITARY)
 		QuestManager.resetQuest(pCreatureObject, QuestManager.quests.LOOT_DATAPAD_1)
-		QuestManager.resetQuest(pCreatureObject, QuestManager.quests.GOT_DATAPAD_1)
+		QuestManager.resetQuest(pCreatureObject, QuestManager.quests.GOT_DATAPAD)
 		QuestManager.resetQuest(pCreatureObject, QuestManager.quests.FS_THEATER_CAMP)
 		QuestManager.resetQuest(pCreatureObject, QuestManager.quests.LOOT_DATAPAD_2)
 		QuestManager.resetQuest(pCreatureObject, QuestManager.quests.GOT_DATAPAD_2)

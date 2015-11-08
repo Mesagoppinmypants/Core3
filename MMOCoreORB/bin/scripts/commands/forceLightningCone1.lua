@@ -42,9 +42,10 @@
 --true = 1, false = 0
 
 ForceLightningCone1Command = {
-        name = "forcelightningcone1",
-        
-    damage = 1500,
+	name = "forcelightningcone1",
+
+	minDamage = 600,
+	maxDamage = 800,
 	speed = 4.0,
 	forceCost = 125,
 	accuracySkillMod = "forcelightning_accuracy";
@@ -54,10 +55,11 @@ ForceLightningCone1Command = {
 	animationCRC = hashCode("force_lightning_1_arc_particle_level_1_light"),
 
 	combatSpam = "forcelightningcone1",
-	
+
 	poolsToDamage = RANDOM_ATTRIBUTE,
-	
+
 	attackType = FORCEATTACK,
+	damageType = ELECTRICITY_DAMAGE,
 
 	range = 32
 }

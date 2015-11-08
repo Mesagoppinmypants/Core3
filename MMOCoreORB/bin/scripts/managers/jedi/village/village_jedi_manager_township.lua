@@ -1,5 +1,6 @@
 local ObjectManager = require("managers.object.object_manager")
 local ScreenPlay = require("screenplays.screenplay")
+local FsMedicPuzzle = require("managers.jedi.village.phase1.fs_medic_puzzle")
 
 require("screenplays.village.village_spawn_table")
 
@@ -11,10 +12,6 @@ VillageJediManagerTownship = ScreenPlay:new {
 	screenplayName = "VillageJediManagerTownship"
 }
 
-VILLAGE_PHASE_ONE = 1
-VILLAGE_PHASE_TWO = 2
-VILLAGE_PHASE_THREE = 3
-VILLAGE_PHASE_FOUR = 4
 VILLAGE_TOTAL_NUMBER_OF_PHASES = 1 -- Temporarily set to 1 for testing until other phases begin development
 
 local VILLAGE_PHASE_CHANGE_TIME = 24 * 60 * 60 * 1000 -- Testing value.
@@ -23,11 +20,25 @@ local VILLAGE_PHASE_CHANGE_TIME = 24 * 60 * 60 * 1000 -- Testing value.
 
 -- Set the current Village Phase for the first time.
 function VillageJediManagerTownship.setCurrentPhaseInit()
-	local phaseChange = hasServerEvent("VillagePhaseChange")
-	if (phaseChange == false) then
-		VillageJediManagerTownship.setCurrentPhase(VILLAGE_PHASE_ONE)
+	if (not hasServerEvent("VillagePhaseChange")) then
+		VillageJediManagerTownship.setCurrentPhase(1)
+		VillageJediManagerTownship.setPhaseID(1)
 		createServerEvent(VILLAGE_PHASE_CHANGE_TIME, "VillageJediManagerTownship", "switchToNextPhase", "VillagePhaseChange")
 	end
+end
+
+function VillageJediManagerTownship.setCurrentPhaseID(phaseID)
+	setQuestStatus("Village:phaseID", phaseID)
+end
+
+function VillageJediManagerTownship.getCurrentPhaseID()
+	local curPhase = tonumber(getQuestStatus("Village:phaseID"))
+
+	if (curPhase == nil) then
+		return 1
+	end
+
+	return curPhase
 end
 
 -- Set the current Village Phase.
@@ -47,6 +58,7 @@ end
 
 function VillageJediManagerTownship:switchToNextPhase()
 	local currentPhase = VillageJediManagerTownship.getCurrentPhase()
+	local phaseID = VillageJediManagerTownship.getCurrentPhaseID()
 	VillageJediManagerTownship:despawnMobiles(currentPhase)
 	VillageJediManagerTownship:despawnSceneObjects(currentPhase)
 
@@ -56,6 +68,7 @@ function VillageJediManagerTownship:switchToNextPhase()
 	end
 
 	VillageJediManagerTownship.setCurrentPhase(currentPhase)
+	VillageJediManagerTownship.setCurrentPhaseID(phaseID + 1)
 	VillageJediManagerTownship:spawnMobiles(currentPhase, false)
 	VillageJediManagerTownship:spawnSceneObjects(currentPhase, false)
 	Logger:log("Switching village phase to " .. currentPhase, LT_INFO)
@@ -227,6 +240,72 @@ function VillageJediManagerTownship:doWoundedVillager(pNpc)
 	end
 
 	createEvent(getRandomNumber(120, 300) * 1000, "VillageJediManagerTownship", "doWoundedVillager", pNpc) -- 2-5 minute delay
+end
+
+function VillageJediManagerTownship.initMedDroid(pNpc)
+	if (pNpc ~= nil) then
+		SceneObject(pNpc):setContainerComponent("MedDroidContainerComponent")
+	end
+end
+
+MedDroidContainerComponent = {}
+
+function MedDroidContainerComponent:transferObject(pContainer, pObj, slot)
+	local pPlayer = VillageJediManagerTownship:getObjOwner(pObj)
+
+	if (pPlayer == nil or pContainer == nil) then
+		return 0
+	end
+
+	FsMedicPuzzle:cureSymptoms(pPlayer, pContainer, pObj)
+
+	return 1
+end
+
+function MedDroidContainerComponent:canAddObject(pContainer, pObj, slot)
+	local pPlayer = VillageJediManagerTownship:getObjOwner(pObj)
+
+	if (pPlayer == nil or pContainer == nil) then
+		return -1
+	end
+
+	if (SceneObject(pObj):getTemplateObjectPath() ~= "object/tangible/item/quest/force_sensitive/fs_medic_puzzle_heal_pack.iff") then
+		return -1
+	end
+
+	if FsMedicPuzzle:hasAnySymptoms(pPlayer, pContainer) then
+		return true
+	else
+		return -1
+	end
+end
+
+function MedDroidContainerComponent:removeObject(pContainer, pObj, slot)
+	return -1
+end
+
+function VillageJediManagerTownship:getObjOwner(pObj)
+	if (pObj == nil) then
+		return nil
+	end
+
+	local pPlayerInv = SceneObject(pObj):getParent()
+
+	if (pPlayerInv == nil) then
+		return nil
+	end
+
+	local parent = SceneObject(pPlayerInv):getParent()
+
+	if (parent == nil) then
+		return nil
+	end
+
+	if (SceneObject(parent):isCreatureObject()) then
+		return parent
+	end
+
+	return nil
 end
 
 registerScreenPlay("VillageJediManagerTownship", true)

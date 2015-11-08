@@ -52,7 +52,11 @@ class WeaponObject extends TangibleObject {
 	protected int healthAttackCost;
 	protected int actionAttackCost;
 	protected int mindAttackCost;
+
+	// TODO: Remove after server wipe
 	protected int forceCost;
+
+	protected float saberForceCost;
 	
 	protected int bladeColor;
 	
@@ -93,7 +97,6 @@ class WeaponObject extends TangibleObject {
 	public static final int COLD = 64;
 	public static final int ACID = 128;
 	public static final int ELECTRICITY = 256;
-	public static final int FORCE = 512;
 
 	public static final int MELEEATTACK = 0;
 	public static final int RANGEDATTACK = 1;
@@ -114,6 +117,8 @@ class WeaponObject extends TangibleObject {
 		actionAttackCost = 0;
 		mindAttackCost = 0;
 		forceCost = 0;
+
+		saberForceCost = 0.0;
 		
 		pointBlankAccuracy = 0;
 		pointBlankRange = 0;
@@ -170,9 +175,12 @@ class WeaponObject extends TangibleObject {
 	@local
 	public native void updateCraftingValues(CraftingValues values, boolean firstUpdate);
 
+	public native void notifyLoadFromDatabase();
+
 	/**
 	 * Handles creating the Saber inventory.
 	 */
+	@preLocked
 	public native void createChildObjects();
 	
 	/**
@@ -347,12 +355,12 @@ class WeaponObject extends TangibleObject {
 	}
 	
 	@dirty
-	public int getForceCost() {
-		return forceCost;
+	public float getForceCost() {
+		return saberForceCost;
 	}
 	
-	public void setForceCost(int value) {
-		forceCost = value;
+	public void setForceCost(float value) {
+		saberForceCost = value;
 	}
 	
 	@dirty

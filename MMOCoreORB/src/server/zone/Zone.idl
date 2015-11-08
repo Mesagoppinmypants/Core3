@@ -14,6 +14,8 @@ import engine.core.ManagedObject;
 
 import server.zone.ZoneProcessServer;
 include server.zone.ZoneServer;
+include server.zone.InRangeObjectsVector;
+include server.zone.ActiveAreasVector;
 import server.zone.objects.scene.SceneObject;
 import server.zone.objects.area.ActiveArea;
 import server.zone.managers.planet.PlanetManager;
@@ -51,8 +53,6 @@ class Zone extends SceneObject {
 	private transient PlanetManager planetManager;
 
 	private transient CreatureManager creatureManager;
-
-	private transient GCWManager gcwManager;
 
 	private ChatRoom chatRoom;
 
@@ -94,15 +94,22 @@ class Zone extends SceneObject {
 
 	@local
 	public native int getInRangeObjects(float x, float y, float range, SortedVector<QuadTreeEntry> objects, boolean readLockZone);
+	
+	@local
+	public native int getInRangeObjects(float x, float y, float range, InRangeObjectsVector objects, boolean readLockZone);
 
 	public native void createContainerComponent();
 
 	@local
 	public native int getInRangeActiveAreas(float x, float y, SortedVector<ActiveArea> objects, boolean readLockZone);
+	@local
+	public native int getInRangeActiveAreas(float x, float y, ActiveAreasVector objects, boolean readLockZone);
 
 	/* gets active areas whose center is within the given range */
 	@local
 	public native int getInRangeActiveAreas(float x, float y, float range, SortedVector<ActiveArea> objects, boolean readLockZone);
+	@local
+	public native int getInRangeActiveAreas(float x, float y, float range, ActiveAreasVector objects, boolean readLockZone);
 
 	@local
 	@dereferenced
@@ -161,6 +168,11 @@ class Zone extends SceneObject {
 		return creatureManager;
 	}
 
+	@dirty
+	public GCWManager getGCWManager() {
+		return planetManager.getGCWManager();
+	}
+
 	public unsigned long getGalacticTime() {
 		return galacticTime.miliDifference() / 1000;
 	}
@@ -205,6 +217,8 @@ class Zone extends SceneObject {
 	 */
 	public native void unregisterObjectWithPlanetaryMap(SceneObject object);
 
+	public native boolean objectIsValidPlanetaryMapPerformanceLocation(SceneObject object);
+
 	public native boolean isObjectRegisteredWithPlanetaryMap(SceneObject object);
 	public native void updatePlanetaryMapIcon(SceneObject object, byte icon);
 
@@ -216,10 +230,6 @@ class Zone extends SceneObject {
 	@dirty
 	public unsigned int getZoneCRC() {
 		return zoneCRC;
-	}
-
-	public native GCWManager getGCWManager(){
-		return gcwManager;
 	}
 
 	public void setChatRoom(ChatRoom room) {

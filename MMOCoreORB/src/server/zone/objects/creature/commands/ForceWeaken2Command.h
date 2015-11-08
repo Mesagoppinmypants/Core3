@@ -28,14 +28,19 @@ public:
 			return NOJEDIARMOR;
 		}
 
+		ManagedReference<SceneObject*> targetObject = server->getZoneServer()->getObject(target);
+
+		if (targetObject == NULL || !targetObject->isCreatureObject()) {
+			return INVALIDTARGET;
+		}
+
 		int res = doCombatAction(creature, target);
 
 		if (res == SUCCESS) {
 
 			// Setup debuff.
 
-			Reference<SceneObject*> object = server->getZoneServer()->getObject(target);
-			ManagedReference<CreatureObject*> creatureTarget = cast<CreatureObject*>( object.get());
+			ManagedReference<CreatureObject*> creatureTarget = targetObject.castTo<CreatureObject*>();
 
 			if (creatureTarget != NULL) {
 				Locker clocker(creatureTarget, creature);
@@ -49,6 +54,8 @@ public:
 				buff->setAttributeModifier(CreatureAttribute::MIND, -600);
 
 				creatureTarget->addBuff(buff);
+
+				CombatManager::instance()->broadcastCombatSpam(creature, creatureTarget, NULL, 0, "cbt_spam", combatSpam + "_hit", 1);
 			}
 
 		}

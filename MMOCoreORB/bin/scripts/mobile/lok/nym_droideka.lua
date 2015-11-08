@@ -10,7 +10,7 @@ nym_droideka = Creature:new {
 	baseHAM = 9900,
 	baseHAMmax = 12100,
 	armor = 1,
-	resists = {30,45,25,25,40,-1,0,-1,-1},
+	resists = {135,135,0,0,0,-1,0,-1,-1},
 	meatType = "",
 	meatAmount = 0,
 	hideType = "",
@@ -29,9 +29,10 @@ nym_droideka = Creature:new {
 	lootGroups = {
 		{
 			groups = {
-				{group = "junk", chance = 4500000},
+				{group = "junk", chance = 4000000},
 				{group = "wearables_uncommon", chance = 2000000},
 				{group = "nyms_common", chance = 1000000},
+				{group = "nyms_rare", chance = 500000},
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
 				{group = "tailor_components", chance = 500000}

@@ -40,7 +40,9 @@ namespace tangible {
 		int getFaction(lua_State *L);
 		int isImperial(lua_State *L);
 		int isRebel(lua_State *L);
+		int isNeutral(lua_State *L);
 		int hasActiveArea(lua_State* L);
+		int isInvisible(lua_State* L);
 
 	protected:
 		TangibleObject* realObject;

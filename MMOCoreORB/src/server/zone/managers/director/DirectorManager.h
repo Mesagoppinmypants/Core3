@@ -87,6 +87,7 @@ namespace server {
 
 		static int writeScreenPlayData(lua_State* L);
 		static int readScreenPlayData(lua_State* L);
+		static int deleteScreenPlayData(lua_State* L);
 		static int clearScreenPlayData(lua_State* L);
 		static int registerScreenPlay(lua_State* L);
 		static int includeFile(lua_State* L);
@@ -158,6 +159,8 @@ namespace server {
 		static int removeQuestStatus(lua_State* L);
 		static int getControllingFaction(lua_State* L);
 		static int playClientEffectLoc(lua_State* L);
+		static int getQuestInfo(lua_State* L);
+		static int getPlayerQuestID(lua_State* L);
 
 	private:
 		void setupLuaPackagePath(Lua* luaEngine);

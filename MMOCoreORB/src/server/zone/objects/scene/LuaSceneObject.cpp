@@ -12,6 +12,7 @@
 #include "server/zone/objects/cell/CellObject.h"
 #include "server/zone/Zone.h"
 #include "server/zone/objects/area/ActiveArea.h"
+#include "server/zone/managers/director/ScreenPlayTask.h"
 
 const char LuaSceneObject::className[] = "LuaSceneObject";
 
@@ -36,9 +37,12 @@ Luna<LuaSceneObject>::RegType LuaSceneObject::Register[] = {
 		{ "getServerObjectCRC", &LuaSceneObject::getServerObjectCRC },
 		{ "showFlyText", &LuaSceneObject::showFlyText },
 		{ "getContainerObject", &LuaSceneObject::getContainerObject },
-		{ "hasFullContainerObjects", &LuaSceneObject::hasFullContainerObjects },
+		{ "getContainerObjectById", &LuaSceneObject::getContainerObjectById },
 		{ "getContainerObjectsSize", &LuaSceneObject::getContainerObjectsSize },
+		{ "getCountableObjectsRecursive", &LuaSceneObject::getCountableObjectsRecursive },
 		{ "getContainerVolumeLimit", &LuaSceneObject::getContainerVolumeLimit },
+		{ "isContainerFull", &LuaSceneObject::isContainerFull },
+		{ "isContainerFullRecursive", &LuaSceneObject::isContainerFullRecursive },
 		{ "getSlottedObject", &LuaSceneObject::getSlottedObject },
 		{ "transferObject", &LuaSceneObject::transferObject },
 //		{ "removeObject", &LuaSceneObject::removeObject },
@@ -57,7 +61,6 @@ Luna<LuaSceneObject>::RegType LuaSceneObject::Register[] = {
 		{ "getCustomObjectName", &LuaSceneObject::getCustomObjectName },
 		{ "getDisplayedName", &LuaSceneObject::getDisplayedName },
 		{ "getObjectName", &LuaSceneObject::getObjectName },
-		{ "getContainerObjectById", &LuaSceneObject::getContainerObjectById },
 		{ "setDirectionalHeading", &LuaSceneObject::setDirectionalHeading },
 		{ "getZoneName", &LuaSceneObject::getZoneName },
 		{ "getTemplateObjectPath", &LuaSceneObject::getTemplateObjectPath },
@@ -77,6 +80,9 @@ Luna<LuaSceneObject>::RegType LuaSceneObject::Register[] = {
 		{ "isASubChildOf", &LuaSceneObject::isASubChildOf },
 		{ "isOwned", &LuaSceneObject::isOwned },
 		{ "playEffect", &LuaSceneObject::playEffect },
+		{ "addPendingTask", &LuaSceneObject::addPendingTask },
+		{ "cancelPendingTask", &LuaSceneObject::cancelPendingTask },
+		{ "getChildObject", &LuaSceneObject::getChildObject },
 		{ 0, 0 }
 
 };
@@ -374,6 +380,46 @@ int LuaSceneObject::getContainerObjectById(lua_State* L) {
     return 1;
 }
 
+int LuaSceneObject::getContainerObjectsSize(lua_State* L) {
+	int num = realObject->getContainerObjectsSize();
+
+	lua_pushnumber(L, num);
+
+	return 1;
+}
+
+int LuaSceneObject::getCountableObjectsRecursive(lua_State* L) {
+	int num = realObject->getCountableObjectsRecursive();
+
+	lua_pushnumber(L, num);
+
+	return 1;
+}
+
+int LuaSceneObject::getContainerVolumeLimit(lua_State* L) {
+	int num = realObject->getContainerVolumeLimit();
+
+	lua_pushnumber(L, num);
+
+	return 1;
+}
+
+int LuaSceneObject::isContainerFull(lua_State* L) {
+	bool full = realObject->isContainerFull();
+
+	lua_pushboolean(L, full);
+
+	return 1;
+}
+
+int LuaSceneObject::isContainerFullRecursive(lua_State* L) {
+	bool full = realObject->isContainerFullRecursive();
+
+	lua_pushboolean(L, full);
+
+	return 1;
+}
+
 int LuaSceneObject::getSlottedObject(lua_State* L) {
 	String slot = lua_tostring(L, -1);
 
@@ -411,31 +457,6 @@ int LuaSceneObject::transferObject(lua_State* L) {
 
 	return 0;
 }*/
-
-int LuaSceneObject::getContainerObjectsSize(lua_State* L) {
-	int num = realObject->getContainerObjectsSize();
-
-	lua_pushnumber(L, num);
-
-	return 1;
-}
-
-int LuaSceneObject::getContainerVolumeLimit(lua_State* L) {
-	int num = realObject->getContainerVolumeLimit();
-
-	lua_pushnumber(L, num);
-
-	return 1;
-}
-
-
-int LuaSceneObject::hasFullContainerObjects(lua_State* L) {
-	bool full = realObject->hasFullContainerObjects();
-
-	lua_pushboolean(L, full);
-
-	return 1;
-}
 
 int LuaSceneObject::showFlyText(lua_State* L) {
 	//final string file, final string uax, byte red, byte green, byte blue
@@ -672,12 +693,13 @@ int LuaSceneObject::setContainerOwnerID(lua_State* L) {
 }
 
 int LuaSceneObject::setObjectName(lua_State* L) {
-	String file = lua_tostring(L, -2);
-	String key = lua_tostring(L, -1);
+	String file = lua_tostring(L, -3);
+	String key = lua_tostring(L, -2);
+	bool notifyClient = lua_toboolean(L, -1);
 
 	StringId stringid(file, key);
 
-	realObject->setObjectName(stringid);
+	realObject->setObjectName(stringid, notifyClient);
 
 	return 0;
 }
@@ -692,6 +714,54 @@ int LuaSceneObject::isASubChildOf(lua_State* L) {
 
 int LuaSceneObject::isOwned(lua_State* L) {
 	lua_pushboolean(L, realObject->isPet() || realObject->isVehicleObject());
+
+	return 1;
+}
+
+int LuaSceneObject::addPendingTask(lua_State* L) {
+	uint32 mili = lua_tonumber(L, -3);
+	String play = lua_tostring(L, -2);
+	String key = lua_tostring(L, -1);
+
+	Reference<ScreenPlayTask*> task = new ScreenPlayTask(realObject, key, play);
+
+	String name = play + ":" + key;
+
+	realObject->addPendingTask(name, task, mili);
+
+	return 0;
+}
+
+int LuaSceneObject::cancelPendingTask(lua_State* L) {
+	String play = lua_tostring(L, -2);
+	String key = lua_tostring(L, -1);
+
+	String name = play + ":" + key;
+
+	if (realObject->containsPendingTask(name)) {
+		Reference<ScreenPlayTask*> task = realObject->getPendingTask(name).castTo<ScreenPlayTask*>();
+
+		if (task != NULL && task->isScheduled()) {
+			task->cancel();
+		}
+
+		realObject->removePendingTask(name);
+	}
+
+	return 0;
+}
+
+int LuaSceneObject::getChildObject(lua_State* L) {
+	int index = lua_tonumber(L, -1);
+
+	SceneObject* obj = realObject->getChildObjects()->get(index);
+
+	if (obj == NULL) {
+		lua_pushnil(L);
+	} else {
+		obj->_setUpdated(true);
+		lua_pushlightuserdata(L, obj);
+	}
 
 	return 1;
 }

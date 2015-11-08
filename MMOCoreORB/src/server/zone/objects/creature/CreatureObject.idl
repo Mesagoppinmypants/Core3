@@ -61,8 +61,6 @@ class CreatureObject extends TangibleObject {
 	protected byte locomotion;
 	protected byte factionRank;
 
-	protected boolean invisible;
-
 	@weakReference
 	protected CreatureObject linkedCreature;
 
@@ -111,7 +109,10 @@ class CreatureObject extends TangibleObject {
 	protected GroupObject group;
 	protected unsigned long groupInviterID;
 	protected unsigned long groupInviteCounter;
+
+	@weakReference
 	protected GuildObject guild;
+
 	protected unsigned long targetID;
 	protected byte moodID;
 	protected int performanceCounter;
@@ -208,12 +209,12 @@ class CreatureObject extends TangibleObject {
 	/**
 	 * CreatureObject constructor, used to initialized the object
 	 * @pre { templateData is a valid SharedCreatureObjectTemplate LuaObject that contains the necessary values to initialize CreatureObject }
-	 * @post { CreatureObject is initialized } 
+	 * @post { CreatureObject is initialized }
 	 * @param templateData templateData points to the SharedCreatureObjectTemplate LuaObject that is used to initialize CreatureObject members
 	 */
 	public CreatureObject() {
 		Logger.setLoggingName("CreatureObject");
-		
+
 		initializeMembers();
 	}
 
@@ -221,6 +222,7 @@ class CreatureObject extends TangibleObject {
 
 	public native void finalize();
 
+	@preLocked
 	public native void createChildObjects();
 
 	/**
@@ -246,7 +248,7 @@ class CreatureObject extends TangibleObject {
 	 * @param actioncntr action id that will be cleared from clients queue
 	 * @param timer how many seconds will the action take to execute
 	 * @param tab1 message 1
-	 * @param tab2 message 2 
+	 * @param tab2 message 2
 	 */
 	@preLocked
 	public native void clearQueueAction(unsigned int actioncntr, float timer = 0, unsigned int tab1 = 0, unsigned int tab2 = 0);
@@ -257,7 +259,7 @@ class CreatureObject extends TangibleObject {
 	 * Sends the CREO baseline messages of this object to the specified player
 	 * @pre { this object is locked }
 	 * @post { this object is locked, player received the baseline messages }
-	 * @param player SceneObject that will receive the baselines 
+	 * @param player SceneObject that will receive the baselines
 	 */
 	@dirty
 	public native void sendBaselinesTo(SceneObject player);
@@ -270,16 +272,6 @@ class CreatureObject extends TangibleObject {
 	 */
 	@dirty
 	public native void sendToOwner(boolean doClose = true);
-
-	/**
-	 * Sends the necessary messages to player in order to create this object
-	 * @pre { this object is locked }
-	 * @post { this object is locked, player received this object }
-	 * @param player SceneObject that will receive the messages
-	 * @param doClose if true a SceneObjectCloseMessage is sent to finish the object
-	 */
-	@dirty
-	public native void sendTo(SceneObject player, boolean doClose);
 
 	/**
 	 * Sends a system message to the client of this object
@@ -343,7 +335,7 @@ class CreatureObject extends TangibleObject {
 	 * Sends the contained slotted objects to the specified player
 	 * @pre { this object is locked }
 	 * @post { this object is locked, player received the slotted objects }
-	 * @param player SceneObject that will receive the objects 
+	 * @param player SceneObject that will receive the objects
 	 */
 	@dirty
 	public native void sendSlottedObjectsTo(SceneObject player);
@@ -449,7 +441,7 @@ class CreatureObject extends TangibleObject {
 	 * Updates the run speed
 	 * @pre { this object is locked }
 	 * @post { this object is locked }
-	 * 
+	 *
 	 */
 	@preLocked
 	public native void setRunSpeed(float newSpeed, boolean notifyClient = true);
@@ -544,7 +536,7 @@ class CreatureObject extends TangibleObject {
 	 * @param notifyClient if set true the client will be updated with the changes
 	 */
 	@preLocked
-	public native void setMaxHAM(int type, int value, boolean notifyClient = true);
+	public native abstract void setMaxHAM(int type, int value, boolean notifyClient = true);
 	@preLocked
 	public native void addMaxHAM(int type, int value, boolean notifyClient = true);
 
@@ -686,7 +678,7 @@ class CreatureObject extends TangibleObject {
 	 */
 	@preLocked
 	public native void clearBuffs(boolean updateclient);
-	
+
 	public native void updateVehiclePosition(boolean sendPackets);
 
 	@preLocked
@@ -741,7 +733,7 @@ class CreatureObject extends TangibleObject {
 	}
 
 	@local
-	public DamageOverTimeList getDamageOverTimeList() { 
+	public DamageOverTimeList getDamageOverTimeList() {
 		return damageOverTimeList;
 	}
 
@@ -1041,13 +1033,19 @@ class CreatureObject extends TangibleObject {
 	 * Evaluates if this object can be attacket by the passed creature object
 	 * @pre { this object is locked }
 	 * @post { this object is locked }
-	 * @return returns true if the creature object can attack this 
+	 * @return returns true if the creature object can attack this
 	 */
 	@dirty
 	public native boolean isAttackableBy(CreatureObject object);
 
 	@dirty
-	public native boolean isAttackableBy(TangibleObject attacker);
+	public native boolean isAttackableBy(CreatureObject object, boolean bypassDeadCheck);
+
+	@dirty
+	public native abstract boolean isAttackableBy(TangibleObject attacker);
+
+	@dirty
+	public native boolean isAttackableBy(TangibleObject object, boolean bypassDeadCheck);
 
 	@dirty
 	public native boolean isHealableBy(CreatureObject object);
@@ -1062,7 +1060,7 @@ class CreatureObject extends TangibleObject {
 	public native boolean isInBountyMission(CreatureObject bountyHunter, CreatureObject target);
 
 	/**
-	 * sends the conversation list 
+	 * sends the conversation list
 	 * @pre {this locked, player locked }
 	 * @post { this locked, player locked }
 	 * @return whether the conversation was started or not
@@ -1073,12 +1071,12 @@ class CreatureObject extends TangibleObject {
 	}
 
 	/**
-	 * sends the conversation list 
+	 * sends the conversation list
 	 * @pre {this locked, player locked }
 	 * @post { this locked, player locked }
 	 */
 	public abstract void selectConversationOption(int option, SceneObject obj) {
-		
+
 	}
 
 	/**
@@ -1179,10 +1177,10 @@ class CreatureObject extends TangibleObject {
 	@dirty
 	public boolean isOnline() {
 		PlayerObject ghost = getPlayerObject();
-		
+
 		if (ghost == null)
 			return false;
-		
+
 		return ghost.isOnline();
 	}
 
@@ -1267,7 +1265,7 @@ class CreatureObject extends TangibleObject {
 	public native void setMeditateState();
 
 	@preLocked
-	public abstract native void activateHAMRegeneration();
+	public abstract native void activateHAMRegeneration(int latency);
 
 	@preLocked
 	public abstract native void activatePassiveWoundRegeneration();
@@ -1290,7 +1288,7 @@ class CreatureObject extends TangibleObject {
 	}
 
 	@local
-	public CooldownTimerMap getCooldownTimerMap() { 
+	public CooldownTimerMap getCooldownTimerMap() {
 		return cooldownTimerMap;
 	}
 
@@ -1503,7 +1501,7 @@ class CreatureObject extends TangibleObject {
 	@read
 	public unsigned long getCreatureLinkID() {
 		CreatureObject strongRef = linkedCreature;
-		
+
 		if (strongRef != null)
 			return strongRef.getObjectID();
 		else
@@ -1594,7 +1592,7 @@ class CreatureObject extends TangibleObject {
 		lastActionCounter = lastActionCounter + 32;
 		if (lastActionCounter < 0x40000000)
 			lastActionCounter = 0x40000000;
-		
+
 		return lastActionCounter;
 	}
 
@@ -1653,7 +1651,7 @@ class CreatureObject extends TangibleObject {
 	@preLocked
 	public native WeaponObject getWeapon();
 
-	@reference
+	@weakReference
 	@read
 	public GuildObject getGuildObject() {
 		return guild;
@@ -1661,15 +1659,19 @@ class CreatureObject extends TangibleObject {
 
 	@read
 	public int getGuildID() {
-		if (guild == null)
+		GuildObject strongRef = guild;
+
+		if (strongRef != null)
+			return strongRef.getGuildID();
+		else
 			return 0;
-		
-		return guild.getGuildID();
 	}
 
 	@read
 	public boolean isInGuild() {
-		return guild != null;
+		GuildObject strongRef = guild;
+
+		return strongRef != null;
 	}
 
 	@preLocked
@@ -1742,12 +1744,12 @@ class CreatureObject extends TangibleObject {
 		return getSpecies() >= 203 && getSpecies() <= 225 && getSpecies() != 207;
 	}
 
-	@dirty 
+	@dirty
 	public boolean isWalkerSpecies() {
 		//Determine if creature is an ATST or ATAT.
 		return getSpecies() == 226;
 	}
-	
+
 	@dirty
 	public boolean isProbotSpecies() {
 		return getSpecies() == 216;
@@ -1829,7 +1831,7 @@ class CreatureObject extends TangibleObject {
 	public boolean isCreatureObject() {
 		return true;
 	}
-	
+
 	@dirty
 	@nativeStub
 	@local
@@ -1929,7 +1931,7 @@ class CreatureObject extends TangibleObject {
 	@read
 	public boolean isStunned() {
 		return stateBitmask & CreatureState.STUNNED;
-	}	
+	}
 
 	@read
 	public boolean isBlinded() {
@@ -2024,12 +2026,10 @@ class CreatureObject extends TangibleObject {
 	@dirty
 	public abstract boolean isDroidObject() {
 		return false;
-	}	
+	}
 
 	@dirty
-	public boolean isPlayerCreature() {
-		return getPlayerObject() != null;
-	}
+	public native boolean isPlayerCreature();
 
 	@dirty
 	public abstract boolean isInformantCreature() {
@@ -2062,16 +2062,6 @@ class CreatureObject extends TangibleObject {
 	@preLocked
 	@arg1preLocked
 	public native int handleObjectMenuSelect(CreatureObject player, byte selectedID);
-
-	@read
-	public boolean isInvisible() {
-		return invisible;
-	}
-
-	@preLocked
-	public void setInvisible(boolean invis) {
-		invisible = invis;
-	}
 
 	public string getAlternateAppearance() {
 		return alternateAppearance;

@@ -23,14 +23,14 @@
 #include "server/zone/managers/loot/LootManager.h"
 #include "server/zone/managers/name/NameManager.h"
 #include "server/zone/managers/crafting/labratories/DroidMechanics.h"
-#include "server/zone/objects/creature/Creature.h"
+#include "server/zone/objects/creature/ai/Creature.h"
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/creature/events/MilkCreatureTask.h"
 #include "server/zone/objects/creature/events/TameCreatureTask.h"
 #include "server/zone/objects/creature/events/SampleDnaTask.h"
 #include "server/zone/objects/group/GroupObject.h"
 #include "server/zone/objects/player/PlayerObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/creature/events/DespawnCreatureTask.h"
 #include "server/zone/objects/region/Region.h"
 #include "server/db/ServerDatabase.h"
@@ -581,7 +581,6 @@ bool CreatureManagerImplementation::createCreatureChildrenObjects(CreatureObject
 }
 
 void CreatureManagerImplementation::loadSpawnAreas() {
-	info("loading spawn areas...", true);
 	spawnAreaMap.loadMap(zone);
 }
 
@@ -658,7 +657,13 @@ int CreatureManagerImplementation::notifyDestruction(TangibleObject* destructor,
 			lootManager->createLoot(creatureInventory, destructedObject);
 		}
 
-		CombatManager::instance()->attemptPeace(destructedObject);
+		Reference<AiAgent*> strongReferenceDestructedObject = destructedObject;
+
+		EXECUTE_TASK_1(strongReferenceDestructedObject, {
+				Locker locker(strongReferenceDestructedObject_p);
+
+				CombatManager::instance()->attemptPeace(strongReferenceDestructedObject_p);
+		});
 
 		// Check to see if we can expedite the despawn of this corpse
 		// We can expedite the despawn when corpse has no loot, no credits, player cannot harvest, and no group members in range can harvest
@@ -745,13 +750,13 @@ void CreatureManagerImplementation::droidHarvest(Creature* creature, CreatureObj
 
 	String creatureHealth = "";
 
-	if (density > 0.80f) {
+	if (density > 0.75f) {
 		quantityExtracted = int(quantityExtracted * 1.25f);
 		creatureHealth = "creature_quality_fat";
-	} else if (density > 0.60f) {
+	} else if (density > 0.50f) {
 		quantityExtracted = int(quantityExtracted * 1.00f);
 		creatureHealth = "creature_quality_medium";
-	} else if (density > 0.40f) {
+	} else if (density > 0.25f) {
 		quantityExtracted = int(quantityExtracted * 0.75f);
 		creatureHealth = "creature_quality_scrawny";
 	} else {
@@ -847,7 +852,7 @@ void CreatureManagerImplementation::harvest(Creature* creature, CreatureObject* 
 
 	if (!creature->canHarvestMe(player))
 		return;
-		
+
 	if (!player->isInRange(creature, 7))
 		return;
 
@@ -910,13 +915,13 @@ void CreatureManagerImplementation::harvest(Creature* creature, CreatureObject* 
 
 	String creatureHealth = "";
 
-	if (density > 0.80f) {
+	if (density > 0.75f) {
 		quantityExtracted = int(quantityExtracted * 1.25f);
 		creatureHealth = "creature_quality_fat";
-	} else if (density > 0.60f) {
+	} else if (density > 0.50f) {
 		quantityExtracted = int(quantityExtracted * 1.00f);
 		creatureHealth = "creature_quality_medium";
-	} else if (density > 0.40f) {
+	} else if (density > 0.25f) {
 		quantityExtracted = int(quantityExtracted * 0.75f);
 		creatureHealth = "creature_quality_scrawny";
 	} else {
@@ -1093,7 +1098,7 @@ void CreatureManagerImplementation::tame(Creature* creature, CreatureObject* pla
 
 	ChatManager* chatManager = player->getZoneServer()->getChatManager();
 
-	chatManager->broadcastMessage(player, "@hireling/hireling:taming_1"); // Easy.
+	chatManager->broadcastMessage(player, "@hireling/hireling:taming_" + String::valueOf(System::random(4) + 1));
 
 	Locker clocker(creature);
 
@@ -1107,7 +1112,7 @@ void CreatureManagerImplementation::tame(Creature* creature, CreatureObject* pla
 
 	ManagedReference<TameCreatureTask*> task = new TameCreatureTask(creature, player, mask, force, adult);
 
-	player->addPendingTask("tame_pet", task, 8000);
+	player->addPendingTask("tame_pet", task, 10000);
 }
 
 void CreatureManagerImplementation::milk(Creature* creature, CreatureObject* player) {
@@ -1225,9 +1230,4 @@ bool CreatureManagerImplementation::addWearableItem(CreatureObject* creature, Ta
 	chatMan->broadcastMessage(creature, message, clothing->getObjectID(), creature->getMoodID(), 0);
 
 	return true;
-}
-
-
-Vector3 CreatureManagerImplementation::getRandomJediTrainer() {
-	return spawnAreaMap.getRandomJediTrainer();
 }

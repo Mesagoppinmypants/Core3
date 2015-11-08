@@ -146,6 +146,7 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<TangibleObject>(SceneObjectType::CAMPKIT);
 	objectFactory.registerObject<Container>(SceneObjectType::STATICLOOTCONTAINER);
 	objectFactory.registerObject<TangibleObject>(SceneObjectType::PLAYERLOOTCRATE);
+	objectFactory.registerObject<PlantObject>(SceneObjectType::GROWABLEPLANT);
 
 	objectFactory.registerObject<SlicingTool>(SceneObjectType::SLICINGTOOL);
 	objectFactory.registerObject<SlicingTool>(SceneObjectType::FLOWANALYZER);
@@ -227,6 +228,7 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<TravelTerminal>(SceneObjectType::TRAVELTERMINAL);
 	objectFactory.registerObject<GuildTerminal>(SceneObjectType::GUILDTERMINAL);
 	objectFactory.registerObject<Jukebox>(SceneObjectType::JUKEBOX);
+	objectFactory.registerObject<FlagGame>(SceneObjectType::FLAGGAME);
 	objectFactory.registerObject<GamblingTerminal>(SceneObjectType::GAMBLINGTERMINAL);
 	objectFactory.registerObject<Terminal>(SceneObjectType::CLONING);
 
@@ -251,6 +253,7 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<StatePack>(SceneObjectType::STATEPACK);
 	objectFactory.registerObject<RevivePack>(SceneObjectType::REVIVEPACK);
 	objectFactory.registerObject<VitalityPack>(SceneObjectType::PETMEDECINE);
+	objectFactory.registerObject<FsPuzzlePack>(SceneObjectType::FSPUZZLEPACK);
 
 	//clothing
 	objectFactory.registerObject<ClothingObject>(SceneObjectType::CLOTHING);
@@ -306,7 +309,8 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<ResourceContainer>(SceneObjectType::ORGANICFOOD);
 	objectFactory.registerObject<ResourceContainer>(SceneObjectType::ORGANICHIDE);
 	objectFactory.registerObject<ResourceContainer>(SceneObjectType::ORGANICSTRUCTURAL);
-	objectFactory.registerObject<ResourceContainer>(SceneObjectType::QUESTREOURCE);
+
+	objectFactory.registerObject<CustomIngredient>(SceneObjectType::QUESTRESOURCE);
 
 	objectFactory.registerObject<DraftSchematic>(SceneObjectType::DRAFTSCHEMATIC);
 	objectFactory.registerObject<ManufactureSchematic>(SceneObjectType::MANUFACTURINGSCHEMATIC);

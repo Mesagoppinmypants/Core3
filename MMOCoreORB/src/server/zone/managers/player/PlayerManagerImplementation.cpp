@@ -39,6 +39,7 @@
 #include "server/zone/objects/player/sessions/VeteranRewardSession.h"
 #include "server/zone/objects/tangible/OptionBitmask.h"
 #include "server/zone/managers/player/JukeboxSong.h"
+#include "server/zone/managers/player/QuestInfo.h"
 
 #include "server/zone/objects/intangible/ShipControlDevice.h"
 #include "server/zone/objects/ship/ShipObject.h"
@@ -81,6 +82,7 @@
 #include "server/zone/packets/tangible/UpdatePVPStatusMessage.h"
 
 #include "server/zone/packets/tangible/TangibleObjectDeltaMessage3.h"
+#include "server/zone/packets/player/PlayMusicMessage.h"
 #include "server/zone/packets/player/PlayerObjectDeltaMessage6.h"
 #include "server/zone/packets/object/StartingLocationListMessage.h"
 
@@ -110,9 +112,9 @@
 
 #include "server/zone/objects/creature/buffs/PowerBoostBuff.h"
 
-#include "server/zone/objects/creature/Creature.h"
+#include "server/zone/objects/creature/ai/Creature.h"
 #include "server/zone/objects/creature/events/DespawnCreatureTask.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/managers/gcw/GCWManager.h"
 
 #include "server/zone/managers/creature/LairObserver.h"
@@ -120,9 +122,11 @@
 #include "server/zone/managers/creature/PetManager.h"
 
 #include "server/zone/objects/creature/events/BurstRunNotifyAvailableEvent.h"
-#include "server/zone/objects/creature/DroidObject.h"
+#include "server/zone/objects/creature/ai/DroidObject.h"
 #include "server/zone/objects/player/Races.h"
 #include "server/zone/objects/tangible/components/droid/DroidPlaybackModuleDataComponent.h"
+
+#include "server/zone/objects/player/badges/Badge.h"
 
 #include <iostream>
 
@@ -133,14 +137,13 @@ PlayerManagerImplementation::PlayerManagerImplementation(ZoneServer* zoneServer,
 	server = zoneServer;
 	processor = impl;
 
-	playerMap = new PlayerMap(3000);
 	nameMap = new CharacterNameMap();
 
 	DirectorManager::instance()->getLuaInstance()->runFile("scripts/screenplays/checklnum.lua");
 
 	loadLuaConfig();
 	loadStartingLocations();
-	loadBadgeMap();
+	loadQuestInfo();
 	loadPermissionLevels();
 
 	setGlobalLogging(true);
@@ -260,37 +263,30 @@ void PlayerManagerImplementation::loadStartingLocations() {
 	info("Loaded " + String::valueOf(startingLocationList.getTotalLocations()) + " starting locations.", true);
 }
 
-void PlayerManagerImplementation::loadBadgeMap() {
-	info("Loading badges.");
+void PlayerManagerImplementation::loadQuestInfo() {
+	TemplateManager* templateManager = TemplateManager::instance();
 
-	IffStream* iffStream = TemplateManager::instance()->openIffFile("datatables/badge/badge_map.iff");
+	IffStream* iffStream = templateManager->openIffFile("datatables/player/quests.iff");
 
 	if (iffStream == NULL) {
-		info("Couldn't load badge map.", true);
+		info("quests.iff could not be found.", true);
 		return;
 	}
 
-	DataTableIff dtiff;
-	dtiff.readObject(iffStream);
-
-	highestBadgeIndex = 0;
-
-	for (int i = 0; i < dtiff.getTotalRows(); ++i) {
-		int idx = 0;
-		String key;
-
-		DataTableRow* row = dtiff.getRow(i);
-		row->getCell(0)->getValue(idx);
-		row->getCell(1)->getValue(key);
-		badgeMap.put(idx, key);
-
-		if (idx > highestBadgeIndex)
-			highestBadgeIndex = idx;
-	}
-
-	info("Loaded " + String::valueOf(badgeMap.size()) + " badges.", true);
+	DataTableIff dtable;
+	dtable.readObject(iffStream);
 
 	delete iffStream;
+
+	for (int i = 0; i < dtable.getTotalRows(); ++i) {
+		DataTableRow* row = dtable.getRow(i);
+
+		QuestInfo* quest = new QuestInfo();
+		quest->parseDataTableRow(row);
+		questInfo.add(quest);
+	}
+
+	info("Loaded " + String::valueOf(questInfo.size()) + " quests.", true);
 }
 
 void PlayerManagerImplementation::loadPermissionLevels() {
@@ -307,9 +303,6 @@ void PlayerManagerImplementation::loadPermissionLevels() {
 }
 
 void PlayerManagerImplementation::finalize() {
-	delete playerMap;
-	playerMap = NULL;
-
 	delete nameMap;
 	nameMap = NULL;
 }
@@ -338,6 +331,26 @@ void PlayerManagerImplementation::loadNameMap() {
 	StringBuffer msg;
 	msg << "loaded " << nameMap->size() << " character names in memory";
 	info(msg.toString(), true);
+}
+
+int PlayerManagerImplementation::getPlayerQuestID(const String& name) {
+	for (int i = 0; i < questInfo.size(); ++i) {
+		QuestInfo* quest = questInfo.get(i);
+
+		if (quest != NULL && quest->getQuestName().hashCode() == name.hashCode())
+			return i;
+	}
+
+	return -1;
+}
+
+String PlayerManagerImplementation::getPlayerQuestParent(int questID) {
+	QuestInfo* quest = questInfo.get(questID);
+
+	if (quest != NULL)
+		return quest->getQuestParent();
+	else
+		return "";
 }
 
 bool PlayerManagerImplementation::existsName(const String& name) {
@@ -564,7 +577,7 @@ void PlayerManagerImplementation::createSkippedTutorialBuilding(CreatureObject* 
 
 	locker.release();
 
-	Reference<SceneObject*> travelTutorialTerminal = server->createObject(STRING_HASHCODE("object/tangible/beta/beta_terminal_warp.iff"), 1);
+	Reference<SceneObject*> travelTutorialTerminal = server->createObject(STRING_HASHCODE("object/tangible/terminal/terminal_travel_tutorial.iff"), 1);
 
 	SceneObject* cellTut = tutorial->getCell(1);
 
@@ -637,7 +650,7 @@ int PlayerManagerImplementation::notifyDestruction(TangibleObject* destructor, T
 
 	PlayerObject* ghost = playerCreature->getPlayerObject();
 
-	ghost->updateIncapacitationCounter();
+	ghost->addIncapacitationTime();
 
 	DeltaVector<ManagedReference<SceneObject*> >* defenderList = destructor->getDefenderList();
 
@@ -648,7 +661,9 @@ int PlayerManagerImplementation::notifyDestruction(TangibleObject* destructor, T
 		destructor->removeDefender(destructedObject);
 	}
 
-	if ((!destructor->isKiller() || !isDefender) && ghost->getIncapacitationCounter() < 3) {
+	if ((destructor->isKiller() && isDefender) || ghost->getIncapacitationCounter() >= 3) {
+		killPlayer(destructor, playerCreature, 0);
+	} else {
 		playerCreature->setCurrentSpeed(0);
 		playerCreature->setPosture(CreaturePosture::INCAPACITATED, true);
 		playerCreature->updateLocomotion();
@@ -672,11 +687,6 @@ int PlayerManagerImplementation::notifyDestruction(TangibleObject* destructor, T
 		stringId.setTT(destructor->getObjectID());
 
 		playerCreature->sendSystemMessage(stringId);
-
-	} else {
-		if (destructor->isKiller() || !ghost->isFirstIncapacitationExpired()) {
-			killPlayer(destructor, playerCreature, 0);
-		}
 	}
 
 	return 0;
@@ -711,6 +721,11 @@ void PlayerManagerImplementation::killPlayer(TangibleObject* attacker, CreatureO
 	player->updateTimeOfDeath();
 	player->clearBuffs(true);
 
+	PlayerObject* ghost = player->getPlayerObject();
+
+	if (ghost != NULL)
+		ghost->resetIncapacitationTimes();
+
 	if (attacker->getFaction() != 0) {
 		if (attacker->isPlayerCreature() || attacker->isPet()) {
 			CreatureObject* attackerCreature = cast<CreatureObject*>(attacker);
@@ -734,9 +749,6 @@ void PlayerManagerImplementation::killPlayer(TangibleObject* attacker, CreatureO
 	CombatManager::instance()->freeDuelList(player, false);
 
 	player->notifyObjectKillObservers(attacker);
-
-	/*Reference<Task*> task = new PlayerIncapacitationRecoverTask(player, true);
-	task->schedule(10 * 1000);*/
 }
 
 void PlayerManagerImplementation::sendActivateCloneRequest(CreatureObject* player, int typeofdeath) {
@@ -956,69 +968,19 @@ void PlayerManagerImplementation::sendPlayerToCloner(CreatureObject* player, uin
 
 
 	// Jedi experience loss.
-	// If player is a Jedi Initiate
-	if(ghost->getJediState()  == 2) {
-		awardExperience(player, "jedi_general", -4500, true);
+	if(ghost->getJediState() >= 2) {
+		int jediXpCap = ghost->getXpCap("jedi_general");
+		int xpLoss = (int)(jediXpCap * -0.05);
+		int curExp = ghost->getExperience("jedi_general");
+
+		int negXpCap = -10000000; // Cap on negative jedi experience
+
+		if ((curExp + xpLoss) < negXpCap)
+			xpLoss = negXpCap - curExp;
+
+		awardExperience(player, "jedi_general", xpLoss, true);
 		StringIdChatParameter message("base_player","prose_revoke_xp");
-		message.setDI(4500);
-		message.setTO("exp_n", "jedi_general");
-		player->sendSystemMessage(message);
-
-	} else if (ghost->getJediState() > 2) {
-		SkillList* skillList = player->getSkillList();
-		int highestLevel = -1;
-
-
-		for(int i=0;i < skillList->size(); ++i) {
-			Skill* skill = skillList->get(i);
-			String skillName = skill->getSkillName();
-
-			if(skillName.contains("force_discipline") && skillName.contains("4")) {
-				highestLevel = 4;
-				break;
-			} else if(highestLevel < 3 && (skillName.contains("force_discipline") && skillName.contains("3"))) {
-				highestLevel = 3;
-			} else if(highestLevel < 2 && (skillName.contains("force_discipline") && skillName.contains("2"))) {
-				highestLevel = 2;
-			} else if(highestLevel < 1 && (skillName.contains("force_discipline") && skillName.contains("1"))) {
-				highestLevel = 1;
-			} else if(highestLevel < 0 && (skillName.contains("force_discipline") && skillName.contains("novice"))) {
-				highestLevel = 0;
-			}
-
-		}
-		int expRemoved = 0;
-
-		switch(highestLevel) {
-		// If player has any level 4 box in any discipline
-		case 4:
-			expRemoved = 200000;
-			break;
-		// If player has any level 3 box in any discipline
-		case 3:
-			expRemoved =  100000;
-			break;
-		// If player has any level 2 box in any discipline
-		case 2:
-			expRemoved =  50000;
-			break;
-		// If player has any level 1 box in any discipline
-		case 1:
-			expRemoved = 30000;
-			break;
-		// If player has any novice box in any discipline
-		case 0:
-			expRemoved =  15000;
-			break;
-		// If player has no novice boxes (new Padawan)
-		case -1:
-			expRemoved = 5000;
-			break;
-		}
-
-		awardExperience(player, "jedi_general", 0-expRemoved, true);
-		StringIdChatParameter message("base_player","prose_revoke_xp");
-		message.setDI(expRemoved);
+		message.setDI(xpLoss * -1);
 		message.setTO("exp_n", "jedi_general");
 		player->sendSystemMessage(message);
 	}
@@ -1066,10 +1028,14 @@ void PlayerManagerImplementation::disseminateExperience(TangibleObject* destruct
 	int baseXp = 0;
 
 	Zone* zone = destructedObject->getZone();
-	if(zone != NULL){
+
+	if (zone != NULL) {
 		GCWManager* gcwMan = zone->getGCWManager();
-		gcwBonus += (gcwMan->getGCWXPBonus() / 100.0f);
-		winningFaction = gcwMan->getWinningFaction();
+
+		if (gcwMan != NULL) {
+			gcwBonus += (gcwMan->getGCWXPBonus() / 100.0f);
+			winningFaction = gcwMan->getWinningFaction();
+		}
 	}
 
 	if (!destructedObject->isCreatureObject() && spawnedCreatures != NULL) {
@@ -1098,153 +1064,141 @@ void PlayerManagerImplementation::disseminateExperience(TangibleObject* destruct
 			baseXp = ai->getBaseXp();
 	}
 
-	// first loop and combine pet's damage with their owner's, keyed by the appropriate exp
-	// we can just use the original threatmap since the mob is dead anyway
-	for (int i = 0; i < threatMap->size(); i++) {
-		ThreatMapEntry* entry = &threatMap->elementAt(i).getValue();
-		CreatureObject* attacker = threatMap->elementAt(i).getKey();
-		if (entry == NULL || attacker == NULL) {
-			threatMap->drop(attacker);
-			continue;
-		}
-
-		// only worried about pets at this stage
-		if (!attacker->isPet())
-			continue;
-
-		PetControlDevice* pcd = attacker->getControlDevice().get().castTo<PetControlDevice*>();
-
-		// only creature pets will award exp, so discard anything else
-		if (pcd == NULL || pcd->getPetType() != PetManager::CREATUREPET) {
-			threatMap->drop(attacker);
-			continue;
-		}
-
-		CreatureObject* owner = attacker->getLinkedCreature().get();
-		if (owner == NULL || !owner->isPlayerCreature() || !owner->hasSkill("outdoors_creaturehandler_novice") || !destructedObject->isInRange(owner, 80)) {
-			threatMap->drop(attacker);
-			continue;
-		}
-
-		PlayerObject* ownerGhost = owner->getPlayerObject();
-		if (ownerGhost == NULL) {
-			threatMap->drop(attacker);
-			continue;
-		}
-
-		int totalPets = 1;
-
-		for (int i = 0; i < ownerGhost->getActivePetsSize(); i++) {
-			ManagedReference<AiAgent*> object = ownerGhost->getActivePet(i);
-
-			if (object != NULL && object->isCreature()) {
-				if (object == attacker)
-					continue;
-
-				PetControlDevice* petControlDevice = object->getControlDevice().get().castTo<PetControlDevice*>();
-				if (petControlDevice != NULL && petControlDevice->getPetType() == PetManager::CREATUREPET)
-					totalPets++;
-			}
-		}
-
-		// TODO: Find a more correct CH xp formula
-		float levelRatio = (float)destructedObject->getLevel() / (float)attacker->getLevel();
-
-		float xpAmount = levelRatio * 500.f;
-
-		xpAmount = MIN(xpAmount, (float)attacker->getLevel() * 50.f);
-
-		xpAmount /= totalPets;
-
-		if (levelRatio <= 0.5)
-			xpAmount = 1;
-
-		threatMap->addDamage(owner, xpAmount, "creaturehandler");
-		threatMap->drop(attacker);
-	}
-
 	for (int i = 0; i < threatMap->size(); ++i) {
 		ThreatMapEntry* entry = &threatMap->elementAt(i).getValue();
-
-		uint32 entryTotalDamage = entry->getTotalDamage();
-
 		CreatureObject* attacker = threatMap->elementAt(i).getKey();
-		if (attacker == NULL || !attacker->isPlayerCreature())
+
+		if (entry == NULL || attacker == NULL) {
 			continue;
+		}
 
-		if (!destructedObject->isInRange(attacker, 80))
-			continue;
+		if (attacker->isPet()) {
+			PetControlDevice* pcd = attacker->getControlDevice().get().castTo<PetControlDevice*>();
 
-		ManagedReference<GroupObject*> group = attacker->getGroup();
+			// only creature pets will award exp, so discard anything else
+			if (pcd == NULL || pcd->getPetType() != PetManager::CREATUREPET) {
+				continue;
+			}
 
-		uint32 combatXp = 0;
+			CreatureObject* owner = attacker->getLinkedCreature().get();
+			if (owner == NULL || !owner->isPlayerCreature()) {
+				continue;
+			}
 
-		Locker crossLocker(attacker, destructedObject);
+			Locker crossLocker(owner, destructedObject);
 
-		for (int j = 0; j < entry->size(); ++j) {
-			uint32 damage = entry->elementAt(j).getValue();
-			String xpType = entry->elementAt(j).getKey();
-			float xpAmount = baseXp;
+			PlayerObject* ownerGhost = owner->getPlayerObject();
+			if (ownerGhost == NULL || !owner->hasSkill("outdoors_creaturehandler_novice") || !destructedObject->isInRange(owner, 80)) {
+				continue;
+			}
 
-			if (xpType == "creaturehandler")
-				xpAmount = damage; // this was pre-calculated in the previous loop
-			else {
+			int totalPets = 1;
+
+			for (int i = 0; i < ownerGhost->getActivePetsSize(); i++) {
+				ManagedReference<AiAgent*> object = ownerGhost->getActivePet(i);
+
+				if (object != NULL && object->isCreature()) {
+					if (object == attacker)
+						continue;
+
+					PetControlDevice* petControlDevice = object->getControlDevice().get().castTo<PetControlDevice*>();
+					if (petControlDevice != NULL && petControlDevice->getPetType() == PetManager::CREATUREPET)
+						totalPets++;
+				}
+			}
+
+			// TODO: Find a more correct CH xp formula
+			float levelRatio = (float)destructedObject->getLevel() / (float)attacker->getLevel();
+
+			float xpAmount = levelRatio * 500.f;
+
+			if (levelRatio <= 0.5) {
+				xpAmount = 1;
+			} else {
+				xpAmount = MIN(xpAmount, (float)attacker->getLevel() * 50.f);
+				xpAmount /= totalPets;
+
+				if (winningFaction == attacker->getFaction())
+					xpAmount *= gcwBonus;
+			}
+
+			awardExperience(owner, "creaturehandler", xpAmount);
+
+		} else if (attacker->isPlayerCreature()) {
+			if (!destructedObject->isInRange(attacker, 80))
+				continue;
+
+			ManagedReference<GroupObject*> group = attacker->getGroup();
+
+			uint32 combatXp = 0;
+
+			Locker crossLocker(attacker, destructedObject);
+
+			for (int j = 0; j < entry->size(); ++j) {
+				uint32 damage = entry->elementAt(j).getValue();
+				String xpType = entry->elementAt(j).getKey();
+				float xpAmount = baseXp;
+
 				xpAmount *= (float) damage / totalDamage;
 
 				//Cap xp based on level
 				xpAmount = MIN(xpAmount, calculatePlayerLevel(attacker, xpType) * 300.f);
+
+				//Apply group bonus if in group
+				if (group != NULL)
+					xpAmount *= groupExpMultiplier;
+
+				if (winningFaction == attacker->getFaction())
+					xpAmount *= gcwBonus;
+
+				//Jedi experience doesn't count towards combat experience supposedly.
+				if (xpType != "jedi_general")
+					combatXp += xpAmount;
+
+				//Award individual expType
+				awardExperience(attacker, xpType, xpAmount);
 			}
 
-			//Apply group bonus if in group
-			if (group != NULL && xpType != "creaturehandler")
-				xpAmount *= groupExpMultiplier;
+			combatXp /= 10.f;
 
-			if( winningFaction == attacker->getFaction())
-				xpAmount *= gcwBonus;
+			awardExperience(attacker, "combat_general", combatXp);
 
-			//Jedi experience doesn't count towards combat experience supposedly.
-			if (xpType != "jedi_general" && xpType != "creaturehandler")
-				combatXp += xpAmount;
+			//Check if the group leader is a squad leader
+			if (group == NULL)
+				continue;
 
-			//Award individual expType
-			awardExperience(attacker, xpType, xpAmount);
-		}
+			Vector3 pos(attacker->getWorldPositionX(), attacker->getWorldPositionY(), 0);
 
-		combatXp /= 10.f;
+			crossLocker.release();
 
-		awardExperience(attacker, "combat_general", combatXp);
+			ManagedReference<SceneObject*> groupLeader = group->getLeader();
 
-		//Check if the group leader is a squad leader
-		if (group == NULL)
-			continue;
+			if (groupLeader == NULL || !groupLeader->isPlayerCreature())
+				continue;
 
-		Vector3 pos(attacker->getWorldPositionX(), attacker->getWorldPositionY(), 0);
+			CreatureObject* squadLeader = groupLeader.castTo<CreatureObject*>();
 
-		crossLocker.release();
+			Locker squadLock(squadLeader, destructedObject);
 
-		ManagedReference<SceneObject*> groupLeader = group->getLeader();
-
-		if (groupLeader == NULL || !groupLeader->isPlayerCreature())
-			continue;
-
-		CreatureObject* squadLeader = groupLeader.castTo<CreatureObject*>();
-
-		Locker squadLock(squadLeader, destructedObject);
-
-		//If he is a squad leader, and is in range of this player, then add the combat exp for him to use.
-		if (squadLeader->hasSkill("outdoors_squadleader_novice") && pos.distanceTo(attacker->getWorldPosition()) <= 192.f) {
-			int v = slExperience.get(squadLeader) + combatXp;
-			slExperience.put(squadLeader, v);
+			//If he is a squad leader, and is in range of this player, then add the combat exp for him to use.
+			if (squadLeader->hasSkill("outdoors_squadleader_novice") && pos.distanceTo(attacker->getWorldPosition()) <= ZoneServer::CLOSEOBJECTRANGE) {
+				int v = slExperience.get(squadLeader) + combatXp;
+				slExperience.put(squadLeader, v);
+			}
 		}
 	}
 
 	//Send out squad leader experience.
 	for (int i = 0; i < slExperience.size(); ++i) {
 		VectorMapEntry<ManagedReference<CreatureObject*>, int>* entry = &slExperience.elementAt(i);
+		CreatureObject* leader = entry->getKey();
 
-		Locker clock(entry->getKey(), destructedObject);
+		if (leader == NULL)
+			continue;
 
-		awardExperience(entry->getKey(), "squadleader", entry->getValue() * 2.f);
+		Locker clock(leader, destructedObject);
+
+		awardExperience(leader, "squadleader", entry->getValue() * 2.f);
 	}
 
 	threatMap->removeAll();
@@ -1332,70 +1286,83 @@ void PlayerManagerImplementation::removeEncumbrancies(CreatureObject* player, Ar
 	player->healDamage(player, CreatureAttribute::WILLPOWER, mindEncumb, true);
 }
 
+void PlayerManagerImplementation::awardBadge(PlayerObject* ghost, uint32 badgeId) {
+	const Badge* badge = BadgeList::instance()->get(badgeId);
+	if (badge != NULL)
+		awardBadge(ghost, badge);
+}
 
-void PlayerManagerImplementation::awardBadge(PlayerObject* ghost, uint32 badge) {
-	if (!Badge::exists(badge))
+void PlayerManagerImplementation::awardBadge(PlayerObject* ghost, const Badge* badge) {
+	if (badge == NULL) {
+		ghost->error("Failed to award null badge.");	
 		return;
+	}
 
 	StringIdChatParameter stringId("badge_n", "");
-	stringId.setTO("badge_n", Badge::getName(badge));
+	stringId.setTO("badge_n", badge->getKey());
 
 	ManagedReference<CreatureObject*> player = dynamic_cast<CreatureObject*>(ghost->getParent().get().get());
-
-	if (ghost->hasBadge(badge)) {
+	const unsigned int badgeId = badge->getIndex();
+	if (ghost->hasBadge(badgeId)) {
 		stringId.setStringId("badge_n", "prose_hasbadge");
 		player->sendSystemMessage(stringId);
 		return;
 	}
 
-	ghost->setBadge(badge);
+	ghost->setBadge(badgeId);
 	stringId.setStringId("badge_n", "prose_grant");
 	player->sendSystemMessage(stringId);
+	
+	if (badge->getHasMusic()) {
+		String music = badge->getMusic();
+		PlayMusicMessage* musicMessage = new PlayMusicMessage(music);
+		player->sendMessage(musicMessage);
+	}
 
-	player->notifyObservers(ObserverEventType::BADGEAWARDED, player, badge);
-
+	player->notifyObservers(ObserverEventType::BADGEAWARDED, player, badgeId);
+	BadgeList* badgeList = BadgeList::instance();
 	switch (ghost->getNumBadges()) {
 	case 5:
-		awardBadge(ghost, Badge::COUNT_5);
+		awardBadge(ghost, badgeList->get("count_5"));
 		break;
 	case 10:
-		awardBadge(ghost, Badge::COUNT_10);
+		awardBadge(ghost, badgeList->get("count_10"));
 		break;
 	case 25:
-		awardBadge(ghost, Badge::COUNT_25);
+		awardBadge(ghost, badgeList->get("count_25"));
 		break;
 	case 50:
-		awardBadge(ghost, Badge::COUNT_50);
+		awardBadge(ghost, badgeList->get("count_50"));
 		break;
 	case 75:
-		awardBadge(ghost, Badge::COUNT_75);
+		awardBadge(ghost, badgeList->get("count_75"));
 		break;
 	case 100:
-		awardBadge(ghost, Badge::COUNT_100);
+		awardBadge(ghost, badgeList->get("count_100"));
 		break;
 	case 125:
-		awardBadge(ghost, Badge::COUNT_125);
+		awardBadge(ghost, badgeList->get("count_125"));
 		break;
 	default:
 		break;
 	}
 
-	if (Badge::getType(badge) == Badge::EXPLORATION) {
-		switch (ghost->getBadgeTypeCount(Badge::EXPLORATION)) {
+	if (badge->getType() == Badge::EXPLORATION) {
+		switch (ghost->getBadgeTypeCount(static_cast<uint8>(Badge::EXPLORATION))) {
 		case 10:
-			awardBadge(ghost, Badge::BDG_EXP_10_BADGES);
+			awardBadge(ghost, badgeList->get("bdg_exp_10_badges"));
 			break;
 		case 20:
-			awardBadge(ghost, Badge::BDG_EXP_20_BADGES);
+			awardBadge(ghost, badgeList->get("bdg_exp_20_badges"));
 			break;
 		case 30:
-			awardBadge(ghost, Badge::BDG_EXP_30_BADGES);
+			awardBadge(ghost, badgeList->get("bdg_exp_30_badges"));
 			break;
 		case 40:
-			awardBadge(ghost, Badge::BDG_EXP_40_BADGES);
+			awardBadge(ghost, badgeList->get("bdg_exp_40_badges"));
 			break;
 		case 45:
-			awardBadge(ghost, Badge::BDG_EXP_45_BADGES);
+			awardBadge(ghost, badgeList->get("bdg_exp_45_badges"));
 			break;
 		default:
 			break;
@@ -1418,6 +1385,10 @@ void PlayerManagerImplementation::awardExperience(CreatureObject* player, const 
 		int amount, bool sendSystemMessage, float localMultiplier) {
 
 	PlayerObject* playerObject = player->getPlayerObject();
+
+	if (playerObject == NULL)
+		return;
+
 	int xp = playerObject->addExperience(xpType, (int) (amount * localMultiplier * globalExpMultiplier));
 
 	player->notifyObservers(ObserverEventType::XPAWARDED, player, xp);
@@ -1977,9 +1948,11 @@ int PlayerManagerImplementation::notifyObserverEvent(uint32 eventType, Observabl
 		if(logoutTask != NULL) {
 			logoutTask->cancelLogout();
 		}
+
+		return 1;
 	}
 
-	return 1;
+	return 0;
 }
 
 void PlayerManagerImplementation::sendBattleFatigueMessage(CreatureObject* player, CreatureObject* target) {
@@ -2055,12 +2028,15 @@ void PlayerManagerImplementation::stopListen(CreatureObject* creature, uint64 en
 	if (object == NULL)
 		return;
 
+	// If the player selected "Stop listening" by using a radial menu created on a
+	// musician other than the one that they are currently listening to then change
+	// entid to their listenID so that the player can still stop listening.
+	if (entid != listenID && listenID != 0 && creature->isListening()) {
+		entid = listenID;
+	}
+
 	if(object->isDroidObject()) {
 		creature->setMood(creature->getMoodID());
-		if (entid != listenID ) {
-			creature->sendSystemMessage("You are not currently listening to " + object->getDisplayedName() + ".");
-			return;
-		}
 		if(doSendPackets) {
 			creature->setListenToID(0, true);
 			creature->setMoodString(creature->getMoodString(), true);
@@ -2070,16 +2046,18 @@ void PlayerManagerImplementation::stopListen(CreatureObject* creature, uint64 en
 			StringIdChatParameter stringID;
 			if (forced) {
 				stringID.setTU(entid);
-				stringID.setStringId("performance", "music_stop_other");
+				stringID.setStringId("performance", "music_stop_other"); // "%TU stops playing."
 				player->sendSystemMessage(stringID);
 				return;
 			} else if (outOfRange) {
+				// The correct string id is @performance:music_listen_out_of_range ("You stop listening to %TT because %OT is too far away.")
+				// but %OT will get replaced by him/her which gives an incorrect message.
 				StringBuffer msg;
 				msg << "You stop listening to " << object->getDisplayedName() << " because they are too far away.";
 				player->sendSystemMessage(msg.toString());
 				return;
 			} else {
-				player->sendSystemMessage("@performance:music_listen_stop_self"); //"You stop watching."
+				player->sendSystemMessage("@performance:music_listen_stop_self"); // "You stop listening."
 				return;
 			}
 		}
@@ -2087,7 +2065,7 @@ void PlayerManagerImplementation::stopListen(CreatureObject* creature, uint64 en
 	}
 
 	if (!object->isPlayerCreature()) {
-		creature->sendSystemMessage("You cannot stop listening an object.");
+		creature->sendSystemMessage("@performance:music_listen_npc"); // "You cannot /listen to NPCs."
 		return;
 	}
 
@@ -2119,12 +2097,6 @@ void PlayerManagerImplementation::stopListen(CreatureObject* creature, uint64 en
 		clocker.release();
 	}
 
-	if (entid != listenID && entertainer != NULL) {
-		creature->sendSystemMessage("You are not currently listening to " + entName + ".");
-
-		return;
-	}
-
 	creature->setMood(creature->getMoodID());
 
 	if (doSendPackets && esession != NULL)
@@ -2137,20 +2109,17 @@ void PlayerManagerImplementation::stopListen(CreatureObject* creature, uint64 en
 
 		if (forced) {
 			stringID.setTU(entid);
-			stringID.setStringId("performance", "music_stop_other");
+			stringID.setStringId("performance", "music_stop_other"); // "%TU stops playing."
 
 			player->sendSystemMessage(stringID);
-			//player->sendSystemMessage("performance", "dance_stop_other", params); //"%TU stops dancing."
 		} else if (outOfRange) {
+			// The correct string id is @performance:music_listen_out_of_range ("You stop listening to %TT because %OT is too far away.")
+			// but %OT will get replaced by him/her which gives an incorrect message.
 			StringBuffer msg;
-			msg << "You stop watching " << entertainer->getFirstName() << " because they are too far away.";
+			msg << "You stop listening to " << entertainer->getFirstName() << " because they are too far away.";
 			player->sendSystemMessage(msg.toString());
-
-			//TODO: Why does %OT say "him/her" instead of "he/she"?
-			//params->addTT(entid);
-			//player->sendSystemMessage("performance", "dance_watch_out_of_range", params); //"You stop watching %TT because %OT is too far away."
 		} else {
-			player->sendSystemMessage("@performance:music_listen_stop_self"); //"You stop watching."
+			player->sendSystemMessage("@performance:music_listen_stop_self"); // "You stop listening."
 		}
 
 		ManagedReference<PlayerObject*> entPlayer = entertainer->getPlayerObject();
@@ -2159,23 +2128,31 @@ void PlayerManagerImplementation::stopListen(CreatureObject* creature, uint64 en
 	}
 	//esession->setEntertainerBuffDuration(creature, PerformanceType::MUSIC, 0.0f); // reset
 	//esession->setEntertainerBuffStrength(creature, PerformanceType::MUSIC, 0.0f);
-	creature->info("stopped watching [" + entName + "]");
+	creature->info("stopped listening [" + entName + "]");
 
-	//creature->setListenToID(0, true);
+	creature->setListenToID(0, true);
 }
 
 
 void PlayerManagerImplementation::stopWatch(CreatureObject* creature, uint64 entid, bool doSendPackets, bool forced, bool doLock, bool outOfRange) {
 	Locker locker(creature);
 
-	ManagedReference<SceneObject*> object = server->getObject(entid);
 	uint64 watchID = creature->getWatchToID();
+
+	// If the player selected "Stop watching" by using a radial menu created on a
+	// dancer other than the one that they are currently watching then change
+	// entid to their watchID so that the player can still stop watching.
+	if (entid != watchID && watchID != 0 && creature->isWatching()) {
+		entid = watchID;
+	}
+
+	ManagedReference<SceneObject*> object = server->getObject(entid);
 
 	if (object == NULL)
 		return;
 
 	if (!object->isPlayerCreature()) {
-		creature->sendSystemMessage("You cannot stop watching an object.");
+		creature->sendSystemMessage("@performance:dance_watch_npc"); // "You cannot /watch NPCs."
 		return;
 	}
 
@@ -2207,12 +2184,6 @@ void PlayerManagerImplementation::stopWatch(CreatureObject* creature, uint64 ent
 		clocker.release();
 	}
 
-	if (entid != watchID) {
-		creature->sendSystemMessage("You are not currently watching " + entName + ".");
-
-		return;
-	}
-
 	creature->setMood(creature->getMoodID());
 
 	if (doSendPackets && esession != NULL)
@@ -2223,22 +2194,18 @@ void PlayerManagerImplementation::stopWatch(CreatureObject* creature, uint64 ent
 		CreatureObject* player = cast<CreatureObject*>( creature);
 
 		StringIdChatParameter stringID;
-		//StfParameter* params = new StfParameter;
 
 		if (forced) {
 			stringID.setTU(entid);
-			stringID.setStringId("performance", "dance_stop_other");
+			stringID.setStringId("performance", "dance_stop_other"); // %TU stops dancing.
 
 			player->sendSystemMessage(stringID);
-			//player->sendSystemMessage("performance", "dance_stop_other", params); //"%TU stops dancing."
 		} else if (outOfRange) {
+			// The correct string id is @performance:dance_watch_out_of_range ("You stop watching %TT because %OT is too far away.")
+			// but %OT will get replaced by him/her which gives an incorrect message.
 			StringBuffer msg;
 			msg << "You stop watching " << entertainer->getFirstName() << " because they are too far away.";
 			player->sendSystemMessage(msg.toString());
-
-			//TODO: Why does %OT say "him/her" instead of "he/she"?
-			//params->addTT(entid);
-			//player->sendSystemMessage("performance", "dance_watch_out_of_range", params); //"You stop watching %TT because %OT is too far away."
 		} else {
 			player->sendSystemMessage("@performance:dance_watch_stop_self"); //"You stop watching."
 		}
@@ -2264,6 +2231,9 @@ void PlayerManagerImplementation::startWatch(CreatureObject* creature, uint64 en
 	ManagedReference<SceneObject*> object = server->getObject(entid);
 	uint64 watchID = creature->getWatchToID();
 
+	if (watchID == entid)
+		return;
+
 	if (object == NULL)
 		return;
 
@@ -2273,7 +2243,7 @@ void PlayerManagerImplementation::startWatch(CreatureObject* creature, uint64 en
 	}*/
 
 	if (!object->isPlayerCreature()) {
-		creature->sendSystemMessage("You cannot start watching an object.");
+		creature->sendSystemMessage("@performance:dance_watch_npc"); // "You can not /watch NPCs."
 		return;
 	}
 
@@ -2285,16 +2255,18 @@ void PlayerManagerImplementation::startWatch(CreatureObject* creature, uint64 en
 	Locker clocker(entertainer, creature);
 
 	if (creature->isDancing() || creature->isPlayingMusic()) {
-		creature->sendSystemMessage("You cannot /watch while skill animating.");
+		StringIdChatParameter stringID;
+		stringID.setStringId("cmd_err", "locomotion_prose"); // "You cannot %TO while %TU."
+		stringID.setTO("/watch");
+		stringID.setTU("@locomotion_n:skillanimating"); // "Skill Animating"
+		creature->sendSystemMessage(stringID);
 
 		return;
 	} else if (!entertainer->isDancing()) {
-		creature->sendSystemMessage(entertainer->getCustomObjectName().toString() + " is not currently dancing.");
-
-		return;
-	} else if (entid == watchID) {
-		creature->sendSystemMessage("You are already watching " + entertainer->getCustomObjectName().toString() + ".");
-
+		StringIdChatParameter stringID;
+		stringID.setStringId("performance", "dance_watch_not_dancing"); // "%TT is not dancing."
+		stringID.setTT(entid);
+		creature->sendSystemMessage(stringID);
 		return;
 	}
 
@@ -2321,8 +2293,10 @@ void PlayerManagerImplementation::startWatch(CreatureObject* creature, uint64 en
 
 	//creature->addWatcher(_this);
 
-	//if (isPlayer())
-	creature->sendSystemMessage("You begin watching " + entertainer->getCustomObjectName().toString() + ".");
+	StringIdChatParameter stringID;
+	stringID.setStringId("performance", "dance_watch_self"); // You start watching %TT.
+	stringID.setTT(entid);
+	creature->sendSystemMessage(stringID);
 
 	//setEntertainerBuffDuration(PerformanceType::DANCE, 0.0f);
 	//setEntertainerBuffStrength(PerformanceType::DANCE, 0.0f);
@@ -2339,6 +2313,9 @@ void PlayerManagerImplementation::startListen(CreatureObject* creature, uint64 e
 	ManagedReference<SceneObject*> object = server->getObject(entid);
 	uint64 listenID = creature->getListenID();
 
+	if (listenID == entid)
+		return;
+
 	if (object == NULL)
 		return;
 
@@ -2351,7 +2328,7 @@ void PlayerManagerImplementation::startListen(CreatureObject* creature, uint64 e
 	if(object->isDroidObject()) {
 		DroidObject* droid = cast<DroidObject*>( object.get());
 		if (droid == NULL) {
-			creature->sendSystemMessage("You cannot start listening an object.");
+			creature->sendSystemMessage("@performance:music_listen_npc"); // "You cannot /listen to NPCs."
 			return;
 		}
 		BaseDroidModuleComponent* bmodule = droid->getModule("playback_module");
@@ -2359,20 +2336,25 @@ void PlayerManagerImplementation::startListen(CreatureObject* creature, uint64 e
 			DroidPlaybackModuleDataComponent* module = cast<DroidPlaybackModuleDataComponent*>(bmodule);
 			if(module != NULL) {
 				if (creature->isDancing() || creature->isPlayingMusic()) {
-					creature->sendSystemMessage("You cannot /watch while skill animating.");
+					StringIdChatParameter stringID;
+					stringID.setStringId("cmd_err", "locomotion_prose"); // "You cannot %TO while %TU."
+					stringID.setTO("/listen");
+					stringID.setTU("@locomotion_n:skillanimating"); // "Skill Animating"
+					creature->sendSystemMessage(stringID);
 					return;
 				}
 
 				if(module->isActive()) {
 					// the droid is playing so we can do something
-					if (entid == listenID) {
-						creature->sendSystemMessage("You are already listening " + droid->getDisplayedName() + ".");
-						return;
-					}
 					if (creature->isListening()) {
 						stopListen(creature, listenID, false);
 					}
-					creature->sendSystemMessage("You begin to listen " + droid->getDisplayedName() + ".");
+
+					StringIdChatParameter stringID;
+					stringID.setTT(entid);
+					stringID.setStringId("performance", "music_listen_self"); // "You start listening to %TT."
+					creature->sendSystemMessage(stringID);
+
 					creature->setListenToID(entid, true);
 					String str = Races::getMoodStr("entertained");
 					creature->setMoodString(str, true);
@@ -2380,20 +2362,23 @@ void PlayerManagerImplementation::startListen(CreatureObject* creature, uint64 e
 					module->addListener(creature->getObjectID());
 					return;
 				} else {
-					creature->sendSystemMessage(droid->getDisplayedName() + " is not currently playing music.");
+					StringIdChatParameter stringID;
+					stringID.setTT(entid);
+					stringID.setStringId("performance", "music_listen_not_playing"); // %TT is not playing a song.
+					creature->sendSystemMessage(stringID);
 					return;
 				}
 			} else {
-				creature->sendSystemMessage("You cannot start listening an object.");
+				creature->sendSystemMessage("@performance:music_listen_npc"); // "You cannot /listen to NPCs."
 			}
 		} else {
-			creature->sendSystemMessage("You cannot start listening an object.");
+			creature->sendSystemMessage("@performance:music_listen_npc"); // "You cannot /listen to NPCs."
 		}
 		return;
 	}
 
 	if (!object->isPlayerCreature()) {
-		creature->sendSystemMessage("You cannot start listening an object.");
+		creature->sendSystemMessage("@performance:music_listen_npc"); // "You cannot /listen to NPCs."
 		return;
 	}
 
@@ -2405,15 +2390,17 @@ void PlayerManagerImplementation::startListen(CreatureObject* creature, uint64 e
 	Locker clocker(entertainer, creature);
 
 	if (creature->isDancing() || creature->isPlayingMusic()) {
-		creature->sendSystemMessage("You cannot /watch while skill animating.");
-
+		StringIdChatParameter stringID;
+		stringID.setStringId("cmd_err", "locomotion_prose"); // "You cannot %TO while %TU."
+		stringID.setTO("/listen");
+		stringID.setTU("@locomotion_n:skillanimating"); // "Skill Animating"
+		creature->sendSystemMessage(stringID);
 		return;
 	} else if (!entertainer->isPlayingMusic()) {
-		creature->sendSystemMessage(entertainer->getCustomObjectName().toString() + " is not currently playing music.");
-
-		return;
-	} else if (entid == listenID) {
-		creature->sendSystemMessage("You are already listening " + entertainer->getCustomObjectName().toString() + ".");
+		StringIdChatParameter stringID;
+		stringID.setTT(entid);
+		stringID.setStringId("performance", "music_listen_not_playing"); // %TT is not playing a song.
+		creature->sendSystemMessage(stringID);
 
 		return;
 	}
@@ -2441,13 +2428,15 @@ void PlayerManagerImplementation::startListen(CreatureObject* creature, uint64 e
 
 	//creature->addWatcher(_this);
 
-	//if (isPlayer())
-	creature->sendSystemMessage("You begin to listen " + entertainer->getCustomObjectName().toString() + ".");
+	StringIdChatParameter stringID;
+	stringID.setTT(entid);
+	stringID.setStringId("performance", "music_listen_self"); // "You start listening to %TT."
+	creature->sendSystemMessage(stringID);
 
 	//setEntertainerBuffDuration(PerformanceType::DANCE, 0.0f);
 	//setEntertainerBuffStrength(PerformanceType::DANCE, 0.0f);
 
-	creature->info("started watching [" + entertainer->getCustomObjectName().toString() + "]");
+	creature->info("started listening to [" + entertainer->getCustomObjectName().toString() + "]");
 
 	creature->setListenToID(entertainer->getObjectID());
 	//watchID =  entid;
@@ -2489,10 +2478,12 @@ SceneObject* PlayerManagerImplementation::getInRangeStructureWithAdminRights(Cre
 	//We need to search nearby for an installation that belongs to the player.
 	Locker _locker(zone);
 
-	SortedVector<ManagedReference<QuadTreeEntry*> >* closeObjects = creature->getCloseObjects();
+	CloseObjectsVector* closeObjs = (CloseObjectsVector*)creature->getCloseObjects();
+	SortedVector<QuadTreeEntry*> closeObjects;
+	closeObjs->safeCopyTo(closeObjects);
 
-	for (int i = 0; i < closeObjects->size(); ++i) {
-		ManagedReference<SceneObject*> tObj = cast<SceneObject*>( closeObjects->get(i).get());
+	for (int i = 0; i < closeObjects.size(); ++i) {
+		ManagedReference<SceneObject*> tObj = cast<SceneObject*>( closeObjects.get(i));
 
 		if (tObj != NULL) {
 			if (tObj->isStructureObject()) {
@@ -2601,7 +2592,7 @@ void PlayerManagerImplementation::updatePermissionName(CreatureObject* player, i
 		UnicodeString tag = permissionLevelList->getPermissionTag(permissionLevel);
 
 		TangibleObjectDeltaMessage3* tanod3 = new TangibleObjectDeltaMessage3(player);
-		tanod3->updateName(player->getDisplayedName(), tag);
+		tanod3->updateCustomName(player->getDisplayedName(), tag);
 		tanod3->close();
 		player->broadcastMessage(tanod3, true);
 
@@ -2860,21 +2851,10 @@ void PlayerManagerImplementation::lootAll(CreatureObject* player, CreatureObject
 	if (!ai->isDead() || player->isDead())
 		return;
 
-	if (ai->getDistanceTo(player) > 6) {
-		player->sendSystemMessage("@pet/droid_modules:corpse_too_far");
-		return;
-	}
-
 	SceneObject* creatureInventory = ai->getSlottedObject("inventory");
 
 	if (creatureInventory == NULL)
 		return;
-
-	if (creatureInventory->getContainerPermissions()->getOwnerID() != player->getObjectID() && creatureInventory->getContainerPermissions()->getOwnerID() != player->getGroupID()) {
-		player->sendSystemMessage("@error_message:no_corpse_permission"); //You do not have permission to access this corpse.
-
-		return;
-	}
 
 	int cashCredits = ai->getCashCredits();
 
@@ -3047,12 +3027,6 @@ int PlayerManagerImplementation::calculatePlayerLevel(CreatureObject* player, St
 	int level = MIN(25, player->getSkillMod("private_" + weaponType + "_combat_difficulty") / 100 + 1);
 
 	return level;
-}
-
-String PlayerManagerImplementation::getBadgeKey(int idx) {
-	VectorMapEntry<int, String> entry = badgeMap.elementAt(idx);
-
-	return entry.getValue();
 }
 
 CraftingStation* PlayerManagerImplementation::getNearbyCraftingStation(CreatureObject* player, int type) {
@@ -4871,3 +4845,104 @@ void PlayerManagerImplementation::enhanceCharacter(CreatureObject* player) {
 	if (message && player->isPlayerCreature())
 		player->sendSystemMessage("An unknown force strengthens you for battles yet to come.");
 }
+
+void PlayerManagerImplementation::sendAdminJediList(CreatureObject* player) {
+	Reference<ObjectManager*> objectManager = player->getZoneServer()->getObjectManager();
+
+	HashTable<String, uint64> names = nameMap->getNames();
+	HashTableIterator<String, uint64> iter = names.iterator();
+
+	VectorMap<UnicodeString, int> players;
+	uint32 a = STRING_HASHCODE("SceneObject.slottedObjects");
+	uint32 b = STRING_HASHCODE("SceneObject.customName");
+	uint32 c = STRING_HASHCODE("PlayerObject.jediState");
+
+	while (iter.hasNext()) {
+		uint64 creoId = iter.next();
+		VectorMap<String, uint64> slottedObjects;
+		UnicodeString playerName;
+		int state = -1;
+
+		objectManager->getPersistentObjectsSerializedVariable<VectorMap<String, uint64> >(a, &slottedObjects, creoId);
+		objectManager->getPersistentObjectsSerializedVariable<UnicodeString>(b, &playerName, creoId);
+
+		uint64 ghostId = slottedObjects.get("ghost");
+
+		if (ghostId == 0) {
+			continue;
+		}
+
+		objectManager->getPersistentObjectsSerializedVariable<int>(c, &state, ghostId);
+
+		if (state > 1) {
+			players.put(playerName, state);
+		}
+	}
+
+	ManagedReference<SuiListBox*> listBox = new SuiListBox(player, SuiWindowType::ADMIN_JEDILIST);
+	listBox->setPromptTitle("Jedi List");
+	listBox->setPromptText("This is a list of all characters with a jedi state of 2 or greater (Name - State).");
+	listBox->setCancelButton(true, "@cancel");
+
+	for (int i = 0; i < players.size(); i++) {
+		listBox->addMenuItem(players.elementAt(i).getKey().toString() + " - " + String::valueOf(players.get(i)));
+	}
+
+	Locker locker(player);
+
+	player->getPlayerObject()->closeSuiWindowType(SuiWindowType::ADMIN_JEDILIST);
+
+	player->getPlayerObject()->addSuiBox(listBox);
+	player->sendMessage(listBox->generateMessage());
+}
+
+void PlayerManagerImplementation::sendAdminList(CreatureObject* player) {
+	Reference<ObjectManager*> objectManager = player->getZoneServer()->getObjectManager();
+
+	HashTable<String, uint64> names = nameMap->getNames();
+	HashTableIterator<String, uint64> iter = names.iterator();
+
+	VectorMap<UnicodeString, int> players;
+	uint32 a = STRING_HASHCODE("SceneObject.slottedObjects");
+	uint32 b = STRING_HASHCODE("SceneObject.customName");
+	uint32 c = STRING_HASHCODE("PlayerObject.adminLevel");
+
+	while (iter.hasNext()) {
+		uint64 creoId = iter.next();
+		VectorMap<String, uint64> slottedObjects;
+		UnicodeString playerName;
+		int state = -1;
+
+		objectManager->getPersistentObjectsSerializedVariable<VectorMap<String, uint64> >(a, &slottedObjects, creoId);
+		objectManager->getPersistentObjectsSerializedVariable<UnicodeString>(b, &playerName, creoId);
+
+		uint64 ghostId = slottedObjects.get("ghost");
+
+		if (ghostId == 0) {
+			continue;
+		}
+
+		objectManager->getPersistentObjectsSerializedVariable<int>(c, &state, ghostId);
+
+		if (state != 0) {
+			players.put(playerName, state);
+		}
+	}
+
+	ManagedReference<SuiListBox*> listBox = new SuiListBox(player, SuiWindowType::ADMIN_LIST);
+	listBox->setPromptTitle("Admin List");
+	listBox->setPromptText("This is a list of all characters with a admin level of 1 or greater (Name - State).");
+	listBox->setCancelButton(true, "@cancel");
+
+	for (int i = 0; i < players.size(); i++) {
+		listBox->addMenuItem(players.elementAt(i).getKey().toString() + " - " + String::valueOf(players.get(i)));
+	}
+
+	Locker locker(player);
+
+	player->getPlayerObject()->closeSuiWindowType(SuiWindowType::ADMIN_LIST);
+
+	player->getPlayerObject()->addSuiBox(listBox);
+	player->sendMessage(listBox->generateMessage());
+}
+

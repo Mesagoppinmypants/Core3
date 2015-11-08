@@ -135,7 +135,7 @@ function ThemeParkLogic:hasFullInventory(pPlayer)
 		return true
 	end
 
-	return SceneObject(pInventory):hasFullContainerObjects()
+	return SceneObject(pInventory):isContainerFullRecursive()
 end
 
 function ThemeParkLogic:hasPermission(conditions, pCreature)
@@ -774,7 +774,8 @@ function ThemeParkLogic:notifyDefeatedTargetWithLoot(pVictim, pAttacker)
 	local pOwner = getCreatureObject(ownerID)
 
 	if (pOwner == nil) then
-		return 0
+		self:clearInventory(pVictim)
+		return 1
 	end
 
 	if self:killedByCorrectPlayer(victimID, attackerID) == false and (self:isGroupedWith(pOwner, pAttacker) == false or self:isInQuestRangeOf(pOwner, pVictim) == false) then
@@ -787,7 +788,7 @@ function ThemeParkLogic:notifyDefeatedTargetWithLoot(pVictim, pAttacker)
 
 	local pInventory = CreatureObject(pVictim):getSlottedObject("inventory")
 	if pInventory == nil then
-		return 0
+		return 1
 	end
 
 	local inventory = LuaSceneObject(pInventory)
@@ -1793,12 +1794,12 @@ function ThemeParkLogic:followPlayer(pConversingNpc, pConversingPlayer)
 	ObjectManager.withCreatureAndPlayerObject(pConversingPlayer, function(playerCreo, player)
 		local npc = AiAgent(pConversingNpc)
 		npc:setFollowObject(pConversingPlayer)
-		if playerCreo:getFaction() == FACTIONREBEL or playerCreo:getFaction() == FACTIONIMPERIAL then
+		if (playerCreo:getFaction() == FACTIONREBEL or playerCreo:getFaction() == FACTIONIMPERIAL) and not player:isOnLeave() then
 			local npcCreo = LuaCreatureObject(pConversingNpc)
 			npcCreo:setFaction(playerCreo:getFaction())
-			if (player:isOvert() == true) then
+			if player:isOvert() then
 				npcCreo:setPvpStatusBitmask(5)
-			else
+			elseif player:isCovert() then
 				npcCreo:setPvpStatusBitmask(1)
 			end
 		end

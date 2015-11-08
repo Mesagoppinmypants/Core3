@@ -446,6 +446,8 @@ void SuiManager::handleCharacterBuilderSelectItem(CreatureObject* player, SuiBox
 					return;
 				}
 
+				Locker locker(apron);
+
 				apron->createChildObjects();
 
 				if (apron->isWearableObject()) {
@@ -549,15 +551,26 @@ void SuiManager::handleCharacterBuilderSelectItem(CreatureObject* player, SuiBox
 
 			} else if (templatePath == "apply_dots") {
 				ManagedReference<SceneObject*> scob = cbSui->getUsingObject();
-				player->addDotState(player, CreatureState::POISONED, scob->getObjectID(), 100, CreatureAttribute::HEALTH, 60, 80, 0);
-				player->addDotState(player, CreatureState::BLEEDING, scob->getObjectID(), 100, CreatureAttribute::ACTION, 60, 80, 0);
-				player->addDotState(player, CreatureState::DISEASED, scob->getObjectID(), 100, CreatureAttribute::ACTION, 60, 80, 0);
-				player->addDotState(player, CreatureState::ONFIRE, scob->getObjectID(), 100, CreatureAttribute::HEALTH, 60, 80, 0);
+				player->addDotState(player, CreatureState::POISONED, scob->getObjectID(), 100, CreatureAttribute::UNKNOWN, 60, -1, 0);
+				player->addDotState(player, CreatureState::BLEEDING, scob->getObjectID(), 100, CreatureAttribute::UNKNOWN, 60, -1, 0);
+				player->addDotState(player, CreatureState::DISEASED, scob->getObjectID(), 100, CreatureAttribute::UNKNOWN, 60, -1, 0);
+				player->addDotState(player, CreatureState::ONFIRE, scob->getObjectID(), 100, CreatureAttribute::UNKNOWN, 60, -1, 0, 20);
 			} else if (templatePath == "clear_dots") {
 				player->clearDots();
 			} else if (templatePath == "max_xp") {
 				ghost->maximizeExperience();
 				player->sendSystemMessage("You have maximized all xp types.");
+			} else if (templatePath == "become_glowy") {
+
+				ManagedReference<SceneObject*> scob = cbSui->getUsingObject();
+				if (scob != NULL) {
+
+					if (scob->getGameObjectType() == SceneObjectType::CHARACTERBUILDERTERMINAL) {
+						CharacterBuilderTerminal* bluefrog = cast<CharacterBuilderTerminal*>( scob.get());
+						bluefrog->grantGlowyBadges(player);
+					}
+				}
+
 			} else {
 
 				if (templatePath.length() > 0) {
@@ -601,6 +614,8 @@ void SuiManager::handleCharacterBuilderSelectItem(CreatureObject* player, SuiBox
 				error("could not create frog item: " + node->getDisplayName());
 				return;
 			}
+
+			Locker locker(item);
 
 			item->createChildObjects();
 

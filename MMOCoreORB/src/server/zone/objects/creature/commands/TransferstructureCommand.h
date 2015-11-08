@@ -37,6 +37,10 @@ public:
 
 		StructureObject* structure = cast<StructureObject*>( obj.get());
 
+		if (structure->isCivicStructure()) {
+			return INVALIDTARGET;
+		}
+
 		if (!structure->isOwnerOf(creature)) {
 			creature->sendSystemMessage("@player_structure:not_owner"); //You are not the owner of this structure.
 			return GENERALERROR;
@@ -188,10 +192,6 @@ public:
 		if (ghost != NULL) {
 			Locker lock(creature);
 
-			if (ghost->getDeclaredResidence() == structure->getObjectID()) {
-				ghost->setDeclaredResidence(NULL);
-			}
-
 			ghost->removeOwnedStructure(structure);
 
 			lock.release();
@@ -213,13 +213,17 @@ public:
 			structure->revokePermission("ADMIN", creature->getObjectID());
 
 		//Update the cell permissions if the structure is private and a building.
-		if (!structure->isPublicStructure() && structure->isBuildingObject()) {
+		if (structure->isBuildingObject()) {
 			BuildingObject* buildingObject = cast<BuildingObject*>( structure);
 
-			buildingObject->updateCellPermissionsTo(targetCreature);
+			buildingObject->setResidence(false);
 
-			if (creature != NULL)
-				buildingObject->updateCellPermissionsTo(creature);
+			if (!structure->isPublicStructure()) {
+				buildingObject->updateCellPermissionsTo(targetCreature);
+
+				if (creature != NULL)
+					buildingObject->updateCellPermissionsTo(creature);
+			}
 		}
 
 		if (creature != NULL && !bForceTransfer) {

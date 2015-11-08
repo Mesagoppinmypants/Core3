@@ -336,9 +336,7 @@ class BuildingObject extends StructureObject {
 	 * @return Returns true if the structure is now public, or false if it is now private.
 	 */
 	@preLocked
-	public boolean togglePrivacy() {
-		return (publicStructure = !publicStructure);
-	}
+	public native boolean togglePrivacy();
 
 	/**
 	 * Calculates the maximum number of items that can be stored by a player in this building.
@@ -404,6 +402,11 @@ class BuildingObject extends StructureObject {
 	@dirty
 	public native boolean canPlayerRegisterWithin();
 
+	public boolean isPlayerRegisteredWithin(unsigned long id) {
+		return registeredPlayerIdList.contains(id);
+	}
+
+	@preLocked
 	public native void createChildObjects();
 
 	@local

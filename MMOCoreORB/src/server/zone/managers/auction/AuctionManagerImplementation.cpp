@@ -224,15 +224,15 @@ void AuctionManagerImplementation::addSaleItem(CreatureObject* player, uint64 ob
 	String vendorUID = getVendorUID(vendor);
 	bool stockroomSale = false;
 
-	if (objectToSell == NULL) {
+	if (objectToSell == NULL || objectToSell->isNoTrade() || objectToSell->containsNoTradeObjectRecursive()) {
 		ItemSoldMessage* soldMessage = new ItemSoldMessage(objectid, ItemSoldMessage::INVALIDITEM);
 		player->sendMessage(soldMessage);
 		return;
 	}
 
 	if(oldItem == NULL) {
-		if (objectToSell == NULL || !objectToSell->isASubChildOf(player) || objectToSell->isNoTrade()) {
-			if(objectToSell != NULL && !objectToSell->isNoTrade())
+		if (objectToSell == NULL || !objectToSell->isASubChildOf(player)) {
+			if(objectToSell != NULL)
 				error("trying to add invalid object");
 			ItemSoldMessage* soldMessage = new ItemSoldMessage(objectid, ItemSoldMessage::INVALIDITEM);
 			player->sendMessage(soldMessage);
@@ -922,12 +922,12 @@ int AuctionManagerImplementation::checkRetrieve(CreatureObject* player, uint64 o
 	int size = item->getSize();
 	if(saleItem->isIntangibleObject()) {
 		ManagedReference<SceneObject*> datapad = player->getSlottedObject("datapad");
-		if (datapad->getCountableObjectsRecursive() + size >= datapad->getContainerVolumeLimit())
+		if (datapad->getCountableObjectsRecursive() + size > datapad->getContainerVolumeLimit())
 			return RetrieveAuctionItemResponseMessage::FULLINVENTORY;
 	} else {
 		ManagedReference<SceneObject*> inventory = player->getSlottedObject("inventory");
 
-		if (inventory->getCountableObjectsRecursive() + size >= inventory->getContainerVolumeLimit())
+		if (inventory->getCountableObjectsRecursive() + size > inventory->getContainerVolumeLimit())
 			return RetrieveAuctionItemResponseMessage::FULLINVENTORY;
 	}
 

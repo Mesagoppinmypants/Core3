@@ -10,7 +10,7 @@
 
 #include "engine/engine.h"
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/NonPlayerCreatureObject.h"
+#include "server/zone/objects/creature/ai/NonPlayerCreatureObject.h"
 #include "server/zone/objects/creature/VehicleObject.h"
 #include "server/zone/objects/tangible/weapon/WeaponObject.h"
 #include "server/zone/objects/tangible/wearables/ArmorObject.h"
@@ -47,6 +47,7 @@ public:
 	const static int WEAPONTRAIL = 0x10;
 	const static int DEFAULTTRAIL = 0xFF;
 
+	const static int NONE = 0;
 	const static int HEALTH = 1;
 	const static int ACTION = 2;
 	const static int MIND = 4;
@@ -193,8 +194,9 @@ protected:
 	int doAreaCombatAction(TangibleObject* attacker, WeaponObject* weapon, TangibleObject* defenderObject, const CreatureAttackData& data);
 	int doAreaCombatAction(CreatureObject* attacker, WeaponObject* weapon, TangibleObject* defenderObject, const CreatureAttackData& data);
 	int doTargetCombatAction(CreatureObject* attacker, WeaponObject* weapon, TangibleObject* defenderObject, const CreatureAttackData& data);
-	void applyDots(CreatureObject* attacker, CreatureObject* defender, const CreatureAttackData& data, int appliedDamage, int unmitDamage);
+	void applyDots(CreatureObject* attacker, CreatureObject* defender, const CreatureAttackData& data, int appliedDamage, int unmitDamage, int poolsToDamage);
 	void applyWeaponDots(CreatureObject* attacker, CreatureObject* defender, WeaponObject* weapon);
+	uint8 getPoolForDot(uint64 dotType, int poolsToDamage);
 
 	float getWeaponRangeModifier(float currentRange, WeaponObject* weapon);
 
@@ -214,11 +216,11 @@ protected:
 	int getDefenderSecondaryDefenseModifier(CreatureObject* defender);
 	float getDefenderToughnessModifier(CreatureObject* defender, int attackType, int damType, float damage, Vector<int>& foodMitigation);
 	int calculateDamageRange(TangibleObject* attacker, CreatureObject* defender, WeaponObject* weapon);
-	float applyDamageModifiers(CreatureObject* attacker, WeaponObject* weapon, float damage);
+	float applyDamageModifiers(CreatureObject* attacker, WeaponObject* weapon, float damage, const CreatureAttackData& data);
 	int getSpeedModifier(CreatureObject* attacker, WeaponObject* weapon);
 	float calculateDamage(CreatureObject* attacker, WeaponObject* weapon, CreatureObject* defender, const CreatureAttackData& data, Vector<int>& foodMitigation);
 	float calculateDamage(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, const CreatureAttackData& data, Vector<int>& foodMitigation);
-	float calculateDamage(CreatureObject* attacker, WeaponObject* weapon, TangibleObject* defender);
+	float calculateDamage(CreatureObject* attacker, WeaponObject* weapon, TangibleObject* defender, const CreatureAttackData& data);
 	bool checkConeAngle(SceneObject* targetCreature, float angle, float creatureVectorX, float creatureVectorY, float directionVectorX, float directionVectorY);
 
 	void doMiss(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage);
@@ -233,12 +235,12 @@ protected:
 
 	int doTargetCombatAction(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defenderObject, const CreatureAttackData& data);
 	int doTargetCombatAction(TangibleObject* attacker, WeaponObject* weapon, TangibleObject* tano, const CreatureAttackData& data);
-	int getArmorObjectReduction(WeaponObject* weapon, ArmorObject* armor);
 	int getArmorReduction(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, float damage, int poolsToDamage, const CreatureAttackData& data);
-	float getArmorPiercing(TangibleObject* defender, WeaponObject* weapon);
-	int getArmorNpcReduction(AiAgent* defender, WeaponObject* weapon);
-	int getArmorVehicleReduction(VehicleObject* defender, WeaponObject* weapon);
-	int getArmorTurretReduction(CreatureObject* attacker, TangibleObject* defender, WeaponObject* weapon);
+	float getArmorPiercing(TangibleObject* defender, int armorPiercing);
+	int getArmorObjectReduction(ArmorObject* armor, int damageType);
+	int getArmorNpcReduction(AiAgent* defender, int damageType);
+	int getArmorVehicleReduction(VehicleObject* defender, int damageType);
+	int getArmorTurretReduction(CreatureObject* attacker, TangibleObject* defender, int damageType);
 
 	ArmorObject* getHealthArmor( CreatureObject* defender);
 	ArmorObject* getActionArmor(CreatureObject* defender);

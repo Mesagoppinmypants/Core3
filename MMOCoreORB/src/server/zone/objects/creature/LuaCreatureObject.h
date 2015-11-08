@@ -38,6 +38,7 @@ namespace creature {
 		int sendSystemMessage(lua_State* L);
 		int sendSystemMessageWithDI(lua_State* L);
 		int sendSystemMessageWithTO(lua_State* L);
+		int sendSystemMessageWithTT(lua_State* L);
 		int sendGroupMessage(lua_State* L);
 		int playMusicMessage(lua_State *L);
 		int sendNewbieTutorialRequest(lua_State *L);
@@ -103,6 +104,7 @@ namespace creature {
 		int getOwner(lua_State* L);
 		int getCurrentSpeed(lua_State* L);
 		int isInvisible(lua_State* L);
+		int isInCombat(lua_State* L);
 	private:
 		// The pointer to the 'real object' defined in object.cc
 		CreatureObject* realObject;

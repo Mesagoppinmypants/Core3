@@ -48,11 +48,10 @@ object_installation_faction_perk_turret_block_med = object_installation_faction_
 	maxCondition = 200000,
 	zoneComponent = "TurretZoneComponent",
 	dataObjectComponent = "TurretDataComponent",
-		-- Damagetypes in WeaponObject
-	vulnerability = BLAST,
-
+	-- Damagetypes in WeaponObject
+	vulnerability = BLAST + LIGHTSABER,
 	-- LIGHT, MEDIUM, HEAVY
-	rating = HEAVY,
+	rating = MEDIUM,
 
 	kinetic = 80,
 	energy = 95,
@@ -62,7 +61,7 @@ object_installation_faction_perk_turret_block_med = object_installation_faction_
 	heat = 80,
 	cold = 80,
 	acid = 80,
-	lightSaber =100,
+	lightSaber = -1,
 	chanceHit = 4,
 	weapon = "object/weapon/ranged/turret/turret_block_large.iff",
 }

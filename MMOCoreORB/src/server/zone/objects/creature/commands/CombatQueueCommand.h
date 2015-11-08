@@ -27,7 +27,9 @@
 
 class CombatQueueCommand : public QueueCommand {
 protected:
-	float damage;
+	float minDamage;
+	float maxDamage;
+	int damageType;
 	float damageMultiplier;
 	int accuracyBonus;
 	float speedMultiplier;
@@ -66,7 +68,9 @@ public:
 
 	CombatQueueCommand(const String& name, ZoneProcessServer* server) : QueueCommand(name, server) {
 
-		damage = 0;
+		minDamage = 0;
+		maxDamage = 0;
+		damageType = 0;
 		damageMultiplier = 1;
 		accuracyBonus = 0;
 		speedMultiplier = 1;
@@ -161,6 +165,30 @@ public:
 
 		CombatManager* combatManager = CombatManager::instance();
 
+		bool shouldTef = false;
+
+		if (creature->isPlayerCreature() && targetObject->isPlayerCreature()) {
+			if (!combatManager->areInDuel(creature, targetObject.castTo<CreatureObject*>())) {
+				shouldTef = true;
+			}
+		} else if (creature->isPet() && targetObject->isPlayerCreature()) {
+			ManagedReference<CreatureObject*> owner = creature->getLinkedCreature().get();
+
+			if (owner != NULL && owner->isPlayerCreature()) {
+				if (!combatManager->areInDuel(owner, targetObject.castTo<CreatureObject*>())) {
+					shouldTef = true;
+				}
+			}
+		} else if (creature->isPlayerCreature() && (targetObject->isPet() || targetObject->isVehicleObject())) {
+			ManagedReference<CreatureObject*> targetOwner = targetObject.castTo<CreatureObject*>()->getLinkedCreature().get();
+
+			if (targetOwner != NULL && targetOwner->isPlayerCreature()) {
+				if (!combatManager->areInDuel(creature, targetOwner)) {
+					shouldTef = true;
+				}
+			}
+		}
+
 		try {
 			int res = combatManager->doCombatAction(creature, weapon, cast<TangibleObject*>(targetObject.get()), CreatureAttackData(arguments, this));
 
@@ -184,31 +212,21 @@ public:
 		creature->removeBuff(STRING_HASHCODE("steadyaim"));
 
 		// Update PvP TEF Duration
-		if (creature->isPlayerCreature() && targetObject->isPlayerCreature()) {
+		if (shouldTef && creature->isPlayerCreature()) {
 			PlayerObject* ghost = creature->getPlayerObject().get();
 
-			if (ghost != NULL && !combatManager->areInDuel(creature, targetObject.castTo<CreatureObject*>())) {
+			if (ghost != NULL) {
 				ghost->updateLastPvpCombatActionTimestamp();
 			}
-		} else if (creature->isPet() && targetObject->isPlayerCreature()) {
+		} else if (shouldTef && creature->isPet()) {
 			ManagedReference<CreatureObject*> owner = creature->getLinkedCreature().get();
 
 			if (owner != NULL && owner->isPlayerCreature()) {
 				PlayerObject* ownerGhost = owner->getPlayerObject().get();
 
-				if (ownerGhost != NULL && !combatManager->areInDuel(owner, targetObject.castTo<CreatureObject*>())) {
+				if (ownerGhost != NULL) {
 					Locker olocker(owner, creature);
 					ownerGhost->updateLastPvpCombatActionTimestamp();
-				}
-			}
-		} else if (creature->isPlayerCreature() && targetObject->isPet()) {
-			ManagedReference<CreatureObject*> targetOwner = targetObject.castTo<CreatureObject*>()->getLinkedCreature().get();
-
-			if (targetOwner != NULL && targetOwner->isPlayerCreature()) {
-				PlayerObject* ghost = creature->getPlayerObject().get();
-
-				if (ghost != NULL && !combatManager->areInDuel(creature, targetOwner)) {
-					ghost->updateLastPvpCombatActionTimestamp();
 				}
 			}
 		}
@@ -388,12 +406,28 @@ public:
 		this->dotEffects = dotEffects;
 	}
 
-	inline float getDamage() const {
-		return damage;
+	inline float getMinDamage() const {
+		return minDamage;
 	}
 
-	void setDamage(float dm) {
-		this->damage = dm;
+	void setMinDamage(float dm) {
+		this->minDamage = dm;
+	}
+
+	inline float getMaxDamage() const {
+		return maxDamage;
+	}
+
+	void setMaxDamage(float dm) {
+		this->maxDamage = dm;
+	}
+
+	inline int getDamageType() const {
+		return damageType;
+	}
+
+	void setDamageType(float dm) {
+		this->damageType = dm;
 	}
 
 	void addDotEffect(DotEffect dotEffect) {

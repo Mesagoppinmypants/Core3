@@ -514,7 +514,7 @@ void SceneObjectImplementation::broadcastObjectPrivate(SceneObject* object, Scen
 
 	if (closeobjects == NULL) {
 		info("Null closeobjects vector in SceneObjectImplementation::broadcastObjectPrivate", true);
-		zone->getInRangeObjects(getPositionX(), getPositionY(), 192, &closeSceneObjects, true);
+		zone->getInRangeObjects(getPositionX(), getPositionY(), ZoneServer::CLOSEOBJECTRANGE, &closeSceneObjects, true);
 
 		maxInRangeObjectCount = closeSceneObjects.size();
 	} else {
@@ -569,7 +569,7 @@ void SceneObjectImplementation::broadcastDestroyPrivate(SceneObject* object, Sce
 
 	if (closeobjects == NULL) {
 		info("Null closeobjects vector in SceneObjectImplementation::broadcastDestroyPrivate", true);
-		zone->getInRangeObjects(getPositionX(), getPositionY(), 256, &closeSceneObjects, true);
+		zone->getInRangeObjects(getPositionX(), getPositionY(), ZoneServer::CLOSEOBJECTRANGE + 64, &closeSceneObjects, true);
 
 		maxInRangeObjectCount = closeSceneObjects.size();
 	} else {
@@ -626,7 +626,7 @@ void SceneObjectImplementation::broadcastMessagePrivate(BasePacket* message, Sce
 	}
 
 	SortedVector<ManagedReference<QuadTreeEntry*> >* closeSceneObjects = NULL;
-	SortedVector<ManagedReference<QuadTreeEntry*> >* closeNoneReference = NULL;
+	SortedVector<QuadTreeEntry*>* closeNoneReference = NULL;
 	int maxInRangeObjectCount = 0;
 	bool deleteVector = true;
 
@@ -634,12 +634,13 @@ void SceneObjectImplementation::broadcastMessagePrivate(BasePacket* message, Sce
 		if (closeobjects == NULL) {
 			info(String::valueOf(getObjectID()) + " Null closeobjects vector in SceneObjectImplementation::broadcastMessagePrivate", true);
 			closeSceneObjects = new SortedVector<ManagedReference<QuadTreeEntry*> >();
-			zone->getInRangeObjects(getPositionX(), getPositionY(), 192, closeSceneObjects, true);
+			zone->getInRangeObjects(getPositionX(), getPositionY(), ZoneServer::CLOSEOBJECTRANGE, closeSceneObjects, true);
 
 			maxInRangeObjectCount = closeSceneObjects->size();
 			deleteVector = true;
 		} else {
-			closeNoneReference = new SortedVector<ManagedReference<QuadTreeEntry*> >(maxInRangeObjectCount, 50);
+			maxInRangeObjectCount = closeobjects->size();
+			closeNoneReference = new SortedVector<QuadTreeEntry*>(maxInRangeObjectCount, 50);
 
 			closeobjects->safeCopyTo(*closeNoneReference);
 			maxInRangeObjectCount = closeNoneReference->size();
@@ -665,7 +666,7 @@ void SceneObjectImplementation::broadcastMessagePrivate(BasePacket* message, Sce
 		if (closeSceneObjects != NULL)
 			scno = static_cast<SceneObject*>(closeSceneObjects->get(i).get());
 		else
-			scno = static_cast<SceneObject*>(closeNoneReference->get(i).get());
+			scno = static_cast<SceneObject*>(closeNoneReference->get(i));
 
 		ManagedReference<ZoneClientSession*> client = scno->getClient();
 
@@ -727,7 +728,7 @@ void SceneObjectImplementation::broadcastMessagesPrivate(Vector<BasePacket*>* me
 
 		if (closeobjects == NULL) {
 			info(String::valueOf(getObjectID()) + " Null closeobjects vector in SceneObjectImplementation::broadcastMessagesPrivate", true);
-			zone->getInRangeObjects(getPositionX(), getPositionY(), 192, &closeSceneObjects, true);
+			zone->getInRangeObjects(getPositionX(), getPositionY(), ZoneServer::CLOSEOBJECTRANGE, &closeSceneObjects, true);
 
 			maxInRangeObjectCount = closeSceneObjects.size();
 		} else {
@@ -1066,7 +1067,7 @@ int SceneObjectImplementation::handleObjectMenuSelect(CreatureObject* player, by
 	return objectMenuComponent->handleObjectMenuSelect(asSceneObject(), player, selectedID);
 }
 
-void SceneObjectImplementation::setObjectName(StringId& stringID) {
+void SceneObjectImplementation::setObjectName(StringId& stringID, bool notifyClient) {
 	objectName = stringID;
 }
 
@@ -1091,24 +1092,30 @@ Vector3 SceneObjectImplementation::getWorldPosition() {
 	return position;
 }
 
-Vector3 SceneObjectImplementation::getCoordinate(float distance, float angleDegrees) {
+Vector3 SceneObjectImplementation::getCoordinate(float distance, float angleDegrees, bool includeZ) {
 	float angleRads = angleDegrees * (M_PI / 180.0f);
 	float newAngle = angleRads + (M_PI / 2) - direction.getRadians();
 
 	float newX = getPositionX() + (cos(newAngle) * distance); // client has x/y inverted
 	float newY = getPositionY() + (sin(newAngle) * distance);
-	float newZ = getZone()->getHeight(newX, newY);
+	float newZ = 0.0f;
+
+	if (includeZ)
+		newZ = getZone()->getHeight(newX, newY);
 
 	return Vector3(newX, newY, newZ);
 }
 
-Vector3 SceneObjectImplementation::getWorldCoordinate(float distance, float angleDegrees) {
+Vector3 SceneObjectImplementation::getWorldCoordinate(float distance, float angleDegrees, bool includeZ) {
 	float angleRads = angleDegrees * (M_PI / 180.0f);
 	float newAngle = angleRads + (M_PI / 2) - direction.getRadians();
 
 	float newX = getWorldPositionX() + (cos(newAngle) * distance); // client has x/y inverted
 	float newY = getWorldPositionY() + (sin(newAngle) * distance);
-	float newZ = getZone()->getHeight(newX, newY);
+	float newZ = 0.0f;
+
+	if (includeZ)
+		newZ = getZone()->getHeight(newX, newY);
 
 	return Vector3(newX, newY, newZ);
 }
@@ -1174,12 +1181,12 @@ void SceneObjectImplementation::createChildObjects() {
 		if (child == NULL)
 			continue;
 
-		ManagedReference<SceneObject*> obj = zoneServer->createObject(child->getTemplateFile().hashCode(), 1);
+		ManagedReference<SceneObject*> obj = zoneServer->createObject(child->getTemplateFile().hashCode(), getPersistenceLevel());
 
 		if (obj == NULL)
 			continue;
 
-		Locker objLocker(obj);
+		Locker objLocker(obj, asSceneObject());
 
 		Vector3 childPosition = child->getPosition();
 		childObjects.put(obj);
@@ -1235,6 +1242,14 @@ void SceneObjectImplementation::createChildObjects() {
 
 			obj->initializePosition(x, z, y);
 			obj->setDirection(dir.rotate(Vector3(0, 1, 0), degrees));
+
+			if (obj->isBuildingObject()) {
+				BuildingObject* building = obj->asBuildingObject();
+
+				if (building != NULL) {
+					building->createCellObjects();
+				}
+			}
 
 			if (!getZone()->transferObject(obj, -1, false)) {
 				obj->destroyObjectFromDatabase(true);

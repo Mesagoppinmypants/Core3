@@ -11,6 +11,7 @@
 #include "server/zone/managers/crafting/schematicmap/SchematicMap.h"
 #include "server/zone/objects/tangible/deed/eventperk/EventPerkDeed.h"
 #include "server/zone/objects/tangible/eventperk/Jukebox.h"
+#include "server/zone/managers/skill/SkillManager.h"
 
 const char LuaPlayerObject::className[] = "LuaPlayerObject";
 
@@ -28,6 +29,7 @@ Luna<LuaPlayerObject>::RegType LuaPlayerObject::Register[] = {
 		{ "removeWaypoint", &LuaPlayerObject::removeWaypoint },
 		{ "removeWaypointBySpecialType", &LuaPlayerObject::removeWaypointBySpecialType },
 		{ "addRewardedSchematic", &LuaPlayerObject::addRewardedSchematic },
+		{ "removeRewardedSchematic", &LuaPlayerObject::removeRewardedSchematic },
 		{ "addPermissionGroup", &LuaPlayerObject::addPermissionGroup },
 		{ "removePermissionGroup", &LuaPlayerObject::removePermissionGroup },
 		{ "hasPermissionGroup", &LuaPlayerObject::hasPermissionGroup },
@@ -48,17 +50,17 @@ Luna<LuaPlayerObject>::RegType LuaPlayerObject::Register[] = {
 		{ "setCompletedQuestsBit", &LuaPlayerObject::setCompletedQuestsBit },
 		{ "clearCompletedQuestsBit", &LuaPlayerObject::clearCompletedQuestsBit },
 		{ "hasAbility", &LuaPlayerObject::hasAbility},
-		{ "getForceSensitiveUnlockedBranches", &LuaPlayerObject::getForceSensitiveUnlockedBranches},
-		{ "setForceSensitiveUnlockedBranches", &LuaPlayerObject::setForceSensitiveUnlockedBranches},
+		{ "addAbility", &LuaPlayerObject::addAbility},
 		{ "getExperience", &LuaPlayerObject::getExperience },
-		{ "getExperienceForType", &LuaPlayerObject::getExperienceForType},
-		{ "getExperienceType", &LuaPlayerObject::getExperienceType},
 		{ "addEventPerk", &LuaPlayerObject::addEventPerk},
 		{ "getEventPerkCount", &LuaPlayerObject::getEventPerkCount},
 		{ "getCharacterAgeInDays", &LuaPlayerObject::getCharacterAgeInDays},
 		{ "isPrivileged", &LuaPlayerObject::isPrivileged},
-		{ "getExperienceRatio", &LuaPlayerObject::getExperienceRatio},
 		{ "closeSuiWindowType", &LuaPlayerObject::closeSuiWindowType},
+		{ "getExperienceList", &LuaPlayerObject::getExperienceList},
+		{ "getExperienceCap", &LuaPlayerObject::getExperienceCap},
+		{ "activateQuest", &LuaPlayerObject::activateQuest },
+		{ "canActivateQuest", &LuaPlayerObject::canActivateQuest },
 		{ 0, 0 }
 };
 
@@ -232,6 +234,18 @@ int LuaPlayerObject::addRewardedSchematic(lua_State* L){
 	return 0;
 }
 
+int LuaPlayerObject::removeRewardedSchematic(lua_State* L){
+	String templateString = lua_tostring(L, -2);
+	bool notifyClient = lua_toboolean(L, -1);
+
+	DraftSchematic* schematic = SchematicMap::instance()->get(templateString.hashCode());
+
+	if (schematic != NULL)
+		realObject->removeRewardedSchematic(schematic, notifyClient);
+
+	return 0;
+}
+
 int LuaPlayerObject::addPermissionGroup(lua_State* L){
 	String permissionGroup = lua_tostring(L, -2);
 	bool updateBuildings = lua_toboolean(L, -1);
@@ -386,6 +400,23 @@ int LuaPlayerObject::clearCompletedQuestsBit(lua_State* L) {
 	return 0;
 }
 
+int LuaPlayerObject::activateQuest(lua_State* L) {
+	int quest = lua_tointeger(L, -1);
+
+	realObject->activateQuest(quest);
+
+	return 0;
+}
+
+int LuaPlayerObject::canActivateQuest(lua_State* L) {
+	int quest = lua_tointeger(L, -1);
+
+	lua_pushboolean(L, realObject->canActivateQuest(quest));
+
+	return 1;
+}
+
+
 int LuaPlayerObject::hasAbility(lua_State* L) {
 	String value = lua_tostring(L, -1);
 
@@ -397,72 +428,24 @@ int LuaPlayerObject::hasAbility(lua_State* L) {
 
 }
 
+int LuaPlayerObject::addAbility(lua_State* L) {
+	String value = lua_tostring(L, -1);
+
+	SkillManager* skillManager = SkillManager::instance();
+
+	if (!realObject->hasAbility(value))
+		skillManager->addAbility(realObject, value);
+
+	return 1;
+
+}
+
 int LuaPlayerObject::getExperience(lua_State* L) {
 	String type = lua_tostring(L, -1);
 
 	lua_pushinteger(L, realObject->getExperience(type));
 
 	return 1;
-}
-
-int LuaPlayerObject::getExperienceForType(lua_State* L) {
-	int type = lua_tointeger(L, -1);
-
-	realObject->updateForceSensitiveElegibleExperiences(type);
-	Vector<String>* experiences = realObject->getForceSensitiveElegibleExperiences();
-
-	lua_newtable(L);
-
-	for (int i=0; i < experiences->size(); ++i) {
-		String value = experiences->get(i);
-		lua_pushstring(L, value.toCharArray());
-		//Logger::console.info("Pushed " + value, true);
-	}
-
-
-	for (int j = experiences->size(); j > 0; --j) {
-		lua_rawseti(L, -j - 1, j);
-	}
-
-
-	return 1;
-}
-
-int LuaPlayerObject::getExperienceType(lua_State* L) {
-	int type = lua_tointeger(L, -1);
-
-	realObject->updateForceSensitiveElegibleExperiences(type);
-	String experience = realObject->getForceSensitiveElegibleExperienceType(type);
-
-	lua_pushstring(L, experience.toCharArray());
-
-	return 1;
-}
-
-int LuaPlayerObject::getForceSensitiveUnlockedBranches(lua_State* L) {
-
-	Vector<String>* branches = realObject->getForceSensitiveElegibleBranches();
-
-	lua_newtable(L);
-
-	for (int i=0; i < branches->size(); ++i) {
-		String value = branches->get(i);
-		lua_pushstring(L, value.toCharArray());
-	}
-
-	for (int j = branches->size(); j > 0; --j) {
-		lua_rawseti(L, -j - 1, j);
-	}
-
-	return 1;
-}
-
-int LuaPlayerObject::setForceSensitiveUnlockedBranches(lua_State* L) {
-	String branchname = lua_tostring(L, -1);
-
-	realObject->addForceSensitiveElegibleBranch(branchname);
-
-	return 0;
 }
 
 int LuaPlayerObject::getEventPerkCount(lua_State* L) {
@@ -477,6 +460,8 @@ int LuaPlayerObject::addEventPerk(lua_State* L) {
 	if (item == NULL) {
 		return 0;
 	}
+
+	Locker locker(item);
 
 	ManagedReference<CreatureObject*> creature = dynamic_cast<CreatureObject*>(realObject->getParent().get().get());
 
@@ -507,20 +492,33 @@ int LuaPlayerObject::isPrivileged(lua_State* L) {
 	return 1;
 }
 
-int LuaPlayerObject::getExperienceRatio(lua_State* L) {
-	String type = lua_tostring(L, -1);
-
-	String ratio = realObject->getForceSensitiveExperienceRatio(type);
-	lua_pushstring(L, ratio.toCharArray());
-
-	return 1;
-}
-
 int LuaPlayerObject::closeSuiWindowType(lua_State* L) {
-        int type = lua_tointeger(L, -1);
- 	unsigned suiType = (unsigned)type;
+	int type = lua_tointeger(L, -1);
+	unsigned suiType = (unsigned)type;
 
 	realObject->closeSuiWindowType( suiType );
 
 	return 0;
 }
+
+int LuaPlayerObject::getExperienceList(lua_State* L) {
+	DeltaVectorMap<String, int>* expList = realObject->getExperienceList();
+
+	lua_newtable(L);
+	for (int i = 0; i < expList->size(); i++) {
+		lua_pushstring(L, expList->getKeyAt(i).toCharArray());
+	}
+	for (int i = expList->size(); i > 0; i--) {
+		lua_rawseti(L, -i - 1, i);
+	}
+
+	return 1;
+}
+
+int LuaPlayerObject::getExperienceCap(lua_State* L) {
+	String type = lua_tostring(L, -1);
+	lua_pushinteger(L, realObject->getXpCap(type));
+
+	return 1;
+}
+

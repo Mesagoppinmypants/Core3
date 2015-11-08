@@ -106,12 +106,22 @@ public:
 		return false;
 	}
 
+	virtual bool isFlagGameData() {
+		return false;
+	}
+
 	virtual bool isDataStorageUnitData() {
 		return false;
 	}
+
 	virtual bool isDroidModuleData() {
 		return false;
 	}
+
+	virtual bool isGamblingTerminalData() {
+		return false;
+	}
+
 };
 
 

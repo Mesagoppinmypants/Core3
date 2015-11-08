@@ -57,6 +57,8 @@
 #include "server/zone/templates/tangible/DroidEffectsModuleTemplate.h"
 #include "server/zone/templates/tangible/DroidPersonalityModuleTemplate.h"
 #include "server/zone/templates/tangible/CamoKitTemplate.h"
+#include "server/zone/templates/tangible/VehicleObjectTemplate.h"
+#include "server/zone/templates/tangible/XpPurchaseTemplate.h"
 #include "server/zone/templates/universe/SharedGroupObjectTemplate.h"
 #include "server/zone/templates/universe/SharedGuildObjectTemplate.h"
 #include "server/zone/templates/universe/SharedJediManagerTemplate.h"
@@ -577,6 +579,8 @@ void TemplateManager::registerTemplateObjects() {
 	templateFactory.registerObject<DroidCraftingModuleTemplate>(SharedObjectTemplate::DROIDMODULECRAFTING);
 	templateFactory.registerObject<DroidEffectsModuleTemplate>(SharedObjectTemplate::DROIDMODULEEFFECTS);
 	templateFactory.registerObject<DroidPersonalityModuleTemplate>(SharedObjectTemplate::DROIDMODULEPERSONALITY);
+	templateFactory.registerObject<VehicleObjectTemplate>(SharedObjectTemplate::VEHICLE);
+	templateFactory.registerObject<XpPurchaseTemplate>(SharedObjectTemplate::XPPURCHASE);
 }
 
 void TemplateManager::registerFunctions() {
@@ -611,7 +615,6 @@ void TemplateManager::registerGlobals() {
 	luaTemplatesInstance->setGlobalInt("COLD", WeaponObject::COLD);
 	luaTemplatesInstance->setGlobalInt("ACID", WeaponObject::ACID);
 	luaTemplatesInstance->setGlobalInt("LIGHTSABER", WeaponObject::LIGHTSABER);
-	luaTemplatesInstance->setGlobalInt("FORCE", WeaponObject::FORCE);
 
 	luaTemplatesInstance->setGlobalInt("NONE", WeaponObject::NONE);
 	luaTemplatesInstance->setGlobalInt("LIGHT", WeaponObject::LIGHT);
@@ -756,6 +759,9 @@ void TemplateManager::registerGlobals() {
 	luaTemplatesInstance->setGlobalInt("DROIDCRAFTINGMODULE", SharedObjectTemplate::DROIDMODULECRAFTING);
 	luaTemplatesInstance->setGlobalInt("DROIDEFFECTSMODULE", SharedObjectTemplate::DROIDMODULEEFFECTS);
 	luaTemplatesInstance->setGlobalInt("DROIDPERSONALITYCHIP", SharedObjectTemplate::DROIDMODULEPERSONALITY);
+	luaTemplatesInstance->setGlobalInt("VEHICLE", SharedObjectTemplate::VEHICLE);
+	luaTemplatesInstance->setGlobalInt("XPPURCHASE", SharedObjectTemplate::XPPURCHASE);
+
 	luaTemplatesInstance->setGlobalInt("NO_HITLOCATION", CombatManager::NOLOCATION);
 	luaTemplatesInstance->setGlobalInt("CHEST_HITLOCATION", CombatManager::CHEST);
 	luaTemplatesInstance->setGlobalInt("ARMS_HITLOCATION", CombatManager::ARMS);

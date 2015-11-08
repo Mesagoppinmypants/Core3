@@ -42,9 +42,9 @@
 --true = 1, false = 0
 
 ForceKnockdown3Command = {
-        name = "forceknockdown3",
+	name = "forceknockdown3",
 
-    damage = 0,
+    damageMultiplier = 0,
 	speed = 4.0,
 	forceCost = 200,
 	accuracySkillMod = "forceknockdown_accuracy";
@@ -68,7 +68,7 @@ ForceKnockdown3Command = {
 
 	combatSpam = "forceknockdown3",
 	
-	poolsToDamage = NONE,
+	poolsToDamage = NO_ATTRIBUTE,
 	
 	attackType = FORCEATTACK,
 

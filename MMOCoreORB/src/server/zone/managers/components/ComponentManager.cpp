@@ -19,6 +19,7 @@
 #include "server/zone/objects/tangible/components/vendor/VendorMenuComponent.h"
 #include "server/zone/objects/tangible/components/vendor/VendorDataComponent.h"
 #include "server/zone/objects/tangible/terminal/components/SecurityTerminalDataComponent.h"
+#include "server/zone/objects/tangible/terminal/components/GamblingTerminalDataComponent.h"
 #include "server/zone/objects/tangible/terminal/components/TurretControlTerminalDataComponent.h"
 #include "server/zone/objects/installation/components/TurretDataComponent.h"
 #include "server/zone/objects/installation/components/MinefieldDataComponent.h"
@@ -59,6 +60,8 @@
 #include "server/zone/objects/tangible/components/DroidCustomKitObjectMenuComponent.h"
 #include "server/zone/objects/tangible/components/SaberInventoryContainerComponent.h"
 #include "server/zone/objects/tangible/components/generic/LootSchematicAttributeListComponent.h"
+#include "server/zone/objects/tangible/components/generic/XpPurchaseAttributeListComponent.h"
+#include "server/zone/objects/tangible/components/generic/XpPurchaseMenuComponent.h"
 #include "server/zone/objects/tangible/components/RingObjectMenuComponent.h"
 #include "server/zone/objects/tangible/components/HeroRingMenuComponent.h"
 #include "server/zone/objects/tangible/components/HeroRingAttributeListComponent.h"
@@ -116,9 +119,12 @@
 #include "server/zone/objects/tangible/components/generic/CoaMessageFragmentMenuComponent.h"
 #include "server/zone/objects/tangible/components/generic/CoaMessageMenuComponent.h"
 #include "server/zone/objects/tangible/components/generic/CoaMessageDataComponent.h"
+#include "server/zone/objects/tangible/components/generic/CoaEncodedDiskMenuComponent.h"
 #include "server/zone/objects/creature/components/FactionRecruiterContainerComponent.h"
 #include "server/zone/objects/tangible/components/EventPerkDataComponent.h"
 #include "server/zone/objects/tangible/components/EventPerkMenuComponent.h"
+#include "server/zone/objects/tangible/components/FlagGameDataComponent.h"
+#include "server/zone/objects/tangible/components/FlagGameMenuComponent.h"
 #include "server/zone/objects/tangible/components/EventPerkAttributeListComponent.h"
 #include "server/zone/objects/tangible/components/droid/DroidMaintenanceModuleDataComponent.h"
 #include "server/zone/objects/tangible/components/droid/DroidEffectsModuleDataComponent.h"
@@ -183,6 +189,8 @@ ComponentManager::ComponentManager() {
 
 	components.put("AttributeListComponent", new AttributeListComponent());
 	components.put("LootSchematicAttributeListComponent", new LootSchematicAttributeListComponent());
+	components.put("XpPurchaseAttributeListComponent", new XpPurchaseAttributeListComponent());
+	components.put("XpPurchaseMenuComponent", new XpPurchaseMenuComponent());
 
 	components.put("RingObjectMenuComponent", new RingObjectMenuComponent());
 
@@ -221,6 +229,7 @@ ComponentManager::ComponentManager() {
 	dataObjectFactory.registerObject<VendorDataComponent>("VendorDataComponent");
 	dataObjectFactory.registerObject<AuctionTerminalDataComponent>("AuctionTerminalDataComponent");
 	dataObjectFactory.registerObject<SecurityTerminalDataComponent>("SecurityTerminalDataComponent");
+	dataObjectFactory.registerObject<GamblingTerminalDataComponent>("GamblingTerminalDataComponent");
 	dataObjectFactory.registerObject<TurretControlTerminalDataComponent>("TurretControlTerminalDataComponent");
 
 	components.put("CityManagementMenuComponent", new CityManagementMenuComponent());
@@ -299,11 +308,16 @@ ComponentManager::ComponentManager() {
 	components.put("CoaMessageMenuComponent", new CoaMessageMenuComponent());
 	components.put("CoaMessageDataComponent", new CoaMessageDataComponent() );
 	dataObjectFactory.registerObject<CoaMessageDataComponent>("CoaMessageDataComponent");
+	components.put("CoaEncodedDiskMenuComponent", new CoaEncodedDiskMenuComponent());
 
 	components.put("EventPerkMenuComponent", new EventPerkMenuComponent() );
 	components.put("EventPerkDataComponent", new EventPerkDataComponent() );
 	components.put("EventPerkAttributeListComponent", new EventPerkAttributeListComponent() );
 	dataObjectFactory.registerObject<EventPerkDataComponent>("EventPerkDataComponent");
+
+	components.put("FlagGameMenuComponent", new FlagGameMenuComponent() );
+	components.put("FlagGameDataComponent", new FlagGameDataComponent() );
+	dataObjectFactory.registerObject<FlagGameDataComponent>("FlagGameDataComponent");
 	// Droid components
 	dataObjectFactory.registerObject<DroidMaintenanceModuleDataComponent>("DroidMaintenanceModuleDataComponent");
 	dataObjectFactory.registerObject<DroidEffectsModuleDataComponent>("DroidEffectsModuleDataComponent");

@@ -56,8 +56,8 @@ Intimidate1Command = {
 	  StateEffect( 
 		INTIMIDATE_EFFECT, 
 		{}, 
-		{ "intimidate_defense", "resistance_states" }, 
-		{ "jedi_state_defense" }, 
+		{}, 
+		{}, 
 		100, 
 		0, 
 		30 
@@ -69,7 +69,7 @@ Intimidate1Command = {
 	effectString = "clienteffect/combat_special_attacker_intimidate.cef",
 	range = 24,
 
-	poolsToDamage = 0
+	poolsToDamage = NO_ATTRIBUTE
 }
 
 AddCommand(Intimidate1Command)

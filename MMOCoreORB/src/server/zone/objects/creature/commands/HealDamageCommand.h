@@ -104,7 +104,7 @@ public:
 			if (tano->isPharmaceuticalObject()) {
 				PharmaceuticalObject* pharma = cast<PharmaceuticalObject*>( tano);
 
-				if (melee && pharma->isStimPack() && !pharma->isPetStimPack() && !pharma->isDroidRepairKit()) {
+				if (melee && pharma->isStimPack() && !pharma->isRangedStimPack() && !pharma->isPetStimPack() && !pharma->isDroidRepairKit()) {
 					StimPack* stimPack = cast<StimPack*>(pharma);
 
 					if (stimPack->getMedicineUseRequired() <= medicineUse)
@@ -280,11 +280,11 @@ public:
 
 			CloseObjectsVector* closeObjectsVector = (CloseObjectsVector*) areaCenter->getCloseObjects();
 
-			SortedVector<ManagedReference<QuadTreeEntry*> > closeObjects;
+			SortedVector<QuadTreeEntry*> closeObjects;
 			closeObjectsVector->safeCopyTo(closeObjects);
 
 			for (int i = 0; i < closeObjects.size(); i++) {
-				SceneObject* object = cast<SceneObject*>( closeObjects.get(i).get());
+				SceneObject* object = cast<SceneObject*>( closeObjects.get(i));
 
 				if (!object->isPlayerCreature() && !object->isPet())
 					continue;

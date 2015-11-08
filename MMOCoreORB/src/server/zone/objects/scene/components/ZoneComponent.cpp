@@ -93,14 +93,14 @@ void ZoneComponent::updateInRangeObjectsOnMount(SceneObject* sceneObject) {
 		CloseObjectsVector* closeObjectsVector = (CloseObjectsVector*) sceneObject->getCloseObjects();
 		CloseObjectsVector* parentCloseObjectsVector = (CloseObjectsVector*) sceneObject->getRootParent().get()->getCloseObjects();
 
-		SortedVector<ManagedReference<QuadTreeEntry*> > closeObjects(closeObjectsVector->size(), 10);
+		SortedVector<QuadTreeEntry*> closeObjects(closeObjectsVector->size(), 10);
 		closeObjectsVector->safeCopyTo(closeObjects);
 
-		SortedVector<ManagedReference<QuadTreeEntry*> > parentCloseObjects(parentCloseObjectsVector->size(), 10);
+		SortedVector<QuadTreeEntry*> parentCloseObjects(parentCloseObjectsVector->size(), 10);
 		parentCloseObjectsVector->safeCopyTo(parentCloseObjects);
 
 		//remove old ones
-		float rangesq = 192.f * 192.f;
+		float rangesq = ZoneServer::CLOSEOBJECTRANGE * ZoneServer::CLOSEOBJECTRANGE;
 
 		float x = sceneObject->getPositionX();
 		float y = sceneObject->getPositionY();
@@ -109,8 +109,8 @@ void ZoneComponent::updateInRangeObjectsOnMount(SceneObject* sceneObject) {
 		float oldy = sceneObject->getPreviousPositionY();
 
 		for (int i = 0; i < closeObjects.size(); ++i) {
-			ManagedReference<QuadTreeEntry*> o = closeObjects.get(i);
-			ManagedReference<QuadTreeEntry*> objectToRemove = o;
+			QuadTreeEntry* o = closeObjects.get(i);
+			QuadTreeEntry* objectToRemove = o;
 			ManagedReference<QuadTreeEntry*> rootParent = o->getRootParent();
 
 			if (rootParent != NULL)
@@ -194,7 +194,7 @@ void ZoneComponent::updateZone(SceneObject* sceneObject, bool lightUpdate, bool 
 			zoneUnlocked = true;
 
 			try {
-				zone->inRange(sceneObject, 192);
+				zone->inRange(sceneObject, ZoneServer::CLOSEOBJECTRANGE);
 			} catch (Exception& e) {
 				sceneObject->error(e.getMessage());
 				e.printStackTrace();
@@ -208,21 +208,16 @@ void ZoneComponent::updateZone(SceneObject* sceneObject, bool lightUpdate, bool 
 	}
 
 	try {
+		bool isInvis = false;
+
 		if (sceneObject->isTangibleObject()) {
 			TangibleObject* tano = sceneObject->asTangibleObject();
 
 			zone->updateActiveAreas(tano);
-		}
 
-		bool isInvis = false;
-
-		if (sceneObject->isCreatureObject()) {
-			CreatureObject* creo = sceneObject->asCreatureObject();
-
-			if(creo->isInvisible())
+			if (tano->isInvisible())
 				isInvis = true;
 		}
-
 
 		if (!isInvis && sendPackets && (parent == NULL || (!parent->isVehicleObject() && !parent->isMount()))) {
 			if (lightUpdate) {
@@ -295,11 +290,12 @@ void ZoneComponent::updateZoneWithParent(SceneObject* sceneObject, SceneObject* 
 		CloseObjectsVector* closeObjects = (CloseObjectsVector*) sceneObject->getCloseObjects();
 
 		if (closeObjects != NULL) {
-			SortedVector<ManagedReference<QuadTreeEntry*> > objects(closeObjects->size(), 10);
+			SortedVector<QuadTreeEntry*> objects(closeObjects->size(), 10);
 			closeObjects->safeCopyTo(objects);
 
 			for (int i = 0; i < objects.size(); ++i) {
 				QuadTreeEntry* object = objects.get(i);
+
 				try {
 					object->notifyPositionUpdate(sceneObject);
 				} catch (Exception& e) {
@@ -314,9 +310,9 @@ void ZoneComponent::updateZoneWithParent(SceneObject* sceneObject, SceneObject* 
 
 		bool isInvis = false;
 
-		if (sceneObject->isCreatureObject()) {
-			CreatureObject* creo = sceneObject->asCreatureObject();
-			if(creo->isInvisible())
+		if (sceneObject->isTangibleObject()) {
+			TangibleObject* tano = sceneObject->asTangibleObject();
+			if(tano->isInvisible())
 				isInvis = true;
 		}
 
@@ -376,10 +372,10 @@ void ZoneComponent::switchZone(SceneObject* sceneObject, const String& newTerrai
 	sceneObject->destroyObjectFromWorld(false);
 
 	if (toggleInvisibility) {
-		CreatureObject* creo = sceneObject->asCreatureObject();
+		TangibleObject* tano = sceneObject->asTangibleObject();
 
-		if (creo != NULL) {
-			creo->setInvisible(!creo->isInvisible());
+		if (tano != NULL) {
+			tano->setInvisible(!tano->isInvisible());
 		}
 	}
 
@@ -503,7 +499,7 @@ void ZoneComponent::destroyObjectFromWorld(SceneObject* sceneObject, bool sendSe
 				templateName = sceneObject->getObjectTemplate()->getTemplateFileName();
 			sceneObject->info("Null closeobjects vector in ZoneComponent::destroyObjectFromWorld with template: " + templateName + " and OID: " + String::valueOf(sceneObject->getObjectID()), true);
 
-			rootZone->getInRangeObjects(sceneObject->getPositionX(), sceneObject->getPositionY(), 256, &closeSceneObjects, false);
+			rootZone->getInRangeObjects(sceneObject->getPositionX(), sceneObject->getPositionY(), ZoneServer::CLOSEOBJECTRANGE + 64, &closeSceneObjects, false);
 
 			for (int i = 0; i < closeSceneObjects.size(); ++i) {
 				QuadTreeEntry* obj = closeSceneObjects.get(i);

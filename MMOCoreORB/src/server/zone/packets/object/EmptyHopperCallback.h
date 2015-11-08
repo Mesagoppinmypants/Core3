@@ -39,8 +39,13 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = cast<CreatureObject*>( client->getPlayer().get().get());
-		
+		ManagedReference<SceneObject*> scene = client->getPlayer();
+
+		if (scene == NULL)
+			return;
+
+		CreatureObject* player = cast<CreatureObject*>(scene.get());
+
 		if (player == NULL)
 			return;
 
@@ -119,7 +124,7 @@ public:
 
 				inso->updateResourceContainerQuantity(container, newQuantity, true);
 			} else if (byte1 == 0) {
-				if (inventory->getCountableObjectsRecursive() < inventory->getContainerVolumeLimit()) {
+				if (!inventory->isContainerFullRecursive()) {
 					Reference<ResourceSpawn*> resSpawn = container->getSpawnObject();
 					Locker locker(resSpawn);
 

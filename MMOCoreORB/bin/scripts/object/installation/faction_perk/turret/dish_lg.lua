@@ -48,9 +48,8 @@ object_installation_faction_perk_turret_dish_lg = object_installation_faction_pe
 	maxCondition = 300000,
 	zoneComponent = "TurretZoneComponent",
 	dataObjectComponent = "TurretDataComponent",
-		-- Damagetypes in WeaponObject
+	-- Damagetypes in WeaponObject
 	vulnerability = BLAST,
-
 	-- LIGHT, MEDIUM, HEAVY
 	rating = HEAVY,
 
@@ -62,9 +61,9 @@ object_installation_faction_perk_turret_dish_lg = object_installation_faction_pe
 	heat = 75,
 	cold = 75,
 	acid = 75,
-	lightSaber =100,
+	lightSaber = 75,
 	chanceHit = 4,
-	weapon = "object/weapon/ranged/turret/turret_block_large.iff",
+	weapon = "object/weapon/ranged/turret/turret_dish_large.iff",
 	
 }
 

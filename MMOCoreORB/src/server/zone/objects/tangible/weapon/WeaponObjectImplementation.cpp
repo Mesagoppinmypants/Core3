@@ -40,6 +40,15 @@ void WeaponObjectImplementation::initializeTransientMembers() {
 	}
 }
 
+void WeaponObjectImplementation::notifyLoadFromDatabase() {
+	if (forceCost != 0) {
+		saberForceCost = forceCost;
+		forceCost = 0;
+	}
+
+	TangibleObjectImplementation::notifyLoadFromDatabase();
+}
+
 void WeaponObjectImplementation::loadTemplateData(SharedObjectTemplate* templateData) {
 	TangibleObjectImplementation::loadTemplateData(templateData);
 
@@ -58,7 +67,7 @@ void WeaponObjectImplementation::loadTemplateData(SharedObjectTemplate* template
 	healthAttackCost = weaponTemplate->getHealthAttackCost();
 	actionAttackCost = weaponTemplate->getActionAttackCost();
 	mindAttackCost = weaponTemplate->getMindAttackCost();
-	forceCost = weaponTemplate->getForceCost();
+	saberForceCost = weaponTemplate->getForceCost();
 
 	pointBlankAccuracy = weaponTemplate->getPointBlankAccuracy();
 	pointBlankRange = weaponTemplate->getPointBlankRange();
@@ -121,7 +130,7 @@ void WeaponObjectImplementation::createChildObjects() {
 				continue;
 
 			ManagedReference<SceneObject*> obj = zoneServer->createObject(
-					child->getTemplateFile().hashCode(), 1);
+					child->getTemplateFile().hashCode(), getPersistenceLevel());
 
 			if (obj == NULL)
 				continue;
@@ -346,7 +355,7 @@ void WeaponObjectImplementation::fillAttributeList(AttributeListMessage* alm, Cr
 
 	// Force Cost
 	if (getForceCost() > 0)
-		alm->insertAttribute("forcecost", getForceCost());
+		alm->insertAttribute("forcecost", (int)getForceCost());
 
 	for (int i = 0; i < getNumberOfDots(); i++) {
 
@@ -733,6 +742,9 @@ void WeaponObjectImplementation::decay(CreatureObject* user) {
 	if (roll < chance) {
 		if (isJediWeapon()) {
 			ManagedReference<SceneObject*> saberInv = getSlottedObject("saber_inv");
+
+			if (saberInv == NULL)
+				return;
 
 			// TODO: is this supposed to be every crystal, or random crystal(s)?
 			for (int i = 0; i < saberInv->getContainerObjectsSize(); i++) {

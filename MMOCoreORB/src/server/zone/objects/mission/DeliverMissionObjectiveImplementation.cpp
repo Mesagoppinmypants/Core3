@@ -9,7 +9,7 @@
 #include "server/zone/objects/area/MissionSpawnActiveArea.h"
 #include "server/ServerCore.h"
 #include "server/zone/objects/waypoint/WaypointObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/region/Region.h"
 #include "server/zone/Zone.h"
@@ -106,7 +106,7 @@ bool DeliverMissionObjectiveImplementation::activateWithResult() {
 
 	//Target NPC
 	//Find a free spawn point.
-	targetSpawnPoint = missionManager->getRandomFreeNpcSpawnPoint(mission->getStartPlanetCRC(), mission->getStartPositionX(), mission->getStartPositionY(), spawnType);
+	targetSpawnPoint = missionManager->getFreeNpcSpawnPoint(mission->getStartPlanetCRC(), mission->getStartPositionX(), mission->getStartPositionY(), spawnType);
 	if (targetSpawnPoint == NULL) {
 		return false;
 	}
@@ -120,7 +120,7 @@ bool DeliverMissionObjectiveImplementation::activateWithResult() {
 	int retries = 10;
 	destinationSpawnPoint = NULL;
 	while (retries > 0 && (destinationSpawnPoint == NULL || destinationSpawnPoint == targetSpawnPoint)) {
-		destinationSpawnPoint = missionManager->getRandomFreeNpcSpawnPoint(mission->getEndPlanet().hashCode(), mission->getEndPositionX(), mission->getEndPositionY(), spawnType);
+		destinationSpawnPoint = missionManager->getFreeNpcSpawnPoint(mission->getEndPlanet().hashCode(), mission->getEndPositionX(), mission->getEndPositionY(), spawnType);
 		retries--;
 	}
 	if (destinationSpawnPoint == NULL || destinationSpawnPoint == targetSpawnPoint) {
@@ -199,7 +199,7 @@ void DeliverMissionObjectiveImplementation::updateMissionStatus(CreatureObject* 
 		Locker clocker(item, player);
 
 		itemName.setStringId("mission/mission_deliver_neutral_easy", itemEntry.toString());
-		item->setObjectName(itemName);
+		item->setObjectName(itemName, false);
 
 		//Give player the item to deliver
 		if (inventory->transferObject(item, -1, true)) {

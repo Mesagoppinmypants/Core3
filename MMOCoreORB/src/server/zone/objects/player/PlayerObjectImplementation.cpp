@@ -75,9 +75,10 @@
 #include "server/zone/managers/gcw/GCWManager.h"
 #include "server/zone/managers/jedi/JediManager.h"
 #include "events/ForceRegenerationEvent.h"
-#include "FsExperienceTypes.h"
 #include "server/login/account/Account.h"
 #include "server/zone/objects/tangible/deed/eventperk/EventPerkDeed.h"
+#include "server/zone/managers/player/QuestInfo.h"
+#include "server/zone/objects/player/events/ForceMeditateTask.h"
 
 void PlayerObjectImplementation::initializeTransientMembers() {
 	IntangibleObjectImplementation::initializeTransientMembers();
@@ -278,7 +279,7 @@ void PlayerObjectImplementation::notifySceneReady() {
 
 	creature->sendBuffsTo(creature);
 
-	GuildObject* guild = creature->getGuildObject();
+	ManagedReference<GuildObject*> guild = creature->getGuildObject().get();
 
 	if (guild != NULL) {
 		ManagedReference<ChatRoom*> guildChat = guild->getChatRoom();
@@ -1117,12 +1118,37 @@ void PlayerObjectImplementation::removeAllFriends() {
 		ManagedReference<CreatureObject*> playerToRemove = zoneServer->getObject(objID).castTo<CreatureObject*>();
 
 		if (playerToRemove != NULL && playerToRemove->isPlayerCreature()) {
-			EXECUTE_TASK_2(playerToRemove, name, {
+			EXECUTE_TASK_2(playerToRemove, playerName, {
 					Locker locker(playerToRemove_p);
 
 					PlayerObject* ghost = playerToRemove_p->getPlayerObject();
 					if (ghost != NULL) {
-						ghost->removeFriend(name_p, false);
+						ghost->removeFriend(playerName_p, false);
+					}
+			});
+		}
+
+		removeReverseFriend(name);
+	}
+}
+
+void PlayerObjectImplementation::removeAllReverseFriends(const String& oldName) {
+	PlayerManager* playerManager = server->getPlayerManager();
+	ZoneServer* zoneServer = server->getZoneServer();
+
+	while (friendList.reversePlayerCount() > 0) {
+		String name = friendList.getReversePlayer(0).toLowerCase();
+		uint64 objID = playerManager->getObjectID(name);
+
+		ManagedReference<CreatureObject*> reverseFriend = zoneServer->getObject(objID).castTo<CreatureObject*>();
+
+		if (reverseFriend != NULL && reverseFriend->isPlayerCreature()) {
+			EXECUTE_TASK_2(reverseFriend, oldName, {
+					Locker locker(reverseFriend_p);
+
+					PlayerObject* ghost = reverseFriend_p->getPlayerObject();
+					if (ghost != NULL) {
+						ghost->removeFriend(oldName_p, false);
 					}
 			});
 		}
@@ -1260,6 +1286,8 @@ void PlayerObjectImplementation::notifyOnline() {
 	//Login to jedi manager
 	JediManager::instance()->onPlayerLoggedIn(playerCreature);
 
+	playerCreature->notifyObservers(ObserverEventType::LOGGEDIN);
+
 	if (getForcePowerMax() > 0 && getForcePower() < getForcePowerMax())
 		activateForcePowerRegen();
 
@@ -1290,6 +1318,8 @@ void PlayerObjectImplementation::notifyOffline() {
 
 	//Logout from visibility manager
 	VisibilityManager::instance()->logout(playerCreature);
+
+	playerCreature->notifyObservers(ObserverEventType::LOGGEDOUT);
 
 	//Logout from jedi manager
 	JediManager::instance()->onPlayerLoggedOut(playerCreature);
@@ -1364,7 +1394,7 @@ void PlayerObjectImplementation::increaseFactionStanding(const String& factionNa
 	else if (player->getFaction() == factionName.hashCode())
 		newAmount = MIN(FactionManager::instance()->getFactionPointsCap(player->getFactionRank()), newAmount);
 	else
-		newAmount = MIN(1000, newAmount);;
+		newAmount = MIN(1000, newAmount);
 
 	factionStandingList.put(factionName, newAmount);
 
@@ -1450,24 +1480,19 @@ float PlayerObjectImplementation::getFactionStanding(const String& factionName) 
 	return factionStandingList.getFactionStanding(factionName);
 }
 
-bool PlayerObjectImplementation::isFirstIncapacitationExpired() {
-	CreatureObject* creature = cast<CreatureObject*>( parent.get().get());
-	if (creature == NULL)
-		return false;
+void PlayerObjectImplementation::addIncapacitationTime() {
+	Time currentTime;
+	uint32 now = currentTime.getTime();
 
-	return creature->checkCooldownRecovery("firstIncapacitationTime");
-}
+	for (int i = incapacitationTimes.size() - 1; i >= 0; i--) {
+		uint32 incapTime = incapacitationTimes.get(i);
 
+		if ((now - incapTime) >= 600) {
+			incapacitationTimes.removeElementAt(i);
+		}
+	}
 
-void PlayerObjectImplementation::resetFirstIncapacitationTime() {
-	CreatureObject* creature = cast<CreatureObject*>( parent.get().get());
-	if (creature == NULL)
-		return;
-
-	if (!isFirstIncapacitation())
-		resetIncapacitationCounter();
-
-	creature->addCooldown("firstIncapacitationTime", 900000);
+	incapacitationTimes.add(now);
 }
 
 void PlayerObjectImplementation::logout(bool doLock) {
@@ -1493,7 +1518,7 @@ void PlayerObjectImplementation::logout(bool doLock) {
 }
 
 
-void PlayerObjectImplementation::doRecovery() {
+void PlayerObjectImplementation::doRecovery(int latency) {
 	if (getZoneServer()->isServerLoading()) {
 		activateRecovery();
 
@@ -1530,7 +1555,7 @@ void PlayerObjectImplementation::doRecovery() {
 		}
 	}
 
-	creature->activateHAMRegeneration();
+	creature->activateHAMRegeneration(latency);
 	creature->activateStateRecovery();
 
 	CooldownTimerMap* cooldownTimerMap = creature->getCooldownTimerMap();
@@ -1566,7 +1591,7 @@ void PlayerObjectImplementation::doRecovery() {
 
 	if (creature->isInCombat() && creature->getTargetID() != 0 && !creature->isPeaced()
 			&& (commandQueue->size() == 0) && creature->isNextActionPast() && !creature->isDead() && !creature->isIncapacitated()) {
-		creature->sendCommand(STRING_HASHCODE("attack"), "", creature->getTargetID());
+		creature->executeObjectControllerAction(STRING_HASHCODE("attack"), creature->getTargetID(), "");
 	}
 
 	if (!getZoneServer()->isServerLoading()) {
@@ -1578,21 +1603,97 @@ void PlayerObjectImplementation::doRecovery() {
 		}
 	}
 
+	checkForNewSpawns();
+
 	activateRecovery();
+}
+
+void PlayerObjectImplementation::checkForNewSpawns() {
+	ManagedReference<CreatureObject*> creature = dynamic_cast<CreatureObject*>(parent.get().get());
+
+	if (creature->isInvisible()) {
+		return;
+	}
+
+	ManagedReference<SceneObject*> parent = creature->getParent();
+
+	if (parent != NULL && parent->isCellObject()) {
+		return;
+	}
+
+	if (creature->getCityRegion() != NULL) {
+		return;
+	}
+
+	SortedVector<ManagedReference<ActiveArea* > > areas = *dynamic_cast<SortedVector<ManagedReference<ActiveArea* > >* >(creature->getActiveAreas());
+	Vector<SpawnArea*> spawnAreas;
+	int totalWeighting = 0;
+
+	for (int i = 0; i < areas.size(); ++i) {
+		ManagedReference<ActiveArea*> area = areas.get(i);
+
+		if (area->isNoSpawnArea()) {
+			return;
+		}
+
+		SpawnArea* spawnArea = area.castTo<SpawnArea*>();
+
+		if (spawnArea == NULL) {
+			continue;
+		}
+
+		if (!(spawnArea->getTier() & SpawnAreaMap::SPAWNAREA)) {
+			continue;
+		}
+
+		spawnAreas.add(spawnArea);
+		totalWeighting += spawnArea->getTotalWeighting();
+	}
+
+	int choice = System::random(totalWeighting - 1);
+	int counter = 0;
+	ManagedReference<SpawnArea*> finalArea = NULL;
+
+	for (int i = 0; i < spawnAreas.size(); i++) {
+		SpawnArea* area = spawnAreas.get(i);
+
+		counter += area->getTotalWeighting();
+
+		if (choice < counter) {
+			finalArea = area;
+			break;
+		}
+	}
+
+	if (finalArea == NULL) {
+		return;
+	}
+
+	EXECUTE_TASK_2(finalArea, creature, {
+			finalArea_p->tryToSpawn(creature_p);
+	});
 }
 
 void PlayerObjectImplementation::activateRecovery() {
 	if (recoveryEvent == NULL) {
 		recoveryEvent = new PlayerRecoveryEvent(_this.getReferenceUnsafeStaticCast());
+	}
 
+	if (!recoveryEvent->isScheduled()) {
 		recoveryEvent->schedule(3000);
 	}
 }
 
 void PlayerObjectImplementation::activateForcePowerRegen() {
+	if (forcePowerRegen == 0) {
+		return;
+	}
+
 	if (forceRegenerationEvent == NULL) {
 		forceRegenerationEvent = new ForceRegenerationEvent(_this.getReferenceUnsafeStaticCast());
+	}
 
+	if (!forceRegenerationEvent->isScheduled()) {
 		float timer = ((float) getForcePowerRegen()) / 5.f;
 		float scheduledTime = 10 / timer;
 		uint64 miliTime = static_cast<uint64>(scheduledTime * 1000.f);
@@ -1616,7 +1717,7 @@ void PlayerObjectImplementation::setOnline() {
 
 	clearCharacterBit(PlayerObjectImplementation::LD, true);
 
-	doRecovery();
+	doRecovery(1000);
 
 	activateMissions();
 }
@@ -1710,14 +1811,6 @@ void PlayerObjectImplementation::clearDisconnectEvent() {
 	disconnectEvent = NULL;
 }
 
-void PlayerObjectImplementation::clearRecoveryEvent() {
-	recoveryEvent = NULL;
-}
-
-void PlayerObjectImplementation::clearForceRegenerationEvent() {
-	forceRegenerationEvent = NULL;
-}
-
 void PlayerObjectImplementation::maximizeExperience() {
 	VectorMap<String, int>* xpCapList = getXpTypeCapList();
 
@@ -1765,6 +1858,10 @@ void PlayerObjectImplementation::setForcePowerMax(int newValue, bool notifyClien
 
 	if(forcePower > forcePowerMax)
 		setForcePower(forcePowerMax, true);
+
+	if (forcePower < forcePowerMax) {
+		activateForcePowerRegen();
+	}
 
 	if (notifyClient == true){
 		// Update the force power bar max.
@@ -1818,16 +1915,14 @@ void PlayerObjectImplementation::doForceRegen() {
 
 	uint32 modifier = 1;
 
-	// TODO: Re-factor Force Meditate so TKA meditate doesn't effect.
-	if (creature->isMeditating())
-		modifier = 3;
+	if (creature->isMeditating()) {
+		Reference<ForceMeditateTask*> medTask = creature->getPendingTask("forcemeditate").castTo<ForceMeditateTask*>();
+
+		if (medTask != NULL)
+			modifier = 3;
+	}
 
 	uint32 forceTick = tick * modifier;
-
-	//forceTick cant be <1 as per above code, tick is always positive and modifier as well
-	/*if (forceTick < 1)
-		forceTick = 1;
-		*/
 
 	if (forceTick > getForcePowerMax() - getForcePower()){   // If the player's Force Power is going to regen again and it's close to max,
 		setForcePower(getForcePowerMax());             // Set it to max, so it doesn't go over max.
@@ -2005,11 +2100,11 @@ void PlayerObjectImplementation::updateInRangeBuildingPermissions() {
 
 	CloseObjectsVector* vec = (CloseObjectsVector*) parent->getCloseObjects();
 
-	SortedVector<ManagedReference<QuadTreeEntry* > > closeObjects;
+	SortedVector<QuadTreeEntry*> closeObjects;
 	vec->safeCopyTo(closeObjects);
 
 	for (int i = 0; i < closeObjects.size(); ++i) {
-		BuildingObject* building = closeObjects.get(i).castTo<BuildingObject*>();
+		BuildingObject* building = cast<BuildingObject*>(closeObjects.get(i));
 
 		if (building != NULL) {
 			building->updateCellPermissionsTo(parent);
@@ -2058,6 +2153,19 @@ void PlayerObjectImplementation::destroyObjectFromDatabase(bool destroyContained
 				if (structure->isCivicStructure()) {
 					StructureSetOwnerTask* task = new StructureSetOwnerTask(structure, 0);
 					task->execute();
+
+					if (structure->isCityHall()) {
+						ManagedReference<CityRegion*> city = structure->getCityRegion().get();
+
+						if (city != NULL) {
+							EXECUTE_TASK_1(city, {
+									Locker locker(city_p);
+
+									city_p->setMayorID(0);
+							});
+						}
+					}
+
 					continue;
 				}
 
@@ -2116,6 +2224,87 @@ void PlayerObjectImplementation::setJediState(int state, bool notifyClient) {
 
 	sendMessage(delta);
 }
+
+int PlayerObjectImplementation::getSpentJediSkillPoints() {
+	if (jediState < 2)
+		return 0;
+
+	ManagedReference<CreatureObject*> player = cast<CreatureObject*>( getParentRecursively(SceneObjectType::PLAYERCREATURE).get().get());
+
+	if(player == NULL)
+		return 0;
+
+	int jediSkillPoints = 0;
+
+	SkillList* skillList = player->getSkillList();
+
+	for(int i = 0; i < skillList->size(); ++i) {
+		Skill* jediSkill = skillList->get(i);
+
+		if (jediSkill->getSkillName().indexOf("force_discipline") != -1)
+			jediSkillPoints += jediSkill->getSkillPointsRequired();
+	}
+
+	return jediSkillPoints;
+}
+
+bool PlayerObjectImplementation::canActivateQuest(int questID) {
+	ManagedReference<CreatureObject*> creature = dynamic_cast<CreatureObject*>(parent.get().get());
+
+	if (creature == NULL)
+		return false;
+
+	PlayerManager* playerManager = creature->getZoneServer()->getPlayerManager();
+
+	if (playerManager == NULL)
+		return false;
+
+	// Invalid quest id
+	if (questID < 0 || questID > playerManager->getTotalPlayerQuests())
+		return false;
+
+	// Quest is active or already completed
+	if (hasActiveQuestBitSet(questID) || hasCompletedQuestsBitSet(questID))
+		return false;
+
+	String parentQuest = playerManager->getPlayerQuestParent(questID);
+
+	// Quest has a parent quest that has not been completed
+	if (parentQuest != "") {
+		int parentQuestID = playerManager->getPlayerQuestID(parentQuest);
+
+		if (parentQuestID < 0 || !hasCompletedQuestsBitSet(parentQuestID))
+			return false;
+	}
+
+	return true;
+}
+
+void PlayerObjectImplementation::activateQuest(int questID) {
+	if (!canActivateQuest(questID))
+		return;
+
+	CreatureObject* creature = cast<CreatureObject*>(getParent().get().get());
+
+	if (creature == NULL)
+		return;
+
+	PlayerManager* playerManager = creature->getZoneServer()->getPlayerManager();
+
+	if (playerManager == NULL)
+		return;
+
+	ManagedReference<QuestInfo*> questInfo = playerManager->getQuestInfo(questID);
+
+	if (questInfo == NULL)
+		return;
+
+	setActiveQuestsBit(questID, 1);
+
+	if (questInfo->shouldSendSystemMessage())
+		creature->sendSystemMessage("@quest/quests:quest_journal_updated");
+}
+
 
 void PlayerObjectImplementation::setActiveQuestsBit(int bitIndex, byte value, bool notifyClient) {
 	activeQuests.setBit(bitIndex, value);
@@ -2191,21 +2380,6 @@ bool PlayerObjectImplementation::hasChosenVeteranReward( const String& rewardTem
 
 }
 
-void PlayerObjectImplementation::updateForceSensitiveElegibleExperiences(int type) {
-	DeltaVectorMap<String, int>* xpList = getExperienceList();
-
-	// Clear the vector for new strings...
-	fsEligibleExperiences.removeAll();
-
-
-	for (int i=0; i < xpList->size(); ++i){
-		String xpString = xpList->getKeyAt(i);
-		if (FsExperienceTypes::isValid(type, xpString) && (!fsEligibleExperiences.contains(xpList->getKeyAt(i)))) {
-			fsEligibleExperiences.add(xpList->getKeyAt(i));
-		}
-	}
-}
-
 int PlayerObjectImplementation::getCharacterAgeInDays() {
 	ManagedReference<CreatureObject*> creature = dynamic_cast<CreatureObject*>(parent.get().get());
 
@@ -2237,10 +2411,4 @@ int PlayerObjectImplementation::getCharacterAgeInDays() {
 	int days = timeDelta / 60 / 60 / 24;
 
 	return days;
-}
-
-String PlayerObjectImplementation::getForceSensitiveExperienceRatio(const String& type) {
-	if (!FsExperienceTypes::getFsRatio(type).isEmpty())
-		return FsExperienceTypes::getFsRatio(type);
-	else return "";
 }

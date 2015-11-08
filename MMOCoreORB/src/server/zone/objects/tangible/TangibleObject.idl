@@ -28,6 +28,7 @@ import server.zone.packets.object.ObjectMenuResponse;
 import server.zone.objects.tangible.threat.ThreatMap;
 import server.zone.objects.tangible.weapon.WeaponObject;
 include server.zone.objects.scene.variables.AutoDeltaSet;
+include server.zone.objects.scene.variables.StringId;
 
 class TangibleObject extends SceneObject {
 	protected boolean targetable;
@@ -36,6 +37,8 @@ class TangibleObject extends SceneObject {
 	protected int volume;
 	
 	protected unsigned int faction;
+
+	protected boolean invisible;
 	
 	@dereferenced
 	protected CustomizationVariables customizationVariables;
@@ -87,6 +90,8 @@ class TangibleObject extends SceneObject {
 		Logger.setLoggingName("TangibleObject");
 		
 		initializeMembers();
+
+		invisible = false;
 
 		antiDecayKitObject = null;
 	}
@@ -175,6 +180,14 @@ class TangibleObject extends SceneObject {
 	public native void notifyLoadFromDatabase();
 
 	/**
+	 * Updates the object name of the object
+	 * @pre { this locked }
+	 * @post { this locked }
+	 */
+	@local
+	public native void setObjectName(@dereferenced StringId stringID, boolean notifyClient);
+
+	/**
 	 * Updates the custom name of the object
 	 * @pre { this locked }
 	 * @post { this locked }
@@ -190,6 +203,16 @@ class TangibleObject extends SceneObject {
 	@dirty
 	public native abstract void sendBaselinesTo(SceneObject player);
 	
+	/**
+	 * Sends the necessary messages to player in order to create this object
+	 * @pre { this object is locked }
+	 * @post { this object is locked, player received this object }
+	 * @param player SceneObject that will receive the messages
+	 * @param doClose if true a SceneObjectCloseMessage is sent to finish the object
+	 */
+	@dirty
+	public native void sendTo(SceneObject player, boolean doClose);
+
 	/**
 	 * Calls the appropriate UI Listener Function
 	 * @pre { this object is locked, object is locked }
@@ -432,6 +455,16 @@ class TangibleObject extends SceneObject {
 	
 	@dirty
 	public abstract boolean isTicketObject() {
+		return false;
+	}
+	
+	@dirty
+	public abstract boolean isFsPuzzlePack() {
+		return false;
+	}
+	
+	@dirty
+	public abstract boolean isPlantObject() {
 		return false;
 	}
 	
@@ -785,5 +818,20 @@ class TangibleObject extends SceneObject {
 	public native boolean isCityStreetLamp();
 	public native boolean isCityStatue();
 	public native boolean isCityFountain();
+
+	@read
+	public boolean isInvisible() {
+		return invisible;
+	}
+
+	@preLocked
+	public void setInvisible(boolean invis) {
+		invisible = invis;
+	}
+
+	@dirty
+	public abstract boolean isCustomIngredient() {
+		return false;
+	}
 }
 

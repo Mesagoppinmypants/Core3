@@ -32,6 +32,7 @@
 #include "server/zone/managers/object/ObjectManager.h"
 #include "server/zone/managers/structure/StructureManager.h"
 #include "server/zone/managers/stringid/StringIdManager.h"
+#include "server/zone/managers/planet/PlanetManager.h"
 #include "server/zone/packets/cell/UpdateCellPermissionsMessage.h"
 #include "server/zone/objects/player/sui/callbacks/StructurePayAccessFeeSuiCallback.h"
 #include "server/zone/objects/building/tasks/RevokePaidAccessTask.h"
@@ -45,7 +46,7 @@
 #include "server/zone/objects/installation/components/TurretDataComponent.h"
 #include "server/zone/managers/creature/CreatureManager.h"
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 
 #include "server/zone/managers/planet/MapLocationType.h"
 
@@ -654,11 +655,11 @@ void BuildingObjectImplementation::destroyObjectFromDatabase(
 void BuildingObjectImplementation::broadcastCellPermissions() {
 	CloseObjectsVector* closeObjectsVector = (CloseObjectsVector*) getCloseObjects();
 
-	SortedVector<ManagedReference<QuadTreeEntry*> > closeObjects;
+	SortedVector<QuadTreeEntry*> closeObjects;
 	closeObjectsVector->safeCopyTo(closeObjects);
 
 	for (int i = 0; i < closeObjects.size(); ++i) {
-		ManagedReference<SceneObject*> obj = cast<SceneObject*>( closeObjects.get(i).get());
+		ManagedReference<SceneObject*> obj = cast<SceneObject*>( closeObjects.get(i));
 
 		if (obj->isPlayerCreature())
 			updateCellPermissionsTo(cast<CreatureObject*>(obj.get()));
@@ -682,11 +683,11 @@ void BuildingObjectImplementation::broadcastCellPermissions(uint64 objectid) {
 
 	CloseObjectsVector* closeObjectsVector = (CloseObjectsVector*) getCloseObjects();
 
-	SortedVector<ManagedReference<QuadTreeEntry*> > closeObjects;
+	SortedVector<QuadTreeEntry*> closeObjects;
 	closeObjectsVector->safeCopyTo(closeObjects);
 
 	for (int i = 0; i < closeObjects.size(); ++i) {
-		ManagedReference<SceneObject*> obj = cast<SceneObject*>( closeObjects.get(i).get());
+		ManagedReference<SceneObject*> obj = cast<SceneObject*>( closeObjects.get(i));
 
 		if (obj->isPlayerCreature()) {
 			CreatureObject* creo = obj.castTo<CreatureObject*>();
@@ -1013,6 +1014,18 @@ bool BuildingObjectImplementation::canPlayerRegisterWithin() {
 	if (categoryName == "medicalcenter" || categoryName == "hotel" || categoryName == "cantina" || categoryName == "theater" || categoryName == "guild_theater" || categoryName == "tavern")
 		return true;
 
+	if (categoryName == "imperial_hq" || categoryName == "rebel_hq") {
+		SharedBuildingObjectTemplate* buildingTemplate = cast<SharedBuildingObjectTemplate*>(getObjectTemplate());
+
+		if (buildingTemplate == NULL) {
+			return false;
+		}
+
+		if (buildingTemplate->getSkillMod("private_medical_rating") > 0 || buildingTemplate->getSkillMod("private_med_battle_fatigue") > 0) {
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -1083,6 +1096,9 @@ void BuildingObjectImplementation::promptPayAccessFee(CreatureObject* player) {
 
 	PlayerObject* ghost = player->getPlayerObject();
 
+	if (ghost == NULL)
+		return;
+
 	if (ghost->hasSuiBoxWindowType(SuiWindowType::STRUCTURE_CONSENT_PAY_ACCESS_FEE))
 		return;
 
@@ -1134,7 +1150,11 @@ void BuildingObjectImplementation::payAccessFee(CreatureObject* player) {
 
 	if(owner != NULL && owner->isPlayerCreature()) {
 		Locker clocker(owner, player);
-		owner->getPlayerObject()->addExperience("merchant", 50, true);
+
+		PlayerObject* ghost = owner->getPlayerObject();
+
+		if (ghost != NULL)
+			ghost->addExperience("merchant", 50, true);
 	}
 
 	updatePaidAccessList();
@@ -1249,7 +1269,7 @@ void BuildingObjectImplementation::createChildObjects(){
 				dbString = "playerstructures";
 			}
 
-			ManagedReference<SceneObject*> obj = server->createObject(child->getTemplateFile().hashCode(),dbString,1);
+			ManagedReference<SceneObject*> obj = server->createObject(child->getTemplateFile().hashCode(), dbString, getPersistenceLevel());
 
 			if (obj == NULL )
 				continue;
@@ -1398,7 +1418,7 @@ void BuildingObjectImplementation::spawnChildSceneObject(String& templatePath, f
 	if (zone == NULL)
 		return;
 
-	ManagedReference<SceneObject*> object = zoneServer->createObject(templatePath.hashCode(), 0);
+	ManagedReference<SceneObject*> object = zoneServer->createObject(templatePath.hashCode(), getPersistenceLevel());
 
 	if (object == NULL || object->isCreatureObject())
 		return;
@@ -1423,8 +1443,6 @@ void BuildingObjectImplementation::spawnChildSceneObject(String& templatePath, f
 	} else {
 		zone->transferObject(object, -1, true);
 	}
-
-	objLocker.release();
 
 	object->createChildObjects();
 
@@ -1462,7 +1480,7 @@ void BuildingObjectImplementation::spawnChildCreaturesFromTemplate(){
 					}
 
 				} catch (Exception& e) {
-						error("unreported exception caught in void SceneObjectImplementation::createChildObjects()!");
+						error("unreported exception caught in void BuildingObjectImplementation::spawnChildCreaturesFromTemplate()!");
 						e.printStackTrace();
 				}
 
@@ -1582,7 +1600,7 @@ void BuildingObjectImplementation::changeSign( SignTemplate* signConfig ){
 
 	ZoneServer* zoneServer = getZone()->getZoneServer();
 
-	ManagedReference<SceneObject*> signSceno = zoneServer->createObject(signConfig->getTemplateFile().hashCode(), 1);
+	ManagedReference<SceneObject*> signSceno = zoneServer->createObject(signConfig->getTemplateFile().hashCode(), getPersistenceLevel());
 	if (signSceno == NULL)
 		return;
 
@@ -1658,6 +1676,33 @@ void BuildingObjectImplementation::changeSign( SignTemplate* signConfig ){
 	// Set to old sign name
 	setCustomObjectName( signName, true );
 }
+
+bool BuildingObjectImplementation::togglePrivacy() {
+	// If the building is a cantina then we need to add/remove it from the planet's
+	// mission map for performance locations.
+	PlanetMapCategory* planetMapCategory = getPlanetMapCategory();
+	if (planetMapCategory != NULL) {
+		String planetMapCategoryName = planetMapCategory->getName();
+		if (planetMapCategoryName == "cantina") {
+			Zone* zone = getZone();
+			if (zone != NULL) {
+				PlanetManager* planetManager = zone->getPlanetManager();
+				if (planetManager != NULL) {
+					if (isPublicStructure()) {
+						planetManager->removePerformanceLocation(asSceneObject());
+					}
+					else {
+						planetManager->addPerformanceLocation(asSceneObject());
+					}
+				}
+			}
+		}
+	}
+
+	publicStructure = !publicStructure;
+	return isPublicStructure();
+}
+
 
 BuildingObject* BuildingObject::asBuildingObject() {
 	return this;

@@ -5,7 +5,7 @@
 #ifndef DROIDMERCHANTBARKERTASK_H_
 #define DROIDMERCHANTBARKERTASK_H_
 
-#include "server/zone/objects/creature/DroidObject.h"
+#include "server/zone/objects/creature/ai/DroidObject.h"
 #include "server/zone/objects/tangible/components/droid/DroidMerchantModuleDataComponent.h"
 #include "server/chat/ChatManager.h"
 #include "server/zone/Zone.h"
@@ -73,16 +73,16 @@ public:
 		}
 		// Get nearby people and bark
 		CloseObjectsVector* vec = (CloseObjectsVector*) droid->getCloseObjects();
-		SortedVector<ManagedReference<QuadTreeEntry*> > closeEntryObjects(200, 50);
+		SortedVector<QuadTreeEntry*> closeEntryObjects(200, 50);
 		if (vec != NULL) {
 			vec->safeCopyTo(closeEntryObjects);
 		} else {
 			droid->info("Null closeobjects vector in DroidMerchantBarkerTask::run()", true);
-			droid->getZone()->getInRangeObjects(droid->getWorldPositionX(), droid->getWorldPositionX(), 192, &closeEntryObjects, true);
+			droid->getZone()->getInRangeObjects(droid->getWorldPositionX(), droid->getWorldPositionX(), ZoneServer::CLOSEOBJECTRANGE, &closeEntryObjects, true);
 		}
 		bool speak = false;
 		for (int i = 0; i < closeEntryObjects.size(); ++i) {
-			SceneObject* object = cast<SceneObject*>(closeEntryObjects.get(i).get());
+			SceneObject* object = cast<SceneObject*>(closeEntryObjects.get(i));
 			if (object->isPlayerCreature() && object->isInRange(droid,15)) {
 				speak = true;
 				break;

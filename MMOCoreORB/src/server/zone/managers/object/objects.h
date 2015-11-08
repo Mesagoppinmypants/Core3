@@ -9,10 +9,10 @@
 #define OBJECTS_H_
 
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/NonPlayerCreatureObject.h"
-#include "server/zone/objects/creature/Creature.h"
+#include "server/zone/objects/creature/ai/NonPlayerCreatureObject.h"
+#include "server/zone/objects/creature/ai/Creature.h"
 #include "server/zone/objects/creature/VehicleObject.h"
-#include "server/zone/objects/creature/DroidObject.h"
+#include "server/zone/objects/creature/ai/DroidObject.h"
 #include "server/zone/objects/intangible/IntangibleObject.h"
 #include "server/zone/objects/intangible/VehicleControlDevice.h"
 #include "server/zone/objects/intangible/PetControlDevice.h"
@@ -60,6 +60,7 @@
 #include "server/zone/objects/installation/garage/GarageInstallation.h"
 #include "server/zone/objects/installation/generator/GeneratorObject.h"
 #include "server/zone/objects/installation/harvester/HarvesterObject.h"
+#include "server/zone/objects/tangible/eventperk/FlagGame.h"
 #include "server/zone/objects/tangible/eventperk/Jukebox.h"
 #include "server/zone/objects/tangible/component/Component.h"
 #include "server/zone/objects/tangible/component/armor/ArmorComponent.h"
@@ -95,6 +96,8 @@
 #include "server/zone/objects/tangible/pharmaceutical/DotPack.h"
 #include "server/zone/objects/tangible/pharmaceutical/VitalityPack.h"
 #include "server/zone/objects/tangible/pharmaceutical/WoundPack.h"
+#include "server/zone/objects/tangible/misc/FsPuzzlePack.h"
+#include "server/zone/objects/tangible/misc/PlantObject.h"
 #include "server/zone/objects/tangible/terminal/mission/MissionTerminal.h"
 #include "server/zone/objects/tangible/sign/SignObject.h"
 #include "server/zone/objects/mission/MissionObject.h"
@@ -107,6 +110,7 @@
 #include "server/zone/objects/tangible/terminal/gambling/GamblingTerminal.h"
 #include "server/zone/objects/resource/ResourceSpawn.h"
 #include "server/zone/objects/resource/ResourceContainer.h"
+#include "server/zone/objects/tangible/misc/CustomIngredient.h"
 
 #include "server/zone/objects/area/ActiveArea.h"
 #include "server/zone/objects/area/CampSiteActiveArea.h"

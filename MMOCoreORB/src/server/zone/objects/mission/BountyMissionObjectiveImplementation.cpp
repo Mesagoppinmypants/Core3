@@ -17,7 +17,7 @@
 #include "server/zone/objects/mission/MissionObject.h"
 #include "server/zone/objects/mission/MissionObserver.h"
 #include "server/zone/objects/player/PlayerObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/chat/ChatManager.h"
 #include "server/zone/objects/mission/bountyhunter/BountyHunterDroid.h"
 #include "server/zone/objects/mission/bountyhunter/events/BountyHunterTargetTask.h"
@@ -592,9 +592,22 @@ void BountyMissionObjectiveImplementation::handlePlayerKilled(ManagedObject* arg
 			if (zoneServer != NULL) {
 				ManagedReference<CreatureObject*> target = zoneServer->getObject(mission->getTargetObjectId()).castTo<CreatureObject*>();
 				if (target != NULL) {
-					VisibilityManager::instance()->clearVisibility(target);
-					owner->getZoneServer()->getPlayerManager()->awardExperience(target, "jedi_general", -30000, true);
+					int minXpLoss = -50000;
+					int maxXpLoss = -500000;
 
+					VisibilityManager::instance()->clearVisibility(target);
+					int xpLoss = mission->getRewardCredits() * -2;
+
+					if (xpLoss > minXpLoss)
+						xpLoss = minXpLoss;
+					else if (xpLoss < maxXpLoss)
+						xpLoss = maxXpLoss;
+
+					owner->getZoneServer()->getPlayerManager()->awardExperience(target, "jedi_general", xpLoss, true);
+					StringIdChatParameter message("base_player","prose_revoke_xp");
+					message.setDI(xpLoss * -1);
+					message.setTO("exp_n", "jedi_general");
+					target->sendSystemMessage(message);
 				}
 			}
 

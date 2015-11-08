@@ -48,9 +48,9 @@ DrainForceCommand = {
 
 	combatSpam = "forcedrain_hit",
 	
-	poolsToDamage = NONE,
+	poolsToDamage = NO_ATTRIBUTE,
 
-	damage = 100, --Force drained
+	minDamage = 100, --Force drained
 
 	range = 32
 	

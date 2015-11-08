@@ -19,7 +19,7 @@
 #include "server/zone/packets/tangible/UpdatePVPStatusMessage.h"
 #include "server/zone/objects/area/ActiveArea.h"
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/managers/crafting/CraftingManager.h"
 #include "server/zone/objects/tangible/component/Component.h"
 #include "server/zone/objects/factorycrate/FactoryCrate.h"
@@ -64,6 +64,8 @@ void TangibleObjectImplementation::loadTemplateData(SharedObjectTemplate* templa
 
 	maxCondition = tanoData->getMaxCondition();
 
+	invisible = tanoData->isInvisible();
+
 	useCount = tanoData->getUseCount();
 
 	optionsBitmask = tanoData->getOptionsBitmask();
@@ -99,7 +101,7 @@ void TangibleObjectImplementation::notifyLoadFromDatabase() {
 void TangibleObjectImplementation::sendBaselinesTo(SceneObject* player) {
 	info("sending tano baselines");
 
-	Reference<TangibleObject*> thisPointer = asTangibleObject();
+	TangibleObject* thisPointer = asTangibleObject();
 
 	BaseMessage* tano3 = new TangibleObjectMessage3(thisPointer);
 	player->sendMessage(tano3);
@@ -144,12 +146,12 @@ void TangibleObjectImplementation::broadcastPvpStatusBitmask() {
 
 		CreatureObject* thisCreo = asCreatureObject();
 
-		SortedVector<ManagedReference<QuadTreeEntry*> > closeObjects(closeobjects->size(), 10);
+		SortedVector<QuadTreeEntry*> closeObjects(closeobjects->size(), 10);
 
 		closeobjects->safeCopyTo(closeObjects);
 
 		for (int i = 0; i < closeObjects.size(); ++i) {
-			SceneObject* obj = cast<SceneObject*>(closeObjects.get(i).get());
+			SceneObject* obj = cast<SceneObject*>(closeObjects.get(i));
 
 			if (obj != NULL && obj->isCreatureObject()) {
 				CreatureObject* creo = obj->asCreatureObject();
@@ -587,6 +589,19 @@ int TangibleObjectImplementation::healDamage(TangibleObject* healer, int damageT
 	return returnValue;
 }
 
+void TangibleObjectImplementation::setObjectName(StringId& stringID, bool notifyClient) {
+	objectName = stringID;
+
+	if (!notifyClient)
+		return;
+
+	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
+	dtano3->updateObjectName(stringID);
+	dtano3->close();
+
+	broadcastMessage(dtano3, true);
+}
+
 void TangibleObjectImplementation::setCustomObjectName(const UnicodeString& name, bool notifyClient) {
 	customName = name;
 
@@ -594,7 +609,7 @@ void TangibleObjectImplementation::setCustomObjectName(const UnicodeString& name
 		return;
 
 	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
-	dtano3->updateName(name);
+	dtano3->updateCustomName(name);
 	dtano3->close();
 
 	broadcastMessage(dtano3, true);
@@ -927,6 +942,13 @@ void TangibleObjectImplementation::addActiveArea(ActiveArea* area) {
 		area->deploy();
 
 	activeAreas.put(area);
+}
+
+void TangibleObjectImplementation::sendTo(SceneObject* player, bool doClose) {
+	if (isInvisible() && player != asTangibleObject())
+		return;
+
+	SceneObjectImplementation::sendTo(player, doClose);
 }
 
 bool TangibleObjectImplementation::isCityStreetLamp(){

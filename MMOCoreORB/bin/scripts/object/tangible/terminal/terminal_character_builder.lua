@@ -56,6 +56,8 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 
 	templateType = CHARACTERBUILDERTERMINAL,
 
+	glowyBadgeIds = {12, 14, 15, 16, 17, 19, 20, 21, 23, 30, 38, 39, 71, 105, 106, 107},
+
 	itemList = {
 		"Character Options",
 		{
@@ -1512,6 +1514,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 			"Apply DOTs", "apply_dots",
 			"Clear DOTs", "clear_dots",
 			"Max XP", "max_xp",
+			"Become Glowy", "become_glowy",
 			"Faction Points",
 			{
 				"Imperial", "faction_imperial",
@@ -2398,10 +2401,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					"Potted Tree (Style 1)", "object/tangible/furniture/all/frn_all_tree_potted_s1.iff",
 					"Potted Tree (Style 2)", "object/tangible/furniture/all/frn_all_tree_potted_s2.iff",
 					"Hanging Planter","object/tangible/furniture/decorative/hanging_planter.iff",
-					"Small Aurilian Plant", "object/tangible/loot/plant_grow/plant_stage_1.iff",
-					"Aurilian Plant", "object/tangible/loot/plant_grow/plant_stage_2.iff",
-					"Large Aurilian Plant", "object/tangible/loot/plant_grow/plant_stage_3.iff",
-					"Dead Aurilian Plant", "object/tangible/loot/plant_grow/plant_stage_dead.iff"
+					"Small Aurilian Plant", "object/tangible/loot/plant_grow/plant_stage_1.iff"
 				},
 				"Miscellaneous Decorations",
 				{

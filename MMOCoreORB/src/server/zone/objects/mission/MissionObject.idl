@@ -29,6 +29,7 @@ class MissionObject extends IntangibleObject {
 	protected int difficulty;
 	protected unicode creatorName;
 	protected int rewardCredits;
+	protected int rewardCreditsDivisor;
 	protected int rewardFactionPointsRebel;
 	protected int rewardFactionPointsImperial;
 	protected int missionNumber;
@@ -103,6 +104,7 @@ class MissionObject extends IntangibleObject {
 		difficulty = 2;
 
 		rewardCredits = 100;
+		rewardCreditsDivisor = 1;
 		rewardFactionPointsRebel = 0;
 		rewardFactionPointsImperial = 0;
 
@@ -110,6 +112,8 @@ class MissionObject extends IntangibleObject {
 
 		startPositionX = 0;
 		startPositionY = 0;
+		endPositionX = 0;
+		endPositionY = 0;
 
 		missionTarget = null;
 		missionTargetDest = null;
@@ -117,6 +121,9 @@ class MissionObject extends IntangibleObject {
 		targetObjectId = 0;
 
 		faction = FACTIONNEUTRAL;
+
+		missionNumber = 0;
+		missionLevel = 0;
 
 		Logger.setLoggingName("MissionObject");
 	}
@@ -193,11 +200,6 @@ class MissionObject extends IntangibleObject {
 	}
 
 	@preLocked
-	public void setStartPlanet(final string planet) {
-		startPlanet = planet;
-	}
-
-	@preLocked
 	public void setRewardFactionPointsRebel(int points) {
 		rewardFactionPointsRebel = points;
 	}
@@ -205,11 +207,6 @@ class MissionObject extends IntangibleObject {
 	@preLocked
 	public void setRewardFactionPointsImperial(int points) {
 		rewardFactionPointsImperial = points;
-	}
-
-	@preLocked
-	public void setEndPlanet(string planetName) {
-		endPlanet = planetName;
 	}
 
 	@local
@@ -320,6 +317,11 @@ class MissionObject extends IntangibleObject {
 	@read
 	public int getRewardCredits() {
 		return rewardCredits;
+	}
+
+	@read
+	public int getRewardCreditsDivisor() {
+		return rewardCreditsDivisor;
 	}
 
 	@read

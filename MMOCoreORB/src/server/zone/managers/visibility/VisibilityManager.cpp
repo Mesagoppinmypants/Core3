@@ -26,13 +26,22 @@ void VisibilityManager::removePlayerFromBountyList(CreatureObject* creature) {
 }
 
 int VisibilityManager::calculateReward(CreatureObject* creature) {
-	//Minimum reward = 25k
-	int reward = 25000;
+	int minReward = 25000; // Minimum reward for a player bounty
+	int maxReward = 250000; // Maximum reward for a player bounty
 
-	// Skills... Max amount for a padawan is 250000, Max jedi_difficulty is 2800.
-	int jediDifficulty = creature->getSkillMod("private_jedi_difficulty");
-	if (jediDifficulty > 0) {
-		reward += MIN((jediDifficulty * 100), 225000);
+	int reward = minReward;
+
+	Reference<PlayerObject*> ghost = creature->getSlottedObject("ghost").castTo<PlayerObject*>();
+
+	if (ghost != NULL) {
+		int skillPoints = ghost->getSpentJediSkillPoints();
+
+		reward = skillPoints * 1000;
+
+		if (reward < minReward)
+			reward = minReward;
+		else if (reward > maxReward)
+			reward = maxReward;
 	}
 
 	return reward;
@@ -44,7 +53,7 @@ float VisibilityManager::calculateVisibilityIncrease(CreatureObject* creature) {
 	float visibilityIncrease = 0;
 
 	if (zone != NULL) {
-		SortedVector<ManagedReference<QuadTreeEntry* > > closeObjects;
+		SortedVector<QuadTreeEntry*> closeObjects;
 		CloseObjectsVector* closeObjectsVector = (CloseObjectsVector*) creature->getCloseObjects();
 		if (closeObjectsVector == NULL) {
 			zone->getInRangeObjects(creature->getWorldPositionX(), creature->getWorldPositionY(), 32, &closeObjects, true);
@@ -53,8 +62,8 @@ float VisibilityManager::calculateVisibilityIncrease(CreatureObject* creature) {
 		}
 
 		for (int i = 0; i < closeObjects.size(); ++i) {
-			SceneObject* obj = cast<SceneObject*>(closeObjects.get(i).get());
-			if (obj->isCreatureObject() && creature->isInRange(obj, 32)) {
+			SceneObject* obj = cast<SceneObject*>(closeObjects.get(i));
+			if (obj != NULL && obj->isCreatureObject() && creature->isInRange(obj, 32)) {
 				ManagedReference<CreatureObject*> c = cast<CreatureObject*>(obj);
 				if (c->isNonPlayerCreatureObject()) {
 					if (creature->getFaction() == 0 || (c->getFaction() != factionImperial && c->getFaction() != factionRebel)) {
