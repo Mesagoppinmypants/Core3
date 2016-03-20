@@ -43,13 +43,16 @@
 
 SaberPolearmDervishCommand = {
         name = "saberpolearmdervish",
-        
-                
+
 	damageMultiplier = 3.5,
 	speedMultiplier = 3.0,
+	healthCostMultiplier = 0,
+	actionCostMultiplier = 0,
+	mindCostMultiplier = 0,
 	areaAction = true,
 	areaRange = 16,
 	forceCostMultiplier = 2.5,
+	visMod = 25,
 
 		stateEffects = {
 	   StateEffect( 
@@ -81,12 +84,13 @@ SaberPolearmDervishCommand = {
 	  )
 	},
 
-	animationCRC = hashCode("showoff_2_light"),
+	animation = "showoff_2", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "saberpolearmdervish",
-	
+
 	poolsToDamage = RANDOM_ATTRIBUTE,
-	
+
 	weaponType = POLEARMJEDIWEAPON,
 
 	range = -1

@@ -10,6 +10,7 @@
 #include "server/zone/ZoneServer.h"
 #include "server/zone/objects/player/sessions/SlicingSession.h"
 #include "server/zone/objects/region/CityRegion.h"
+#include "server/zone/objects/tangible/terminal/mission/MissionTerminal.h"
 #include "server/zone/managers/gcw/GCWManager.h"
 #include "server/zone/Zone.h"
 
@@ -40,9 +41,22 @@ int PrecisionLaserKnifeImplementation::handleObjectMenuSelect(CreatureObject* pl
 			return 0;
 		}
 
+		MissionTerminal* terminal = target.castTo<MissionTerminal*>();
+
+		if (terminal == NULL || terminal->isBountyTerminal())
+			return 0;
+
 		ManagedReference<CityRegion*> city = player->getCityRegion();
 		if (city != NULL && !city->isClientRegion() && city->isBanned(player->getObjectID())) {
 			player->sendSystemMessage("@city/city:banned_services"); // You are banned from using this city's services.
+			return 0;
+		}
+
+		if (!player->checkCooldownRecovery("slicing.terminal")) {
+			StringIdChatParameter message;
+			message.setStringId("@slicing/slicing:not_yet"); // You will be able to hack the network again in %DI seconds.
+			message.setDI(player->getCooldownTime("slicing.terminal")->getTime() - Time().getTime());
+			player->sendSystemMessage(message);
 			return 0;
 		}
 
@@ -51,22 +65,22 @@ int PrecisionLaserKnifeImplementation::handleObjectMenuSelect(CreatureObject* pl
 	} else if (target->isArmorObject() && !player->hasSkill("combat_smuggler_slicing_03")) {
 		return 0;
 	} else if (target->isSecurityTerminal()) {
-		if (!player->hasSkill("combat_smuggler_slicing_01"))
-			return 0;
-
 		Zone* zone = target->getZone();
-		if(zone == NULL)
+		if (zone == NULL)
 			return 0;
 
 		GCWManager* gcwMan = zone->getGCWManager();
-		if(gcwMan == NULL)
+		if (gcwMan == NULL)
 			return 0;
 
-		if(!gcwMan->canStartSlice(player, target))
+		if (!gcwMan->canStartSlice(player, target))
 			return 0;
 
+		if (gcwMan->isTerminalDamaged(target)) {
+			player->sendSystemMessage("@hq:terminal_disabled"); // This terminal has been disabled. Repair the objectives to reactivate.
+			return 0;
+		}
 	}
-
 
 	if (target->isSliced()) {
 		player->sendSystemMessage("@slicing/slicing:already_sliced");
@@ -78,20 +92,13 @@ int PrecisionLaserKnifeImplementation::handleObjectMenuSelect(CreatureObject* pl
 		return 0;
 	}
 
-	if (!player->checkCooldownRecovery("slicing.terminal")) {
-		player->sendSystemMessage("@slicing/slicing:not_again");
-		return 0;
-	}
-
 	//Create Session
 	ManagedReference<SlicingSession*> session = new SlicingSession(player);
 
-	if(target->isSecurityTerminal())
+	if (target->isSecurityTerminal())
 		session->setBaseSlice(true);
 
 	session->initalizeSlicingMenu(player, target);
-
-	//useCharge(player);
 
 	return 0;
 }

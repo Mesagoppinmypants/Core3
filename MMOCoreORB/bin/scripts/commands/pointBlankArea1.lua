@@ -51,10 +51,11 @@ PointBlankArea1Command = {
 	mindCostMultiplier = 0.5,
 	accuracyBonus = 15,
 
-	coneAngle = 15,
-	coneAction = true,
+	areaRange = 15,
+	areaAction = true,
 
-	animationCRC = hashCode("fire_area_no_trails_light"),
+	animation = "fire_area_no_trails", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "pointblankblast",
 	

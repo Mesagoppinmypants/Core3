@@ -48,6 +48,7 @@ ForceLightningSingle2Command = {
 	maxDamage = 2000,
 	speed = 4.0,
 	forceCost = 150,
+	visMod = 25,
 	accuracySkillMod = "forcelightning_accuracy";
 
 	stateEffects = {
@@ -62,7 +63,8 @@ ForceLightningSingle2Command = {
 	  )
 	},
 
-	animationCRC = hashCode("force_lightning_1_particle_level_3_light"),
+	animation = "force_lightning_1_particle_level_3", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "forcelightningsingle2",
 

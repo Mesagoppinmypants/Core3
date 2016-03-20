@@ -10,6 +10,7 @@
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/player/sui/messagebox/SuiMessageBox.h"
 #include "server/zone/objects/player/sui/callbacks/ReactionFinePaymentSuiCallback.h"
+#include "server/zone/packets/object/CombatAction.h"
 
 void ReactionManagerImplementation::loadLuaConfig() {
 	Lua* lua = new Lua();
@@ -197,7 +198,7 @@ void ReactionManagerImplementation::sendChatReaction(AiAgent* npc, int type, int
 		message << ":" << typeString << num;
 		StringIdChatParameter chat;
 		chat.setStringId(message.toString());
-		zoneServer->getChatManager()->broadcastMessage(npc,chat,0,0,0);
+		zoneServer->getChatManager()->broadcastChatMessage(npc,chat,0,0,0);
 
 		npc->getCooldownTimerMap()->updateToCurrentAndAddMili("reaction_chat", 60000); // 60 second cooldown
 	}
@@ -264,7 +265,7 @@ void ReactionManagerImplementation::emoteReaction(CreatureObject* emoteUser, AiA
 	if (randomQuip != -1) {
 		StringIdChatParameter param(getReactionQuip(randomQuip));
 		param.setTT(emoteUser->getObjectID());
-		chatManager->broadcastMessage(emoteTarget, param, 0, 0, 0);
+		chatManager->broadcastChatMessage(emoteTarget, param, 0, 0, 0);
 	}
 
 	if (reactionFine->getFactionFine() != 0)
@@ -385,11 +386,13 @@ void ReactionManagerImplementation::doKnockdown(CreatureObject* victim, AiAgent*
 	else
 		knockdownAnim = "attack_high_center_light_0";
 
-	// TODO: Get knockdown animation working
-	//attacker->doCombatAnimation(victim, knockdownAnim.hashCode(), 0, 0xFF);
 
-	victim->inflictDamage(attacker, CreatureAttribute::MIND, victim->getHAM(CreatureAttribute::MIND) + 200, true);
+	victim->inflictDamage(attacker, CreatureAttribute::MIND, victim->getHAM(CreatureAttribute::MIND) + 200, true, true, true);
 
+
+	victim->updatePostures(); // set posture, don't send posture message, but send DeltaCreo3
+
+	attacker->doCombatAnimation(victim, knockdownAnim.hashCode(), HIT, 0xFF); // play attacker animation - This will update the victim's posture on the client
 }
 
 void ReactionManagerImplementation::doReactionFineMailCheck(CreatureObject* player) {

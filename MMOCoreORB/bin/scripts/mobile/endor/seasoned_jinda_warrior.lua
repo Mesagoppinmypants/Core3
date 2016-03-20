@@ -1,6 +1,7 @@
 seasoned_jinda_warrior = Creature:new {
 	objectName = "@mob/creature_names:seasoned_jinda_warrior",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jinda_tribe",
 	faction = "",
 	level = 35,
@@ -23,7 +24,7 @@ seasoned_jinda_warrior = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

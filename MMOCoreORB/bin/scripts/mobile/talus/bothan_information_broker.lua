@@ -1,6 +1,7 @@
 bothan_information_broker = Creature:new {
 	objectName = "@mob/creature_names:bothan_information_broker",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "spynet",
 	faction = "",
 	level = 3,
@@ -23,7 +24,7 @@ bothan_information_broker = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

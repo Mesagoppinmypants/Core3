@@ -1,6 +1,7 @@
 fbase_rebel_elite_sand_rat_hard = Creature:new {
 	objectName = "@mob/creature_names:fbase_rebel_elite_sand_rat_hard",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 140,
@@ -23,7 +24,7 @@ fbase_rebel_elite_sand_rat_hard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

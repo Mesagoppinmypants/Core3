@@ -1,6 +1,7 @@
 rebel_recruiter = Creature:new {
 	objectName = "@mob/creature_names:rebel_recruiter",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 20,
@@ -35,7 +36,7 @@ rebel_recruiter = Creature:new {
 	attacks = merge(riflemanmaster,pistoleermaster,carbineermaster,brawlermaster),
 	conversationTemplate = "rebelRecruiterConvoTemplate",
 	containerComponentTemplate = "FactionRecruiterContainerComponent",
-	optionsBitmask = 264
+	optionsBitmask = INVULNERABLE + CONVERSABLE
 
 }
 

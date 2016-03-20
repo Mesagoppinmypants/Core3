@@ -1,6 +1,7 @@
 gamorrean_guard = Creature:new {
 	objectName = "@mob/creature_names:gamorrean_guard",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jabba",
 	faction = "jabba",
 	level = 10,
@@ -23,7 +24,7 @@ gamorrean_guard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gamorrean.iff"},

@@ -1,6 +1,7 @@
 pubam_spiritmaster = Creature:new {
 	objectName = "@mob/creature_names:pubam_spiritmaster",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "pubam",
 	faction = "pubam",
 	level = 5,
@@ -23,7 +24,7 @@ pubam_spiritmaster = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

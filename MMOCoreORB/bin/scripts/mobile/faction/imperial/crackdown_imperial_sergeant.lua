@@ -1,6 +1,7 @@
 crackdown_imperial_sergeant = Creature:new {
 	objectName = "@mob/creature_names:crackdown_imperial_sergeant",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 1,
@@ -23,7 +24,7 @@ crackdown_imperial_sergeant = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_medic3_human_male_01.iff"},

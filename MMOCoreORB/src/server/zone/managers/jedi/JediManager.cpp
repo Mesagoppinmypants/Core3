@@ -22,6 +22,14 @@ String JediManager::getJediManagerName() {
 	return ret;
 }
 
+int JediManager::getJediProgressionType() {
+	ReadLocker locker(this);
+
+	int ret = jediProgressionType;
+
+	return ret;
+}
+
 void JediManager::setJediManagerName(String name) {
 	Locker writeLock(this);
 
@@ -47,10 +55,10 @@ void JediManager::loadConfiguration(Lua* luaEngine) {
 
 	switch (jediProgressionType) {
 	case HOLOGRINDJEDIPROGRESSION:
-		luaEngine->runFile("scripts/managers/jedi/hologrind/hologrind_jedi_manager.lua");
+		luaEngine->runFile("scripts/managers/jedi/hologrind_jedi_manager.lua");
 		break;
 	case VILLAGEJEDIPROGRESSION:
-		luaEngine->runFile("scripts/managers/jedi/village/village_jedi_manager.lua");
+		luaEngine->runFile("scripts/managers/jedi/village_jedi_manager.lua");
 		break;
 	case CUSTOMJEDIPROGRESSION:
 		luaEngine->runFile(luaEngine->getGlobalString(String("customJediProgressionFile")));
@@ -104,4 +112,13 @@ void JediManager::useItem(SceneObject* item, const int itemType, CreatureObject*
 	*luaUseItem << creature;
 
 	luaUseItem->callFunction();
+}
+
+void JediManager::onFSTreeCompleted(CreatureObject* creature, String branch) {
+	Lua* lua = DirectorManager::instance()->getLuaInstance();
+	Reference<LuaFunction*> luaStartTask = lua->createFunction(getJediManagerName(), "onFSTreeCompleted", 0);
+	*luaStartTask << creature;
+	*luaStartTask << branch;
+
+	luaStartTask->callFunction();
 }

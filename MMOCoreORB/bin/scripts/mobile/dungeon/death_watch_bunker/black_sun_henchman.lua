@@ -1,6 +1,7 @@
 black_sun_henchman = Creature:new {
 	objectName = "@mob/creature_names:mand_bunker_blksun_henchman",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "death_watch",
 	faction = "",
 	level = 76,
@@ -23,7 +24,7 @@ black_sun_henchman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 	scale = 1.15,
 

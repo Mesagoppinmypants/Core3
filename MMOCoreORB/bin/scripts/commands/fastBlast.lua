@@ -53,9 +53,11 @@ FastBlastCommand = {
 
 	poolsToDamage = HEALTH_ATTRIBUTE + ACTION_ATTRIBUTE + MIND_ATTRIBUTE,
 
-	animationCRC = hashCode("fire_5_special_single_light"),
+	animation = "fire_5_special_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "fastblast",
+	weaponType = PISTOLWEAPON,
 
 	range = -1
 }

@@ -22,7 +22,7 @@ novice_force_mystic = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_novice_force_mystic.iff"},
@@ -42,7 +42,7 @@ novice_force_mystic = Creature:new {
 	},
 	weapons = {"mixed_force_weapons"},
 	conversationTemplate = "",
-	attacks = merge(pikemanmaster,brawlermaster)
+	attacks = merge(pikemanmaster,brawlermaster,fencermaster)
 }
 
 CreatureTemplates:addCreatureTemplate(novice_force_mystic, "novice_force_mystic")

@@ -1,6 +1,7 @@
 fbase_imperial_master_sergeant = Creature:new {
 	objectName = "@mob/creature_names:fbase_imperial_master_sergeant",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 28,
@@ -23,7 +24,7 @@ fbase_imperial_master_sergeant = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_medic3_human_male_01.iff"},

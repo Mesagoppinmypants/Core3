@@ -41,11 +41,14 @@ protected:
 	float mindCostMultiplier;
 	float forceCostMultiplier;
 	float forceCost;
+	int visMod;
 
+	int coneRange;
 	int range;
 
 	String accuracySkillMod;
 
+	bool splashDamage;
 	bool areaAction;
 	bool coneAction;
 	int coneAngle;
@@ -53,18 +56,24 @@ protected:
 
 	String combatSpam;
 	String stateSpam;
-	uint32 animationCRC;
+	String animation;
 	String effectString;
 
 	VectorMap<uint8, StateEffect> stateEffects;
-	VectorMap<uint64, DotEffect> dotEffects;
+	Vector<DotEffect> dotEffects;
 
 	uint8 attackType;
 	uint8 trails;
+	uint8 animType;
 
 	uint32 weaponType;
 
 public:
+	enum AnimGenTypes {
+		GENERATE_NONE, // Uses animation as given - Default
+		GENERATE_RANGED, // Generates _light|_medium as well as appends _face with headshots
+		GENERATE_INTENSITY // generates _light|_medium only
+	};
 
 	CombatQueueCommand(const String& name, ZoneProcessServer* server) : QueueCommand(name, server) {
 
@@ -82,10 +91,13 @@ public:
 		// Force Power is only set in Jedi-skills.
 		forceCostMultiplier = 0;
 		forceCost = 0;
+		visMod = 0;
 
 		poolsToDamage = CombatManager::RANDOM;
 
 		coneAngle = 30;
+
+		coneRange = -1;
 
 		//for weapon set -1
 		range = -1;
@@ -93,11 +105,14 @@ public:
 		accuracySkillMod = "";
 
 		areaRange = 0;
+		splashDamage = false;
 		areaAction = false;
 		coneAction = false;
 
 		combatSpam = "";
-		animationCRC = 0;
+		animation = "";
+		animType = GENERATE_NONE;
+
 
 		attackType = CombatManager::WEAPONATTACK;
 		trails = CombatManager::DEFAULTTRAIL;
@@ -112,7 +127,7 @@ public:
 		if (targetObject == NULL || !targetObject->isTangibleObject() || targetObject == creature)
 			return INVALIDTARGET;
 
-		float checkRange = range;
+		float rangeToCheck = range;
 
 		if (weapon == NULL) {
 			if(creature->getWeapon() == NULL) {
@@ -126,8 +141,8 @@ public:
 		if (!(getWeaponType() & weapon->getWeaponBitmask()))
 			return INVALIDWEAPON;
 
-		if (checkRange == -1)
-			checkRange = MAX(10.f, weapon->getMaxRange());
+		if (rangeToCheck == -1)
+			rangeToCheck = MAX(10.f, weapon->getMaxRange());
 
 		if (creature->isDead() || (creature->isPet() && creature->isIncapacitated()))
 			return INVALIDLOCOMOTION;
@@ -136,12 +151,48 @@ public:
 			PlayerObject* ghost = creature->getPlayerObject();
 
 			if (ghost != NULL) {
-				if (ghost->isOnLoadScreen()) {
+				if (ghost->isOnLoadScreen())
 					ghost->setOnLoadScreen(false);
-				}
 
-				if (ghost->isAFK()) {
+				if (ghost->isAFK())
 					return GENERALERROR;
+
+				ManagedReference<TangibleObject*> targetTano = targetObject.castTo<TangibleObject*>();
+
+				if (targetTano != NULL && creature->getFaction() != 0 && targetTano->getFaction() != 0 && targetTano->getFaction() != creature->getFaction() && ghost->getFactionStatus() != FactionStatus::OVERT) {
+					if (targetTano->isCreatureObject()) {
+						ManagedReference<CreatureObject*> targetCreature = targetObject.castTo<CreatureObject*>();
+
+						if (targetCreature != NULL) {
+							if (targetCreature->isPlayerCreature()) {
+								if (!CombatManager::instance()->areInDuel(creature, targetCreature)) {
+									PlayerObject* targetGhost = targetCreature->getPlayerObject();
+
+									if (targetGhost != NULL && targetGhost->getFactionStatus() == FactionStatus::OVERT) {
+										ghost->doFieldFactionChange(FactionStatus::OVERT);
+									}
+								}
+							} else if (targetCreature->isPet()) {
+								ManagedReference<CreatureObject*> targetOwner = targetCreature->getLinkedCreature().get();
+
+								if (targetOwner != NULL && !CombatManager::instance()->areInDuel(creature, targetOwner)) {
+									PlayerObject* targetGhost = targetOwner->getPlayerObject();
+
+									if (targetGhost != NULL && targetGhost->getFactionStatus() == FactionStatus::OVERT) {
+										ghost->doFieldFactionChange(FactionStatus::OVERT);
+									}
+								}
+							} else {
+								if (ghost->getFactionStatus() == FactionStatus::ONLEAVE)
+									ghost->doFieldFactionChange(FactionStatus::COVERT);
+							}
+						}
+					} else {
+						if (ghost->getFactionStatus() == FactionStatus::ONLEAVE && !(targetTano->getPvpStatusBitmask() & CreatureFlag::OVERT))
+							ghost->doFieldFactionChange(FactionStatus::COVERT);
+						else if ((targetTano->getPvpStatusBitmask() & CreatureFlag::OVERT))
+							ghost->doFieldFactionChange(FactionStatus::OVERT);
+					}
 				}
 			}
 		}
@@ -152,15 +203,30 @@ public:
 		if (creature->isProne() && (weapon->isMeleeWeapon() || poolsToDamage == 0))
 			return NOPRONE;
 
-		if (!targetObject->isInRange(creature, checkRange + targetObject->getTemplateRadius() + creature->getTemplateRadius()))
+		if(!checkDistance(creature, targetObject, rangeToCheck))
 			return TOOFAR;
 
-		if (weapon->isRangedWeapon() && creature->isProne() && targetObject->isInRange(creature, 7 + targetObject->getTemplateRadius() + creature->getTemplateRadius()))
+		if (weapon->isRangedWeapon() && creature->isProne() && checkDistance(targetObject, creature, 7))
 			return TOOCLOSE;
 
 		if (!CollisionManager::checkLineOfSight(creature, targetObject)) {
 			creature->sendSystemMessage("@container_error_message:container18");
 			return GENERALERROR;
+		}
+
+		if (creature->isPlayerCreature() && !targetObject->isPlayerCreature() && targetObject->getParentID() != 0 && creature->getParentID() != targetObject->getParentID()) {
+			Reference<CellObject*> targetCell = targetObject->getParent().castTo<CellObject*>();
+
+			if (targetCell != NULL) {
+				ContainerPermissions* perms = targetCell->getContainerPermissions();
+
+				if (!perms->hasInheritPermissionsFromParent()) {
+					if (!targetCell->checkContainerPermission(creature, ContainerPermissions::WALKIN)) {
+						creature->sendSystemMessage("@container_error_message:container18");
+						return GENERALERROR;
+					}
+				}
+			}
 		}
 
 		CombatManager* combatManager = CombatManager::instance();
@@ -190,7 +256,7 @@ public:
 		}
 
 		try {
-			int res = combatManager->doCombatAction(creature, weapon, cast<TangibleObject*>(targetObject.get()), CreatureAttackData(arguments, this));
+			int res = combatManager->doCombatAction(creature, weapon, cast<TangibleObject*>(targetObject.get()), CreatureAttackData(arguments, this, target));
 
 			switch (res) {
 			case -1:
@@ -250,6 +316,10 @@ public:
 		return mindCostMultiplier;
 	}
 
+	inline int getConeRange() const {
+		return coneRange;
+	}
+
 	inline int getRange() const {
 		return range;
 	}
@@ -272,6 +342,10 @@ public:
 
 	inline float getSpeed() const {
 		return speed;
+	}
+
+	inline bool isSplashDamage() const {
+		return splashDamage;
 	}
 
 	inline bool isAreaAction() const {
@@ -330,6 +404,10 @@ public:
 		this->coneAngle = i;
 	}
 
+	void setSplashDamage(bool b) {
+		this->splashDamage = b;
+	}
+
 	void setAreaAction(bool b) {
 		this->areaAction = b;
 	}
@@ -354,9 +432,119 @@ public:
 		this->speed = speedd;
 	}
 
-	inline uint32 getAnimationCRC() const {
-		return animationCRC;
+	void setAnimType(uint8 type) {
+		animType = type;
 	}
+
+	uint8 getAnimType() const {
+		return animType;
+	}
+
+	String getAnimationString() const {
+		return animation;
+	}
+
+	static inline String getIntensity(int threshold, int damage) {
+		if(damage > threshold)
+			return "_medium";
+		else
+			return "_light";
+	}
+
+	String getDefaultAttackAnimation(TangibleObject* attacker, WeaponObject* weapon, uint8 hitLocation, int damage) const {
+			enum lateralLocations {LEFT, CENTER, RIGHT};
+			static const char* headLocations[] =  {"attack_high_left", "attack_high_center", "attack_high_right"};
+			static const char* chestLocations[] = {"attack_mid_left", "attack_mid_center", "attack_mid_right"};
+			static const char* legLocations[] = {"attack_low_left", "attack_low_center", "attack_low_right"};
+
+			static const char* rangedAttacks[] = {"fire_1_single", "fire_3_single", "fire_5_single"};
+
+			String intensity = getIntensity((weapon != NULL ? (((uint32)weapon->getMaxDamage()) >> 2) : 0), damage);
+			StringBuffer buffer;
+			if(!attacker->isCreature()) {
+				if(weapon->isRangedWeapon()) {
+
+					buffer << rangedAttacks[System::random(2)];
+
+					buffer << intensity;
+
+					if(hitLocation == CombatManager::HIT_HEAD)
+						buffer << "_face";
+
+				} else {
+					if(hitLocation == 0)
+						hitLocation = System::random(5)+1;
+
+					switch(hitLocation) {
+					case CombatManager::HIT_BODY:
+						buffer << chestLocations[CENTER];
+						break;
+					case CombatManager::HIT_LARM:
+						buffer << chestLocations[RIGHT];
+						break;
+					case CombatManager::HIT_RARM:
+						buffer << chestLocations[LEFT]; // these are purposely backwards - It's mirrored
+						break;
+					case CombatManager::HIT_LLEG:
+						buffer << legLocations[System::random(1)+1];
+						break;
+					case CombatManager::HIT_RLEG:
+						buffer << legLocations[System::random(1)];
+						break;
+					case CombatManager::HIT_HEAD:
+						buffer << headLocations[System::random(2)];
+						break;
+					}
+
+					buffer << intensity;
+
+					// TODO: Actually sequence these
+					buffer << "_" << String::valueOf(System::random(3));
+				}
+			} else {
+				if (attacker->getGameObjectType() == SceneObjectType::DROIDCREATURE || attacker->getGameObjectType() == SceneObjectType::PROBOTCREATURE)
+					return "droid_attack" + intensity;
+				else if (weapon->isRangedWeapon())
+					return "creature_attack_ranged" + intensity;
+				else
+					return "creature_attack" + intensity;
+			}
+
+			//info("Generated Attack Animation- " + buffer.toString(), true);
+			return buffer.toString();
+		}
+
+	inline String generateAnimation(uint8 hitLocation, int weaponThreshold, int damage) const {
+		String anim = animation;
+
+		switch(animType) {
+		case GENERATE_NONE:
+			break;
+		case GENERATE_RANGED:
+		case GENERATE_INTENSITY:
+			anim += getIntensity(weaponThreshold, damage);
+
+			if(animType == GENERATE_INTENSITY)
+				return anim;
+
+			if(hitLocation == CombatManager::HIT_HEAD)
+				anim += "_face";
+
+			return anim;
+		}
+		//info("Generated Attack Animation- " + anim, true);
+		return anim;
+	}
+	virtual String getAnimation(TangibleObject* attacker, TangibleObject* defender, WeaponObject* weapon, uint8 hitLocation, int damage) const {
+
+		if(animation.isEmpty())
+			return getDefaultAttackAnimation(attacker, weapon, hitLocation, damage);
+
+		return generateAnimation(hitLocation, (weapon != NULL ? (((uint32)weapon->getMaxDamage()) >> 2) : 0), damage);
+
+	}
+
+
 
 	inline String getEffectString() const {
 		return effectString;
@@ -374,12 +562,12 @@ public:
 		return &(const_cast<CombatQueueCommand*>(this)->stateEffects);
 	}
 
-	inline VectorMap<uint64, DotEffect>* getDotEffects() const {
+	inline Vector<DotEffect>* getDotEffects() const {
 		return &(const_cast<CombatQueueCommand*>(this)->dotEffects);
 	}
 
-	void setAnimationCRC(uint32 animationCRC) {
-		this->animationCRC = animationCRC;
+	void setAnimationString(String anim) {
+		this->animation = anim;
 	}
 
 	void setCombatSpam(String combatSpam) {
@@ -402,7 +590,7 @@ public:
 		return const_cast<CombatQueueCommand*>(this)->stateEffects.get(type);
 	}
 
-	void setDotEffects(VectorMap<uint64, DotEffect> dotEffects) {
+	void setDotEffects(Vector<DotEffect> dotEffects) {
 		this->dotEffects = dotEffects;
 	}
 
@@ -431,11 +619,11 @@ public:
 	}
 
 	void addDotEffect(DotEffect dotEffect) {
-		dotEffects.put(dotEffect.getDotType(), dotEffect);
+		dotEffects.add(dotEffect);
 	}
 
-	DotEffect getDotEffect(uint64 type) {
-		return dotEffects.get(type);
+	void setConeRange(int i) {
+		this->coneRange = i;
 	}
 
 	void setRange(int i) {
@@ -459,7 +647,7 @@ public:
 	}
 
 	// this goes in command in order to allow for overriding for special commands
-	virtual void applyEffect(CreatureObject* creature, uint8 effectType, uint32 mod, uint32 crc = 0) const {
+	virtual void applyEffect(CreatureObject* attacker, CreatureObject* defender, uint8 effectType, uint32 mod) const {
 		CombatManager* combatManager = CombatManager::instance();
 		StateEffect effect = getStateEffect(effectType);
 		Reference<Buff*> buff = NULL;
@@ -467,7 +655,7 @@ public:
 		Vector<String> defenseMods = effect.getDefenderStateDefenseModifiers();
 		float targetDefense = 0.f;
 		for (int j = 0; j < defenseMods.size(); j++)
-			targetDefense += creature->getSkillMod(defenseMods.get(j));
+			targetDefense += defender->getSkillMod(defenseMods.get(j));
 
 		targetDefense -= mod;
 
@@ -475,120 +663,129 @@ public:
 
 		switch (effectType) {
 		case CommandEffect::BLIND:
-			creature->setBlindedState(duration);
+			defender->setBlindedState(duration);
 			break;
 		case CommandEffect::DIZZY:
-			creature->setDizziedState(duration);
+			defender->setDizziedState(duration);
 			break;
 		case CommandEffect::INTIMIDATE:
-			creature->setIntimidatedState(mod, crc, duration);
+			defender->setIntimidatedState(duration);
 			break;
 		case CommandEffect::STUN:
-			creature->setStunnedState(duration);
+			defender->setStunnedState(duration);
 			break;
 		case CommandEffect::KNOCKDOWN:
-			if (!creature->checkKnockdownRecovery()) {
-				if (creature->getPosture() != CreaturePosture::UPRIGHT)
-					creature->setPosture(CreaturePosture::UPRIGHT);
+			if (!defender->checkKnockdownRecovery()) {
+				if (defender->getPosture() != CreaturePosture::UPRIGHT)
+					defender->setPosture(CreaturePosture::UPRIGHT, false, false);
 				break;
 			}
 
-			if (creature->isRidingMount()) {
-				creature->updateCooldownTimer("mount_dismount", 0);
-				creature->dismount();
+			if (defender->isRidingMount()) {
+				defender->updateCooldownTimer("mount_dismount", 0);
+				defender->dismount();
 			}
 
-			if (!creature->isDead() && !creature->isIncapacitated())
-				creature->setPosture(CreaturePosture::KNOCKEDDOWN);
+			if (!defender->isDead() && !defender->isIncapacitated())
+				defender->setPosture(CreaturePosture::KNOCKEDDOWN, false, false);
 
-			creature->updateKnockdownRecovery();
-			creature->updatePostureChangeDelay(5000);
-			creature->removeBuff(STRING_HASHCODE("burstrun"));
-			creature->removeBuff(STRING_HASHCODE("retreat"));
-			creature->sendSystemMessage("@cbt_spam:posture_knocked_down");
-			creature->sendStateCombatSpam("cbt_spam", "posture_knocked_down", 0, 0, false);
+			defender->updateKnockdownRecovery();
+			defender->updatePostureChangeDelay(5000);
+			defender->removeBuff(STRING_HASHCODE("burstrun"));
+			defender->removeBuff(STRING_HASHCODE("retreat"));
+			defender->sendSystemMessage("@cbt_spam:posture_knocked_down");
+			defender->sendStateCombatSpam("cbt_spam", "posture_knocked_down", 0, 0, false);
 			break;
 		case CommandEffect::POSTUREUP:
-			if (!creature->checkPostureUpRecovery()) {
-				if (creature->getPosture() != CreaturePosture::UPRIGHT)
-					creature->setPosture(CreaturePosture::UPRIGHT);
+			if (!defender->checkPostureUpRecovery()) {
+				if (defender->getPosture() != CreaturePosture::UPRIGHT)
+					defender->setPosture(CreaturePosture::UPRIGHT, false, false);
 				break;
 			}
 
-			if (creature->isRidingMount()) {
-				creature->updateCooldownTimer("mount_dismount", 0);
-				creature->dismount();
+			if (defender->isRidingMount()) {
+				defender->updateCooldownTimer("mount_dismount", 0);
+				defender->dismount();
 			}
 
-			if (creature->getPosture() == CreaturePosture::PRONE) {
-				creature->setPosture(CreaturePosture::CROUCHED);
-				creature->sendSystemMessage("@cbt_spam:force_posture_change_1");
-				creature->sendStateCombatSpam("cbt_spam", "force_posture_change_1", 0, 0, false);
-			} else if (creature->getPosture() == CreaturePosture::CROUCHED) {
-				creature->setPosture(CreaturePosture::UPRIGHT);
-				creature->sendSystemMessage("@cbt_spam:force_posture_change_0");
-				creature->sendStateCombatSpam("cbt_spam", "force_posture_change_0", 0, 0, false);
+			if (defender->getPosture() == CreaturePosture::PRONE) {
+				defender->setPosture(CreaturePosture::CROUCHED, false, false);
+				defender->sendSystemMessage("@cbt_spam:force_posture_change_1");
+				defender->sendStateCombatSpam("cbt_spam", "force_posture_change_1", 0, 0, false);
+			} else if (defender->getPosture() == CreaturePosture::CROUCHED) {
+				defender->setPosture(CreaturePosture::UPRIGHT, false, false);
+				defender->sendSystemMessage("@cbt_spam:force_posture_change_0");
+				defender->sendStateCombatSpam("cbt_spam", "force_posture_change_0", 0, 0, false);
 			}
 
-			creature->updatePostureUpRecovery();
-			creature->updatePostureChangeDelay(2500);
-			creature->removeBuff(STRING_HASHCODE("burstrun"));
-			creature->removeBuff(STRING_HASHCODE("retreat"));
+			defender->updatePostureUpRecovery();
+			defender->updatePostureChangeDelay(2500);
+			defender->removeBuff(STRING_HASHCODE("burstrun"));
+			defender->removeBuff(STRING_HASHCODE("retreat"));
 			break;
 		case CommandEffect::POSTUREDOWN:
-			if (!creature->checkPostureDownRecovery()) {
-				if (creature->getPosture() != CreaturePosture::UPRIGHT)
-					creature->setPosture(CreaturePosture::UPRIGHT);
+			if (!defender->checkPostureDownRecovery()) {
+				if (defender->getPosture() != CreaturePosture::UPRIGHT)
+					defender->setPosture(CreaturePosture::UPRIGHT, false, false);
 				break;
 			}
 
-			if (creature->isRidingMount()) {
-				creature->updateCooldownTimer("mount_dismount", 0);
-				creature->dismount();
+			if (defender->isRidingMount()) {
+				defender->updateCooldownTimer("mount_dismount", 0);
+				defender->dismount();
 			}
 
-			if (creature->getPosture() == CreaturePosture::UPRIGHT) {
-				creature->setPosture(CreaturePosture::CROUCHED);
-				creature->sendSystemMessage("@cbt_spam:force_posture_change_1");
-				creature->sendStateCombatSpam("cbt_spam", "force_posture_change_1", 0, 0, false);
-			} else if (creature->getPosture() == CreaturePosture::CROUCHED) {
-				creature->setPosture(CreaturePosture::PRONE);
-				creature->sendSystemMessage("@cbt_spam:force_posture_change_2");
-				creature->sendStateCombatSpam("cbt_spam", "force_posture_change_2", 0, 0, false);
+			if (defender->getPosture() == CreaturePosture::UPRIGHT) {
+				defender->setPosture(CreaturePosture::CROUCHED, false, false);
+				defender->sendSystemMessage("@cbt_spam:force_posture_change_1");
+				defender->sendStateCombatSpam("cbt_spam", "force_posture_change_1", 0, 0, false);
+			} else if (defender->getPosture() == CreaturePosture::CROUCHED) {
+				defender->setPosture(CreaturePosture::PRONE, false, false);
+				defender->sendSystemMessage("@cbt_spam:force_posture_change_2");
+				defender->sendStateCombatSpam("cbt_spam", "force_posture_change_2", 0, 0, false);
 			}
 
-			creature->updatePostureDownRecovery();
-			creature->updatePostureChangeDelay(2500);
-			creature->removeBuff(STRING_HASHCODE("burstrun"));
-			creature->removeBuff(STRING_HASHCODE("retreat"));
+			defender->updatePostureDownRecovery();
+			defender->updatePostureChangeDelay(2500);
+			defender->removeBuff(STRING_HASHCODE("burstrun"));
+			defender->removeBuff(STRING_HASHCODE("retreat"));
 			break;
 		case CommandEffect::NEXTATTACKDELAY:
-			creature->setNextAttackDelay(mod, duration);
+			defender->setNextAttackDelay(mod, duration);
 			break;
 		case CommandEffect::HEALTHDEGRADE:
-			buff = new Buff(creature, STRING_HASHCODE("healthdegrade"), duration, BuffType::STATE);
+			buff = new Buff(defender, STRING_HASHCODE("healthdegrade"), duration, BuffType::STATE);
 			buff->setAttributeModifier(CreatureAttribute::CONSTITUTION, -1*effect.getStateStrength());
 			buff->setAttributeModifier(CreatureAttribute::STRENGTH, -1*effect.getStateStrength());
-			creature->addBuff(buff);
+			defender->addBuff(buff);
 			break;
 		case CommandEffect::ACTIONDEGRADE:
-			buff = new Buff(creature, STRING_HASHCODE("actiondegrade"), duration, BuffType::STATE);
+			buff = new Buff(defender, STRING_HASHCODE("actiondegrade"), duration, BuffType::STATE);
 			buff->setAttributeModifier(CreatureAttribute::QUICKNESS, -1*effect.getStateStrength());
 			buff->setAttributeModifier(CreatureAttribute::STAMINA, -1*effect.getStateStrength());
-			creature->addBuff(buff);
+			defender->addBuff(buff);
 			break;
 		case CommandEffect::MINDDEGRADE:
-			buff = new Buff(creature, STRING_HASHCODE("minddegrade"), duration, BuffType::STATE);
+			buff = new Buff(defender, STRING_HASHCODE("minddegrade"), duration, BuffType::STATE);
 			buff->setAttributeModifier(CreatureAttribute::FOCUS, -1*effect.getStateStrength());
 			buff->setAttributeModifier(CreatureAttribute::WILLPOWER, -1*effect.getStateStrength());
-			creature->addBuff(buff);
+			defender->addBuff(buff);
 			break;
 		case CommandEffect::REMOVECOVER:
-			if (creature->hasState(CreatureState::COVER)) {
-				creature->clearState(CreatureState::COVER);
-				creature->sendSystemMessage("@combat_effects:strafe_system");
-				creature->setNextAttackDelay(mod, duration);
+			if (defender->hasState(CreatureState::COVER)) {
+				defender->clearState(CreatureState::COVER);
+				defender->sendSystemMessage("@combat_effects:strafe_system");
+				defender->setNextAttackDelay(mod, duration);
 			}
+			break;
+		case CommandEffect::ATTACKER_FORCE_STAND:
+			attacker->setPosture(CreaturePosture::UPRIGHT, false, false);
+			break;
+		case CommandEffect::ATTACKER_FORCE_CROUCH:
+			attacker->setPosture(CreaturePosture::CROUCHED, false, false);
+			break;
+		case CommandEffect::ATTACKER_FORCE_PRONE:
+			attacker->setPosture(CreaturePosture::PRONE, false, false);
 			break;
 		default:
 			break;
@@ -656,6 +853,14 @@ public:
 
 	bool validateWeapon(WeaponObject* weapon) {
 		return true;
+	}
+
+	void setVisMod(int vm) {
+		visMod = vm;
+	}
+
+	int getVisMod() const {
+		return visMod;
 	}
 
 };

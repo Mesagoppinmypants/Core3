@@ -1,6 +1,7 @@
 first_brigade_sergeant = Creature:new {
 	objectName = "@mob/creature_names:brigade_sergeant",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "restuss",
 	faction = "restuss",
 	level = 10,
@@ -23,7 +24,7 @@ first_brigade_sergeant = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

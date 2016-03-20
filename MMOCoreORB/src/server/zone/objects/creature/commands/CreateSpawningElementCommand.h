@@ -15,6 +15,7 @@
 #include "server/zone/templates/mobile/LairTemplate.h"
 #include "server/zone/managers/creature/CreatureTemplateManager.h"
 #include "server/zone/managers/structure/StructureManager.h"
+#include "server/zone/templates/tangible/SharedStructureObjectTemplate.h"
 
 class CreateSpawningElementCommand : public QueueCommand {
 public:
@@ -36,8 +37,6 @@ public:
 		if (!creature->isPlayerCreature())
 			return GENERALERROR;
 
-		StringTokenizer tokenizer(arguments.toString());
-
 		ManagedReference<SceneObject* > object = server->getZoneServer()->getObject(target);
 
 		StringTokenizer args(arguments.toString());
@@ -49,7 +48,8 @@ public:
 			return GENERALERROR;
 
 		if (!args.hasMoreTokens()) {
-			creature->sendSystemMessage("Spawn: /createSpawningElement spawn lairTemplate/IffObjectPath <level>");
+			creature->sendSystemMessage("Spawn: /createSpawningElement spawn IffObjectPath [x z y heading]");
+			creature->sendSystemMessage("Spawn: /createSpawningElement lair lairTemplate [level]");
 			creature->sendSystemMessage("Delete: /createSpawningElement delete oid");
 			return INVALIDPARAMETERS;
 		}
@@ -63,7 +63,7 @@ public:
 			return GENERALERROR;
 
 		try {
-			if (action.toLowerCase() == "spawn") {
+			if (action.toLowerCase() == "lair") {
 				String objectTemplate;
 				args.getStringToken(objectTemplate);
 				float x = creature->getPositionX();
@@ -102,16 +102,35 @@ public:
 					}
 
 				}
+			} else if (action.toLowerCase() == "spawn") {
+				String objectTemplate;
+				args.getStringToken(objectTemplate);
+				float x = creature->getPositionX();
+				float z = creature->getPositionZ();
+				float y = creature->getPositionY();
+				float heading = creature->getDirectionAngle();
+
+				if (args.hasMoreTokens())
+					x = args.getFloatToken();
+
+				if (args.hasMoreTokens())
+					z = args.getFloatToken();
+
+				if (args.hasMoreTokens())
+					y = args.getFloatToken();
+
+				if (args.hasMoreTokens())
+					heading = args.getFloatToken();
 
 				SharedStructureObjectTemplate* serverTemplate = dynamic_cast<SharedStructureObjectTemplate*>(TemplateManager::instance()->getTemplate(objectTemplate.hashCode()));
 				if (serverTemplate != NULL) {
 					if (creature->getParent() != NULL) {
 						creature->sendSystemMessage("You need to be outside and unmounted to spawn a structure");
-
 						return GENERALERROR;
 					}
 
-					StructureObject* structure = StructureManager::instance()->placeStructure(creature, objectTemplate, x, y, creature->getDirectionAngle(), 0);
+					StructureObject* structure = StructureManager::instance()->placeStructure(creature, objectTemplate, x, y, heading, 0);
+
 					if (structure == NULL)
 						return GENERALERROR;
 
@@ -181,7 +200,8 @@ public:
 
 			}
 		} catch (Exception& e) {
-			creature->sendSystemMessage("Spawn: /createSpawningElement spawn lairTemplate/IffObjectPath <level>");
+			creature->sendSystemMessage("Spawn: /createSpawningElement spawn IffObjectPath [x z y heading]");
+			creature->sendSystemMessage("Spawn: /createSpawningElement lair lairTemplate [level]");
 			creature->sendSystemMessage("Delete: /createSpawningElement delete oid");
 		}
 

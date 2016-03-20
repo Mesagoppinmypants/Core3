@@ -1,6 +1,7 @@
 corsec_cadet = Creature:new {
 	objectName = "@mob/creature_names:corsec_cadet",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "corsec",
 	faction = "corsec",
 	level = 12,
@@ -23,7 +24,7 @@ corsec_cadet = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

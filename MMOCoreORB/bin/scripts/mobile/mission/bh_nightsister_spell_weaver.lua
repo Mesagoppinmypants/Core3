@@ -1,6 +1,7 @@
 bh_nightsister_spell_weaver = Creature:new {
 	objectName = "@mob/creature_names:nightsister_spell_weaver",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "nightsister",
 	faction = "nightsister",
 	level = 107,
@@ -23,7 +24,7 @@ bh_nightsister_spell_weaver = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_nightsister_spellweaver.iff"},

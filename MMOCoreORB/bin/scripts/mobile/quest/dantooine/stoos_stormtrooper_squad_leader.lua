@@ -1,6 +1,7 @@
 stoos_stormtrooper_squad_leader = Creature:new {
   objectName = "@mob/creature_names:stormtrooper_squad_leader",
-  randomNameType = NAME_STORMTROOPER_TAG,
+  randomNameType = NAME_STORMTROOPER,
+	randomNameTag = true,
   socialGroup = "imperial",
   faction = "imperial",
   level = 27,
@@ -23,7 +24,7 @@ stoos_stormtrooper_squad_leader = Creature:new {
   ferocity = 0,
   pvpBitmask = NONE,
   creatureBitmask = NONE,
-  optionsBitmask = 136,
+  optionsBitmask = AIENABLED + CONVERSABLE,
   diet = HERBIVORE,
 
   templates = {"object/mobile/dressed_stormtrooper_squad_leader_white_white.iff"},

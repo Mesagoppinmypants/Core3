@@ -1,6 +1,7 @@
 explorer = Creature:new {
 	objectName = "@mob/creature_names:explorer",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "wilder",
 	faction = "",
 	level = 7,
@@ -23,7 +24,7 @@ explorer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {	"object/mobile/dressed_commoner_fat_zabrak_male_01.iff",

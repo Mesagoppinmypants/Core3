@@ -1,6 +1,7 @@
 sennex_warder = Creature:new {
 	objectName = "@mob/creature_names:sennex_warder",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "sennex",
 	faction = "pirate",
 	level = 20,
@@ -23,7 +24,7 @@ sennex_warder = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_sennex_pirate_01.iff",

@@ -1,6 +1,7 @@
 proficient_jinda_worker = Creature:new {
 	objectName = "@mob/creature_names:proficient_jinda_worker",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jinda_tribe",
 	faction = "",
 	level = 28,
@@ -23,7 +24,7 @@ proficient_jinda_worker = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

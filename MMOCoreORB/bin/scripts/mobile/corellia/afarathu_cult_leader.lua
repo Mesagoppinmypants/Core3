@@ -1,6 +1,7 @@
 afarathu_cult_leader = Creature:new {
 	objectName = "@mob/creature_names:afarathu_cult_leader",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "afarathu",
 	faction = "afarathu",
 	level = 18,
@@ -23,7 +24,7 @@ afarathu_cult_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_selonian_m_01.iff",

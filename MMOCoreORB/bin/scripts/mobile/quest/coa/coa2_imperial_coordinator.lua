@@ -1,6 +1,7 @@
 coa2_imperial_coordinator = Creature:new {
 	objectName = "@mob/creature_names:coa2_imperial_coordinator",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 25,
@@ -23,7 +24,7 @@ coa2_imperial_coordinator = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_officer_m_3.iff"},

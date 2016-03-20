@@ -1,6 +1,7 @@
 champhra_agriculturalist = Creature:new {
 	objectName = "@mob/creature_names:farmer_agriculturalist",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
 	faction = "townsperson",
 	level = 10,
@@ -23,7 +24,7 @@ champhra_agriculturalist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_quest_farmer.iff",

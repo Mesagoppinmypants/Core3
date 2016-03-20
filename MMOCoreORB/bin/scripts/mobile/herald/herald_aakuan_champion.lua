@@ -1,6 +1,7 @@
 herald_aakuan_champion = Creature:new {
 	objectName = "@mob/creature_names:aakuan_champion",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "aakuans",
 	faction = "aakuans",
 	level = 30,
@@ -23,7 +24,7 @@ herald_aakuan_champion = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

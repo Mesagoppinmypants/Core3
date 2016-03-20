@@ -1,6 +1,7 @@
 fbase_imperial_medic = Creature:new {
 	objectName = "@mob/creature_names:fbase_imperial_medic",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 26,
@@ -23,7 +24,7 @@ fbase_imperial_medic = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HEALER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

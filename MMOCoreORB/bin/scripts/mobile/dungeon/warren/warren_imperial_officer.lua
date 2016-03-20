@@ -1,6 +1,7 @@
 warren_imperial_officer = Creature:new {
 	objectName = "@mob/creature_names:warren_imperial_officer",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "warren_imperial",
 	faction = "",
 	level = 27,
@@ -23,7 +24,7 @@ warren_imperial_officer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE + AGGRESSIVE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

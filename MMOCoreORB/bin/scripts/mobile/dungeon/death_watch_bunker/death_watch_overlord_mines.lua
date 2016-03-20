@@ -1,6 +1,7 @@
 death_watch_overlord_mines = Creature:new {
 	objectName = "@mob/creature_names:mand_bunker_dthwatch_gold",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "death_watch",
 	faction = "",
 	level = 221,
@@ -23,7 +24,7 @@ death_watch_overlord_mines = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 	scale = 1.15,
 

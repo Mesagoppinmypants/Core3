@@ -1,6 +1,7 @@
 naboo_pirate_cutthroat = Creature:new {
 	objectName = "@mob/creature_names:naboo_pirate_cutthroat",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "naboo_pirate",
 	faction = "naboo_pirate",
 	level = 11,
@@ -23,7 +24,7 @@ naboo_pirate_cutthroat = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

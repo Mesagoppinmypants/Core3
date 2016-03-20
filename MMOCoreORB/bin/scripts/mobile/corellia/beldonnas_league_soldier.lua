@@ -1,6 +1,7 @@
 beldonnas_league_soldier = Creature:new {
 	objectName = "@mob/creature_names:beldonnas_soldier",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "beldonnas_league",
 	faction = "beldonnas_league",
 	level = 16,
@@ -23,7 +24,7 @@ beldonnas_league_soldier = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_goon_twk_female_01.iff",

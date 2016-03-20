@@ -1,6 +1,7 @@
 aakuan_guardian = Creature:new {
 	objectName = "@mob/creature_names:aakuan_guardian",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "aakuans",
 	faction = "aakuans",
 	level = 25,
@@ -23,7 +24,7 @@ aakuan_guardian = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

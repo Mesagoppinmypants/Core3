@@ -1,6 +1,7 @@
 weequay_thug = Creature:new {
 	objectName = "@mob/creature_names:weequay_thug",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "weequay",
 	faction = "",
 	level = 9,
@@ -23,7 +24,7 @@ weequay_thug = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_weequay_thug.iff"},
@@ -42,7 +43,7 @@ weequay_thug = Creature:new {
 	weapons = {"pirate_weapons_medium"},
 	conversationTemplate = "",
 	reactionStf = "@npc_reaction/military",
-	attacks = merge(brawlernovice,marksmannovice)
+	attacks = merge(brawlermid,marksmanmaster,carbineernovice)
 }
 
 CreatureTemplates:addCreatureTemplate(weequay_thug, "weequay_thug")

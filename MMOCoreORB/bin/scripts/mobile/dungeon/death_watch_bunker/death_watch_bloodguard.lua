@@ -1,6 +1,7 @@
 death_watch_bloodguard = Creature:new {
 	objectName = "@mob/creature_names:mand_bunker_dthwatch_red",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "death_watch",
 	faction = "",
 	level = 121,
@@ -23,7 +24,7 @@ death_watch_bloodguard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 	scale = 1.15,
 
@@ -39,7 +40,7 @@ death_watch_bloodguard = Creature:new {
 	},
 	weapons = {"pirate_weapons_heavy"},
 	conversationTemplate = "",
-	attacks = merge(bountyhuntermaster,marksmanmaster,brawlermaster)
+	attacks = merge(bountyhuntermaster,marksmanmaster,brawlermaster,tkamaster)
 }
 
 CreatureTemplates:addCreatureTemplate(death_watch_bloodguard, "death_watch_bloodguard")

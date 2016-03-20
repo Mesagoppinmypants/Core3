@@ -15,10 +15,14 @@ include server.zone.ZoneProcessServer;
 import server.zone.objects.creature.buffs.BuffDurationEvent;
 include server.zone.objects.creature.buffs.BuffType;
 include server.chat.StringIdChatParameter;
+import system.lang.Time;
 
 class Buff extends ManagedObject implements Logger {
 	@weakReference
 	protected CreatureObject creature;
+	
+	@dereferenced
+	protected Time timeApplied;
 
 	protected transient BuffDurationEvent buffEvent;
 
@@ -129,10 +133,16 @@ class Buff extends ManagedObject implements Logger {
 	public native abstract void applyAttributeModifiers();
 	public native abstract void applySkillModifiers();
 	public native abstract void applyStates();
+	
+	@preLocked
+	public native abstract void applyAllModifiers();
 
 	public native abstract void removeAttributeModifiers();
 	public native abstract void removeSkillModifiers();
 	public native abstract void removeStates();
+	
+	@preLocked
+	public native abstract void removeAllModifiers();
 
 	@preLocked
 	public abstract native void clearBuffEvent();
@@ -143,14 +153,13 @@ class Buff extends ManagedObject implements Logger {
 	@preLocked
 	public native void scheduleBuffEvent();
 
+	/*
+	 * This updates the duration event for this buff only  
+	 * Does not affect secondaryBuffs or update the client
+	 * You should probably use the CreatureObject::renewBuff() instead
+	 */
 	@preLocked
-	public void renew(float newDuration = -1) {
-		if (newDuration > 0)
-			buffDuration = newDuration;
-
-		clearBuffEvent();
-		scheduleBuffEvent();
-	}
+	public native void renew(float newDuration = -1);
 
 	@preLocked
 	public native abstract void parseAttributeModifierString(final string modifierstring);
@@ -289,6 +298,14 @@ class Buff extends ManagedObject implements Logger {
 		if (secondaryCRC != 0 && !secondaryBuffCRCs.contains(secondaryCRC))
 			secondaryBuffCRCs.add(secondaryCRC);
 	}
+	
+	@dirty
+	@local
+	@dereferenced
+	public native Time getTimeApplied();
+	
+	@dirty
+	public abstract native int compareTo(Buff obj);
 
 	@local
 	@dirty

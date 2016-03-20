@@ -22,7 +22,7 @@ krayt_dragon_ancient = Creature:new {
 	ferocity = 30,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 	scale = 1.5,
 
@@ -31,11 +31,10 @@ krayt_dragon_ancient = Creature:new {
 		{
 	        groups = {
 				{group = "krayt_tissue_rare", chance = 2000000},
-				{group = "krayt_dragon_common", chance = 2000000},
+				{group = "krayt_dragon_common", chance = 2500000},
 				{group = "pearls_flawless", chance = 1500000},
-				{group = "armor_all", chance = 1500000},
-				{group = "weapons_all", chance = 1500000},
-				{group = "wearables_all", chance = 1500000},
+				{group = "armor_all", chance = 2000000},
+				{group = "weapons_all", chance = 2000000},
 			},
 			lootChance = 7720000
 		}

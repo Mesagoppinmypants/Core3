@@ -1,6 +1,7 @@
 trainer_shipwright = Creature:new {
 	objectName = "@npc_spawner_n:shipwright_trainer",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	faction = "",
 	level = 100,
 	chanceHit = 0.390000,
@@ -22,7 +23,7 @@ trainer_shipwright = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE + JTLINTERESTING,
 	diet = HERBIVORE,
 
 	templates = {

@@ -11,6 +11,7 @@
 #include "engine/engine.h"
 #include "DirectorSharedMemory.h"
 #include "server/zone/managers/director/QuestStatus.h"
+#include "server/zone/managers/director/QuestVectorMap.h"
 
 #include "system/util/SynchronizedHashTable.h"
 #include "system/util/SynchronizedVectorMap.h"
@@ -53,6 +54,7 @@ namespace server {
 		ThreadLocal<Lua*> localLua;
 		VectorMap<String, bool> screenPlays;
 		SynchronizedVectorMap<String, Reference<QuestStatus*> > questStatuses;
+		SynchronizedVectorMap<String, Reference<QuestVectorMap*> > questVectorMaps;
 
 #ifdef WITH_STM
 		TransactionalReference<DirectorSharedMemory* > sharedMemory;
@@ -78,9 +80,13 @@ namespace server {
 		ConversationScreen* getNextConversationScreen(const String& luaClass, ConversationTemplate* conversationTemplate, CreatureObject* conversingPlayer, int selectedOption, CreatureObject* conversingNPC);
 		ConversationScreen* runScreenHandlers(const String& luaClass, ConversationTemplate* conversationTemplate, CreatureObject* conversingPlayer, CreatureObject* conversingNPC, int selectedOption, ConversationScreen* conversationScreen);
 
-		void setQuestStatus(String keyString, String valString);
-		String getQuestStatus(String keyString);
-		void removeQuestStatus(String key);
+		void setQuestStatus(const String& keyString, const String& valString);
+		String getQuestStatus(const String& keyString);
+		void removeQuestStatus(const String& key);
+
+		QuestVectorMap* getQuestVectorMap(const String& keyString);
+		QuestVectorMap* createQuestVectorMap(const String& keyString);
+		void removeQuestVectorMap(const String& keyString);
 
 		virtual Lua* getLuaInstance();
 		int runScreenPlays();
@@ -95,10 +101,12 @@ namespace server {
 		static int createEventActualTime(lua_State* L);
 		static int createServerEvent(lua_State* L);
 		static int hasServerEvent(lua_State* L);
+		static int getServerEventID(lua_State* L);
 		static int getServerEventTimeLeft(lua_State* L);
 		static int createObserver(lua_State* L);
 		static int dropObserver(lua_State* L);
 		static int spawnMobile(lua_State* L);
+		static int spawnEventMobile(lua_State* L);
 		static int spawnSceneObject(lua_State* L);
 		static int spawnActiveArea(lua_State* L);
 		static int spawnBuilding(lua_State* L);
@@ -158,9 +166,14 @@ namespace server {
 		static int getQuestStatus(lua_State* L);
 		static int removeQuestStatus(lua_State* L);
 		static int getControllingFaction(lua_State* L);
+		static int getImperialScore(lua_State* L);
+		static int getRebelScore(lua_State* L);
 		static int playClientEffectLoc(lua_State* L);
 		static int getQuestInfo(lua_State* L);
 		static int getPlayerQuestID(lua_State* L);
+		static int getQuestVectorMap(lua_State* L);
+		static int removeQuestVectorMap(lua_State* L);
+		static int createQuestVectorMap(lua_State* L);
 
 	private:
 		void setupLuaPackagePath(Lua* luaEngine);

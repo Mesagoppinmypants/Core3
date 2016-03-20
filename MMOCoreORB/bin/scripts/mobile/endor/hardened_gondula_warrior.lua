@@ -1,6 +1,7 @@
 hardened_gondula_warrior = Creature:new {
 	objectName = "@mob/creature_names:hardened_gondula_warrior",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "gondula_tribe",
 	faction = "gondula_tribe",
 	level = 53,
@@ -23,7 +24,7 @@ hardened_gondula_warrior = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

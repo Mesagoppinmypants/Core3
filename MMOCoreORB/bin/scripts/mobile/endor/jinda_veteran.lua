@@ -1,6 +1,7 @@
 jinda_veteran = Creature:new {
 	objectName = "@mob/creature_names:jinda_veteran",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jinda_tribe",
 	faction = "",
 	level = 45,
@@ -23,7 +24,7 @@ jinda_veteran = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

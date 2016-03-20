@@ -1,6 +1,7 @@
 lost_aqualish_bomber = Creature:new {
 	objectName = "@mob/creature_names:lost_aqualish_bomber",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "lost_aqualish",
 	faction = "lost_aqualish",
 	level = 15,
@@ -23,7 +24,7 @@ lost_aqualish_bomber = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -32,11 +33,12 @@ lost_aqualish_bomber = Creature:new {
 	lootGroups = {
 		{
 			groups = {
-				{group = "junk", chance = 3000000},
+				{group = "junk", chance = 2500000},
 				{group = "wearables_common", chance = 2000000},
 				{group = "heavy_weapons", chance = 2000000},
 				{group = "tailor_components", chance = 1500000},
-				{group = "loot_kit_parts", chance = 1500000}
+				{group = "loot_kit_parts", chance = 1500000},
+				{group = "color_crystals", chance = 500000}
 			}
 		}
 	},

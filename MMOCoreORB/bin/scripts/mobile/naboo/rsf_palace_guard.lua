@@ -1,6 +1,7 @@
 rsf_palace_guard = Creature:new {
 	objectName = "@mob/creature_names:rsf_palace_guard",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "naboo_security_force",
 	faction = "naboo_security_force",
 	level = 15,
@@ -23,7 +24,7 @@ rsf_palace_guard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rsf_palace_guard.iff"},

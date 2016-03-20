@@ -1,6 +1,7 @@
 first_brigade_trooper = Creature:new {
 	objectName = "@mob/creature_names:brigade_trooper",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "restuss",
 	faction = "restuss",
 	level = 6,
@@ -23,7 +24,7 @@ first_brigade_trooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

@@ -1,6 +1,7 @@
 forsaken_force_drifter = Creature:new {
 	objectName = "@mob/creature_names:forsaken_force_drifter",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "force",
 	faction = "",
 	level = 80,
@@ -23,23 +24,24 @@ forsaken_force_drifter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_forsaken_force_drifter.iff"},
 	lootGroups = {
 		{
 			groups = {
-				{group = "junk", chance = 3500000},
-				{group = "crystals_poor", chance = 500000},
-				{group = "color_crystals", chance = 500000},
+				{group = "junk", chance = 3000000},
+				{group = "crystals_poor", chance = 800000},
+				{group = "color_crystals", chance = 700000},
 				{group = "holocron_dark", chance = 500000},
 				{group = "holocron_light", chance = 500000},
 				{group = "melee_weapons", chance = 1000000},
 				{group = "armor_attachments", chance = 1000000},
 				{group = "clothing_attachments", chance = 1000000},
-				{group = "wearables_common", chance = 750000},
-				{group = "wearables_uncommon", chance = 750000}
+				{group = "wearables_common", chance = 700000},
+				{group = "wearables_uncommon", chance = 700000},
+				{group = "force_hunter_rare", chance = 100000}
 			}
 		}
 	},

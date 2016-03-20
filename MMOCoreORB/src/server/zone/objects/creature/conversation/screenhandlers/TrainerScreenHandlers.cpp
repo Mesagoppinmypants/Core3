@@ -6,6 +6,7 @@
 #include "server/zone/managers/skill/SkillManager.h"
 #include "server/zone/objects/player/sessions/TrainerConversationSession.h"
 #include "server/zone/Zone.h"
+#include "server/zone/managers/jedi/JediManager.h"
 
 const String TrainerScreenHandlers::STARTSCREENHANDLERID = "convoscreenstart";
 const String TrainerScreenHandlers::INFOSCREENHANDLERID = "convoscreentrainerinfo";
@@ -262,8 +263,14 @@ ConversationScreen* TrainerCanLearnSkillScreenHandler::handleScreen(CreatureObje
 		//Skill selected.
 		Skill* trainingSkill = SkillManager::instance()->getSkill(session->getTrainableSkills(selectedOption));
 		if (trainingSkill != NULL) {
+			int skillCost = trainingSkill->getMoneyRequired();
+			int persuasion = conversingPlayer->getSkillMod("force_persuade");
+
+			if (persuasion > 0)
+				skillCost -= (skillCost * persuasion) / 100;
+
 			StringIdChatParameter optionText("@skill_teacher:prose_cost");
-			optionText.setDI(trainingSkill->getMoneyRequired());
+			optionText.setDI(skillCost);
 			optionText.setTO("@skl_n:" + trainingSkill->getSkillName());
 			conversationScreen->setDialogText(optionText);
 			//Store selected skill in player session for next screen.
@@ -311,8 +318,15 @@ ConversationScreen* TrainerTrainSkillScreenHandler::handleScreen(CreatureObject*
 		//Check if the player lacks skill points.
 		playerLacksSkillPoints = SkillManager::instance()->fullfillsSkillPrerequisitesAndXp(skill->getSkillName(), conversingPlayer);
 	}
+
+	int skillCost = skill->getMoneyRequired();
+	int persuasion = conversingPlayer->getSkillMod("force_persuade");
+
+	if (persuasion > 0)
+		skillCost -= (skillCost * persuasion) / 100;
+
 	// Verify that the player has enough credits.
-	if (conversingPlayer->getCashCredits() + conversingPlayer->getBankCredits() >= skill->getMoneyRequired()) {
+	if (conversingPlayer->getCashCredits() + conversingPlayer->getBankCredits() >= skillCost) {
 		enoughCredits = true;
 	}
 
@@ -320,7 +334,6 @@ ConversationScreen* TrainerTrainSkillScreenHandler::handleScreen(CreatureObject*
 		//Train skill.
 
 		//Withdraw money from player.
-		int skillCost = skill->getMoneyRequired();
 		if (skillCost <= conversingPlayer->getCashCredits()) {
 			conversingPlayer->subtractCashCredits(skillCost);
 		} else {
@@ -334,7 +347,7 @@ ConversationScreen* TrainerTrainSkillScreenHandler::handleScreen(CreatureObject*
 
 		//Send message to client
 		StringIdChatParameter systemMessageCredits("@skill_teacher:prose_pay");
-		systemMessageCredits.setDI(skill->getMoneyRequired());
+		systemMessageCredits.setDI(skillCost);
 		systemMessageCredits.setTO("@skl_n:" + skill->getSkillName());
 		conversingPlayer->sendSystemMessage(systemMessageCredits);
 		StringIdChatParameter systemMessageSkillLearned("@skill_teacher:prose_skill_learned");
@@ -351,21 +364,7 @@ ConversationScreen* TrainerTrainSkillScreenHandler::handleScreen(CreatureObject*
 		// Set the screen play state if they mastered a fourth-tier box.
 		if (skill->getSkillName().contains("force_sensitive")) {
 			if (skill->getSkillName().contains("_04")) {
-				conversingPlayer->setScreenPlayState("VillageUnlockScreenPlay:" + skill->getSkillName(), 4);
-			}
-
-			int treesMastered = 0;
-			// If they have trained the 6th tree's 4th box, finish village.
-			SkillList* skills = conversingPlayer->getSkillList();
-			for (int i=0; i < skills->size(); ++i) {
-				String skillName = skills->get(i)->getSkillName();
-				if (skillName.contains("force_sensitive") && skillName.contains("_04")) {
-					treesMastered += 1;
-				}
-			}
-
-			if (treesMastered >= 6) { // Six trees to access village. State matches that in jedi manager.
-				conversingPlayer->setScreenPlayState("VillageJediProgression", 8);
+				JediManager::instance()->onFSTreeCompleted(conversingPlayer, skill->getSkillName());
 			}
 		}
 
@@ -396,8 +395,14 @@ ConversationScreen* TrainerNotEnoughCreditsScreenHandler::handleScreen(CreatureO
 	Skill* skill = SkillManager::instance()->getSkill(session->getSelectedSkill());
 
 	if (skill != NULL) {
+		int skillCost = skill->getMoneyRequired();
+		int persuasion = conversingPlayer->getSkillMod("force_persuade");
+
+		if (persuasion > 0)
+			skillCost -= (skillCost * persuasion) / 100;
+
 		StringIdChatParameter* dialogText = conversationScreen->getDialogText();
-		dialogText->setDI(skill->getMoneyRequired());
+		dialogText->setDI(skillCost);
 		dialogText->setTO("@skl_n:" + skill->getSkillName());
 	} else {
 		nextScreenId = TrainerScreenHandlers::ERRORSCREENHANDLERID;

@@ -32,12 +32,18 @@ end
 -- @param quest the index number for the quest to complete.
 function QuestManager.completeQuest(pCreatureObject, quest)
 	if (QuestManager.shouldSendSystemMessage(pCreatureObject, quest)) then
+		local summary = QuestManager.getJournalSummary(quest)
+
+		if (summary ~= "") then
+			CreatureObject(pCreatureObject):sendSystemMessage(summary)
+		end
+
 		CreatureObject(pCreatureObject):sendSystemMessage("@quest/quests:task_complete")
 	end
 
 	ObjectManager.withCreaturePlayerObject(pCreatureObject, function(playerObject)
 		playerObject:clearActiveQuestsBit(quest)
-		playerObject:setCompletedQuestsBit(quest, QUEST_ACTIVE)
+		playerObject:setCompletedQuestsBit(quest, QUEST_COMPLETED)
 	end)
 end
 
@@ -86,6 +92,16 @@ function QuestManager.getQuestName(questID)
 	end
 
 	return LuaQuestInfo(pQuest):getQuestName()
+end
+
+function QuestManager.getJournalSummary(questID)
+	local pQuest = getQuestInfo(questID)
+
+	if (pQuest == nil) then
+		return ""
+	end
+
+	return LuaQuestInfo(pQuest):getJournalSummary()
 end
 
 function QuestManager.getCurrentQuestID(pPlayer)
@@ -192,7 +208,7 @@ QuestManager.quests.DO_NOT_USE_BAD_SLOT 			= 76
 QuestManager.quests.FS_GOTO_DATH 					= 77
 QuestManager.quests.FS_VILLAGE_ELDER 				= 78
 QuestManager.quests.OLD_MAN_FORCE_CRYSTAL 			= 79
-QuestManager.quests.FS_DATH_wOMAN 					= 80
+QuestManager.quests.FS_DATH_WOMAN 					= 80
 QuestManager.quests.FS_PATROL_QUEST_1 				= 81
 QuestManager.quests.FS_PATROL_QUEST_2 				= 82
 QuestManager.quests.FS_PATROL_QUEST_3 				= 83

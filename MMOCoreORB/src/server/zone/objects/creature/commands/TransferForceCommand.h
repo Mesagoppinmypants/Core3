@@ -44,31 +44,34 @@ public:
 
 		if (targetGhost == NULL || playerGhost == NULL)
 			return GENERALERROR;
-			
+
 		if (!CollisionManager::checkLineOfSight(creature, targetCreature)) {
 			creature->sendSystemMessage("@container_error_message:container18");
-			return GENERALERROR;	
-		}			
-			
-		if (!creature->isInRange(targetCreature, range + targetCreature->getTemplateRadius() + creature->getTemplateRadius()))
+			return GENERALERROR;
+		}
+
+		if (!checkDistance(creature, targetCreature, range))
 			return TOOFAR;
-			
+
 		int maxTransfer = minDamage; //Value set in command lua
 		if (playerGhost->getForcePower() < maxTransfer) {
 			creature->sendSystemMessage("@jedi_spam:no_force_power"); //You do not have enough force to do that.
 			return GENERALERROR;
 		}
-			
+
 		if (targetCreature->isHealableBy(creature)) {
 			int forceSpace = targetGhost->getForcePowerMax() - targetGhost->getForcePower();
-			if (forceSpace <= 0)
+			if (forceSpace <= 0) {
+				creature->sendSystemMessage("@jedi_spam:power_already_active"); //This target is already affected by that power.
 				return GENERALERROR;
+			}
 
 			int forceTransfer = forceSpace >= maxTransfer ? maxTransfer : forceSpace;
 			targetGhost->setForcePower(targetGhost->getForcePower() + forceTransfer);
 			playerGhost->setForcePower(playerGhost->getForcePower() - forceTransfer);
 
-			creature->doCombatAnimation(targetCreature, animationCRC, 0x1, 0xFF);
+			uint32 animCRC = getAnimationString().hashCode();
+			creature->doCombatAnimation(targetCreature, animCRC, 0x1, 0xFF);
 			CombatManager::instance()->broadcastCombatSpam(creature, targetCreature, NULL, forceTransfer, "cbt_spam", combatSpam, 0);
 
 			return SUCCESS;

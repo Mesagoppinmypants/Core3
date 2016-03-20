@@ -1,6 +1,7 @@
 brigand_assassin = Creature:new {
 	objectName = "@mob/creature_names:assassin",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "brigand",
 	faction = "",
 	level = 17,
@@ -23,7 +24,7 @@ brigand_assassin = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

@@ -1,6 +1,7 @@
 traveller = Creature:new {
 	objectName = "",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a Traveller",
 	socialGroup = "wilder",
 	faction = "",
@@ -24,7 +25,7 @@ traveller = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = { "object/mobile/dressed_commoner_old_human_female_01.iff",

@@ -1,6 +1,7 @@
 blood_razor_scout = Creature:new {
 	objectName = "@mob/creature_names:blood_razor_scout",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "bloodrazor",
 	faction = "bloodrazor",
 	level = 32,
@@ -23,7 +24,7 @@ blood_razor_scout = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

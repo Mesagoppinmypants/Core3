@@ -1,6 +1,7 @@
 imprisoned_imperial_officer = Creature:new {
 	objectName = "@mob/creature_names:imprisoned_imperial",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 12,
@@ -23,7 +24,7 @@ imprisoned_imperial_officer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

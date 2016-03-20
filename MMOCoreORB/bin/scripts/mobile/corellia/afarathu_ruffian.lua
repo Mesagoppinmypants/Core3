@@ -1,6 +1,7 @@
 afarathu_ruffian = Creature:new {
 	objectName = "@mob/creature_names:afarathu_cult_ruffian",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "afarathu",
 	faction = "afarathu",
 	level = 5,
@@ -23,7 +24,7 @@ afarathu_ruffian = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_selonian_f_01.iff",

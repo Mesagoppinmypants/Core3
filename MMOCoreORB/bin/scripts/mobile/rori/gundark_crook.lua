@@ -1,6 +1,7 @@
 gundark_crook = Creature:new {
 	objectName = "@mob/creature_names:gundark_crook",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "gundark_gang",
 	faction = "thug",
 	level = 5,
@@ -23,7 +24,7 @@ gundark_crook = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

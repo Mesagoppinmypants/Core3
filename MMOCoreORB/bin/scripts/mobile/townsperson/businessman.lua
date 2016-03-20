@@ -1,6 +1,7 @@
 businessman = Creature:new {
 	objectName = "@mob/creature_names:businessman",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
 	faction = "townsperson",
 	level = 4,
@@ -23,7 +24,7 @@ businessman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE + INTERESTING,
 	diet = HERBIVORE,
 
 	templates = {	"object/mobile/dressed_commoner_fat_zabrak_male_01.iff",

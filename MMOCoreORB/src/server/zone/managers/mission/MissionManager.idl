@@ -53,6 +53,8 @@ class MissionManager extends Observer implements Logger {
 	
 	protected boolean enableFactionalEntertainerMissions;
 	
+	protected boolean enableSameAccountBountyMissions;
+	
 	public static final unsigned int UNKNOWN_TARGET = 0xB911DA26;
 	
 	public MissionManager(ZoneServer srv, ZoneProcessServer impl) {
@@ -64,6 +66,7 @@ class MissionManager extends Observer implements Logger {
 		enableFactionalCraftingMissions = false;
 		enableFactionalReconMissions = false;
 		enableFactionalEntertainerMissions = false;
+		enableSameAccountBountyMissions = false;
 		
 		Logger.setLoggingName("MissionManager");
 		
@@ -82,16 +85,16 @@ class MissionManager extends Observer implements Logger {
 	
 	public native void populateMissionList(MissionTerminal missionTerminal, CreatureObject player, int counter);
 
-	public native boolean randomGenericDeliverMission(CreatureObject player, MissionObject mission, boolean inTownMission, final int faction);
+	public native boolean randomGenericDeliverMission(CreatureObject player, MissionObject mission, boolean inTownMission, final unsigned int faction);
 
-	public native void randomizeGenericBountyMission(CreatureObject player, MissionObject mission, final int faction);
-	public native void randomizeGenericCraftingMission(CreatureObject player, MissionObject mission, final int faction);
-	public native void randomizeGenericDeliverMission(CreatureObject player, MissionObject mission, final int faction);
-	public native void randomizeGenericDestroyMission(CreatureObject player, MissionObject mission, final int faction);
-	public native void randomizeGenericEntertainerMission(CreatureObject player, MissionObject mission, final int faction, final int missionType);
-	public native void randomizeGenericHuntingMission(CreatureObject player, MissionObject mission, final int faction);
-	public native void randomizeGenericReconMission(CreatureObject player, MissionObject mission, final int faction);
-	public native void randomizeGenericSurveyMission(CreatureObject player, MissionObject mission, final int faction);
+	public native void randomizeGenericBountyMission(CreatureObject player, MissionObject mission, final unsigned int faction);
+	public native void randomizeGenericCraftingMission(CreatureObject player, MissionObject mission, final unsigned int faction);
+	public native void randomizeGenericDeliverMission(CreatureObject player, MissionObject mission, final unsigned int faction);
+	public native void randomizeGenericDestroyMission(CreatureObject player, MissionObject mission, final unsigned int faction);
+	public native void randomizeGenericEntertainerMission(CreatureObject player, MissionObject mission, final unsigned int faction, final unsigned int missionType);
+	public native void randomizeGenericHuntingMission(CreatureObject player, MissionObject mission, final unsigned int faction);
+	public native void randomizeGenericReconMission(CreatureObject player, MissionObject mission, final unsigned int faction);
+	public native void randomizeGenericSurveyMission(CreatureObject player, MissionObject mission, final unsigned int faction);
 	
 	public native void randomizeSurveyMission(CreatureObject player, MissionObject mission);
 	public native void randomizeDestroyMission(CreatureObject player, MissionObject mission);
@@ -128,16 +131,16 @@ class MissionManager extends Observer implements Logger {
 	public native void createSpawnPoint(CreatureObject player, final string spawnTypes);
 	
 	@local
-	public native LairSpawn getRandomLairSpawn(CreatureObject player, final int faction, unsigned int type);
+	public native LairSpawn getRandomLairSpawn(CreatureObject player, final unsigned int faction, unsigned int type);
 	@local
 	@dereferenced
 	public native Vector3 getRandomBountyTargetPosition(CreatureObject player, final string planet);
 	@reference
 	public native MissionObject getBountyHunterMission(CreatureObject player);
 		
-	public native string getDeliveryMissionFileName(final int faction);
-	public native int getDeliverMissionNumberOfMissions(final int faction);
-	public native int getDeliverMissionSpawnType(final int faction);
+	public native string getDeliveryMissionFileName(final unsigned int faction);
+	public native int getDeliverMissionNumberOfMissions(final unsigned int faction);
+	public native int getDeliverMissionSpawnType(final unsigned int faction);
 	
 	public native void addPlayerToBountyList(unsigned long targetId, int reward);
 	public native void removePlayerFromBountyList(unsigned long targetId);

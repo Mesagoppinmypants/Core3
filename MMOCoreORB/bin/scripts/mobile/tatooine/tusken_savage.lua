@@ -22,7 +22,7 @@ tusken_savage = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/tusken_raider.iff"},
@@ -43,7 +43,7 @@ tusken_savage = Creature:new {
 	},
 	weapons = {"tusken_weapons"},
 	conversationTemplate = "",
-	attacks = merge(marksmanmaster,brawlermaster)
+	attacks = merge(marksmanmaster,brawlermaster,carbineermaster)
 }
 
 CreatureTemplates:addCreatureTemplate(tusken_savage, "tusken_savage")

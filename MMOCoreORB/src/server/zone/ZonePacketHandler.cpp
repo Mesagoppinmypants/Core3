@@ -74,6 +74,16 @@
 #include "packets/chat/ChatRequestPersistentMessageCallback.h"
 #include "packets/chat/ChatDeletePersistentMessageCallback.h"
 #include "packets/chat/ChatEnterRoomByIdCallback.h"
+#include "packets/chat/ChatCreateRoomCallback.h"
+#include "packets/chat/ChatDestroyRoomCallback.h"
+#include "packets/chat/ChatQueryRoomCallback.h"
+#include "packets/chat/ChatLeaveRoomCallback.h"
+#include "packets/chat/ChatInviteToRoomCallback.h"
+#include "packets/chat/ChatUninviteFromRoomCallback.h"
+#include "packets/chat/ChatAddModeratorToRoomCallback.h"
+#include "packets/chat/ChatRemoveModeratorFromRoomCallback.h"
+#include "packets/chat/ChatBanFromRoomCallback.h"
+#include "packets/chat/ChatUnbanFromRoomCallback.h"
 
 #include "packets/trade/AbortTradeMessageCallback.h"
 #include "packets/trade/AcceptTransactionMessageCallback.h"
@@ -149,7 +159,18 @@ void ZonePacketHandler::registerMessages() {
 	messageCallbackFactory.registerObject<CreateTicketMessageCallback>(0x40E64DAC);
 	messageCallbackFactory.registerObject<CancelLiveAuctionMessageCallback>(0x3687A4D2);
 	messageCallbackFactory.registerObject<FactionRequestMessageCallback>(0xC1B03B81);
-	messageCallbackFactory.registerObject<ShipUpdateTransformCallback>(0x76026fb9);
+	messageCallbackFactory.registerObject<ShipUpdateTransformCallback>(0x76026FB9);
+	messageCallbackFactory.registerObject<ChatCreateRoomCallback>(0x35366BED);
+	messageCallbackFactory.registerObject<ChatQueryRoomCallback>(0x9CF2B192);
+	messageCallbackFactory.registerObject<ChatDestroyRoomCallback>(0x094B2A77);
+	messageCallbackFactory.registerObject<ChatLeaveRoomCallback>(0x493E3FFA);
+	messageCallbackFactory.registerObject<ChatInviteToRoomCallback>(0x7273ECD3);
+	messageCallbackFactory.registerObject<ChatUninviteFromRoomCallback>(0xFC8D01F1);
+	messageCallbackFactory.registerObject<ChatAddModeratorToRoomCallback>(0x90BDE76F);
+	messageCallbackFactory.registerObject<ChatRemoveModeratorFromRoomCallback>(0x8A3F8E04);
+	messageCallbackFactory.registerObject<ChatBanFromRoomCallback>(0xD9FA0194);
+	messageCallbackFactory.registerObject<ChatUnbanFromRoomCallback>(0x4C8F94A9);
+
 }
 
 void ZonePacketHandler::registerObjectControllerMessages() {

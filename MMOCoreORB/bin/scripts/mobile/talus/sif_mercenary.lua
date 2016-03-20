@@ -1,6 +1,7 @@
 sif_mercenary = Creature:new {
 	objectName = "@mob/creature_names:trandoshan_sif",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "sif",
 	faction = "sif",
 	level = 36,
@@ -23,7 +24,7 @@ sif_mercenary = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_talus_sif_mercenary_trand_01.iff"},

@@ -62,6 +62,7 @@
 #include "server/zone/objects/tangible/components/generic/LootSchematicAttributeListComponent.h"
 #include "server/zone/objects/tangible/components/generic/XpPurchaseAttributeListComponent.h"
 #include "server/zone/objects/tangible/components/generic/XpPurchaseMenuComponent.h"
+#include "server/zone/objects/tangible/components/PersonnelPerkZoneComponent.h"
 #include "server/zone/objects/tangible/components/RingObjectMenuComponent.h"
 #include "server/zone/objects/tangible/components/HeroRingMenuComponent.h"
 #include "server/zone/objects/tangible/components/HeroRingAttributeListComponent.h"
@@ -103,6 +104,7 @@
 #include "server/zone/objects/tangible/firework/components/FireworkShowMenuComponent.h"
 #include "server/zone/objects/tangible/firework/components/FireworkShowDataComponent.h"
 #include "server/zone/objects/structure/components/StructureZoneComponent.h"
+#include "server/zone/objects/structure/components/GarageZoneComponent.h"
 #include "server/zone/objects/creature/components/TrainerMenuComponent.h"
 #include "server/zone/objects/creature/components/SarlaccMenuComponent.h"
 #include "server/zone/objects/creature/components/PetMenuComponent.h"
@@ -111,6 +113,7 @@
 #include "server/zone/objects/tangible/components/GogglesObjectMenuComponent.h"
 #include "server/zone/objects/tangible/components/ArmorObjectMenuComponent.h"
 #include "server/zone/objects/tangible/components/PlaceableLootContainerComponent.h"
+#include "server/zone/objects/tangible/components/ScavengerChestContainerComponent.h"
 #include "server/zone/objects/tangible/tool/recycle/RecycleToolContainerComponent.h"
 #include "server/zone/objects/structure/components/DecorationDataComponent.h"
 #include "server/zone/objects/tangible/components/CityDecorationMenuComponent.h"
@@ -157,6 +160,7 @@ ComponentManager::ComponentManager() {
 	components.put("StructureZoneComponent", new StructureZoneComponent());
 	components.put("ShuttleZoneComponent", new ShuttleZoneComponent());
 	components.put("ShuttleInstallationZoneComponent", new ShuttleInstallationZoneComponent());
+	components.put("GarageZoneComponent", new GarageZoneComponent());
 
 	components.put("BuildingDataComponent", new BuildingDataComponent() );
 	components.put("DestructibleBuildingDataComponent", new DestructibleBuildingDataComponent());
@@ -225,6 +229,7 @@ ComponentManager::ComponentManager() {
 	components.put("MinefieldZoneComponent", new MinefieldZoneComponent());
 	components.put("MinefieldContainerComponent", new MinefieldContainerComponent());
 	components.put("DetectorZoneComponent", new DetectorZoneComponent());
+	components.put("PersonnelPerkZoneComponent", new PersonnelPerkZoneComponent());
 
 	dataObjectFactory.registerObject<VendorDataComponent>("VendorDataComponent");
 	dataObjectFactory.registerObject<AuctionTerminalDataComponent>("AuctionTerminalDataComponent");
@@ -295,6 +300,8 @@ ComponentManager::ComponentManager() {
 	// SE Goggles.
 	components.put("GogglesObjectMenuComponent", new GogglesObjectMenuComponent());
 	components.put("PlaceableLootContainerComponent", new PlaceableLootContainerComponent());
+
+	components.put("ScavengerChestContainerComponent", new ScavengerChestContainerComponent());
 
 	components.put("DecorationDataComponent", new DecorationDataComponent() );
 	dataObjectFactory.registerObject<DecorationDataComponent>("DecorationDataComponent");

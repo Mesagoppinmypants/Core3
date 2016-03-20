@@ -1,6 +1,7 @@
 frenzied_donkuwah = Creature:new {
 	objectName = "@mob/creature_names:frenzied_donkuwah",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "donkuwah_tribe",
 	faction = "donkuwah_tribe",
 	level = 39,
@@ -23,7 +24,7 @@ frenzied_donkuwah = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

@@ -16,7 +16,7 @@
 #include "server/zone/packets/creature/CreatureObjectMessage6.h"
 #include "server/zone/managers/visibility/VisibilityManager.h"
 
-int PlayerContainerComponent::canAddObject(SceneObject* sceneObject, SceneObject* object, int containmentType, String& errorDescription) {
+int PlayerContainerComponent::canAddObject(SceneObject* sceneObject, SceneObject* object, int containmentType, String& errorDescription) const {
 	CreatureObject* creo = dynamic_cast<CreatureObject*>(sceneObject);
 
 	if (object->isTangibleObject() && containmentType == 4) {
@@ -108,7 +108,7 @@ int PlayerContainerComponent::canAddObject(SceneObject* sceneObject, SceneObject
  * Is called when this object has been inserted with an object
  * @param object object that has been inserted
  */
-int PlayerContainerComponent::notifyObjectInserted(SceneObject* sceneObject, SceneObject* object) {
+int PlayerContainerComponent::notifyObjectInserted(SceneObject* sceneObject, SceneObject* object) const {
 	CreatureObject* creo = dynamic_cast<CreatureObject*>(sceneObject);
 
 	if (object->isArmorObject()) {
@@ -146,26 +146,13 @@ int PlayerContainerComponent::notifyObjectInserted(SceneObject* sceneObject, Sce
 	PlayerObject* ghost = creo->getPlayerObject();
 
 	if (ghost && ghost->isJedi()) {
+
 		if (object->isRobeObject()) {
-			RobeObject* robeObject = cast<RobeObject*>(object);
-			if (robeObject->getSkillRequired() != "") {
-				ghost->setForcePowerMax(creo->getSkillMod("jedi_force_power_max"));
-				VisibilityManager::instance()->increaseVisibility(creo);
-				if (creo->getWeapon()->isJediWeapon()) {
-					ghost->setForcePowerRegen(creo->getSkillMod("jedi_force_power_regen"));
-				}
-			}
+			ghost->setForcePowerMax(creo->getSkillMod("jedi_force_power_max"));
 		} else if (object->isWeaponObject()) {
 			WeaponObject* weaponObject = cast<WeaponObject*>(object);
 			if (weaponObject->isJediWeapon()) {
-				SceneObject* item = creo->getSlottedObject("chest1");
-				if (item != NULL && item->isRobeObject()) {
-					RobeObject* robeObject = cast<RobeObject*>(item);
-					if (robeObject->getSkillRequired() != "") {
-						ghost->setForcePowerRegen(creo->getSkillMod("jedi_force_power_regen"));
-					}
-				}
-				VisibilityManager::instance()->increaseVisibility(creo);
+				VisibilityManager::instance()->increaseVisibility(creo, VisibilityManager::SABERVISMOD);
 			}
 		}
 	}
@@ -177,7 +164,7 @@ int PlayerContainerComponent::notifyObjectInserted(SceneObject* sceneObject, Sce
  * Is called when an object was removed
  * @param object object that has been inserted
  */
-int PlayerContainerComponent::notifyObjectRemoved(SceneObject* sceneObject, SceneObject* object, SceneObject* destination) {
+int PlayerContainerComponent::notifyObjectRemoved(SceneObject* sceneObject, SceneObject* object, SceneObject* destination) const {
 	CreatureObject* creo = dynamic_cast<CreatureObject*>(sceneObject);
 
 	if (object->isArmorObject()) {
@@ -218,26 +205,7 @@ int PlayerContainerComponent::notifyObjectRemoved(SceneObject* sceneObject, Scen
 
 	if (ghost && ghost->isJedi()) {
 		if (object->isRobeObject()) {
-			RobeObject* robeObject = cast<RobeObject*>(object);
-			if (robeObject->getSkillRequired() != "") {
-				ghost->setForcePowerMax(creo->getSkillMod("jedi_force_power_max"));
-				VisibilityManager::instance()->increaseVisibility(creo);
-				if (creo->getWeapon()->isJediWeapon()) {
-					ghost->setForcePowerRegen(creo->getSkillMod("jedi_force_power_regen"));
-				}
-			}
-		} else if (object->isWeaponObject()) {
-			WeaponObject* weaponObject = cast<WeaponObject*>(object);
-			if (weaponObject->isJediWeapon()) {
-				SceneObject* item = creo->getSlottedObject("chest1");
-				if (item != NULL && item->isRobeObject()) {
-					RobeObject* robeObject = cast<RobeObject*>(item);
-					if (robeObject->getSkillRequired() != "") {
-						ghost->setForcePowerRegen(creo->getSkillMod("jedi_force_power_regen") - robeObject->getTemplateSkillMods()->get("jedi_force_power_regen"));
-					}
-				}
-				VisibilityManager::instance()->increaseVisibility(creo);
-			}
+			ghost->setForcePowerMax(creo->getSkillMod("jedi_force_power_max"));
 		}
 	}
 

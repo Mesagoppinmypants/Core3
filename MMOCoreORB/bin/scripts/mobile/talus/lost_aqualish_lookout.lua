@@ -1,6 +1,7 @@
 lost_aqualish_lookout = Creature:new {
 	objectName = "@mob/creature_names:lost_aqualish_lookout",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "lost_aqualish",
 	faction = "lost_aqualish",
 	level = 10,
@@ -23,7 +24,7 @@ lost_aqualish_lookout = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

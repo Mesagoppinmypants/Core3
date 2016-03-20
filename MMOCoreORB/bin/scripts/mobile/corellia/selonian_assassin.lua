@@ -1,6 +1,7 @@
 selonian_assassin = Creature:new {
 	objectName = "@mob/creature_names:selonian_assassin",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "selonian",
 	faction = "",
 	level = 9,
@@ -23,7 +24,7 @@ selonian_assassin = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

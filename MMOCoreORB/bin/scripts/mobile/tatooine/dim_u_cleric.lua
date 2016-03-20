@@ -1,6 +1,7 @@
 dim_u_cleric = Creature:new {
 	objectName = "@mob/creature_names:dim_u_cleric",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "dim_u",
 	faction = "",
 	level = 9,
@@ -23,7 +24,7 @@ dim_u_cleric = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_dim_u_cleric.iff"},

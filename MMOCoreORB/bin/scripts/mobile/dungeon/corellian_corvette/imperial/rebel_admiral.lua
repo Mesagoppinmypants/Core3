@@ -1,6 +1,7 @@
 rebel_admiral = Creature:new {
 	objectName = "@mob/creature_names:corvette_rebel_admiral",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 226,
@@ -23,7 +24,7 @@ rebel_admiral = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_major_zabrak_male_01.iff"},

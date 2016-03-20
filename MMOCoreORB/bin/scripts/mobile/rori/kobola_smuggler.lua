@@ -1,6 +1,7 @@
 kobola_smuggler = Creature:new {
 	objectName = "@mob/creature_names:kobola_smuggler",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "kobola",
 	faction = "kobola",
 	level = 10,
@@ -23,7 +24,7 @@ kobola_smuggler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

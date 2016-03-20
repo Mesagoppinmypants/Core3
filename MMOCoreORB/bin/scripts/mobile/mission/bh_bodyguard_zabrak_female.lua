@@ -1,6 +1,7 @@
 bh_bodyguard_zabrak_female = Creature:new {
 	objectName = "@mob/creature_names:bodyguard",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "thug",
 	faction = "thug",
 	level = 18,
@@ -23,7 +24,7 @@ bh_bodyguard_zabrak_female = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_garyn_theif_zabrak_female_01.iff"},

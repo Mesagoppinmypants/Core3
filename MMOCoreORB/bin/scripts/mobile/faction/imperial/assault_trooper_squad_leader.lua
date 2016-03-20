@@ -1,6 +1,7 @@
 assault_trooper_squad_leader = Creature:new {
 	objectName = "@mob/creature_names:fbase_stormtrooper_squad_leader",
-	randomNameType = NAME_STORMTROOPER_TAG,
+	randomNameType = NAME_STORMTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 27,
@@ -23,7 +24,7 @@ assault_trooper_squad_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 	scale = 1.05,
 

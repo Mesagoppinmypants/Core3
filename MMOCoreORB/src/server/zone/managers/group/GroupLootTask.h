@@ -125,6 +125,11 @@ public:
 		if (lootCredits < 1)
 			return;
 
+		int luck = player->getSkillMod("force_luck");
+
+		if (luck > 0)
+			lootCredits += (lootCredits * luck) / 20;
+
 		Locker clocker(group, corpse);
 
 		//Determine eligible group members to give credits.
@@ -151,9 +156,9 @@ public:
 
 		//Send initial system message to everyone in group except the looter.
 		StringIdChatParameter lootMember("group", "notify_coin_loot_int"); //"[GROUP] %TU looted %DI credits from %TT."
-		lootMember.setTU(player);
+		lootMember.setTU(player->getDisplayedName());
 		lootMember.setDI(lootCredits);
-		lootMember.setTT(corpse);
+		lootMember.setTT(corpse->getDisplayedName());
 		group->sendSystemMessage(lootMember, player);
 
 		clocker.release();

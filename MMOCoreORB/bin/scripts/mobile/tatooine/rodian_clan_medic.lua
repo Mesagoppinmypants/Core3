@@ -1,6 +1,7 @@
 rodian_clan_medic = Creature:new {
 	objectName = "@mob/creature_names:rodian_clan_medic",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rodian",
 	faction = "",
 	level = 7,
@@ -23,7 +24,7 @@ rodian_clan_medic = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_rodian_clan_medic.iff"},

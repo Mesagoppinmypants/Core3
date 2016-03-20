@@ -32,48 +32,48 @@ local unlockableFSBranches = {
 
 -- These are the 3 types of FS experience for regex searches, full strings not needed for each type, just least specific.
 local XpCombat =
-	{
-		{"combat_general", 3},
-		{"squadleader", 90},
-		{"bountyhunter", 1},
-		{"combat_melee", 30},
-		{"combat_ranged", 30}
-	}
+{
+	{"combat_general", 3},
+	{"squadleader", 90},
+	{"bountyhunter", 1},
+	{"combat_melee", 30},
+	{"combat_ranged", 30}
+}
 
 local XpSenses =
-	{
-		{"bio_engineer_dna_harvesting", 3},
-		{"political", 3},
-		{"slicing",  3},
-		{"merchant",  4},
-		{"resource_harvesting_inorganic",  5},
-		{"imagedesigner", 7},
-		{"scout",  8},
-		{"creaturehandler",  9},
-		{"dance",  10},
-		{"music",  10},
-		{"entertainer_healing",  10},
-		{"camp",  10},
-		{"medical",  10},
-		{"trapping",  25},
-	}
+{
+	{"bio_engineer_dna_harvesting", 3},
+	{"political", 3},
+	{"slicing",  3},
+	{"merchant",  4},
+	{"resource_harvesting_inorganic",  5},
+	{"imagedesigner", 7},
+	{"scout",  8},
+	{"creaturehandler",  9},
+	{"dance",  10},
+	{"music",  10},
+	{"entertainer_healing",  10},
+	{"camp",  10},
+	{"medical",  10},
+	{"trapping",  25},
+}
 
 local XpCrafting =
-	{
-		{"crafting_bio_engineer_creature",  4},
-		{"crafting_bio_engineer_tissue",  5},
-		{"crafting_c", 5},
-		{"crafting_d", 5},
-		{"crafting_f", 5},
-		{"crafting_m", 5},
-		{"crafting_sc", 5},
-		{"crafting_sp", 5},
-		{"crafting_w", 5},
-		{"crafting_general", 8},
-		{"crafting_structure_general", 35}
-	}
+{
+	{"crafting_bio_engineer_creature",  4},
+	{"crafting_bio_engineer_tissue",  5},
+	{"crafting_c", 5},
+	{"crafting_d", 5},
+	{"crafting_f", 5},
+	{"crafting_m", 5},
+	{"crafting_sc", 5},
+	{"crafting_sp", 5},
+	{"crafting_w", 5},
+	{"crafting_general", 8},
+	{"crafting_structure_general", 35}
+}
 
-ExperienceConverter = Object:new {}
+ExperienceConverter = ScreenPlay:new {}
 
 -- Since the logic flow of the conversation calls set always before get, it should work, but just in case...
 function ExperienceConverter:setSuiTransferExperienceSelection(var, oid)
@@ -142,11 +142,31 @@ function ExperienceConverter:getNextUnlockableBranches(pCreatureObject)
 		end
 	end)
 
-	if (table.getn(trees) > 0) then
+	if (#trees > 0) then
 		return trees
 	else
 		return nil
 	end
+end
+
+-- Get the fully mastered and trained trees.
+-- @param pCreatureObject pointer to the creature object of the player.
+-- @return number of trees mastered.
+function ExperienceConverter:getMasteredBranches(pCreatureObject)
+	if (pCreatureObject == nil) then
+		return 0
+	end
+
+	local returnValue = 0 -- None.
+
+	foreach(unlockableFSBranches, function(theTable)
+		local checkTrees = CreatureObject(pCreatureObject):getScreenPlayState("VillageUnlockScreenPlay:" .. string.sub(theTable.topBox, 0, (string.len(theTable.topBox) - 3)))
+		if (checkTrees == 4) then
+			returnValue = returnValue + 1
+		end
+	end)
+
+	return returnValue
 end
 
 -- Get the highest box from the tables above for the trainer.
@@ -176,9 +196,9 @@ function ExperienceConverter:getExperienceForConversion(pCreature, theType)
 	if (theType == 0 or theType == 3) then
 		inputTable = XpCombat
 	elseif (theType == 1) then
-		inputTable = XpSenses
-	elseif (theType == 2) then
 		inputTable = XpCrafting
+	elseif (theType == 2) then
+		inputTable = XpSenses
 	end
 
 	local expList = {}
@@ -210,9 +230,9 @@ function ExperienceConverter:getExperienceRatio(experienceType, theType)
 	if (theType == 0 or theType == 3) then
 		inputTable = XpCombat
 	elseif (theType == 1) then
-		inputTable = XpSenses
-	elseif (theType == 2) then
 		inputTable = XpCrafting
+	elseif (theType == 2) then
+		inputTable = XpSenses
 	end
 
 

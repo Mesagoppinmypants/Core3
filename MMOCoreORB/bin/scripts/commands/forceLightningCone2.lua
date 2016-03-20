@@ -51,6 +51,7 @@ ForceLightningCone2Command = {
 	accuracySkillMod = "forcelightning_accuracy";
 	coneAngle = 60,
 	coneAction = true,
+	visMod = 25,
 
 	stateEffects = {
 	  StateEffect(
@@ -64,7 +65,8 @@ ForceLightningCone2Command = {
 	  )
 	},
 
-	animationCRC = hashCode("force_lightning_1_arc_particle_level_3_light"),
+	animation = "force_lightning_1_arc_particle_level_3", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "forcelightningcone2",
 

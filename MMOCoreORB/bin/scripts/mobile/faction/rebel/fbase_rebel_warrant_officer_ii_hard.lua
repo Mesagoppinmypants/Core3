@@ -1,6 +1,7 @@
 fbase_rebel_warrant_officer_ii_hard = Creature:new {
 	objectName = "@mob/creature_names:fbase_rebel_warrant_officer_ii_hard",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 56,
@@ -23,7 +24,7 @@ fbase_rebel_warrant_officer_ii_hard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

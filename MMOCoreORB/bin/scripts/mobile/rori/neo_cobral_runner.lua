@@ -1,6 +1,7 @@
 neo_cobral_runner = Creature:new {
 	objectName = "@mob/creature_names:cobral_runner",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "cobral",
 	faction = "cobral",
 	level = 15,
@@ -23,7 +24,7 @@ neo_cobral_runner = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

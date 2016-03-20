@@ -1,6 +1,7 @@
 elite_novatrooper_commander = Creature:new {
 	objectName = "@mob/creature_names:stormtrooper_novatrooper_elite_commander",
-	randomNameType = NAME_STORMTROOPER_TAG,
+	randomNameType = NAME_STORMTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 201,
@@ -23,7 +24,7 @@ elite_novatrooper_commander = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_stormtrooper_commander_black_gold.iff"},

@@ -1,6 +1,7 @@
 alkhara_bandit = Creature:new {
 	objectName = "@mob/creature_names:alkhara_bandit",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "alkhara",
 	faction = "alkhara",
 	level = 13,
@@ -23,7 +24,7 @@ alkhara_bandit = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_alkhara_bandit.iff"},

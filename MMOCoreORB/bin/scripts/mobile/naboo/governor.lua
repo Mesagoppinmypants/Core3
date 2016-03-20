@@ -1,6 +1,7 @@
 governor = Creature:new {
 	objectName = "@mob/creature_names:governor",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "naboo",
 	faction = "naboo",
 	level = 9,
@@ -23,7 +24,7 @@ governor = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_governor.iff"},

@@ -8,7 +8,8 @@
 #include "CreatureAttackData.h"
 #include "server/zone/objects/creature/commands/CombatQueueCommand.h"
 
-CreatureAttackData::CreatureAttackData(const UnicodeString& dataString, const CombatQueueCommand* base) {
+CreatureAttackData::CreatureAttackData(const UnicodeString& dataString, const CombatQueueCommand* base, uint64 target) {
+	targetID = target;
 	baseCommand = base;
 	fillFromBase();
 
@@ -33,6 +34,7 @@ CreatureAttackData::CreatureAttackData(const UnicodeString& dataString, const Co
 
 CreatureAttackData::CreatureAttackData(const CreatureAttackData& data) {
 	baseCommand = data.baseCommand;
+	targetID = data.targetID;
 
 	damageMultiplier = data.damageMultiplier;
 	healthDamageMultiplier = data.healthDamageMultiplier;
@@ -55,9 +57,10 @@ CreatureAttackData::CreatureAttackData(const CreatureAttackData& data) {
 
 	range = data.range;
 	coneAngle = data.coneAngle;
+	coneRange = data.coneRange;
 	areaRange = data.areaRange;
 
-	animationCRC = data.animationCRC;
+	splashDamage = data.splashDamage;
 
 	attackType= data.attackType;
 	trails = data.trails;
@@ -82,12 +85,13 @@ void CreatureAttackData::fillFromBase() {
 	stateEffects = baseCommand->getStateEffects();
 	dotEffects = baseCommand->getDotEffects();
 	coneAngle = baseCommand->getConeAngle();
+	coneRange = baseCommand->getConeRange();
 	range = baseCommand->getRange();
 	areaRange = baseCommand->getAreaRange();
-	animationCRC = baseCommand->getAnimationCRC();
 	attackType = baseCommand->getAttackType();
 	trails = baseCommand->getTrails();
 	combatSpam = baseCommand->getCombatSpam();
+	splashDamage = baseCommand->isSplashDamage();
 
 	stateAccuracyBonus = 0;
 
@@ -150,9 +154,6 @@ void CreatureAttackData::setVariable(const String& var, const String& val) {
 	case 0xFEC2FA79: // STRING_HASHCODE("areaRange")
 		areaRange = Integer::valueOf(val);
 		break;
-	case 0x244FB60D: // STRING_HASHCODE("animationCRC")
-		animationCRC = Integer::valueOf(val);
-		break;
 	case 0x708615B8: // STRING_HASHCODE("attackType")
 		attackType = Integer::valueOf(val);
 		break;
@@ -176,4 +177,35 @@ String CreatureAttackData::getCommandName() const {
 
 uint32 CreatureAttackData::getCommandCRC() const {
 	return baseCommand->getNameCRC();
+}
+
+bool CreatureAttackData::changesDefenderPosture() const {
+	if(stateEffects == NULL)
+		return false;
+
+	for(int i=0; i<stateEffects->size(); i++) {
+		switch(stateEffects->get(i).getEffectType()) {
+		case CommandEffect::KNOCKDOWN:
+		case CommandEffect::POSTUREUP:
+		case CommandEffect::POSTUREDOWN:
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CreatureAttackData::changesAttackerPosture() const {
+	if(stateEffects == NULL)
+		return false;
+
+	for(int i=0; i<stateEffects->size(); i++) {
+		switch(stateEffects->get(i).getEffectType()) {
+		case CommandEffect::ATTACKER_FORCE_STAND:
+		case CommandEffect::ATTACKER_FORCE_CROUCH:
+		case CommandEffect::ATTACKER_FORCE_PRONE:
+			return true;
+		}
+	}
+	return false;
 }

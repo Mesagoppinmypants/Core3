@@ -1,6 +1,7 @@
 borvos_thief = Creature:new {
 	objectName = "",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "Borvo's Thief",
 	socialGroup = "borvo",
 	faction = "borvo",
@@ -24,7 +25,7 @@ borvos_thief = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_borvos_thief.iff"},

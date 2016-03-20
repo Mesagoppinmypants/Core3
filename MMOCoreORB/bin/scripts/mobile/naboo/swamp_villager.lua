@@ -1,6 +1,7 @@
 swamp_villager = Creature:new {
 	objectName = "@mob/creature_names:swamp_villager",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "villager",
 	faction = "",
 	level = 7,
@@ -23,7 +24,7 @@ swamp_villager = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_swamp_villager.iff"},

@@ -1,6 +1,7 @@
 tough_thug_male_rodian = Creature:new {
 	objectName = "@mob/creature_names:thug",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "thug",
 	faction = "thug",
 	level = 16,
@@ -23,7 +24,7 @@ tough_thug_male_rodian = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_cobral_thug_rodian_male_01.iff",

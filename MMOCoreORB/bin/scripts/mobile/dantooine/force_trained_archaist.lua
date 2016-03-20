@@ -1,6 +1,7 @@
 force_trained_archaist = Creature:new {
 	objectName = "@mob/creature_names:force_trained_archaist",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "force",
 	faction = "",
 	level = 90,
@@ -23,7 +24,7 @@ force_trained_archaist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_force_trained_archaist.iff"},

@@ -1,6 +1,7 @@
 bh_scientist = Creature:new {
 	objectName = "@mob/creature_names:scientist",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
 	faction = "townsperson",
 	level = 34,
@@ -23,7 +24,7 @@ bh_scientist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_combatmedic_trainer_human_male_01.iff",

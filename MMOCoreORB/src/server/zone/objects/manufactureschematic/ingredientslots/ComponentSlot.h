@@ -111,8 +111,7 @@ public:
 
 		if(incomingTano->getUseCount() > slotNeeds) {
 
-			int newCount = incomingTano->getUseCount() - slotNeeds;
-			incomingTano->setUseCount(newCount, true);
+			incomingTano->decreaseUseCount(slotNeeds);
 
 			itemToUse = cast<TangibleObject*>( objectManager->cloneObject(incomingTano));
 
@@ -122,8 +121,9 @@ public:
 				itemToUse->removeAntiDecayKit();
 			}
 
-			itemToUse->setUseCount(slotNeeds, false);
+			itemToUse->setUseCount((slotNeeds > 1 ? slotNeeds : 0), false);
 			itemToUse->setParent(NULL);
+			itemToUse->sendTo(player, true); // Without this, the new object does not appear in the crafting slot
 			itemToUse->sendAttributeListTo(player);
 
 		} else {
@@ -145,7 +145,8 @@ public:
 			}
 
 			newTano->setParent(NULL);
-			newTano->setUseCount(1, false);
+			newTano->setUseCount(0, false);
+			newTano->sendTo(player, true); // Without this, the new object does not appear in the crafting slot
 			itemsToAdd.add(newTano);
 
 			ilocker.release();
@@ -158,6 +159,7 @@ public:
 		while(itemsToAdd.size() > 0) {
 			ManagedReference<TangibleObject*> tano = itemsToAdd.remove(0);
 			if(!satchel->transferObject(tano, -1, true)) {
+
 				error("cant transfer crafting component Has Items: " + String::valueOf(satchel->getContainerObjectsSize()));
 				return false;
 			}
@@ -199,8 +201,16 @@ public:
 		int quantity = 0;
 		for(int i = 0; i < contents.size(); ++i) {
 			TangibleObject* tano =  contents.elementAt(i);
-			if(tano != NULL)
-				quantity += tano->getUseCount();
+			if(tano != NULL) {
+				uint32 useCount = tano->getUseCount();
+
+				// Objects with 0 uses that have not been destroyed are still valid and "usable" one time only
+				if(useCount == 0)
+					useCount++;
+
+				quantity += useCount;
+			}
+
 		}
 		return quantity;
 	}

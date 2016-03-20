@@ -1,6 +1,7 @@
 grecks_henchman = Creature:new {
 	objectName = "@mob/creature_names:greck_henchman",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "olag_greck",
 	faction = "olag_greck",
 	level = 6,
@@ -23,7 +24,7 @@ grecks_henchman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

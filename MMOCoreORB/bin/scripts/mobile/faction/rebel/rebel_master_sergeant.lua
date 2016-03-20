@@ -1,6 +1,7 @@
 rebel_master_sergeant = Creature:new {
 	objectName = "@mob/creature_names:rebel_master_sergeant",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 17,
@@ -23,7 +24,7 @@ rebel_master_sergeant = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_master_sergeant_sullustan_male_01.iff"},

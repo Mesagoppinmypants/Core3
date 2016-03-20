@@ -1,6 +1,7 @@
 male_zabrak_thug_low = Creature:new {
 	objectName = "@mob/creature_names:thug",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "thug",
 	faction = "thug",
 	level = 7,
@@ -23,7 +24,7 @@ male_zabrak_thug_low = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_thug_zabrak_male_01.iff"},

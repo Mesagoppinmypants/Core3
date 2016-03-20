@@ -1,6 +1,7 @@
 gungan_hunter = Creature:new {
 	objectName = "@mob/creature_names:gungan_hunter",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "gungan",
 	faction = "gungan",
 	level = 17,
@@ -23,7 +24,7 @@ gungan_hunter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gungan_s04_male.iff"},

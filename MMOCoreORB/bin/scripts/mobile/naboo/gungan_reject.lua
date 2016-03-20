@@ -1,6 +1,7 @@
 gungan_reject = Creature:new {
 	objectName = "@mob/creature_names:mordran_gungan_reject",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "borvo",
 	faction = "borvo",
 	level = 35,
@@ -23,7 +24,7 @@ gungan_reject = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gungan_s03_male.iff"},

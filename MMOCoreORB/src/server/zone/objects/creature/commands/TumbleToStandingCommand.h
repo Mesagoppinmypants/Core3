@@ -15,7 +15,6 @@ public:
 		: QueueCommand(name, server) {
 
 	}
-	
 
 	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
@@ -24,6 +23,9 @@ public:
 
 		if (!checkInvalidLocomotions(creature))
 			return INVALIDLOCOMOTION;
+
+		if (creature->hasAttackDelay() || !creature->checkPostureChangeDelay())
+			return GENERALERROR;
 
 		if (creature->isDizzied() && System::random(100) < 85) {
 			creature->queueDizzyFallEvent();
@@ -35,8 +37,7 @@ public:
 
 			creature->inflictDamage(creature, CreatureAttribute::ACTION, actionCost, true);
 
-
-			creature->setPosture(CreaturePosture::UPRIGHT, false);
+			creature->setPosture(CreaturePosture::UPRIGHT, false, true);
 
 			Reference<CreatureObject*> defender = server->getZoneServer()->getObject(target).castTo<CreatureObject*>();
 			if (defender == NULL)
@@ -55,10 +56,6 @@ public:
 
 			locker.release();
 
-			CreatureObjectDeltaMessage3* pmsg = new CreatureObjectDeltaMessage3(creature);
-			pmsg->updatePosture();
-			pmsg->close();
-			creature->broadcastMessage(pmsg, true);
 			creature->sendStateCombatSpam("cbt_spam", "tum_standing", 0);
 		}
 

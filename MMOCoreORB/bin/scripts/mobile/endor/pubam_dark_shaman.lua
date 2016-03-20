@@ -1,6 +1,7 @@
 pubam_dark_shaman = Creature:new {
 	objectName = "@mob/creature_names:pubam_dark_shaman",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "pubam",
 	faction = "pubam",
 	level = 48,
@@ -23,7 +24,7 @@ pubam_dark_shaman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

@@ -1,6 +1,7 @@
 scientist_target_crazed_scientist = Creature:new {
 	objectName = "@mob/creature_names:scientist",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "thug",
 	faction = "thug",
 	level = 7,
@@ -23,7 +24,7 @@ scientist_target_crazed_scientist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

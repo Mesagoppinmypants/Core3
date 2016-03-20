@@ -1,6 +1,7 @@
 escaped_singing_mountain_clan_slave = Creature:new {
 	objectName = "@mob/creature_names:escaped_singing_mtn_clan_slave",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "slave",
 	faction = "",
 	level = 26,
@@ -23,7 +24,7 @@ escaped_singing_mountain_clan_slave = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_sing_mt_clan_escaped_slave.iff"},

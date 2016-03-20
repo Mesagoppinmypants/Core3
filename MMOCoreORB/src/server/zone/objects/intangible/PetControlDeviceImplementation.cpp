@@ -21,6 +21,7 @@
 #include "server/zone/objects/region/CityRegion.h"
 #include "server/zone/objects/player/sessions/TradeSession.h"
 #include "server/zone/managers/player/PlayerManager.h"
+#include "server/zone/objects/creature/events/DroidSkillModTask.h"
 #include "server/zone/objects/creature/events/DroidPowerTask.h"
 #include "server/zone/objects/tangible/weapon/WeaponObject.h"
 #include "server/zone/managers/stringid/StringIdManager.h"
@@ -245,7 +246,7 @@ void PetControlDeviceImplementation::callObject(CreatureObject* player) {
 		player->getCooldownTimerMap()->updateToCurrentAndAddMili("petCallOrStoreCooldown", 1000); // 1 sec
 	}
 
-	EnqueuePetCommand* enqueueCommand = new EnqueuePetCommand(pet, String("petFollow").toLowerCase().hashCode(), "", player->getObjectID(), 1);
+	EnqueuePetCommand* enqueueCommand = new EnqueuePetCommand(pet, String("petFollow").toLowerCase().hashCode(), String::valueOf(player->getObjectID()), player->getObjectID(), 1);
 	enqueueCommand->execute();
 }
 
@@ -361,14 +362,18 @@ void PetControlDeviceImplementation::spawnObject(CreatureObject* player) {
 		if( droid == NULL )
 			return;
 
-		// Sanity check that there isn't another power task outstanding
+		// Sanity check that there aren't outstanding power/skill mod tasks
 		droid->removePendingTask( "droid_power" );
+		droid->removePendingTask( "droid_skill_mod" );
 		droid->initDroidModules();
 		droid->onCall();
 		droid->loadSkillMods(player);
 		// Submit new power task
 		Reference<Task*> droidPowerTask = new DroidPowerTask( droid );
 		droid->addPendingTask("droid_power", droidPowerTask, 120000); // 2 min
+		// Submit new skill mod task
+		Reference<Task*> droidSkillModTask = new DroidSkillModTask( droid, player );
+		droid->addPendingTask("droid_skill_mod", droidSkillModTask, 3000); // 3 sec
 	}
 
 	pet->setHomeLocation(player->getPositionX(), player->getPositionZ(), player->getPositionY(), (parent != NULL && parent->isCellObject()) ? parent : NULL);
@@ -1098,7 +1103,7 @@ void PetControlDeviceImplementation::setTrainingCommand( unsigned int commandID 
 		message << stf << ":start_convo_4";
 		StringIdChatParameter chat;
 		chat.setStringId(message.toString());
-		pet->getZoneServer()->getChatManager()->broadcastMessage(pet,chat,0,0,0);
+		pet->getZoneServer()->getChatManager()->broadcastChatMessage(pet,chat,0,0,0);
 	} else {
 		pet->showFlyText("npc_reaction/flytext","alert", 204, 0, 0);  // "?"
 	}

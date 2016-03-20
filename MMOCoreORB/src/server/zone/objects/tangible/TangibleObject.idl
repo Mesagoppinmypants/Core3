@@ -39,6 +39,9 @@ class TangibleObject extends SceneObject {
 	protected unsigned int faction;
 
 	protected boolean invisible;
+
+	@dereferenced
+	protected VectorMap<string, string> luaStringData;
 	
 	@dereferenced
 	protected CustomizationVariables customizationVariables;
@@ -55,6 +58,8 @@ class TangibleObject extends SceneObject {
 	
 	@dereferenced
 	protected AutoDeltaSet<int> visibleComponents;
+	
+	protected boolean isCraftedEnhancedItem;
 	
 	protected unsigned int pvpStatusBitmask;
 	
@@ -79,7 +84,7 @@ class TangibleObject extends SceneObject {
 	protected SortedVector<ActiveArea> activeAreas;
 
 	protected SceneObject antiDecayKitObject;
-
+	
 	/**
 	 * TangibleObject constructor, used to initialized the object
 	 * @pre { templateData is a valid SharedTangibleObjectTemplate LuaObject that contains the necessary values to initialize CreatureObject }
@@ -94,6 +99,8 @@ class TangibleObject extends SceneObject {
 		invisible = false;
 
 		antiDecayKitObject = null;
+
+		luaStringData.setNoDuplicateInsertPlan();
 	}
 	
 	public void initializeMembers() {
@@ -113,6 +120,7 @@ class TangibleObject extends SceneObject {
 		
 		sliceable = false;
 		sliced = false;
+		isCraftedEnhancedItem = false;
 		
 		threatMap = null;
 		junkDealerNeeded = 0;
@@ -266,6 +274,7 @@ class TangibleObject extends SceneObject {
 	@preLocked
 	public native abstract void removeDefenders();
 	
+	
 	/**
 	 * Sets the combat state, needs to be overriden
 	 * @pre { this object is locked }
@@ -284,14 +293,15 @@ class TangibleObject extends SceneObject {
 	@preLocked
 	public native abstract void setUseCount(unsigned int newUseCount, boolean notifyClient = true);
 	
-	@preLocked
-	public native void setCountdownTimer(unsigned int newCount, boolean notifyClient = true);
-	
 	/**
 	 * Decreases use count, when reaches 0 destroys itself
 	 */
 	@preLocked
-	public native void decreaseUseCount();
+	public native abstract void decreaseUseCount(unsigned int decrementAmount = 1, boolean notifyClient = true);
+	
+	@preLocked
+	public abstract native void setCountdownTimer(unsigned int newCount, boolean notifyClient = true);
+
 	
 	/**
 	 * Fills the attribute list message options that are sent to player creature
@@ -335,13 +345,17 @@ class TangibleObject extends SceneObject {
 	
 	/**
 	 * Evaluates if this object can be attacket by the passed creature object
-	 * @pre { this object is locked }
-	 * @post { this object is locked}
+	 * @pre { }
+	 * @post { }
 	 * @return returns true if the creature object can attack this 
 	 */
 	@dirty
 	public native abstract boolean isAttackableBy(CreatureObject object);
+
 	
+	@dirty
+	public native abstract boolean isAttackableBy(TangibleObject object);
+		
 	/**
 	 * Evaluates if this creature is aggresive to the object
 	 * @pre { }
@@ -360,8 +374,8 @@ class TangibleObject extends SceneObject {
 	
 	/**
 	 * Sends the pvp options bitmask
-	 * @pre { this object is locked}
-	 * @post { this object is locked }
+	 * @pre { }
+	 * @post { }
 	 */
 	@dirty
 	public abstract native void sendPvpStatusTo(CreatureObject player);
@@ -374,11 +388,11 @@ class TangibleObject extends SceneObject {
 	 */
 	@preLocked
 	@arg1preLocked
-	public native abstract int inflictDamage(TangibleObject attacker, int damageType, float damage, boolean destroy, boolean notifyClient = true);
+	public native abstract int inflictDamage(TangibleObject attacker, int damageType, float damage, boolean destroy, boolean notifyClient = true, boolean isCombatAction = false);
 	
 	@preLocked
 	@arg1preLocked
-	public native abstract int inflictDamage(TangibleObject attacker, int damageType, float damage, boolean destroy, final string xp, boolean notifyClient = true);
+	public native abstract int inflictDamage(TangibleObject attacker, int damageType, float damage, boolean destroy, final string xp, boolean notifyClient = true, boolean isCombatAction = false);
 	
 	/**
 	 * Heals damage
@@ -433,10 +447,10 @@ class TangibleObject extends SceneObject {
 	@local
 	public abstract native void updateCraftingValues(CraftingValues values, boolean firstUpdate);
 	
-	public abstract native int notifyObjectDestructionObservers(TangibleObject attacker, int condition);
+	public abstract native int notifyObjectDestructionObservers(TangibleObject attacker, int condition, boolean isCombatAction);
 	
 	@preLocked
-	public native void dropFromDefenderLists(TangibleObject destructor);
+	public native void dropFromDefenderLists();
 	
 	@dirty
 	public byte getObjectVisible() {
@@ -476,14 +490,6 @@ class TangibleObject extends SceneObject {
 		
 	@dirty
 	public abstract int getUseCount() {
-		return useCount;
-	}
-	
-	@dirty
-	public abstract int getDisplayedUseCount() {
-		if(useCount == 1 && super.gameObjectType != SceneObjectType.TRAP)
-			return 0;
-		
 		return useCount;
 	}
 	
@@ -531,6 +537,11 @@ class TangibleObject extends SceneObject {
 	@dirty
 	public int getLevel() {
 		return level;
+	}
+	
+	@dirty 
+	public boolean getIsCraftedEnhancedItem() {
+		return isCraftedEnhancedItem;
 	}
 	
 	@dirty
@@ -581,22 +592,16 @@ class TangibleObject extends SceneObject {
 	public unsigned int getFaction() {
 		return faction;
 	}
-	
+
 	@read
-	public boolean isRebel() {
-		return faction == 0x16148850;
-	}
-	
+	public native boolean isRebel();
+
 	@read
-	public boolean isImperial() {
-		return faction == 0xDB4ACC54;
-	}
-	
+	public native boolean isImperial();
+
 	@read
-	public boolean isNeutral() {
-		return faction == 0;
-	}
-	
+	public native boolean isNeutral();
+
 	@dirty
 	@local
 	@nativeStub
@@ -644,6 +649,7 @@ class TangibleObject extends SceneObject {
 		customizationVariables.parseFromClientString(vars);
 	}
 	
+	public native void setIsCraftedEnhancedItem(boolean value);
 	public native void setPvpStatusBitmask(unsigned int bitmask, boolean notifyClient = true);
 
 	public native void setPvpStatusBit(unsigned int pvpStatus, boolean notifyClient = true);
@@ -832,6 +838,21 @@ class TangibleObject extends SceneObject {
 	@dirty
 	public abstract boolean isCustomIngredient() {
 		return false;
+	}
+
+	@preLocked
+	public void setLuaStringData(final string key, final string data) {
+		luaStringData.put(key, data);
+	}
+	
+	@preLocked
+	public void deleteLuaStringData(final string key) {
+		luaStringData.drop(key);
+	}
+
+	@dirty
+	public string getLuaStringData(final string key) {
+		return luaStringData.get(key);
 	}
 }
 

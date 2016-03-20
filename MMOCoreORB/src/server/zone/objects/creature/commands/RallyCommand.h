@@ -24,8 +24,8 @@ public:
 			return INVALIDLOCOMOTION;
 
 		if (!creature->isPlayerCreature())
-			return GENERALERROR;			
-	
+			return GENERALERROR;
+
 		ManagedReference<CreatureObject*> player = cast<CreatureObject*>(creature);
 		ManagedReference<GroupObject*> group = player->getGroup();
 
@@ -104,7 +104,7 @@ public:
 			checkForTef(leader, memberPlayer);
 		}
 
-//		What is this used for?		
+//		What is this used for?
 //		leader->updateCooldownTimer("rally", (duration + 30) * 1000);
 
 		return true;
@@ -156,7 +156,7 @@ public:
 
 		for (int i = 0; i < closeObjects.size(); ++i) {
 			SceneObject* object = cast<SceneObject*>( closeObjects.get(i));
-			if (object == NULL || !object->isPlayerCreature() || !leader->isInRange(object, 70) || group->hasMember(object))
+			if (object == NULL || !object->isPlayerCreature() || !checkDistance(leader, object, 70) || group->hasMember(object))
 				continue;
 
 			CreatureObject* receiver = cast<CreatureObject*>( object); //in range player who isn't in group.

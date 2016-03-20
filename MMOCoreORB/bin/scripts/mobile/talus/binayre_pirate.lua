@@ -1,6 +1,7 @@
 binayre_pirate = Creature:new {
 	objectName = "@mob/creature_names:binayre_pirate",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "binayre",
 	faction = "binayre",
 	level = 15,
@@ -23,7 +24,7 @@ binayre_pirate = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

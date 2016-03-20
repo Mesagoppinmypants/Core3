@@ -1,6 +1,7 @@
 nightsister_spell_weaver = Creature:new {
 	objectName = "@mob/creature_names:nightsister_spell_weaver",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "nightsister",
 	faction = "nightsister",
 	level = 107,
@@ -23,7 +24,7 @@ nightsister_spell_weaver = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_nightsister_spellweaver.iff"},
@@ -40,13 +41,13 @@ nightsister_spell_weaver = Creature:new {
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
 				{group = "wearables_common", chance = 500000},
-				{group = "wearables_uncommon", chance = 500000}
+				{group = "tailor_components", chance = 500000}
 			}
 		}
 	},
-	weapons = {},
+	weapons = {"mixed_force_weapons"},
 	conversationTemplate = "",
-	attacks = merge(tkamaster,brawlermaster,forcewielder)
+	attacks = merge(fencermid,swordsmanmid,pikemanmaster,tkamaster,brawlermaster,forcewielder)
 }
 
 CreatureTemplates:addCreatureTemplate(nightsister_spell_weaver, "nightsister_spell_weaver")

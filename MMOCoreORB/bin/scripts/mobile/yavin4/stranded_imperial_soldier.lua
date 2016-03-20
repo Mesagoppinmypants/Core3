@@ -1,6 +1,7 @@
 stranded_imperial_soldier = Creature:new {
 	objectName = "@mob/creature_names:stranded_imperial_soldier",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 24,
@@ -23,7 +24,7 @@ stranded_imperial_soldier = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_stranded_imperial_soldier.iff"},

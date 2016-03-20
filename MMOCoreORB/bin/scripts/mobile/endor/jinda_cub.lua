@@ -1,6 +1,7 @@
 jinda_cub = Creature:new {
 	objectName = "@mob/creature_names:jinda_cub",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jinda_tribe",
 	faction = "",
 	level = 5,
@@ -23,7 +24,7 @@ jinda_cub = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

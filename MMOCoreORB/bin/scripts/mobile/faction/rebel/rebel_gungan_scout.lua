@@ -1,6 +1,7 @@
 rebel_gungan_scout = Creature:new {
 	objectName = "@mob/creature_names:gungan_scout",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 14,
@@ -23,7 +24,7 @@ rebel_gungan_scout = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gungan_male.iff"},

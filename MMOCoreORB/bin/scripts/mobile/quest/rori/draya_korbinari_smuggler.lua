@@ -21,9 +21,9 @@ draya_korbinari_smuggler = Creature:new {
 	milk = 0,
 	tamingChance = 0,
 	ferocity = 0,
-	pvpBitmask = ATTACKABLE + AGGRESSIVE + ENEMY,
-	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	pvpBitmask = ATTACKABLE,
+	creatureBitmask = NONE,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_kobola_smuggler_trandoshan_male_01.iff"},

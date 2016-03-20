@@ -1,6 +1,7 @@
 blood_razor_elite_pirate = Creature:new {
 	objectName = "@mob/creature_names:blood_razor_pirate_elite",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "bloodrazor",
 	faction = "bloodrazor",
 	level = 33,
@@ -23,7 +24,7 @@ blood_razor_elite_pirate = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

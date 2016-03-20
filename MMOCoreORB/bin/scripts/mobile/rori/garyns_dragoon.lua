@@ -1,6 +1,7 @@
 garyns_dragoon = Creature:new {
 	objectName = "@mob/creature_names:garyn_dragoon",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "garyn",
 	faction = "garyn",
 	level = 26,
@@ -23,7 +24,7 @@ garyns_dragoon = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

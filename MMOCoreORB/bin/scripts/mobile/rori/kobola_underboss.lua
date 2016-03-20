@@ -1,6 +1,7 @@
 kobola_underboss = Creature:new {
 	objectName = "@mob/creature_names:kobola_underboss",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "kobola",
 	faction = "kobola",
 	level = 25,
@@ -23,7 +24,7 @@ kobola_underboss = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

@@ -1,6 +1,7 @@
 corsec_special_ops_major = Creature:new {
 	objectName = "@mob/creature_names:corsec_major_aggro",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "corsec",
 	faction = "corsec",
 	level = 181,
@@ -23,7 +24,7 @@ corsec_special_ops_major = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = { "object/mobile/dressed_corsec_captain_human_female_01.iff",

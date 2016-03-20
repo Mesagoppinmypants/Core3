@@ -1,6 +1,7 @@
 weak_mercenary = Creature:new {
 	objectName = "@mob/creature_names:mercenary_weak",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "lok_mercenaries",
 	faction = "lok_mercenaries",
 	level = 34,
@@ -23,7 +24,7 @@ weak_mercenary = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

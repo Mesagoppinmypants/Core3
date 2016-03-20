@@ -158,6 +158,7 @@ public:
 	const static int PLAYERLOOTCRATE = 0x2035;
 	const static int FSPUZZLEPACK = 0x2036;
 	const static int GROWABLEPLANT = 0x2037;
+	const static int FSCRAFTINGCOMPONENT = 0x2038;
 	/// End Not in client **************
 
 	const static int TERMINAL = 0x4000;
@@ -185,6 +186,10 @@ public:
 	const static int GAMBLINGTERMINAL = 0x4017;
 	const static int JUKEBOX = 0x4018;
 	const static int FLAGGAME = 0x4019;
+	const static int EVENTPERK = 0x401A;
+	const static int LOTTERYDROID = 0x401B;
+	const static int SCAVENGERCHEST = 0x401C;
+	const static int SHUTTLEBEACON = 0x401D;
 	/// end not in client ***************
 
 	const static int TOOL = 0x8000;
@@ -289,6 +294,7 @@ public:
 	// Not in client **********
 	const static int RESOURCEDEED = 0x800006;
 	const static int EVENTPERKDEED = 0x800007;
+	const static int VETHARVESTERDEED = 0x800008;
 	// ************************
 
 	const static int CLOTHING = 0x1000000;
@@ -321,7 +327,6 @@ public:
 	const static int MISSIONSPAWNAREA = 0x2000002;
 	const static int MISSIONRECONAREA = 0x2000003;
 	const static int SPAWNAREA = 0x2000004;
-	const static int GARAGEAREA = 0x2000006;
 	const static int ACTIVEAREA = 0x2000007;
 	const static int CAMPAREA = 0x2000009;
 	const static int FSVILLAGEAREA = 0x200000A;

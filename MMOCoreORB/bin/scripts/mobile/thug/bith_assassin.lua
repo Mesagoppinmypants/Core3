@@ -1,6 +1,7 @@
 bith_assassin = Creature:new {
 	objectName = "@mob/creature_names:assassin",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "bith",
 	faction = "",
 	level = 18,
@@ -23,7 +24,7 @@ bith_assassin = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_cobral_hooligan_bith_female_01.iff"},

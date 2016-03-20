@@ -47,6 +47,7 @@ ForceKnockdown3Command = {
     damageMultiplier = 0,
 	speed = 4.0,
 	forceCost = 200,
+	visMod = 25,
 	accuracySkillMod = "forceknockdown_accuracy";
 	areaAction = true,
 	areaRange = 15,
@@ -64,7 +65,7 @@ ForceKnockdown3Command = {
 	},
 	
 	
-	animationCRC = hashCode("force_knockdown_1_arc_particle_level_1"),
+	animation = "force_knockdown_1_arc_particle_level_1",
 
 	combatSpam = "forceknockdown3",
 	

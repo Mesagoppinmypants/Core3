@@ -75,6 +75,7 @@ public:
 	const static int NOJEDIARMOR = 12;
 	const static int INVALIDSYNTAX = 13;
 	const static int TOOCLOSE = 14;
+	const static int NOSTACKJEDIBUFF = 15;
 
 
 	virtual ~QueueCommand() {
@@ -116,6 +117,10 @@ public:
 	 */
 	void addInvalidLocomotion(int l) {
 		invalidLocomotion.add(l);
+	}
+
+	inline bool checkDistance(SceneObject* source, SceneObject* target, float range) const {
+		return (source->getWorldPosition().distanceTo(target->getWorldPosition()) - source->getTemplateRadius() - target->getTemplateRadius() <= range);
 	}
 
 	/*
@@ -280,6 +285,14 @@ public:
 
 	virtual bool isJediQueueCommand() {
 		return false;
+	}
+
+	virtual bool isJediCombatCommand() {
+		return false;
+	}
+
+	bool isJediCommand() {
+		return (isForceHealCommand() || isJediQueueCommand() || isJediCombatCommand());
 	}
 
 	inline int getSkillModSize() const {

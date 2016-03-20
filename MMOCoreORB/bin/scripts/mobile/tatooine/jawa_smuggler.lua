@@ -1,6 +1,7 @@
 jawa_smuggler = Creature:new {
 	objectName = "@mob/creature_names:jawa_smuggler",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jawa",
 	faction = "jawa",
 	level = 6,
@@ -23,7 +24,7 @@ jawa_smuggler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/jawa_male.iff"},

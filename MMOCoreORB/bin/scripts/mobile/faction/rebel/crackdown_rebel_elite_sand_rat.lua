@@ -1,6 +1,7 @@
 crackdown_rebel_elite_sand_rat = Creature:new {
 	objectName = "@mob/creature_names:crackdown_rebel_elite_sand_rat",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 1,
@@ -23,7 +24,7 @@ crackdown_rebel_elite_sand_rat = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_trooper_sullustan_male_01.iff"},

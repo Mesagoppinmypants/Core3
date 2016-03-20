@@ -1,6 +1,7 @@
 weathered_gondula_shaman = Creature:new {
 	objectName = "@mob/creature_names:weathered_gondula_shaman",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "gondula_tribe",
 	faction = "gondula_tribe",
 	level = 43,
@@ -23,7 +24,7 @@ weathered_gondula_shaman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

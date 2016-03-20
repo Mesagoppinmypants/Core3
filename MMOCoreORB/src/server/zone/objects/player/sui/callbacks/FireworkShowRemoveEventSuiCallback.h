@@ -13,7 +13,9 @@ public:
 		: SuiCallback(server) {
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (!suiBox->isListBox() || cancelPressed)
 			return;
 
@@ -59,8 +61,10 @@ public:
 
 		ManagedReference<TangibleObject*> fireworkShowObject = fireworkShow.castTo<TangibleObject*>();
 
-		if (fireworkShowObject != NULL )
-			fireworkShowObject->setUseCount(fireworkShowObject->getUseCount() - 1, true);
+		if (fireworkShowObject != NULL) {
+			Locker locker(fireworkShowObject);
+			fireworkShowObject->decreaseUseCount();
+		}
 
 		FireworkShowMenuComponent* showMenu = cast<FireworkShowMenuComponent*>(fireworkShow->getObjectMenuComponent());
 		showMenu->removeEvent(player, fireworkShow.castTo<FireworkObject*>());

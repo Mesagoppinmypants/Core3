@@ -1,6 +1,7 @@
 singing_mountain_clan_councilwoman = Creature:new {
 	objectName = "@mob/creature_names:singing_mtn_clan_councilwoman",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "mtn_clan",
 	faction = "mtn_clan",
 	level = 253,
@@ -23,7 +24,7 @@ singing_mountain_clan_councilwoman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_sing_mt_clan_councilwoman.iff"},
@@ -39,7 +40,7 @@ singing_mountain_clan_councilwoman = Creature:new {
 				{group = "rifles", chance = 1000000},
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
-				{group = "wearables_scarce", chance = 500000}
+				{group = "wearables_rare", chance = 500000}
 			}
 		}
 	},

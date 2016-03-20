@@ -43,14 +43,16 @@
 
 SaberThrow3Command = {
         name = "saberthrow3",
-        
-                
-        
+
 	damageMultiplier = 2.0,
 	speedMultiplier = 4.5,
+	healthCostMultiplier = 0,
+	actionCostMultiplier = 0,
+	mindCostMultiplier = 0,
 	coneAngle = 30,
 	coneAction = true,
 	forceCostMultiplier = 2.5,
+	visMod = 25,
 
 	stateEffects = {
 	   StateEffect( 
@@ -64,12 +66,12 @@ SaberThrow3Command = {
 	  )
 	},
 
-	animationCRC = hashCode("saberthrow_posture_change"),
+	animation = "saberthrow_posture_change",
 
 	combatSpam = "saberthrow3",
-	
+
 	poolsToDamage = RANDOM_ATTRIBUTE,
-	
+
 	weaponType = JEDIWEAPON,
 
 	range = 32

@@ -1,6 +1,7 @@
 bh_bounty_hunter_thug = Creature:new {
 	objectName = "@mob/creature_names:bounty_hunter",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "mercenary",
 	faction = "",
 	level = 24,
@@ -22,7 +23,7 @@ bh_bounty_hunter_thug = Creature:new {
 	tamingChance = 0.000000,
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	creatureBitmask = PACK + KILLER,
 	diet = HERBIVORE,
 

@@ -1,6 +1,7 @@
 fbase_imperial_corporal_hard = Creature:new {
 	objectName = "@mob/creature_names:fbase_imperial_corporal_hard",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 52,
@@ -23,7 +24,7 @@ fbase_imperial_corporal_hard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

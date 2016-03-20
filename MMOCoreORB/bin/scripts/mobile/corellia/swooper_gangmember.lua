@@ -1,6 +1,7 @@
 swooper_gangmember = Creature:new {
 	objectName = "",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a swooper gangmember",
 	socialGroup = "cor_swoop",
 	faction = "cor_swoop",
@@ -24,7 +25,7 @@ swooper_gangmember = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_swooper_zabrak_female_01.iff",

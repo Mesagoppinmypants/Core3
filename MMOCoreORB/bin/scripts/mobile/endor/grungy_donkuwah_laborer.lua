@@ -1,6 +1,7 @@
 grungy_donkuwah_laborer = Creature:new {
 	objectName = "@mob/creature_names:grungy_donkuwah_laborer",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "donkuwah_tribe",
 	faction = "donkuwah_tribe",
 	level = 28,
@@ -23,7 +24,7 @@ grungy_donkuwah_laborer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

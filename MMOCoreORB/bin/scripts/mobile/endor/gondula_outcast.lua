@@ -1,6 +1,7 @@
 gondula_outcast = Creature:new {
 	objectName = "@mob/creature_names:gundula_outcast",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "gondula_tribe",
 	faction = "gondula_tribe",
 	level = 13,
@@ -23,7 +24,7 @@ gondula_outcast = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_ewok_m_01.iff"},

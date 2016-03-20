@@ -22,8 +22,8 @@ gohn_bimmin = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
-	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	creatureBitmask = KILLER,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

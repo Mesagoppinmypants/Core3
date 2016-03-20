@@ -1,6 +1,7 @@
 corsec_special_agent = Creature:new {
 	objectName = "@mob/creature_names:corsec_agent_aggro",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "corsec",
 	faction = "corsec",
 	level = 105,
@@ -23,7 +24,7 @@ corsec_special_agent = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = { "object/mobile/dressed_corsec_pilot_human_female_01.iff",

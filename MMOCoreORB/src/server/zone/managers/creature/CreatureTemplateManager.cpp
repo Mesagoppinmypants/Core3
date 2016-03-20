@@ -50,6 +50,13 @@ CreatureTemplateManager::CreatureTemplateManager() : Logger("CreatureTemplateMan
 	lua->setGlobalInt("CHANGEFACTIONSTATUS", CreatureFlag::CHANGEFACTIONSTATUS);
 	lua->setGlobalInt("BLINK_GREEN", CreatureFlag::BLINK_GREEN);
 
+	lua->setGlobalInt("CONVERSABLE", OptionBitmask::CONVERSE);
+	lua->setGlobalInt("AIENABLED", OptionBitmask::AIENABLED);
+	lua->setGlobalInt("INVULNERABLE", OptionBitmask::INVULNERABLE);
+	lua->setGlobalInt("FACTIONAGGRO", OptionBitmask::FACTIONAGGRO);
+	lua->setGlobalInt("INTERESTING", OptionBitmask::INTERESTING);
+	lua->setGlobalInt("JTLINTERESTING", OptionBitmask::JTLINTERESTING);
+
 	lua->setGlobalInt("PACK", CreatureFlag::PACK);
 	lua->setGlobalInt("HERD", CreatureFlag::HERD);
 	lua->setGlobalInt("KILLER", CreatureFlag::KILLER);
@@ -64,17 +71,10 @@ CreatureTemplateManager::CreatureTemplateManager() : Logger("CreatureTemplateMan
 	// NameManager Types
 	lua->setGlobalInt("NAME_TAG", NameManagerType::TAG);
 	lua->setGlobalInt("NAME_GENERIC", NameManagerType::GENERIC);
-	lua->setGlobalInt("NAME_GENERIC_TAG", NameManagerType::GENERIC_TAG);
-	lua->setGlobalInt("NAME_GENERIC_FIRSTNAME", NameManagerType::GENERIC_FIRSTNAME);
-	lua->setGlobalInt("NAME_GENERIC_FIRSTNAME_TAG", NameManagerType::GENERIC_FIRSTNAME_TAG);
 	lua->setGlobalInt("NAME_STORMTROOPER", NameManagerType::STORMTROOPER);
-	lua->setGlobalInt("NAME_STORMTROOPER_TAG", NameManagerType::STORMTROOPER_TAG);
 	lua->setGlobalInt("NAME_SCOUTTROOPER", NameManagerType::SCOUTTROOPER);
-	lua->setGlobalInt("NAME_SCOUTTROOPER_TAG", NameManagerType::SCOUTTROOPER_TAG);
 	lua->setGlobalInt("NAME_DARKTROOPER", NameManagerType::DARKTROOPER);
-	lua->setGlobalInt("NAME_DARKTROOPER_TAG", NameManagerType::DARKTROOPER_TAG);
 	lua->setGlobalInt("NAME_SWAMPTROOPER", NameManagerType::SWAMPTROOPER);
-	lua->setGlobalInt("NAME_SWAMPTROOPER_TAG", NameManagerType::SWAMPTROOPER_TAG);
 }
 
 CreatureTemplateManager::~CreatureTemplateManager() {

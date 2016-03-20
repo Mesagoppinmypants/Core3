@@ -52,6 +52,7 @@ protected:
 
 	String objectName;
 	int randomNameType;
+	bool randomNameTag;
 	String socialGroup;
 	String faction;
 
@@ -60,6 +61,7 @@ protected:
 	float chanceHit;
 	int damageMin;
 	int damageMax;
+	float specialDamageMult;
 	int range;
 
 	float scale;
@@ -245,6 +247,10 @@ public:
 		return randomNameType;
 	}
 
+	inline bool getRandomNameTag() {
+		return randomNameTag;
+	}
+
 	inline String getSocialGroup() {
 		return socialGroup;
 	}
@@ -279,6 +285,10 @@ public:
 
 	inline int getDamageMax() {
 		return damageMax;
+	}
+
+	inline float getSpecialDamageMult() {
+		return specialDamageMult;
 	}
 
 	inline int getRange() {

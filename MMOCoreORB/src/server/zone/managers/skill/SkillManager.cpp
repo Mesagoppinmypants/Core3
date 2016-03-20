@@ -308,18 +308,8 @@ bool SkillManager::awardSkill(const String& skillName, CreatureObject* creature,
 		updateXpLimits(ghost);
 
 
-		// Update Force Power Max and Regen.
+		// Update Force Power Max.
 		ghost->setForcePowerMax(creature->getSkillMod("jedi_force_power_max"), true);
-		ghost->setForcePowerRegen(creature->getSkillMod("jedi_force_power_regen"));
-		SceneObject* item = creature->getSlottedObject("chest1");
-		if (item != NULL && item->isRobeObject()) {
-			RobeObject* robeObject = cast<RobeObject*>(item);
-			if (robeObject->getSkillRequired() != "") {
-				if (!creature->getWeapon()->isJediWeapon()) {
-					ghost->setForcePowerRegen(creature->getSkillMod("jedi_force_power_regen") - robeObject->getTemplateSkillMods()->get("jedi_force_power_regen"));
-				}
-			}
-		}
 
 		if (skillName.contains("master")) {
 			ManagedReference<PlayerManager*> playerManager = creature->getZoneServer()->getPlayerManager();
@@ -457,18 +447,8 @@ bool SkillManager::surrenderSkill(const String& skillName, CreatureObject* creat
 		//Update maximum experience.
 		updateXpLimits(ghost);
 
-		/// Update Force Power Max and Regen
+		/// Update Force Power Max
 		ghost->setForcePowerMax(creature->getSkillMod("jedi_force_power_max"), true);
-		ghost->setForcePowerRegen(creature->getSkillMod("jedi_force_power_regen"));
-		SceneObject* item = creature->getSlottedObject("chest1");
-		if (item != NULL && item->isRobeObject()) {
-			RobeObject* robeObject = cast<RobeObject*>(item);
-			if (robeObject->getSkillRequired() != "") {
-				if (!creature->getWeapon()->isJediWeapon()) {
-					ghost->setForcePowerRegen(creature->getSkillMod("jedi_force_power_regen") - robeObject->getTemplateSkillMods()->get("jedi_force_power_regen"));
-				}
-			}
-		}
 
 		SkillList* list = creature->getSkillList();
 
@@ -549,7 +529,6 @@ void SkillManager::surrenderAllSkills(CreatureObject* creature, bool notifyClien
 
 				/// update force
 				ghost->setForcePowerMax(creature->getSkillMod("jedi_force_power_max"), true);
-				ghost->setForcePowerRegen(creature->getSkillMod("jedi_force_power_regen"));
 			}
 		}
 	}
@@ -712,6 +691,9 @@ bool SkillManager::fullfillsSkillPrerequisites(const String& skillName, Creature
 	if(ghost == NULL || ghost->getJediState() < skill->getJediStateRequired()) {
 		return false;
 	}
+
+	if (ghost->isPrivileged())
+		return true;
 
 	if (skillName.beginsWith("force_sensitive")) { // Check for Force Sensitive boxes.
 		int index = skillName.indexOf("0");

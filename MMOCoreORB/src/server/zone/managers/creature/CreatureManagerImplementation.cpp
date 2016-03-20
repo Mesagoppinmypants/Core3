@@ -229,6 +229,7 @@ SceneObject* CreatureManagerImplementation::spawnDynamicSpawn(unsigned int lairT
 
 	zone->transferObject(theater, -1, false);
 
+	theater->createChildObjects();
 	dynamicObserver->spawnInitialMobiles(theater);
 
 	return theater;
@@ -584,11 +585,14 @@ void CreatureManagerImplementation::loadSpawnAreas() {
 	spawnAreaMap.loadMap(zone);
 }
 
-int CreatureManagerImplementation::notifyDestruction(TangibleObject* destructor, AiAgent* destructedObject, int condition) {
+int CreatureManagerImplementation::notifyDestruction(TangibleObject* destructor, AiAgent* destructedObject, int condition, bool isCombatAction) {
 	if (destructedObject->isDead())
 		return 1;
 
-	destructedObject->setPosture(CreaturePosture::DEAD, true);
+	destructedObject->clearOptionBit(OptionBitmask::INTERESTING);
+	destructedObject->clearOptionBit(OptionBitmask::JTLINTERESTING);
+
+	destructedObject->setPosture(CreaturePosture::DEAD, !isCombatAction, !isCombatAction);
 
 	destructedObject->updateTimeOfDeath();
 
@@ -1098,7 +1102,7 @@ void CreatureManagerImplementation::tame(Creature* creature, CreatureObject* pla
 
 	ChatManager* chatManager = player->getZoneServer()->getChatManager();
 
-	chatManager->broadcastMessage(player, "@hireling/hireling:taming_" + String::valueOf(System::random(4) + 1));
+	chatManager->broadcastChatMessage(player, "@hireling/hireling:taming_" + String::valueOf(System::random(4) + 1), 0, 0, 0, ghost->getLanguageID());
 
 	Locker clocker(creature);
 
@@ -1192,7 +1196,7 @@ bool CreatureManagerImplementation::addWearableItem(CreatureObject* creature, Ta
 			else
 				message = "@player_structure:wear_no";
 
-			chatMan->broadcastMessage(creature, message, clothing->getObjectID(), creature->getMoodID(), 0);
+			chatMan->broadcastChatMessage(creature, message, clothing->getObjectID(), creature->getMoodID(), 0);
 
 			return false;
 		}
@@ -1227,7 +1231,7 @@ bool CreatureManagerImplementation::addWearableItem(CreatureObject* creature, Ta
 	else
 		message = "@player_structure:wear_yes";
 
-	chatMan->broadcastMessage(creature, message, clothing->getObjectID(), creature->getMoodID(), 0);
+	chatMan->broadcastChatMessage(creature, message, clothing->getObjectID(), creature->getMoodID(), 0);
 
 	return true;
 }

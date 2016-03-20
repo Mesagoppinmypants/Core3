@@ -1,6 +1,7 @@
 chunker_braggart = Creature:new {
 	objectName = "@mob/creature_names:chunker_braggart",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "chunker",
 	faction = "thug",
 	level = 8,
@@ -23,7 +24,7 @@ chunker_braggart = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/human_male.iff"},

@@ -314,7 +314,6 @@ void CommandConfigManager::registerSpecialCommands(CommandList* sCommands) {
 	createCommand(String("mildDisease").toLowerCase())->setCommandGroup(0xe1c9a54a);
 	createCommand(String("strongDisease").toLowerCase())->setCommandGroup(0xe1c9a54a);
 	createCommand(String("turretFire").toLowerCase())->setCommandGroup(0xe1c9a54a);
-	createCommand(String("turretFireManual").toLowerCase())->setCommandGroup(0xe1c9a54a);
 	createCommand(String("minefieldAttack").toLowerCase())->setCommandGroup(0xe1c9a54a);
 	createCommand(String("creatureRangedAttack").toLowerCase())->setCommandGroup(0xe1c9a54a);
 	createCommand(String("defaultDroidAttack").toLowerCase())->setCommandGroup(0xe1c9a54a);
@@ -367,6 +366,7 @@ void CommandConfigManager::registerGlobals() {
 	setGlobalLong("TUMBLING_STATE", CreatureState::TUMBLING);
 	setGlobalLong("RALLIED_STATE", CreatureState::RALLIED);
 	setGlobalLong("STUNNED_STATE", CreatureState::STUNNED);
+	setGlobalLong("FEIGNDEATH_STATE", CreatureState::FEIGNDEATH);
 	setGlobalLong("BLINDED_STATE", CreatureState::BLINDED);
 	setGlobalLong("DIZZY_STATE", CreatureState::DIZZY);
 	setGlobalLong("INTIMIDATED_STATE", CreatureState::INTIMIDATED);
@@ -463,6 +463,9 @@ void CommandConfigManager::registerGlobals() {
 	setGlobalInt("MINDDEGRADE_EFFECT", CommandEffect::MINDDEGRADE);
 	setGlobalInt("REMOVE_COVER_EFFECT", CommandEffect::REMOVECOVER);
 	setGlobalInt("FORCECHOKE", CommandEffect::FORCECHOKE);
+	setGlobalInt("ATTACKER_FORCE_STANDING", CommandEffect::ATTACKER_FORCE_STAND);
+	setGlobalInt("ATTACKER_FORCE_CROUCH", CommandEffect::ATTACKER_FORCE_CROUCH);
+	setGlobalInt("ATTACKER_FORCE_PRONE", CommandEffect::ATTACKER_FORCE_PRONE);
 
 	// trails
 	setGlobalInt("NOTRAIL", CombatManager::NOTRAIL);
@@ -487,10 +490,19 @@ void CommandConfigManager::registerGlobals() {
 	setGlobalInt("COLD_DAMAGE", WeaponObject::COLD);
 	setGlobalInt("ACID_DAMAGE", WeaponObject::ACID);
 	setGlobalInt("ELECTRICITY_DAMAGE", WeaponObject::ELECTRICITY);
-
+    
+	// JediQueueCommand buff types
+	setGlobalInt("BASE_BUFF", JediQueueCommand::BASE_BUFF);
+	setGlobalInt("SINGLE_USE_BUFF", JediQueueCommand::SINGLE_USE_BUFF);
+    
 	// force heal targets
 	setGlobalInt("FORCE_HEAL_TARGET_SELF", ForceHealQueueCommand::TARGET_SELF);
 	setGlobalInt("FORCE_HEAL_TARGET_OTHER", ForceHealQueueCommand::TARGET_OTHER);
+
+	//animation generation types
+	setGlobalInt("GENERATE_NONE", CombatQueueCommand::GENERATE_NONE);
+	setGlobalInt("GENERATE_RANGED", CombatQueueCommand::GENERATE_RANGED);
+	setGlobalInt("GENERATE_INTENSITY", CombatQueueCommand::GENERATE_INTENSITY);
 }
 
 int CommandConfigManager::runSlashCommandsFile(lua_State* L) {
@@ -591,12 +603,19 @@ void CommandConfigManager::parseVariableData(String varName, LuaObject &command,
 			combatCommand->setForceCostMultiplier(Lua::getFloatParameter(L));
 		else if (varName == "forceCost")
 			combatCommand->setForceCost(Lua::getFloatParameter(L));
+		else if (varName == "visMod")
+			combatCommand->setVisMod(Lua::getIntParameter(L));
+		else if (varName == "coneRange")
+			combatCommand->setConeRange(Lua::getIntParameter(L));
 		else if (varName == "range")
 			combatCommand->setRange(Lua::getIntParameter(L));
 		else if (varName == "accuracySkillMod")
 			combatCommand->setAccuracySkillMod(Lua::getStringParameter(L));
 		else if (varName == "areaAction") {
 			combatCommand->setAreaAction((bool)lua_toboolean(L, -1));
+			command.pop();
+		} else if (varName == "splashDamage") {
+			combatCommand->setSplashDamage((bool)lua_toboolean(L, -1));
 			command.pop();
 		} else if (varName == "coneAction") {
 			combatCommand->setConeAction((bool)lua_toboolean(L, -1));
@@ -607,8 +626,10 @@ void CommandConfigManager::parseVariableData(String varName, LuaObject &command,
 			combatCommand->setAreaRange(Lua::getIntParameter(L));
 		else if (varName == "combatSpam")
 			combatCommand->setCombatSpam(Lua::getStringParameter(L));
-		else if (varName == "animationCRC")
-			combatCommand->setAnimationCRC(Lua::getUnsignedIntParameter(L));
+		else if (varName == "animation")
+			combatCommand->setAnimationString(Lua::getStringParameter(L));
+		else if (varName == "animType")
+			combatCommand->setAnimType(Lua::getUnsignedIntParameter(L));
 		else if (varName == "effectString")
 			combatCommand->setEffectString(Lua::getStringParameter(L));
 		else if (varName == "trails")
@@ -652,10 +673,14 @@ void CommandConfigManager::parseVariableData(String varName, LuaObject &command,
 		JediQueueCommand* jediCommand = cast<JediQueueCommand*>(slashCommand);
 		if (varName == "forceCost")
 			jediCommand->setForceCost(Lua::getIntParameter(L));
+		else if(varName == "buffClass")
+			jediCommand->setBuffClass(Lua::getIntParameter(L));
+		else if(varName == "visMod")
+			jediCommand->setVisMod(Lua::getIntParameter(L));
 		else if (varName == "duration")
 			jediCommand->setDuration(Lua::getIntParameter(L));
 		else if (varName == "animationCRC")
-			jediCommand->setAnimationCRC(Lua::getUnsignedIntParameter(L));
+			jediCommand->setAnimationCRC(Lua::getIntParameter(L));
 		else if (varName == "clientEffect")
 			jediCommand->setClientEffect(Lua::getStringParameter(L));
 		else if (varName == "speedMod")
@@ -1476,7 +1501,6 @@ void CommandConfigManager::registerCommands() {
 	commandFactory.registerCommand<TumbleToProneCommand>(String("tumbleToProne").toLowerCase());
 	commandFactory.registerCommand<TumbleToStandingCommand>(String("tumbleToStanding").toLowerCase());
 	commandFactory.registerCommand<TurretFireCommand>(String("turretFire").toLowerCase());
-	commandFactory.registerCommand<TurretFireManualCommand>(String("turretFireManual").toLowerCase());
 	commandFactory.registerCommand<UnarmedBlind1Command>(String("unarmedBlind1").toLowerCase());
 	commandFactory.registerCommand<UnarmedBodyHit1Command>(String("unarmedBodyHit1").toLowerCase());
 	commandFactory.registerCommand<UnarmedCombo1Command>(String("unarmedCombo1").toLowerCase());

@@ -43,17 +43,22 @@
 
 Saber2hHit2Command = {
         name = "saber2hhit2",
-        
-    damageMultiplier = 2.0,
-	speedMultiplier = 1.5,
-	forceCostMultiplier = 1.5,
 
-	animationCRC = hashCode("combo_jedi_1_light"),
+	damageMultiplier = 2.0,
+	speedMultiplier = 1.5,
+	healthCostMultiplier = 0,
+	actionCostMultiplier = 0,
+	mindCostMultiplier = 0,
+	forceCostMultiplier = 1.5,
+	visMod = 25,
+
+	animation = "combo_jedi_1", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "saber2hhit2",
-	
+
 	poolsToDamage = RANDOM_ATTRIBUTE,
-	
+
 	weaponType = TWOHANDJEDIWEAPON,
 
 	range = -1

@@ -1,6 +1,7 @@
 janta_tribesman = Creature:new {
 	objectName = "@mob/creature_names:janta_tribesman",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "janta_tribe",
 	faction = "janta_tribe",
 	level = 20,
@@ -23,7 +24,7 @@ janta_tribesman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

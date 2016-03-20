@@ -1,6 +1,7 @@
 panshee_veteran = Creature:new {
 	objectName = "@mob/creature_names:panshee_veteran",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "panshee_tribe",
 	faction = "panshee_tribe",
 	level = 35,
@@ -23,7 +24,7 @@ panshee_veteran = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

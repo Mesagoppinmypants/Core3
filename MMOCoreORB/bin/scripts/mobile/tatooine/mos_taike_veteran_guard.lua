@@ -1,6 +1,7 @@
 mos_taike_veteran_guard = Creature:new {
 	objectName = "@mob/creature_names:mos_taike_guard_old",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
 	faction = "townsperson",
 	level = 21,
@@ -23,7 +24,7 @@ mos_taike_veteran_guard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/mos_taike_guard_old.iff"},

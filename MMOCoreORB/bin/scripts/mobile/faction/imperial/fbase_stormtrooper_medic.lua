@@ -1,6 +1,7 @@
 fbase_stormtrooper_medic = Creature:new {
 	objectName = "@mob/creature_names:fbase_stormtrooper_medic",
-	randomNameType = NAME_STORMTROOPER_TAG,
+	randomNameType = NAME_STORMTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 36,
@@ -23,7 +24,7 @@ fbase_stormtrooper_medic = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 	scale = 1.05,
 

@@ -287,8 +287,10 @@ function GeonosianLabScreenPlay:restartGasLeak()
 	end
 end
 
-function GeonosianLabScreenPlay:keypadSuiCallback(pCreature, pSui, cancelPressed, enteredCode, pressedButton)
-	if (pCreature == nil or pSui == nil) then
+function GeonosianLabScreenPlay:keypadSuiCallback(pCreature, pSui, eventIndex, enteredCode, pressedButton)
+	local cancelPressed = (eventIndex == 1)
+
+	if (pCreature == nil or pSui == nil or cancelPressed) then
 		return
 	end
 
@@ -489,7 +491,7 @@ function GeonosianLabScreenPlay:notifyDebrisDestroyed(pDebris, pPlayer)
 		return 0
 	end
 
-	createEvent(240000, "GeonosianLabScreenPlay", "respawnDebris", pDebris)
+	createEvent(240000, "GeonosianLabScreenPlay", "respawnDebris", pDebris, "")
 	SceneObject(pDebris):destroyObjectFromWorld()
 
 	CreatureObject(pPlayer):clearCombatState(1)

@@ -1,6 +1,7 @@
 rebel_specforce_pathfinder = Creature:new {
 	objectName = "@mob/creature_names:rebel_specforce_pathfinder",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 18,
@@ -23,7 +24,7 @@ rebel_specforce_pathfinder = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

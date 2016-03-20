@@ -8,7 +8,6 @@
 #include "BuffDurationEvent.h"
 #include "BuffList.h"
 
-#include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/creature/CreatureAttribute.h"
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/packets/object/Buffs.h"
@@ -61,6 +60,14 @@ void BuffImplementation::notifyLoadFromDatabase() {
 	//info("initializeTransientMembers() nextExecutionTime difference from now" + String::valueOf(nextExecutionTime.miliDifference()), true);
 }
 
+void BuffImplementation::renew(float newDuration) {
+	if (newDuration > 0)
+		buffDuration = newDuration;
+
+	clearBuffEvent();
+	scheduleBuffEvent();
+}
+
 void BuffImplementation::sendTo(CreatureObject* player) {
 	if (buffCRC != 0) {
 		AddBuffMessage* abm = new AddBuffMessage(player, buffCRC, getTimeLeft());
@@ -79,17 +86,24 @@ void BuffImplementation::sendDestroyTo(CreatureObject* player) {
 	}
 }
 
+Time BuffImplementation::getTimeApplied() {
+	return timeApplied;
+}
+
+int BuffImplementation::compareTo(Buff *buff) {
+	Time rhs = buff->getTimeApplied();
+	return timeApplied.compareTo(rhs);
+}
 void BuffImplementation::activate(bool applyModifiers) {
 	//info("activating buff with crc " + String::hexvalueOf((int)buffCRC), true);
 	try {
-		if (applyModifiers && !modsApplied) {
-			applyAttributeModifiers();
-			applySkillModifiers();
-			applyStates();
-			modsApplied = true;
-		}
+
+		if(applyModifiers)
+			applyAllModifiers();
 
 		scheduleBuffEvent();
+
+		timeApplied.updateToCurrentTime();
 
 		//info("nextExecutionTime miliDifference:" + String::valueOf(nextExecutionTime.miliDifference()), true);
 
@@ -112,6 +126,24 @@ void BuffImplementation::activate(bool applyModifiers) {
 	}
 }
 
+void BuffImplementation::applyAllModifiers() {
+	if (!modsApplied) {
+		applyAttributeModifiers();
+		applySkillModifiers();
+		applyStates();
+		modsApplied = true;
+	}
+}
+
+void BuffImplementation::removeAllModifiers() {
+	if (modsApplied) {
+		removeAttributeModifiers();
+		removeSkillModifiers();
+		removeStates();
+		modsApplied = false;
+	}
+}
+
 void BuffImplementation::deactivate(bool removeModifiers) {
 	ManagedReference<CreatureObject*> strongRef = creature.get().get();
 
@@ -119,12 +151,8 @@ void BuffImplementation::deactivate(bool removeModifiers) {
 		return;
 
 	try {
-		if (removeModifiers && modsApplied) {
-			removeAttributeModifiers();
-			removeSkillModifiers();
-			removeStates();
-			modsApplied = false;
-		}
+		if(removeModifiers)
+			removeAllModifiers();
 
 		if (creature.get()->isPlayerCreature())
 			sendDestroyTo(cast<CreatureObject*>(creature.get().get()));

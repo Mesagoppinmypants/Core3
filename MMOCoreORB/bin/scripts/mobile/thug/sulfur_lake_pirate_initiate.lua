@@ -1,6 +1,7 @@
 sulfur_lake_pirate_initiate = Creature:new {
 	objectName = "@mob/creature_names:slp_squab",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "pirate",
 	faction = "",
 	level = 12,
@@ -23,7 +24,7 @@ sulfur_lake_pirate_initiate = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = { "object/mobile/dressed_criminal_pirate_human_male_01.iff" },

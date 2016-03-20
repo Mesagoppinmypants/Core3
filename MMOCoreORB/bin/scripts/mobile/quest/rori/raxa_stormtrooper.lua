@@ -1,6 +1,7 @@
 raxa_stormtrooper = Creature:new {
 	objectName = "@mob/creature_names:stormtrooper",
-	randomNameType = NAME_STORMTROOPER_TAG,
+	randomNameType = NAME_STORMTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 25,
@@ -23,7 +24,7 @@ raxa_stormtrooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_stormtrooper_m.iff"},

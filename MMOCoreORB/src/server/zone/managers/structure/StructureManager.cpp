@@ -40,10 +40,10 @@
 #include "server/zone/objects/player/sui/callbacks/StructureSelectSignSuiCallback.h"
 #include "server/zone/managers/stringid/StringIdManager.h"
 #include "server/zone/objects/terrain/layer/boundaries/BoundaryRectangle.h"
-#include "server/zone/managers/gcw/GCWManager.h"
 #include "tasks/DestroyStructureTask.h"
 #include "server/zone/objects/intangible/PetControlDevice.h"
 #include "server/zone/managers/creature/PetManager.h"
+#include "server/zone/objects/installation/harvester/HarvesterObject.h"
 
 void StructureManager::loadPlayerStructures(const String& zoneName) {
 
@@ -93,7 +93,7 @@ void StructureManager::loadPlayerStructures(const String& zoneName) {
 						GCWManager* gcwMan = zone->getGCWManager();
 
 						if (gcwMan != NULL) {
-							gcwMan->registerGCWBase(cast<BuildingObject*>(object.get()),false);
+							gcwMan->registerGCWBase(cast<BuildingObject*>(object.get()), false);
 						}
 					}
 				}
@@ -718,12 +718,47 @@ int StructureManager::redeedStructure(CreatureObject* creature) {
 		ManagedReference<SceneObject*> inventory = creature->getSlottedObject(
 				"inventory");
 
-		if (inventory == NULL || inventory->isContainerFullRecursive()) {
-			creature->sendSystemMessage("@player_structure:inventory_full"); //This installation can not be redeeded because your inventory does not have room to put the deed.
-			creature->sendSystemMessage(
-					"@player_structure:deed_reclaimed_failed"); //Structure destroy and deed reclaimed FAILED!
+		bool isSelfPoweredHarvester = false;
+		HarvesterObject* harvester = structureObject.castTo<HarvesterObject*>();
+
+		if(harvester != NULL)
+			isSelfPoweredHarvester = harvester->isSelfPowered();
+
+		if (inventory == NULL || inventory->getCountableObjectsRecursive() > (inventory->getContainerVolumeLimit() - (isSelfPoweredHarvester ? 2 : 1))) {
+
+			if(isSelfPoweredHarvester) {
+				//This installation can not be destroyed because there is no room for the Self Powered Harvester Kit in your inventory.
+				creature->sendSystemMessage("@player_structure:inventory_full_selfpowered");
+			} else {
+				//This installation can not be redeeded because your inventory does not have room to put the deed.
+				creature->sendSystemMessage("@player_structure:inventory_full");
+			}
+
+			creature->sendSystemMessage("@player_structure:deed_reclaimed_failed"); //Structure destroy and deed reclaimed FAILED!
 			return session->cancelSession();
 		} else {
+
+			if(isSelfPoweredHarvester) {
+
+				Reference<SceneObject*> rewardSceno = server->createObject(STRING_HASHCODE("object/tangible/veteran_reward/harvester.iff"), 1);
+				if( rewardSceno == NULL ){
+					creature->sendSystemMessage("@player_structure:deed_reclaimed_failed"); //Structure destroy and deed reclaimed FAILED!
+					return session->cancelSession();
+				}
+
+				// Transfer to player
+				if( !inventory->transferObject(rewardSceno, -1, false, true) ){ // Allow overflow
+					creature->sendSystemMessage("@player_structure:deed_reclaimed_failed"); //Structure destroy and deed reclaimed FAILED!
+					rewardSceno->destroyObjectFromDatabase(true);
+					return session->cancelSession();
+				}
+
+				harvester->setSelfPowered(false);
+
+				inventory->broadcastObject(rewardSceno, true);
+				creature->sendSystemMessage("@player_structure:selfpowered");
+			}
+
 			deed->setSurplusMaintenance(maint - redeedCost);
 			deed->setSurplusPower(structureObject->getSurplusPower());
 
@@ -873,8 +908,7 @@ void StructureManager::reportStructureStatus(CreatureObject* creature,
 			"@player_structure:condition_prompt "
 					+ String::valueOf(structure->getDecayPercentage()) + "%");
 
-	if (!structure->isCivicStructure()) {
-
+	if (!structure->isCivicStructure() && !structure->isGCWBase()) {
 		// property tax
 		float propertytax = 0.f;
 		if(!structure->isCivicStructure() && structure->getCityRegion() != NULL){
@@ -911,7 +945,6 @@ void StructureManager::reportStructureStatus(CreatureObject* creature,
 					+ structure->getMaintenanceMods());
 	}
 
-
 	if (structure->isInstallationObject() && !structure->isGeneratorObject() && !structure->isCivicStructure()) {
 		InstallationObject* installation = cast<InstallationObject*>(structure);
 
@@ -936,6 +969,17 @@ void StructureManager::reportStructureStatus(CreatureObject* creature,
 
 	if (structure->isBuildingObject()) {
 		BuildingObject* building = cast<BuildingObject*>(structure);
+
+		if (building->isGCWBase()) {
+			Zone* zone = creature->getZone();
+
+			if (zone != NULL) {
+				GCWManager* gcwMan = zone->getGCWManager();
+
+				if (gcwMan != NULL)
+					status->addMenuItem(gcwMan->getVulnerableStatus(building, creature));
+			}
+		}
 
 		status->addMenuItem(
 				"@player_structure:items_in_building_prompt "

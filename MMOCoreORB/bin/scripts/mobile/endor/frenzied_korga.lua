@@ -1,6 +1,7 @@
 frenzied_korga = Creature:new {
 	objectName = "@mob/creature_names:frenzied_korga",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "korga_tribe",
 	faction = "korga_tribe",
 	level = 35,
@@ -23,7 +24,7 @@ frenzied_korga = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

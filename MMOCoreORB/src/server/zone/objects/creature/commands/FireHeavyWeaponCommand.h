@@ -53,14 +53,16 @@ public:
 			if (weaponData == NULL)
 				return GENERALERROR;
 
-			UnicodeString args = "combatSpam=" + weaponData->getCombatSpam() + ";animationCRC=fire_heavy_" + weaponData->getAnimationType() + "medium;";
+			UnicodeString args = "combatSpam=" + weaponData->getCombatSpam() + ";";
 
 			int result = doCombatAction(creature, target, args, weapon);
 
 			if (result == SUCCESS) {
-				Locker locker(weapon);
-
-				weapon->decreaseUseCount();
+				// We need to give some time for the combat animation to start playing before destroying the tano
+				Core::getTaskManager()->scheduleTask([weapon] {
+					Locker lock(weapon);
+					weapon->decreaseUseCount();
+				}, "FireHeavyWeaponTanoDecrementTask", 100);
 			}
 
 			return result;
@@ -70,6 +72,20 @@ public:
 		}
 
 		return GENERALERROR;
+	}
+
+	String getAnimation(TangibleObject* attacker, TangibleObject* defender, WeaponObject* weapon, uint8 hitLocation, int damage) const {
+		if (weapon == NULL) {
+			warning("Null weapon in FireHeavyWeapon::getAnimation");
+			return "";
+		}
+		SharedWeaponObjectTemplate* weaponData = cast<SharedWeaponObjectTemplate*>(weapon->getObjectTemplate());
+		if (weaponData == NULL) {
+			warning("Null weaponData in FireHeavyWeapon::getAnimation");
+			return "";
+		}
+
+		return "fire_heavy_" + weaponData->getAnimationType() + getIntensity(weapon->getMaxDamage()/2.0f, damage);
 	}
 
 	float getCommandDuration(CreatureObject *object, const UnicodeString& arguments) const {

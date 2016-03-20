@@ -1,6 +1,7 @@
 blood_razor_strong_pirate = Creature:new {
 	objectName = "@mob/creature_names:blood_razor_pirate_strong",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "bloodrazor",
 	faction = "bloodrazor",
 	level = 26,
@@ -23,7 +24,7 @@ blood_razor_strong_pirate = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

@@ -8,10 +8,23 @@
 #include "server/zone/templates/tangible/EventPerkDeedTemplate.h"
 #include "server/chat/StringIdChatParameter.h"
 
-void EventPerkMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) {
+void EventPerkMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 	TangibleObjectMenuComponent::fillObjectMenuResponse(sceneObject, menuResponse, player);
 
 	EventPerkDataComponent* data = cast<EventPerkDataComponent*>(sceneObject->getDataObjectComponent()->get());
+
+	if (sceneObject->getGameObjectType() == SceneObjectType::EVENTPERK || data == NULL) {
+		ContainerPermissions* permissions = sceneObject->getContainerPermissions();
+		uint64 objectID = permissions->getOwnerID();
+
+		Reference<SceneObject*> owner = Core::getObjectBroker()->lookUp(objectID).castTo<SceneObject*>();
+
+		if (owner == NULL) {
+			player->sendSystemMessage("Error: perk parent object is NULL.");
+			return;
+		}
+		data = cast<EventPerkDataComponent*>(owner->getDataObjectComponent()->get());
+	}
 
 	if (data == NULL) {
 		player->sendSystemMessage("Error: no dataObjectComponent.");
@@ -31,16 +44,27 @@ void EventPerkMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, Ob
 		menuResponse->addRadialMenuItem(132, 3, "@event_perk:mnu_show_exp_time"); // Show Expiration Time
 		menuResponse->addRadialMenuItem(128, 3, "@event_perk:mnu_redeed"); // Reclaim Rental Deed
 
-		menuResponse->addRadialMenuItem(51, 1, "@event_perk:mnu_rotate"); // Rotate
-		menuResponse->addRadialMenuItemToRadialID(51, 52, 3, "@event_perk:mnu_rot_left"); // Rotate Left
-		menuResponse->addRadialMenuItemToRadialID(51, 53, 3, "@event_perk:mnu_rot_right"); // Rotate Right
+		if (deed->getPerkType() != EventPerkDeedTemplate::HONORGUARD && deed->getPerkType() != EventPerkDeedTemplate::RECRUITER) {
+			menuResponse->addRadialMenuItem(51, 1, "@event_perk:mnu_rotate"); // Rotate
+			menuResponse->addRadialMenuItemToRadialID(51, 52, 3, "@event_perk:mnu_rot_left"); // Rotate Left
+			menuResponse->addRadialMenuItemToRadialID(51, 53, 3, "@event_perk:mnu_rot_right"); // Rotate Right
+		}
 	} else if (player->getPlayerObject() != NULL && player->getPlayerObject()->isPrivileged()) {
 		menuResponse->addRadialMenuItem(132, 3, "@event_perk:mnu_show_exp_time"); // Show Expiration Time
 	}
 }
 
-int EventPerkMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) {
+int EventPerkMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) const {
 	EventPerkDataComponent* data = cast<EventPerkDataComponent*>(sceneObject->getDataObjectComponent()->get());
+
+	if (sceneObject->getGameObjectType() == SceneObjectType::EVENTPERK || data == NULL) {
+		ContainerPermissions* permissions = sceneObject->getContainerPermissions();
+		uint64 objectID = permissions->getOwnerID();
+
+		Reference<SceneObject*> owner = Core::getObjectBroker()->lookUp(objectID).castTo<SceneObject*>();
+
+		data = cast<EventPerkDataComponent*>(owner->getDataObjectComponent()->get());
+	}
 
 	if (data == NULL) {
 		player->sendSystemMessage("Error: no dataObjectComponent.");
@@ -82,6 +106,10 @@ int EventPerkMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, Cre
 	}
 
 	if (selectedID == 128) {
+		if (sceneObject->getGameObjectType() == SceneObjectType::SCAVENGERCHEST && sceneObject->getContainerObjectsSize() > 0) {
+			player->sendSystemMessage("@event_perk:redeed_remove_items"); // The chest still contains items. You must empty the chest before it can be redeeded.
+			return 1;
+		}
 		ManagedReference<SceneObject*> inventory = player->getSlottedObject("inventory");
 		PlayerObject* ghost = player->getPlayerObject();
 
@@ -90,7 +118,7 @@ int EventPerkMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, Cre
 			return 1;
 		}
 
-		if (ghost == NULL || ghost->getEventPerkCount() > 5) {
+		if (ghost == NULL || (!ghost->isPrivileged() && ghost->getEventPerkCount() > 5)) {
 			player->sendSystemMessage("@event_perk:redeed_too_many_deeds"); // You have too many rental deeds in your possession and cannot redeed this rental.
 			return 1;
 		}
@@ -98,7 +126,14 @@ int EventPerkMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, Cre
 		deed->sendTo(player, true);
 		inventory->transferObject(deed, -1, true);
 		deed->setGenerated(false);
-		sceneObject->destroyObjectFromWorld(true);
+
+		ManagedReference<TangibleObject*> perk = deed->getGeneratedObject();
+
+		if (perk != NULL) {
+			Locker perkLock(perk);
+			perk->destroyChildObjects();
+			perk->destroyObjectFromWorld(true);
+		}
 
 		player->sendSystemMessage("@event_perk:redeed_success"); // Your Rental has been removed and the deed reclaimed.
 		return 0;

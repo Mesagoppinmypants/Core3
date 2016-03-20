@@ -1,6 +1,7 @@
 haggard_donkuwah_battlelord = Creature:new {
 	objectName = "@mob/creature_names:haggard_donkuwah_battlelord",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "donkuwah_tribe",
 	faction = "donkuwah_tribe",
 	level = 24,
@@ -23,7 +24,7 @@ haggard_donkuwah_battlelord = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

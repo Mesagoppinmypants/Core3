@@ -1,6 +1,7 @@
 gifted_jinda_shaman = Creature:new {
 	objectName = "@mob/creature_names:gifted_jinda_shaman",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jinda_tribe",
 	faction = "",
 	level = 27,
@@ -23,7 +24,7 @@ gifted_jinda_shaman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

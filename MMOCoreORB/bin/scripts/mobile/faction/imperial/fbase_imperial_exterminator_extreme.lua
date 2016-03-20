@@ -1,6 +1,7 @@
 fbase_imperial_exterminator_extreme = Creature:new {
 	objectName = "@mob/creature_names:fbase_imperial_exterminator_extreme",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 172,
@@ -23,7 +24,7 @@ fbase_imperial_exterminator_extreme = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_exterminator.iff"},

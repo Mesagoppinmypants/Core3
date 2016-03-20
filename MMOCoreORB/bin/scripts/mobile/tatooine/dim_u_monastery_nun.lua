@@ -1,6 +1,7 @@
 dim_u_monastery_nun = Creature:new {
 	objectName = "@mob/creature_names:dim_u_monastery_nun",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "dim_u",
 	faction = "",
 	level = 6,
@@ -23,7 +24,7 @@ dim_u_monastery_nun = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_dim_u_monastery_nun.iff"},

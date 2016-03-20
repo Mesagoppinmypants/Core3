@@ -35,13 +35,16 @@ protected:
 	float forceCostMultiplier;
 
     int range;
+    int coneRange;
     int coneAngle;
     int areaRange;
 
-    uint32 animationCRC;
+    bool splashDamage;
+
+    uint64 targetID;
 
     VectorMap<uint8, StateEffect>* stateEffects;
-    VectorMap<uint64, DotEffect>* dotEffects;
+    Vector<DotEffect>* dotEffects;
 
 	uint8 attackType;
 	uint8 trails;
@@ -51,7 +54,7 @@ protected:
 	int stateAccuracyBonus;
 
 public:
-    CreatureAttackData(const UnicodeString & dataString, const CombatQueueCommand *base);
+    CreatureAttackData(const UnicodeString & dataString, const CombatQueueCommand *base, uint64 target);
     CreatureAttackData(const CreatureAttackData& data);
     virtual ~CreatureAttackData() {}
 
@@ -109,8 +112,13 @@ public:
 		return actionCostMultiplier;
 	}
 
-	uint32 getAnimationCRC() const {
-		return animationCRC;
+
+	void setSplashDamage(bool b) {
+		splashDamage = b;
+	}
+
+	bool isSplashDamage() const {
+		return splashDamage;
 	}
 
 	int getAreaRange() const {
@@ -141,6 +149,10 @@ public:
 		return poolsToDamage;
 	}
 
+	int getConeRange() const {
+		return coneRange;
+	}
+
 	int getRange() const {
 		return range;
 	}
@@ -153,12 +165,8 @@ public:
 		return stateEffects;
 	}
 
-	VectorMap<uint64, DotEffect>* getDotEffects() const {
+	Vector<DotEffect>* getDotEffects() const {
 		return dotEffects;
-	}
-
-	void setAnimationCRC(uint32 animationCRC) {
-		this->animationCRC = animationCRC;
 	}
 
 	uint8 getAttackType() const {
@@ -171,6 +179,10 @@ public:
 
 	uint8 getTrails() const {
 		return trails;
+	}
+
+	uint64 getPrimaryTarget() const {
+		return targetID;
 	}
 
 	void setTrails(uint8 trails) {
@@ -196,6 +208,10 @@ public:
 	void setStateAccuracyBonus(int stateAccuracyBonus) {
 		this->stateAccuracyBonus = stateAccuracyBonus;
 	}
+
+	bool changesDefenderPosture() const;
+
+	bool changesAttackerPosture() const;
 };
 
 #endif /* CREATUREATTACKDATA_H_ */

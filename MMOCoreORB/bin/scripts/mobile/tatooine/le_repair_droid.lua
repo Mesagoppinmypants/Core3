@@ -21,8 +21,8 @@ le_repair_droid = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = NONE,
-	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	creatureBitmask = NONE,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/le_repair_droid.iff"},

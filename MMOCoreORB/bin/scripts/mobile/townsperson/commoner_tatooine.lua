@@ -1,6 +1,7 @@
 commoner_tatooine = Creature:new {
 	objectName = "@mob/creature_names:commoner",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
 	faction = "townsperson",
 	level = 4,
@@ -23,7 +24,7 @@ commoner_tatooine = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {	"object/mobile/dressed_commoner_tatooine_aqualish_female_01.iff",

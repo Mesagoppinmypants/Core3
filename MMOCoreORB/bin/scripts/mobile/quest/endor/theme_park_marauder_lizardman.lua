@@ -1,7 +1,7 @@
 theme_park_marauder_lizardman = Creature:new {
 	objectName = "@npc_name:trandoshan_base_male",
 	customName = "Lizardman",
-	socialGroup = "",
+	socialGroup = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.26,
@@ -22,8 +22,8 @@ theme_park_marauder_lizardman = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
-	creatureBitmask = PACK + HERD,
-	optionsBitmask = 264,
+	creatureBitmask = NONE,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates =

@@ -130,7 +130,9 @@ public:
 			return;
 
 		int posture = object->getPosture();
-		if (!object->hasDizzyEvent() && (posture == CreaturePosture::UPRIGHT || posture == CreaturePosture::PRONE
+
+		//TODO: This should be derived from the locomotion table
+		if (!object->hasDizzyEvent() && (posture == CreaturePosture::UPRIGHT || posture == CreaturePosture::PRONE || posture == CreaturePosture::CROUCHED
 				|| posture == CreaturePosture::DRIVINGVEHICLE || posture == CreaturePosture::RIDINGCREATURE || posture == CreaturePosture::SKILLANIMATING) ) {
 
 			updatePosition(object);
@@ -193,6 +195,7 @@ public:
 
 			ObjectController* objectController = zoneServer->getObjectController();
 			objectController->activateCommand(object, STRING_HASHCODE("dismount"), 0, 0, "");
+			return; // don't allow a dismount and parent update in the same frame, this looks better than bouncing their position
 		}
 
 		uint32 objectMovementCounter = object->getMovementCounter();
@@ -240,7 +243,7 @@ public:
 		ValidatedPosition pos;
 		pos.update(object);
 
-		if (!ghost->isPrivileged()) {
+		if (!ghost->hasGodMode()) {
 			SceneObject* inventory = object->getSlottedObject("inventory");
 
 			if (inventory != NULL && inventory->getCountableObjectsRecursive() > inventory->getContainerVolumeLimit() + 1) {

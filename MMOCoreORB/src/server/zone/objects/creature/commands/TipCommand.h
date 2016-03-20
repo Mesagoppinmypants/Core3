@@ -16,7 +16,7 @@ private:
 			int amount) const {
 
 		// Target player must be in range (I think it's likely to assume this is the maximum targeting range, 190m)
-		if (!player->isInRange(targetPlayer, 190)) {
+		if (!checkDistance(player, targetPlayer, 190)) {
 			StringIdChatParameter ptr("base_player", "prose_tip_range"); // You are too far away to tip %TT with cash. You can send a wire transfer instead.
 			ptr.setTT(targetPlayer->getCreatureName());
 			player->sendSystemMessage(ptr);
@@ -36,8 +36,9 @@ private:
 		// We have a target, who is on-line, in range, with sufficient funds.
 		// Lock target player to prevent simultaneous tips to not register correctly.
 
-		Locker clocker(targetPlayer, player);
 		player->subtractCashCredits(amount);
+
+		Locker clocker(targetPlayer, player);
 		targetPlayer->addCashCredits(amount, false); // FIXME: param notifyClient does nothing atm. in CreatureObject.idl:632
 
 		StringIdChatParameter tiptarget("base_player", "prose_tip_pass_target"); // %TT tips you %DI credits.

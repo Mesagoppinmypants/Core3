@@ -1,6 +1,7 @@
 swamp_trooper = Creature:new {
 	objectName = "@mob/creature_names:swamp_trooper",
-	randomNameType = NAME_SWAMPTROOPER_TAG,
+	randomNameType = NAME_SWAMPTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 25,
@@ -23,7 +24,7 @@ swamp_trooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_swamp_trooper.iff"},

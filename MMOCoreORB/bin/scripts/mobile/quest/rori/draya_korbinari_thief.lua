@@ -22,8 +22,8 @@ draya_korbinari_thief = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
-	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 264,
+	creatureBitmask = NONE,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_kobola_thief_rodian_male_01.iff"},

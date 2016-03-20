@@ -1,6 +1,7 @@
 veteran_explorer = Creature:new {
 	objectName = "",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a Veteran Explorer",
 	socialGroup = "wilder",
 	faction = "",
@@ -24,7 +25,7 @@ veteran_explorer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_hutt_expedition_force_member.iff"},

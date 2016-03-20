@@ -1,6 +1,7 @@
 drall_abbot = Creature:new {
 	objectName = "@mob/creature_names:drall_abbot",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "drall",
 	faction = "drall",
 	level = 15,
@@ -23,7 +24,7 @@ drall_abbot = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

@@ -29,9 +29,7 @@ QueueCommand::QueueCommand(const String& skillname, ZoneProcessServer* serv) : L
 	admin = false;
 
 	defaultTime = 0.f;
-
 	cooldown = 0;
-
 	defaultPriority = NORMAL;
 
 	setLogging(true);
@@ -143,6 +141,13 @@ void QueueCommand::onFail(uint32 actioncntr, CreatureObject* creature, uint32 er
 
 	case NOJEDIARMOR:
 		creature->sendSystemMessage("@jedi_spam:not_with_armor"); // You cannot use Force powers or lightsaber abilities while wearing armor.
+		if (addToQueue)
+			creature->clearQueueAction(actioncntr);
+
+		break;
+
+	case NOSTACKJEDIBUFF:
+		creature->sendSystemMessage("@jedi_spam:force_buff_present"); // You are already have a similar Force enhancement active.
 		if (addToQueue)
 			creature->clearQueueAction(actioncntr);
 

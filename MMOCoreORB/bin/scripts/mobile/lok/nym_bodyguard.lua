@@ -1,6 +1,7 @@
 nym_bodyguard = Creature:new {
 	objectName = "@mob/creature_names:nym_bodyguard",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "nym",
 	faction = "nym",
 	level = 28,
@@ -23,7 +24,7 @@ nym_bodyguard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_nym_bodyguard_rod_m.iff",

@@ -20,18 +20,15 @@
 #include "TurretControlTerminalDataComponent.h"
 
 
-void TurretControlMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) {
-
+void TurretControlMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 	ManagedReference<BuildingObject*> building = cast<BuildingObject*>(sceneObject->getParentRecursively(SceneObjectType::FACTIONBUILDING).get().get());
 	ManagedReference<PlayerObject*> thisPlayer = player->getPlayerObject();
-
 
 	if (thisPlayer == NULL || building == NULL || player->isDead() || player->isIncapacitated())
 		return;
 
-
 	if (player->getFaction() == 0) {
-		player->sendSystemMessage("@faction_recruiter:must_be_declared_use"); // Your faction affiliation must be delcared in order to use that item.
+		player->sendSystemMessage("@hq:declared_only"); // Only Special Forces personnel may access this terminal!
 		return;
 	}
 
@@ -51,11 +48,9 @@ void TurretControlMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject
 	if (building->getFaction() == player->getFaction()) {
 		menuResponse->addRadialMenuItem(222, 3, "@hq:mnu_turret_control"); // "Turret Control"
 	}
-
-	//menuResponse->addRadialMenuItem(222, 3, "OH YEA");
 }
 
-int TurretControlMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) {
+int TurretControlMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) const {
 	if (sceneObject == NULL || !sceneObject->isTangibleObject() || player == NULL)
 		return 0;
 
@@ -81,13 +76,12 @@ int TurretControlMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
 	if (!gcwMan->canUseTerminals(player, building, sceneObject))
 		return 1;
 
+	if (building->getFaction() != player->getFaction())
+		return 1;
+
 	if (selectedID == 222) {
 		gcwMan->sendTurretAttackListTo(player,sceneObject);
 	}
 
 	return 0;
 }
-
-
-
-

@@ -1,6 +1,7 @@
 selonian_separatist_soldier = Creature:new {
 	objectName = "@mob/creature_names:selonian_separatist_soldier",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "selonian",
 	faction = "",
 	level = 10,
@@ -23,7 +24,7 @@ selonian_separatist_soldier = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

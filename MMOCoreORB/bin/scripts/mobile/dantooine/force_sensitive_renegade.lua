@@ -1,6 +1,7 @@
 force_sensitive_renegade = Creature:new {
 	objectName = "@mob/creature_names:force_sensitive_renegade",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "force",
 	faction = "",
 	level = 80,
@@ -23,7 +24,7 @@ force_sensitive_renegade = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_force_sensitive_renegade.iff"},

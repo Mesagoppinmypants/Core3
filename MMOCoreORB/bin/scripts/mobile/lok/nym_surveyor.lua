@@ -1,6 +1,7 @@
 nym_surveyor = Creature:new {
 	objectName = "@mob/creature_names:nym_surveyer",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "nym",
 	faction = "nym",
 	level = 21,
@@ -23,7 +24,7 @@ nym_surveyor = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_nym_surveyer_rod_m.iff",
@@ -33,11 +34,12 @@ nym_surveyor = Creature:new {
 	lootGroups = {
 		{
 			groups = {
-				{group = "junk", chance = 6500000},
+				{group = "junk", chance = 6000000},
 				{group = "nyms_common", chance = 1000000},
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
-				{group = "tailor_components", chance = 500000}
+				{group = "tailor_components", chance = 500000},
+				{group = "color_crystals", chance = 500000}
 			}
 		}
 	},

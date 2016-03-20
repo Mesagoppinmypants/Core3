@@ -1,6 +1,7 @@
 rebel_gungan_priest = Creature:new {
 	objectName = "@mob/creature_names:gungan_priest",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 9,
@@ -23,7 +24,7 @@ rebel_gungan_priest = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gungan_male.iff"},

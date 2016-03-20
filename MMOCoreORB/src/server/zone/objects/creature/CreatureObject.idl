@@ -117,7 +117,7 @@ class CreatureObject extends TangibleObject {
 	protected byte moodID;
 	protected int performanceCounter;
 	protected int instrumentID;
-
+	
 	@dereferenced
 	protected DeltaVector<int> hamList;
 
@@ -241,6 +241,12 @@ class CreatureObject extends TangibleObject {
 	 */
 	public native void initializeTransientMembers();
 
+	@preLocked
+	public abstract void setCountdownTimer(unsigned int newCount, boolean notifyClient = true) {
+		super.setCountdownTimer(newCount, notifyClient);
+		cooldownTimerMap.updateToCurrentAndAddMili("incapTimer", getUseCount()*1000);
+	}
+		
 	/**
 	 * Sends a CommandQueueRemove ObjectControllerMessage to the owner client of this object
 	 * @pre { }
@@ -357,21 +363,23 @@ class CreatureObject extends TangibleObject {
 	@preLocked
 	public native void clearCombatState(boolean clearDefenders = true);
 
-	@preLocked
 	public native void addMountedCombatSlow();
 
-	@preLocked
-	public native void removeMountedCombatSlow();
+	public native void removeMountedCombatSlow(boolean showEndMessage = true);
 
 	/**
 	 * Sets a new posture
 	 * @pre { this object is locked }
 	 * @post {this object is locked, this object has the new posture set }
 	 * @param newPosture posture to set
-	 * @param notifyClient if set true the client will be updated with the changes
+	 * @param immedate if set true the client will immediately play the posture animation, should not be used in combat
+	 * 
 	 */
 	@preLocked
-	public native abstract void setPosture(int newPosture, boolean notifyClient = true);
+	public native abstract void setPosture(int newPosture, boolean immedate = true, boolean notifyClient = true);
+	
+	@preLocked
+	public native abstract void updatePostures(boolean immediate = true);
 
 	/**
 	 * checks locomotion and sets a new one if appropriate
@@ -446,7 +454,6 @@ class CreatureObject extends TangibleObject {
 	@preLocked
 	public native void setRunSpeed(float newSpeed, boolean notifyClient = true);
 
-	@preLocked
 	public void setCurrentSpeed(float newSpeed) {
 		currentSpeed = newSpeed;
 	}
@@ -469,11 +476,11 @@ class CreatureObject extends TangibleObject {
 	 */
 	@preLocked
 	@arg1preLocked
-	public native int inflictDamage(TangibleObject attacker, int damageType, float damage, boolean destroy, boolean notifyClient = true);
+	public native int inflictDamage(TangibleObject attacker, int damageType, float damage, boolean destroy, boolean notifyClient = true, boolean isCombatAction = false);
 
 	@preLocked
 	@arg1preLocked
-	public native int inflictDamage(TangibleObject attacker, int damageType, float damage, boolean destroy, final string xp, boolean notifyClient = true);
+	public native int inflictDamage(TangibleObject attacker, int damageType, float damage, boolean destroy, final string xp, boolean notifyClient = true, boolean isCombatAction = false);
 
 	@dirty
 	public boolean hasDamage(int attribute) {
@@ -668,7 +675,7 @@ class CreatureObject extends TangibleObject {
 	@preLocked
 	@arg1preLocked
 	public native void removeBuff(Buff buff);
-
+	
 	@preLocked
 	public native boolean removeStateBuff(unsigned long state);
 
@@ -678,6 +685,16 @@ class CreatureObject extends TangibleObject {
 	 */
 	@preLocked
 	public native void clearBuffs(boolean updateclient);
+	
+	/**
+	 * Renews the buff and all secondary buffs associated with it.
+	 * @param buffCRC The buff to renew from the list
+	 * @param duration The duration to renew the buff at
+	 * @param sendToClient Send buff information to the client - Necessary to update timers
+	 */
+	@preLocked
+	public native void renewBuff(unsigned int buffCRC, int duration, boolean sendToClient = false);
+
 
 	public native void updateVehiclePosition(boolean sendPackets);
 
@@ -718,8 +735,26 @@ class CreatureObject extends TangibleObject {
 	}
 
 	@preLocked
-	public abstract int addDotState(CreatureObject attacker, unsigned long dotType, unsigned long objectID, unsigned int strength, byte type, unsigned int duration, float potency, unsigned int defense, int secondaryStrength = 0) {
-		return damageOverTimeList.addDot(this, attacker, objectID, duration, dotType, type, strength, potency, defense, secondaryStrength);
+	public abstract int addDotState(CreatureObject attacker,
+									unsigned long dotType,
+									unsigned long objectID,
+									unsigned int strength,
+									byte type,
+									unsigned int duration,
+									float potency,
+									unsigned int defense,
+									int secondaryStrength = 0) {
+
+		return damageOverTimeList.addDot(this,
+										 attacker,
+										 objectID,
+										 duration, 
+										 dotType,
+										 type,
+										 strength,
+										 potency,
+										 defense,
+										 secondaryStrength);
 	}
 
 	@preLocked
@@ -1030,9 +1065,9 @@ class CreatureObject extends TangibleObject {
 	public native void executeObjectControllerAction(unsigned int actionCRC, unsigned long targetID, final unicode args);
 
 	/**
-	 * Evaluates if this object can be attacket by the passed creature object
-	 * @pre { this object is locked }
-	 * @post { this object is locked }
+	 * Evaluates if this object can be attacked by the passed creature object
+	 * @pre { }
+	 * @post { }
 	 * @return returns true if the creature object can attack this
 	 */
 	@dirty
@@ -1132,7 +1167,7 @@ class CreatureObject extends TangibleObject {
 	 */
 	@preLocked
 	@arg1preLocked
-	public native int notifyObjectDestructionObservers(TangibleObject attacker, int condition);
+	public native int notifyObjectDestructionObservers(TangibleObject attacker, int condition, boolean isCombatAction);
 
 	/**
 	 * Is called when this object is killed
@@ -1230,6 +1265,18 @@ class CreatureObject extends TangibleObject {
 	public native float calculateBFRatio();
 
 	@preLocked
+	public native void removeFeignedDeath();
+
+	@preLocked
+	public native boolean canFeignDeath();
+
+	@preLocked
+	public native void feignDeath();
+
+	@preLocked
+	public native void setFeignedDeathState();
+
+	@preLocked
 	public native void setDizziedState(int durationSeconds = 5);
 
 	@preLocked
@@ -1251,7 +1298,7 @@ class CreatureObject extends TangibleObject {
 	public native void setBlindedState(int durationSeconds = 5);
 
 	@preLocked
-	public native void setIntimidatedState(unsigned int mod, unsigned int crc, int durationSeconds = 15);
+	public native void setIntimidatedState(int durationSeconds = 15);
 
 	@preLocked
 	public native void setSnaredState(int durationSeconds = 20);
@@ -1285,6 +1332,11 @@ class CreatureObject extends TangibleObject {
 
 	public void removeAttackDelay() {
 		cooldownTimerMap.updateToCurrentTime("nextAttackDelay");
+	}
+	
+	@dirty
+	public boolean hasIncapTimer() {
+		return !cooldownTimerMap.isPast("incapTimer");
 	}
 
 	@local
@@ -1336,6 +1388,11 @@ class CreatureObject extends TangibleObject {
 	public boolean checkKnockdownRecovery() {
 		return cooldownTimerMap.isPast("knockdownRecovery");
 	}
+	
+	
+	// Updates directional arrows and planet names for group members out of range
+	@dirty 
+	public native void updateGroupMFDPositions();
 
 	// misc methods
 	@preLocked
@@ -1402,7 +1459,10 @@ class CreatureObject extends TangibleObject {
 	public native void doAnimation(final string animation);
 
 	@dirty
-	public native void doCombatAnimation(CreatureObject defender, unsigned int animationCRC, byte hit, byte trails);
+	public native void doCombatAnimation(TangibleObject defender, unsigned int animationCRC, byte hit, byte trails, unsigned long weaponID=0);
+	
+	@dirty
+	public native void doCombatAnimation(unsigned int animationCRC);
 
 	@preLocked
 	public native void activateQueueAction();
@@ -1842,11 +1902,6 @@ class CreatureObject extends TangibleObject {
 		return nextAction.isPast();
 	}
 
-	@dirty
-	public abstract boolean isTrainerCreature() {
-		return false;
-	}
-
 	@read
 	public boolean isSwimming() {
 		return stateBitmask & CreatureState.SWIMMING;
@@ -1981,6 +2036,11 @@ class CreatureObject extends TangibleObject {
 	@read
 	public boolean isOnFire() {
 		return stateBitmask & CreatureState.ONFIRE;
+	}
+	
+	@read
+	public boolean isFeigningDeath() {
+		return stateBitmask & CreatureState.FEIGNDEATH;
 	}
 
 	@read

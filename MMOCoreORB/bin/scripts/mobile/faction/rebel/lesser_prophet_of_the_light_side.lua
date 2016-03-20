@@ -1,6 +1,7 @@
 lesser_prophet_of_the_light_side = Creature:new {
 	objectName = "@mob/creature_names:lesser_prophet_of_the_dark_side",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 85,
@@ -23,7 +24,7 @@ lesser_prophet_of_the_light_side = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_jedi_trainer_old_human_male_01.iff"},

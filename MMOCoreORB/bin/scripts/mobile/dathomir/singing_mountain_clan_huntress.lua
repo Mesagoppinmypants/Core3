@@ -1,6 +1,7 @@
 singing_mountain_clan_huntress = Creature:new {
 	objectName = "@mob/creature_names:singing_mtn_clan_huntress",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "mtn_clan",
 	faction = "mtn_clan",
 	level = 75,
@@ -23,7 +24,7 @@ singing_mountain_clan_huntress = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_sing_mt_clan_huntress.iff"},
@@ -39,14 +40,14 @@ singing_mountain_clan_huntress = Creature:new {
 				{group = "rifles", chance = 1000000},
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
-				{group = "wearables_common", chance = 500000},
-				{group = "wearables_uncommon", chance = 500000}
+				{group = "wearables_uncommon", chance = 500000},
+				{group = "tailor_components", chance = 500000}
 			}
 		}
 	},
 	weapons = {"mixed_force_weapons"},
 	conversationTemplate = "",
-	attacks = merge(brawlermaster,pikemanmaster)
+	attacks = merge(brawlermaster,pikemanmaster,swordsmanmaster)
 }
 
 CreatureTemplates:addCreatureTemplate(singing_mountain_clan_huntress, "singing_mountain_clan_huntress")

@@ -9,6 +9,7 @@
 #include "server/zone/objects/structure/StructureObject.h"
 #include "server/zone/objects/player/sessions/DestroyStructureSession.h"
 #include "server/zone/objects/tangible/terminal/Terminal.h"
+#include "server/zone/managers/gcw/GCWManager.h"
 #include "server/zone/objects/tangible/components/CampTerminalMenuComponent.h"
 
 class DestroystructureCommand : public QueueCommand {
@@ -45,12 +46,32 @@ public:
 		if (ghost == NULL)
 			return GENERALERROR;
 
-		if (!ghost->isOwnedStructure(structure) && !ghost->isPrivileged()) {
+		if (!ghost->isOwnedStructure(structure) && !ghost->isStaff()) {
 			creature->sendSystemMessage("@player_structure:destroy_must_be_owner"); //You must be the owner to destroy a structure.
 			return INVALIDTARGET;
 		}
 
-		if ((structure->isGCWBase() && !ghost->isPrivileged()) || structure->isTurret() || structure->isMinefield()) {
+		if (structure->isGCWBase() && !ghost->isStaff()) {
+			ManagedReference<Zone*> zone = creature->getZone();
+
+			if (zone == NULL)
+				return GENERALERROR;
+
+			GCWManager* gcwMan = zone->getGCWManager();
+
+			if (gcwMan == NULL)
+				return GENERALERROR;
+
+			BuildingObject* buildingObject = cast<BuildingObject*>(structure);
+
+			if (buildingObject == NULL)
+				return GENERALERROR;
+
+			if (((structure->getPvpStatusBitmask() & CreatureFlag::OVERT) && gcwMan->isBaseVulnerable(buildingObject)) || (structure->getOwnerCreatureObject() != creature))
+				return INVALIDTARGET;
+		}
+
+		if (structure->isTurret() || structure->isMinefield()) {
 			return INVALIDTARGET;
 		}
 

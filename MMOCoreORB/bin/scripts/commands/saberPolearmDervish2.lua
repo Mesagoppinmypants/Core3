@@ -43,13 +43,17 @@
 
 SaberPolearmDervish2Command = {
         name = "saberpolearmdervish2",
-        
-        
+
 	damageMultiplier = 4.5,
 	speedMultiplier = 4.0,
+	healthCostMultiplier = 0,
+	actionCostMultiplier = 0,
+	mindCostMultiplier = 0,
 	coneAngle = 45,
 	coneAction = true,
+	coneRange = 24,
 	forceCostMultiplier = 3.0,
+	visMod = 25,
 
 		stateEffects = {
 	   StateEffect( 
@@ -81,15 +85,16 @@ SaberPolearmDervish2Command = {
 	  )
 	},
 
-	animationCRC = hashCode("combo_jedi_2_light"),
+	animation = "combo_jedi_2", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "saberpolearmdervish2",
-	
+
 	poolsToDamage = RANDOM_ATTRIBUTE,
-	
+
 	weaponType = POLEARMJEDIWEAPON,
 
-	range = 24
+	range = -1
 }
 
 AddCommand(SaberPolearmDervish2Command)

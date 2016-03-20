@@ -22,16 +22,16 @@ blood_crazed_plains_marauder = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_blood_crazed_plains_marauder.iff"},
 	lootGroups = {
 		{
 			groups = {
-				{group = "pistols", chance = 1000000},
-				{group = "carbines", chance = 1000000},
-				{group = "rifles", chance = 1000000},
+				{group = "pistols", chance = 750000},
+				{group = "carbines", chance = 750000},
+				{group = "rifles", chance = 750000},
 				{group = "melee_baton", chance = 1000000},
 				{group = "loot_kit_parts", chance = 1000000},
 				{group = "armor_attachments", chance = 500000},
@@ -41,6 +41,7 @@ blood_crazed_plains_marauder = Creature:new {
 				{group = "mabari_armor", chance = 800000},
 				{group = "tantel_armor", chance = 800000},
 				{group = "ubese_armor", chance = 800000},
+				{group = "color_crystals", chance = 750000},
 			}
 		}
 	},

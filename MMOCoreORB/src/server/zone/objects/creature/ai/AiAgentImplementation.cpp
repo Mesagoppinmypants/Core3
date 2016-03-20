@@ -60,6 +60,7 @@
 #include "server/zone/managers/faction/FactionManager.h"
 #include "server/zone/managers/name/NameManager.h"
 #include "server/zone/managers/stringid/StringIdManager.h"
+#include "server/zone/packets/object/CombatAction.h"
 #include "server/zone/packets/object/StartNpcConversation.h"
 #include "server/zone/packets/scene/AttributeListMessage.h"
 #include "server/zone/packets/scene/LightUpdateTransformMessage.h"
@@ -67,6 +68,7 @@
 #include "server/zone/packets/scene/UpdateTransformMessage.h"
 #include "server/zone/packets/scene/UpdateTransformWithParentMessage.h"
 #include "server/zone/templates/AiTemplate.h"
+#include "server/zone/templates/tangible/SharedCreatureObjectTemplate.h"
 #include "server/zone/templates/mobile/CreatureTemplate.h"
 #include "server/zone/templates/mobile/MobileOutfit.h"
 #include "server/zone/templates/mobile/MobileOutfitGroup.h"
@@ -268,10 +270,12 @@ void AiAgentImplementation::loadTemplateData(CreatureTemplate* templateData) {
 	if(npcTemplate->getRandomNameType() != NameManagerType::TAG) {
 		NameManager* nm = server->getNameManager();
 
-		if(npcTemplate->getRandomNameType() % 2 == 1) {
-			setCustomObjectName(nm->makeCreatureName(npcTemplate->getRandomNameType()), false);
+		int templSpecies = getSpecies();
+
+		if(!npcTemplate->getRandomNameTag()) {
+			setCustomObjectName(nm->makeCreatureName(npcTemplate->getRandomNameType(), templSpecies), false);
 		} else {
-			String newName = nm->makeCreatureName(npcTemplate->getRandomNameType());
+			String newName = nm->makeCreatureName(npcTemplate->getRandomNameType(), templSpecies);
 			newName += " (";
 
 			if (objectName == "")
@@ -484,6 +488,14 @@ void AiAgentImplementation::initializeTransientMembers() {
 
 void AiAgentImplementation::notifyPositionUpdate(QuadTreeEntry* entry) {
 	CreatureObjectImplementation::notifyPositionUpdate(entry);
+
+	SceneObject* object = static_cast<SceneObject*>(entry);
+
+	CreatureObject* creo = object->asCreatureObject();
+
+	if (creo != NULL && creo->isPlayerCreature() && !creo->isInvisible()) {
+		activateAwarenessEvent();
+	}
 }
 
 bool AiAgentImplementation::runAwarenessLogicCheck(SceneObject* pObject) {
@@ -653,8 +665,9 @@ int AiAgentImplementation::checkForReactionChat(SceneObject* pObject) {
 }
 
 void AiAgentImplementation::doAwarenessCheck() {
-	if (numberOfPlayersInRange.get() <= 0)
-		return;
+	int oldCount = numberOfPlayersInRange.get();
+
+	int newPlayerCount = -1;
 
 	CloseObjectsVector* vec = (CloseObjectsVector*) getCloseObjects();
 	if (vec == NULL)
@@ -667,6 +680,7 @@ void AiAgentImplementation::doAwarenessCheck() {
 
 	if (current != NULL) {
 		AiAgent* thisObject = asAiAgent();
+		newPlayerCount = 0;
 
 		for (int i = 0; i < closeObjects.size(); ++i) {
 			SceneObject* scene = static_cast<SceneObject*>(closeObjects.get(i));
@@ -681,15 +695,25 @@ void AiAgentImplementation::doAwarenessCheck() {
 
 			//Locker crossLocker(target, thisObject); lets do dirty reads
 
+			if (target->isPlayerCreature() && !target->isInvisible())
+				++newPlayerCount;
+
 			if (current->doAwarenessCheck(target)) {
 				interrupt(target, ObserverEventType::OBJECTINRANGEMOVED);
 			}
 		}
 	}
 
-	if (numberOfPlayersInRange.get() > 0) {
-		activateAwarenessEvent();
+	if (newPlayerCount != -1) {
+		bool success = numberOfPlayersInRange.compareAndSet(oldCount, newPlayerCount);
+
+		if (success && !newPlayerCount) {
+			return;
+		}
 	}
+
+	if (numberOfPlayersInRange.get() > 0)
+		activateAwarenessEvent();
 }
 
 void AiAgentImplementation::doRecovery(int latency) {
@@ -1370,7 +1394,9 @@ void AiAgentImplementation::notifyDespawn(Zone* zone) {
 		return;
 	}
 
-	if (respawnTimer == 0) {
+	notifyObservers(ObserverEventType::CREATUREDESPAWNED);
+
+	if (respawnTimer <= 0) {
 		//zone->getCreatureManager()->addToReservePool(asAiAgent());
 		return;
 	}
@@ -1418,16 +1444,30 @@ void AiAgentImplementation::notifyDissapear(QuadTreeEntry* entry) {
 		if (!creo->isInvisible()) {
 			int32 newValue = (int32) numberOfPlayersInRange.decrement();
 
+			if (newValue < 0) {
+				int oldValue;
+
+				do {
+					oldValue = (int)numberOfPlayersInRange.get();
+
+					newValue = oldValue;
+
+					if (newValue < 0)
+						newValue = 0;
+				} while (!numberOfPlayersInRange.compareAndSet((uint32)oldValue, (uint32)newValue));
+			}
+
 			if (newValue == 0) {
 				if (despawnOnNoPlayerInRange && (despawnEvent == NULL) && !isPet()) {
 					despawnEvent = new DespawnCreatureOnPlayerDissappear(asAiAgent());
 					despawnEvent->schedule(30000);
 				}
 
+				/*Locker locker(&awarenessEventMutex);
 				if (awarenessEvent != NULL) {
 					awarenessEvent->cancel();
 					awarenessEvent = NULL;
-				}
+				}*/
 			} else if (newValue < 0) {
 				error("numberOfPlayersInRange below 0");
 			}
@@ -1442,6 +1482,11 @@ void AiAgentImplementation::activateAwarenessEvent(uint64 delay) {
 #ifdef DEBUG
 	info("Starting activateAwarenessEvent check", true);
 #endif
+	CloseObjectsVector* vec = (CloseObjectsVector*) getCloseObjects();
+
+	if (vec == NULL)
+		return;
+
 	Locker locker(&awarenessEventMutex);
 
 	if (awarenessEvent == NULL) {
@@ -1473,8 +1518,10 @@ void AiAgentImplementation::activateRecovery() {
 }
 
 void AiAgentImplementation::activatePostureRecovery() {
-	if (isProne() || isKnockedDown() || isKneeling())
+	if ((isProne() || isKnockedDown() || isKneeling()) && checkPostureChangeDelay()) {
 		executeObjectControllerAction(0xA8A25C79); // stand
+
+	}
 }
 
 void AiAgentImplementation::activateHAMRegeneration(int latency) {
@@ -2276,23 +2323,23 @@ void AiAgentImplementation::broadcastNextPositionUpdate(PatrolPoint* point) {
 	broadcastMessage(msg, false);
 }
 
-int AiAgentImplementation::notifyObjectDestructionObservers(TangibleObject* attacker, int condition) {
+int AiAgentImplementation::notifyObjectDestructionObservers(TangibleObject* attacker, int condition, bool isCombatAction) {
 	sendReactionChat(ReactionManager::DEATH);
 
 	if (isPet()) {
 		PetManager* petManager = server->getZoneServer()->getPetManager();
 
-		petManager->notifyDestruction(attacker, asAiAgent(), condition);
+		petManager->notifyDestruction(attacker, asAiAgent(), condition, isCombatAction);
 
 	} else {
 		if (getZone() != NULL) {
 			CreatureManager* creatureManager = getZone()->getCreatureManager();
 
-			creatureManager->notifyDestruction(attacker, asAiAgent(), condition);
+			creatureManager->notifyDestruction(attacker, asAiAgent(), condition, isCombatAction);
 		}
 	}
 
-	return CreatureObjectImplementation::notifyObjectDestructionObservers(attacker, condition);
+	return CreatureObjectImplementation::notifyObjectDestructionObservers(attacker, condition, isCombatAction);
 }
 
 int AiAgentImplementation::notifyConverseObservers(CreatureObject* converser) {
@@ -2301,7 +2348,7 @@ int AiAgentImplementation::notifyConverseObservers(CreatureObject* converser) {
 	return 1;
 }
 
-int AiAgentImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, bool notifyClient) {
+int AiAgentImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, bool notifyClient, bool isCombatAction) {
 	lastDamageReceived.updateToCurrentTime();
 
 	activateRecovery();
@@ -2314,10 +2361,10 @@ int AiAgentImplementation::inflictDamage(TangibleObject* attacker, int damageTyp
 		}
 	}
 	activateInterrupt(attacker, ObserverEventType::DAMAGERECEIVED);
-	return CreatureObjectImplementation::inflictDamage(attacker, damageType, damage, destroy, notifyClient);
+	return CreatureObjectImplementation::inflictDamage(attacker, damageType, damage, destroy, notifyClient, isCombatAction);
 }
 
-int AiAgentImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, const String& xp, bool notifyClient) {
+int AiAgentImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, const String& xp, bool notifyClient, bool isCombatAction) {
 	lastDamageReceived.updateToCurrentTime();
 
 	activateRecovery();
@@ -2330,7 +2377,7 @@ int AiAgentImplementation::inflictDamage(TangibleObject* attacker, int damageTyp
 		}
 	}
 	activateInterrupt(attacker, ObserverEventType::DAMAGERECEIVED);
-	return CreatureObjectImplementation::inflictDamage(attacker, damageType, damage, destroy, notifyClient);
+	return CreatureObjectImplementation::inflictDamage(attacker, damageType, damage, destroy, notifyClient, isCombatAction);
 }
 
 
@@ -2499,7 +2546,7 @@ void AiAgentImplementation::fillAttributeList(AttributeListMessage* alm, Creatur
 		}
 	}
 
-	if (player->getPlayerObject() && player->getPlayerObject()->isPrivileged()) {
+	if (player->getPlayerObject() && player->getPlayerObject()->hasGodMode()) {
 		ManagedReference<SceneObject*> home = homeObject.get();
 
 		if (home != NULL) {
@@ -2586,6 +2633,20 @@ bool AiAgentImplementation::sendConversationStartTo(SceneObject* player) {
 bool AiAgentImplementation::isAggressiveTo(CreatureObject* target) {
 	if (!isAttackableBy(target) || target->isVehicleObject())
 		return false;
+
+	if (getParentID() != 0 && getParentID() != target->getParentID()) {
+		Reference<CellObject*> curCell = getParent().castTo<CellObject*>();
+
+		if (curCell != NULL) {
+			ContainerPermissions* perms = curCell->getContainerPermissions();
+
+			if (!perms->hasInheritPermissionsFromParent()) {
+				if (!curCell->checkContainerPermission(target, ContainerPermissions::WALKIN)) {
+					return false;
+				}
+			}
+		}
+	}
 
 	// grab the GCW faction
 	uint32 targetFaction = target->getFaction();
@@ -3033,8 +3094,6 @@ bool AiAgentImplementation::isAttackableBy(TangibleObject* object) {
 			return false;
 		}
 
-	} else if (targetFaction == 0 && getFaction() != 0) {
-		return false;
 	}
 
 	return true;
@@ -3085,22 +3144,24 @@ bool AiAgentImplementation::isAttackableBy(CreatureObject* object) {
 
 	unsigned int targetFaction = object->getFaction();
 
-	if (targetFaction != 0 && getFaction() != 0) {
+	if (getFaction() != 0) {
 		if (targetFaction == getFaction()) {
 			return false;
 		}
 
-		PlayerObject* ghost = object->getPlayerObject();
+		if (object->isPlayerCreature()) {
+			PlayerObject* ghost = object->getPlayerObject();
 
-		if (ghost != NULL && ghost->getFactionStatus() == FactionStatus::ONLEAVE) {
-			return false;
+			if (targetFaction == 0 || (ghost != NULL && ghost->getFactionStatus() == FactionStatus::ONLEAVE)) {
+				return false;
+			}
 		}
-
-	} else if (targetFaction == 0 && getFaction() != 0) {
-		return false;
 	}
 
 	if (object->isAiAgent()) {
+		if ((creatureBitmask & CreatureFlag::NOAIAGGRO) && !object->isPet())
+			return false;
+
 		AiAgent* ai = object->asAiAgent();
 
 		CreatureTemplate* targetTemplate = ai->getCreatureTemplate();

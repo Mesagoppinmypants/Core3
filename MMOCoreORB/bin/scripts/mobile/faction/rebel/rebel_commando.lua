@@ -1,6 +1,7 @@
 rebel_commando = Creature:new {
 	objectName = "@mob/creature_names:rebel_commando",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 25,
@@ -23,7 +24,7 @@ rebel_commando = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -52,7 +53,7 @@ rebel_commando = Creature:new {
 	conversationTemplate = "",
 	reactionStf = "@npc_reaction/military",
 	personalityStf = "@hireling/hireling_military",
-	attacks = merge(commandomaster,marksmanmaster,brawlermaster)
+	attacks = merge(commandomaster,marksmanmaster,brawlermaster,pistoleermaster)
 }
 
 CreatureTemplates:addCreatureTemplate(rebel_commando, "rebel_commando")

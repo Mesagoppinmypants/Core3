@@ -1,6 +1,7 @@
 jabba_swooper_leader = Creature:new {
 	objectName = "@mob/creature_names:jabbas_swooper_leader",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jabba",
 	faction = "jabba",
 	level = 8,
@@ -23,7 +24,7 @@ jabba_swooper_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_jabba_swooper_leader.iff"},

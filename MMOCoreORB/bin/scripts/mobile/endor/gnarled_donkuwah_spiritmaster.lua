@@ -1,6 +1,7 @@
 gnarled_donkuwah_spiritmaster = Creature:new {
 	objectName = "@mob/creature_names:gnarled_donkuwah_spiritmaster",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "donkuwah_tribe",
 	faction = "donkuwah_tribe",
 	level = 35,
@@ -23,7 +24,7 @@ gnarled_donkuwah_spiritmaster = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

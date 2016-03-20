@@ -13,7 +13,7 @@
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/managers/loot/LootManager.h"
 #include "server/zone/managers/gcw/GCWManager.h"
-#include "server/zone/managers/gcw/SecuritySliceTask.h"
+#include "server/zone/managers/gcw/tasks/SecuritySliceTask.h"
 #include "server/zone/objects/tangible/Container.h"
 #include "server/zone/objects/tangible/RelockLootContainerEvent.h"
 #include "server/zone/objects/tangible/weapon/WeaponObject.h"
@@ -479,27 +479,27 @@ void SlicingSessionImplementation::handleSlice(SuiListBox* suiBox) {
 
 	if (tangibleObject->isContainerObject() || tangibleObject->getGameObjectType() == SceneObjectType::PLAYERLOOTCRATE) {
 		handleContainerSlice();
-		playerManager->awardExperience(player, "slicing", 125, true); // Container Slice XP
-	} else	if (tangibleObject->isMissionTerminal()) {
+		playerManager->awardExperience(player, "slicing", 250, true); // Container Slice XP
+	} else if (tangibleObject->isMissionTerminal()) {
 		MissionTerminal* term = cast<MissionTerminal*>( tangibleObject.get());
-		playerManager->awardExperience(player, "slicing", 250, true); // Terminal Slice XP
+		playerManager->awardExperience(player, "slicing", 100, true); // Terminal Slice XP
 		term->addSlicer(player);
 		player->sendSystemMessage("@slicing/slicing:terminal_success");
 	} else if (tangibleObject->isWeaponObject()) {
 		handleWeaponSlice();
-		playerManager->awardExperience(player, "slicing", 500, true); // Weapon Slice XP
+		playerManager->awardExperience(player, "slicing", 250, true); // Weapon Slice XP
 	} else if (tangibleObject->isArmorObject()) {
 		handleArmorSlice();
-		playerManager->awardExperience(player, "slicing", 1000, true); // Armor Slice XP
+		playerManager->awardExperience(player, "slicing", 250, true); // Armor Slice XP
 	} else if ( isBaseSlice()){
 		playerManager->awardExperience(player,"slicing", 1000, true); // Base slicing
 
 		Zone* zone = player->getZone();
 
-		if(zone != NULL){
+		if (zone != NULL){
 			GCWManager* gcwMan = zone->getGCWManager();
 
-			if(gcwMan != NULL){
+			if (gcwMan != NULL){
 				SecuritySliceTask* task = new SecuritySliceTask(gcwMan, tangibleObject.get(), player);
 				task->execute();
 			}

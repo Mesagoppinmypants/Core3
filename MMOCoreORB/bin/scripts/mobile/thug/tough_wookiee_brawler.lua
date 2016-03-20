@@ -1,6 +1,7 @@
 tough_wookiee_brawler = Creature:new {
 	objectName = "@mob/creature_names:brawler",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "mercenary",
 	faction = "",
 	level = 14,
@@ -23,7 +24,7 @@ tough_wookiee_brawler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/wookiee_male.iff"},

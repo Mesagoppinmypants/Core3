@@ -1,6 +1,7 @@
 shaggy_donkuwah_youth = Creature:new {
 	objectName = "@mob/creature_names:shaggy_donkuwah_youth",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "donkuwah_tribe",
 	faction = "donkuwah_tribe",
 	level = 14,
@@ -23,7 +24,7 @@ shaggy_donkuwah_youth = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

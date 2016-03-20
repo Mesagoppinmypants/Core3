@@ -33,6 +33,7 @@ ForceHealQueueCommand::ForceHealQueueCommand(const String& name, ZoneProcessServ
 	healBattleFatigue = 0;
 	healAmount = 0;
 	healWoundAmount = 0;
+	visMod = 10;
 
 	range = 0;
 
@@ -224,6 +225,12 @@ int ForceHealQueueCommand::checkStates(CreatureObject* creature, CreatureObject*
 			retval |= INTIMIDATE;
 		}
 	}
+
+	if (healStates & CreatureState::FEIGNDEATH) {
+		if(target->hasState(CreatureState::FEIGNDEATH)) {
+			retval |= FEIGNDEATH;
+		}
+	}
 #ifdef DEBUG_FORCE_HEALS
 	creature->sendSystemMessage("[checkStates] result = " + String::valueOf(retval));
 	creature->sendSystemMessage("[checkStates] result & STUNN = " + dbg_fh_bool2s(retval & STUN));
@@ -257,6 +264,11 @@ int ForceHealQueueCommand::doHealStates(CreatureObject* creature, CreatureObject
 	if (healableStates & INTIMIDATE) {
 		target->removeStateBuff(CreatureState::INTIMIDATED);
 		attrs.healedStates |= INTIMIDATE;
+	}
+
+	if (healableStates & FEIGNDEATH) {
+		target->removeFeignedDeath();
+		attrs.healedStates |= FEIGNDEATH;
 	}
 
 	return SUCCESS;
@@ -523,10 +535,8 @@ int ForceHealQueueCommand::runCommandWithTarget(CreatureObject* creature, Creatu
 		return GENERALERROR;
 	}
 
-	if (!creature->isInRange(targetCreature, range + targetCreature->getTemplateRadius() + creature->getTemplateRadius())) {
-		// out of range
+	if(!checkDistance(creature, targetCreature, range))
 		return TOOFAR;
-	}
 
 	if (!CollisionManager::checkLineOfSight(creature, targetCreature)) {
 		creature->sendSystemMessage("@container_error_message:container18"); // not in sight?!?
@@ -603,7 +613,7 @@ int ForceHealQueueCommand::runCommand(CreatureObject* creature, CreatureObject* 
 #ifdef DEBUG_FORCE_HEALS
 				creature->sendSystemMessage("[runCommand] healBattleFatigue sets didHeal = true");
 #endif
-				sendHealMessage(creature, targetCreature, BATTLE_FATIGUE, healedAttributes.healedBF);
+				sendHealMessage(creature, targetCreature, BATTLE_FATIGUE, healedAttributes.healedBF, true);
 				didHeal = true;
 			}
 		}
@@ -751,5 +761,8 @@ void ForceHealQueueCommand::applyForceCost(CreatureObject* creature, int calcula
 	} else {
 		playerObject->setForcePower(currentForce - calculatedForceCost);
 	}
+
+	//This seems like a logical place to put this to me
+	VisibilityManager::instance()->increaseVisibility(creature, visMod);
 }
 

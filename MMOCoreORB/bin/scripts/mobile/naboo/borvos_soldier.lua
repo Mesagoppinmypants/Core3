@@ -1,6 +1,7 @@
 borvos_soldier = Creature:new {
 	objectName = "",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "Borvo's Soldier",
 	socialGroup = "borvo",
 	faction = "borvo",
@@ -24,7 +25,7 @@ borvos_soldier = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_borvos_soldier.iff"},

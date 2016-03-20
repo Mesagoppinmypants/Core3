@@ -22,8 +22,8 @@ akkar_plint = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
-	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	creatureBitmask = NONE,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_jabba_henchman.iff"},

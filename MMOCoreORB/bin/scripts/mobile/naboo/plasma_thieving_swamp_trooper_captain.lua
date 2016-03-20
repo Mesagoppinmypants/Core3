@@ -1,6 +1,7 @@
 plasma_thieving_swamp_trooper_captain = Creature:new {
 	objectName = "@mob/creature_names:swamp_trooper_captain_anti_gungan",
-	randomNameType = NAME_SWAMPTROOPER_TAG,
+	randomNameType = NAME_SWAMPTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 30,
@@ -23,7 +24,7 @@ plasma_thieving_swamp_trooper_captain = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_swamp_trooper.iff"},

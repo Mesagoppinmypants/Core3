@@ -37,6 +37,8 @@ int MissionTerminalImplementation::handleObjectMenuSelect(CreatureObject* player
 	ManagedReference<CityRegion*> city = player->getCityRegion();
 
 	if (selectedID == 69 && player->hasSkill("combat_smuggler_slicing_01")) {
+		if (isBountyTerminal())
+			return 0;
 
 		if (city != NULL && !city->isClientRegion() && city->isBanned(player->getObjectID())) {
 			player->sendSystemMessage("@city/city:banned_services"); // You are banned from using this city's services.
@@ -49,7 +51,10 @@ int MissionTerminalImplementation::handleObjectMenuSelect(CreatureObject* player
 		}
 
 		if (!player->checkCooldownRecovery("slicing.terminal")) {
-			player->sendSystemMessage("@slicing/slicing:not_again");
+			StringIdChatParameter message;
+			message.setStringId("@slicing/slicing:not_yet"); // You will be able to hack the network again in %DI seconds.
+			message.setDI(player->getCooldownTime("slicing.terminal")->getTime() - Time().getTime());
+			player->sendSystemMessage(message);
 			return 0;
 		}
 

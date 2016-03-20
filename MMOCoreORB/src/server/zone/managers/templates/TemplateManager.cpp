@@ -630,6 +630,13 @@ void TemplateManager::registerGlobals() {
 	luaTemplatesInstance->setGlobalInt("CHANGEFACTIONSTATUS", CreatureFlag::CHANGEFACTIONSTATUS);
 	luaTemplatesInstance->setGlobalInt("BLINK_GREEN", CreatureFlag::BLINK_GREEN);
 
+	luaTemplatesInstance->setGlobalInt("CONVERSABLE", OptionBitmask::CONVERSE);
+	luaTemplatesInstance->setGlobalInt("AIENABLED", OptionBitmask::AIENABLED);
+	luaTemplatesInstance->setGlobalInt("INVULNERABLE", OptionBitmask::INVULNERABLE);
+	luaTemplatesInstance->setGlobalInt("FACTIONAGGRO", OptionBitmask::FACTIONAGGRO);
+	luaTemplatesInstance->setGlobalInt("INTERESTING", OptionBitmask::INTERESTING);
+	luaTemplatesInstance->setGlobalInt("JTLINTERESTING", OptionBitmask::JTLINTERESTING);
+
 	luaTemplatesInstance->setGlobalInt("MELEEATTACK", WeaponObject::MELEEATTACK);
 	luaTemplatesInstance->setGlobalInt("RANGEDATTACK", WeaponObject::RANGEDATTACK);
 	luaTemplatesInstance->setGlobalInt("FORCEATTACK", WeaponObject::FORCEATTACK);
@@ -762,19 +769,20 @@ void TemplateManager::registerGlobals() {
 	luaTemplatesInstance->setGlobalInt("VEHICLE", SharedObjectTemplate::VEHICLE);
 	luaTemplatesInstance->setGlobalInt("XPPURCHASE", SharedObjectTemplate::XPPURCHASE);
 
-	luaTemplatesInstance->setGlobalInt("NO_HITLOCATION", CombatManager::NOLOCATION);
-	luaTemplatesInstance->setGlobalInt("CHEST_HITLOCATION", CombatManager::CHEST);
-	luaTemplatesInstance->setGlobalInt("ARMS_HITLOCATION", CombatManager::ARMS);
-	luaTemplatesInstance->setGlobalInt("LEGS_HITLOCATION", CombatManager::LEGS);
-	luaTemplatesInstance->setGlobalInt("HEAD_HITLOCATION", CombatManager::HEAD);
+	luaTemplatesInstance->setGlobalInt("NO_HITLOCATION", WearablesDeltaVector::NOLOCATION);
+	luaTemplatesInstance->setGlobalInt("CHEST_HITLOCATION", WearablesDeltaVector::CHEST);
+	luaTemplatesInstance->setGlobalInt("ARMS_HITLOCATION", WearablesDeltaVector::ARMS);
+	luaTemplatesInstance->setGlobalInt("LEGS_HITLOCATION", WearablesDeltaVector::LEGS);
+	luaTemplatesInstance->setGlobalInt("HEAD_HITLOCATION", WearablesDeltaVector::HEAD);
 
 	luaTemplatesInstance->setGlobalInt("GENETIC_LAB", CraftingManager::GENETIC_LAB);
 	luaTemplatesInstance->setGlobalInt("RESOURCE_LAB", CraftingManager::RESOURCE_LAB);
 
 	luaTemplatesInstance->setGlobalInt("STATIC", EventPerkDeedTemplate::STATIC);
 	luaTemplatesInstance->setGlobalInt("THEATER", EventPerkDeedTemplate::THEATER);
-	luaTemplatesInstance->setGlobalInt("PERSONNEL", EventPerkDeedTemplate::PERSONNEL);
+	luaTemplatesInstance->setGlobalInt("RECRUITER", EventPerkDeedTemplate::RECRUITER);
 	luaTemplatesInstance->setGlobalInt("GAME", EventPerkDeedTemplate::GAME);
+	luaTemplatesInstance->setGlobalInt("HONORGUARD", EventPerkDeedTemplate::HONORGUARD);
 
 	luaTemplatesInstance->setGlobalInt("STIM_A", StimPackTemplate::STIM_A);
 	luaTemplatesInstance->setGlobalInt("STIM_B", StimPackTemplate::STIM_B);

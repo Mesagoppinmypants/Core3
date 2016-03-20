@@ -1,6 +1,7 @@
 slooni_slave = Creature:new {
 	objectName = "@mob/creature_names:slave_twilek_female",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
 	faction = "townsperson",
 	level = 7,
@@ -23,7 +24,7 @@ slooni_slave = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/twilek_female.iff"},

@@ -1,6 +1,7 @@
 narmle_militia_commander = Creature:new {
 	objectName = "@mob/creature_names:narmle_commander",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "narmle",
 	faction = "narmle",
 	level = 25,
@@ -23,7 +24,7 @@ narmle_militia_commander = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

@@ -1,6 +1,7 @@
 coa2_rebel_coordinator = Creature:new {
 	objectName = "@mob/creature_names:coa2_rebel_coordinator",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 25,
@@ -23,7 +24,7 @@ coa2_rebel_coordinator = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_brigadier_general_sullustan_male.iff"},

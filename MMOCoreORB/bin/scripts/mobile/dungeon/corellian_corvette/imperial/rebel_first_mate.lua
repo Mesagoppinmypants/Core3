@@ -1,6 +1,7 @@
 rebel_first_mate = Creature:new {
 	objectName = "@mob/creature_names:corvette_rebel_mate",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 86,
@@ -23,7 +24,7 @@ rebel_first_mate = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_first_lieutenant_bothan_male_01.iff"},

@@ -97,6 +97,12 @@ public:
 	String getJediManagerName();
 
 	/**
+	 * Get the value of the currently active jedi progression type.
+	 * @return the value of the currently active jedi progression type.
+	 */
+	int getJediProgressionType();
+
+	/**
 	 * Set the name of the currently active lua jedi manager.
 	 * @param name the name of the currently active lua jedi manager.
 	 */
@@ -109,6 +115,15 @@ public:
 	 * @param creature the creature that used the item.
 	 */
 	void useItem(SceneObject* item, const int itemType, CreatureObject* creature);
+
+
+	/**
+	 * Decides what to do next pending learning an FS tree.
+	 * Calls the onFSTreeCompleted in the lua manager.
+	 * @param creature the creature object.
+	 * @param branch String of the branch name.
+	 */
+	void onFSTreeCompleted(CreatureObject* creature, String branch);
 };
 
 }

@@ -1,6 +1,7 @@
 nightsister_initiate = Creature:new {
 	objectName = "@mob/creature_names:nightsister_initiate",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "nightsister",
 	faction = "nightsister",
 	level = 60,
@@ -23,7 +24,7 @@ nightsister_initiate = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_nightsister_initiate.iff"},
@@ -40,13 +41,13 @@ nightsister_initiate = Creature:new {
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
 				{group = "wearables_common", chance = 500000},
-				{group = "wearables_uncommon", chance = 500000}
+				{group = "tailor_components", chance = 500000}
 			}
 		}
 	},
 	weapons = {"mixed_force_weapons"},
 	conversationTemplate = "",
-	attacks = merge(pikemanmaster,brawlermaster)
+	attacks = merge(tkamid,fencermid,swordsmanmid,pikemanmid,brawlermaster)
 }
 
 CreatureTemplates:addCreatureTemplate(nightsister_initiate, "nightsister_initiate")

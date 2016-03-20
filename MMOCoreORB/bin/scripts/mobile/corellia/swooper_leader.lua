@@ -1,6 +1,7 @@
 swooper_leader = Creature:new {
 	objectName = "@mob/creature_names:swooper_leader",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "cor_swoop",
 	faction = "cor_swoop",
 	level = 12,
@@ -23,7 +24,7 @@ swooper_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_swooper_zabrak_male_01.iff"},

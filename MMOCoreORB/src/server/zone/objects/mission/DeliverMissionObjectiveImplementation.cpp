@@ -59,7 +59,7 @@ bool DeliverMissionObjectiveImplementation::activateWithResult() {
 	ManagedReference<CreatureObject*> owner = getPlayerOwner();
 	ManagedReference<MissionObject* > mission = this->mission.get();
 
-	if (owner == NULL) {
+	if (owner == NULL || mission == NULL) {
 		return false;
 	}
 	Zone* zone = owner->getZone();
@@ -91,10 +91,10 @@ bool DeliverMissionObjectiveImplementation::activateWithResult() {
 	//Select spawn type.
 	int spawnType = NpcSpawnPoint::NEUTRALSPAWN;
 	switch (mission->getFaction()) {
-	case MissionObject::FACTIONIMPERIAL:
+	case FactionManager::FACTIONIMPERIAL:
 		spawnType = NpcSpawnPoint::IMPERIALSPAWN;
 		break;
-	case MissionObject::FACTIONREBEL:
+	case FactionManager::FACTIONREBEL:
 		spawnType = NpcSpawnPoint::REBELSPAWN;
 		break;
 	default:
@@ -132,11 +132,6 @@ bool DeliverMissionObjectiveImplementation::activateWithResult() {
 	//Create waypoint and activate it.
 	if (objectiveStatus == 0) {
 		WaypointObject* waypoint = mission->getWaypointToMission();
-
-		if (waypoint == NULL) {
-			Locker mlocker(mission);
-			waypoint = mission->createWaypoint();
-		}
 
 		Locker locker(waypoint);
 
@@ -177,6 +172,8 @@ void DeliverMissionObjectiveImplementation::despawnNpcs() {
 
 void DeliverMissionObjectiveImplementation::updateMissionStatus(CreatureObject* player) {
 	ManagedReference<MissionObject* > mission = this->mission.get();
+	if(mission == NULL)
+		return;
 
 	StringBuffer itemEntry;
 	itemEntry << "m" << mission->getMissionNumber();
@@ -234,12 +231,9 @@ void DeliverMissionObjectiveImplementation::updateMissionStatus(CreatureObject* 
 bool DeliverMissionObjectiveImplementation::updateMissionTarget(CreatureObject* player) {
 	//Now update the waypoint to the new target
 	ManagedReference<MissionObject* > mission = this->mission.get();
-
+	if(mission == NULL)
+		return false;
 	WaypointObject* waypoint = mission->getWaypointToMission();
-	if (waypoint == NULL) {
-		Locker mlocker(mission);
-		waypoint = mission->createWaypoint();
-	}
 
 	Locker locker(waypoint);
 

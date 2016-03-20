@@ -31,14 +31,14 @@ function RecruiterConvoHandler:runScreenHandlers(conversationTemplate, conversin
 
 		local conversationScreen = screen:cloneScreen()
 		local clonedConversation = LuaConversationScreen(conversationScreen)
-		if (screenID == "greet_member_start_covert" or screenID == "stay_covert") then
+		if (screenID == "greet_member_start_covert" or screenID == "stay_covert" or screenID == "dont_resign_covert") then
 			self:updateScreenWithPromotions(conversingPlayer, conversationTemplate, conversationScreen, recruiterScreenplay:getRecruiterFaction(conversingNPC))
 			if (recruiterScreenplay:getFactionFromHashCode(player:getFaction()) == "rebel") then
 				clonedConversation:addOption("@conversation/faction_recruiter_rebel:s_480", "faction_purchase")
 			else
 				clonedConversation:addOption("@conversation/faction_recruiter_imperial:s_324", "faction_purchase")
 			end
-		elseif (screenID == "greet_member_start_overt" or screenID == "stay_special_forces" or screenID == "stay_overt") then
+		elseif (screenID == "greet_member_start_overt" or screenID == "stay_special_forces" or screenID == "stay_overt" or screenID == "dont_resign_overt") then
 			self:updateScreenWithPromotions(conversingPlayer, conversationTemplate, conversationScreen, recruiterScreenplay:getRecruiterFaction(conversingNPC))
 			self:updateScreenWithBribe(conversingPlayer, conversingNPC, conversationTemplate, conversationScreen, recruiterScreenplay:getRecruiterFaction(conversingNPC))
 			if (recruiterScreenplay:getFactionFromHashCode(player:getFaction()) == "rebel") then
@@ -54,7 +54,7 @@ function RecruiterConvoHandler:runScreenHandlers(conversationTemplate, conversin
 		elseif (screenID == "accepted_go_overt") then
 			player:setPvpStatusBit(CHANGEFACTIONSTATUS)
 			writeData(player:getObjectID() .. ":changingFactionStatus", 1)
-			createEvent(30000, "recruiterScreenplay", "handleGoOvert", conversingPlayer)
+			createEvent(30000, "recruiterScreenplay", "handleGoOvert", conversingPlayer, "")
 
 		elseif (screenID == "accepted_go_covert") then
 			if (player:hasSkill("force_title_jedi_rank_03")) then
@@ -62,7 +62,7 @@ function RecruiterConvoHandler:runScreenHandlers(conversationTemplate, conversin
 			end
 			player:setPvpStatusBit(CHANGEFACTIONSTATUS)
 			writeData(player:getObjectID() .. ":changingFactionStatus", 1)
-			createEvent(300000, "recruiterScreenplay", "handleGoCovert", conversingPlayer)
+			createEvent(300000, "recruiterScreenplay", "handleGoCovert", conversingPlayer, "")
 
 		elseif (screenID == "accepted_go_on_leave") then
 
@@ -71,7 +71,7 @@ function RecruiterConvoHandler:runScreenHandlers(conversationTemplate, conversin
 			end
 			player:setPvpStatusBit(CHANGEFACTIONSTATUS)
 			writeData(player:getObjectID() .. ":changingFactionStatus", 1)
-			createEvent(300000, "recruiterScreenplay", "handleGoOnLeave", conversingPlayer)
+			createEvent(300000, "recruiterScreenplay", "handleGoOnLeave", conversingPlayer, "")
 
 		elseif (screenID == "accepted_resign") then
 			if (player:hasSkill("force_title_jedi_rank_03")) then
@@ -81,14 +81,14 @@ function RecruiterConvoHandler:runScreenHandlers(conversationTemplate, conversin
 			if (playerObject:isOvert()) then
 				player:setPvpStatusBit(CHANGEFACTIONSTATUS)
 				writeData(player:getObjectID() .. ":changingFactionStatus", 1)
-				createEvent(300000, "recruiterScreenplay", "handleResign", conversingPlayer)
+				createEvent(300000, "recruiterScreenplay", "handleResign", conversingPlayer, "")
 				return conversationScreen
 			end
 			recruiterScreenplay:handleResign(conversingPlayer)
 
 		elseif (screenID == "accepted_resume_duties") then
 			player:setPvpStatusBit(CHANGEFACTIONSTATUS)
-			createEvent(30000, "recruiterScreenplay", "handleGoCovert", conversingPlayer)
+			createEvent(30000, "recruiterScreenplay", "handleGoCovert", conversingPlayer, "")
 			writeData(player:getObjectID() .. ":changingFactionStatus", 1)
 
 		elseif (screenID == "confirm_promotion") then
@@ -131,6 +131,12 @@ function RecruiterConvoHandler:runScreenHandlers(conversationTemplate, conversin
 			
 		elseif (screenID == "greet_neutral_start") then
 			self:addJoinMilitaryOption(recruiterScreenplay:getRecruiterFaction(conversingNPC), clonedConversation, playerObject, conversingNPC)
+
+		elseif (screenID == "show_gcw_score") then
+			local zoneName = SceneObject(conversingNPC):getZoneName()
+			clonedConversation:setDialogTextDI(getImperialScore(zoneName))
+			clonedConversation:setDialogTextTO(getRebelScore(zoneName))
+
 		end
 
 		return conversationScreen

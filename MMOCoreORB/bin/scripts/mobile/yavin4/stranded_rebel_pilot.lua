@@ -1,6 +1,7 @@
 stranded_rebel_pilot = Creature:new {
 	objectName = "@mob/creature_names:stranded_rebel_pilot",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 20,
@@ -23,7 +24,7 @@ stranded_rebel_pilot = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_stranded_rebel_pilot.iff"},

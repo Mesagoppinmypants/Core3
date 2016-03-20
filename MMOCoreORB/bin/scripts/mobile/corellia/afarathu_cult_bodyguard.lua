@@ -1,6 +1,7 @@
 afarathu_cult_bodyguard = Creature:new {
 	objectName = "@mob/creature_names:afarathu_cult_bodyguard",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "afarathu",
 	faction = "afarathu",
 	level = 15,
@@ -23,7 +24,7 @@ afarathu_cult_bodyguard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_selonian_m_01.iff",

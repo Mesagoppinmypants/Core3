@@ -1,6 +1,7 @@
 imperial_officer = Creature:new {
 	objectName = "@mob/creature_names:warren_imperial_officer",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 30,
@@ -54,7 +55,7 @@ imperial_officer = Creature:new {
 	conversationTemplate = "",
 	reactionStf = "@npc_reaction/military",
 	personalityStf = "@hireling/hireling_military",
-	optionsBitmask = 128
+	optionsBitmask = AIENABLED
 }
 
 CreatureTemplates:addCreatureTemplate(imperial_officer, "imperial_officer")

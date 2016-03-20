@@ -1,6 +1,7 @@
 corsec_security_specialist = Creature:new {
 	objectName = "@mob/creature_names:corsec_detective_aggro",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "corsec",
 	faction = "corsec",
 	level = 120,
@@ -23,7 +24,7 @@ corsec_security_specialist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

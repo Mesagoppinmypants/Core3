@@ -1,6 +1,7 @@
 corsec_sergeant = Creature:new {
 	objectName = "@mob/creature_names:corsec_sergeant",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "corsec",
 	faction = "corsec",
 	level = 16,
@@ -23,7 +24,7 @@ corsec_sergeant = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = { "object/mobile/dressed_corsec_officer_human_male_01.iff",

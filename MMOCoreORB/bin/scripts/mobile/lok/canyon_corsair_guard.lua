@@ -1,6 +1,7 @@
 canyon_corsair_guard = Creature:new {
 	objectName = "@mob/creature_names:canyon_corsair_guard",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "canyon_corsair",
 	faction = "canyon_corsair",
 	level = 36,
@@ -23,7 +24,7 @@ canyon_corsair_guard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

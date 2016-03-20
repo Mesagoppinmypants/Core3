@@ -1,6 +1,7 @@
 canyon_corsair_strong_pirate = Creature:new {
 	objectName = "@mob/creature_names:canyon_corsair_pirate_strong",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "canyon_corsair",
 	faction = "canyon_corsair",
 	level = 36,
@@ -23,7 +24,7 @@ canyon_corsair_strong_pirate = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

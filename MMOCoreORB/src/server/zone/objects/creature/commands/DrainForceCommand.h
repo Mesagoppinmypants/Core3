@@ -37,10 +37,10 @@ public:
 
 		CreatureObject* targetCreature = cast<CreatureObject*>( object.get());
 
-		if (targetCreature == NULL || targetCreature->isDead() || targetCreature->isIncapacitated() || !targetCreature->isAttackableBy(creature))
+		if (targetCreature == NULL || targetCreature->isDead() || (targetCreature->isIncapacitated() && !targetCreature->isFeigningDeath()) || !targetCreature->isAttackableBy(creature))
 			return INVALIDTARGET;
 
-		if (!targetCreature->isInRange(creature, range + targetCreature->getTemplateRadius() + creature->getTemplateRadius()))
+		if(!checkDistance(creature, targetCreature, range))
 			return TOOFAR;
 
 		if (!CollisionManager::checkLineOfSight(creature, targetCreature)) {
@@ -78,7 +78,8 @@ public:
 			playerGhost->setForcePower(playerGhost->getForcePower() + forceDrain);
 			targetGhost->setForcePower(targetGhost->getForcePower() - forceDrain);
 
-			creature->doCombatAnimation(targetCreature, animationCRC, 0x1, 0xFF);
+			uint32 animCRC = getAnimationString().hashCode();
+			creature->doCombatAnimation(targetCreature, animCRC, 0x1, 0xFF);
 			manager->broadcastCombatSpam(creature, targetCreature, NULL, forceDrain, "cbt_spam", combatSpam, 1);
 
 			return SUCCESS;

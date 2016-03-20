@@ -1,6 +1,7 @@
 bh_spiderclan_auspex = Creature:new {
 	objectName = "@mob/creature_names:spider_nightsister_spell_weaver",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "spider_nightsister",
 	faction = "spider_nightsister",
 	level = 107,
@@ -23,7 +24,7 @@ bh_spiderclan_auspex = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_spider_nightsister_spellweaver.iff"},

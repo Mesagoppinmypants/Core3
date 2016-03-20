@@ -22,8 +22,8 @@ sont_toipo = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
-	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	creatureBitmask = NONE,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_thug_aqualish_male_01.iff"},

@@ -25,6 +25,7 @@
 #include "DeleteCharactersTask.h"
 #include "server/conf/ConfigManager.h"
 #include "server/zone/objects/tangible/wearables/WearableContainerObject.h"
+#include "server/zone/objects/tangible/deed/vetharvester/VetHarvesterDeed.h"
 
 using namespace engine::db;
 
@@ -92,7 +93,6 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<FsVillageArea>(SceneObjectType::FSVILLAGEAREA);
 	objectFactory.registerObject<ActiveArea>(SceneObjectType::ACTIVEAREA);
 	objectFactory.registerObject<BadgeActiveArea>(SceneObjectType::BADGEAREA);
-	objectFactory.registerObject<GarageArea>(SceneObjectType::GARAGEAREA);
 	objectFactory.registerObject<MissionSpawnActiveArea>(SceneObjectType::MISSIONSPAWNAREA);
 	objectFactory.registerObject<MissionReconActiveArea>(SceneObjectType::MISSIONRECONAREA);
 	objectFactory.registerObject<SpawnArea>(SceneObjectType::SPAWNAREA);
@@ -110,6 +110,7 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<IntangibleObject>(SceneObjectType::INTANGIBLE);
 	objectFactory.registerObject<IntangibleObject>(SceneObjectType::DATA2);
 	objectFactory.registerObject<TheaterObject>(SceneObjectType::THEATEROBJECT);
+	objectFactory.registerObject<TangibleObject>(SceneObjectType::EVENTPERK);
 
 	objectFactory.registerObject<ArmorObject>(SceneObjectType::ARMOR);
 	objectFactory.registerObject<ArmorObject>(SceneObjectType::BODYARMOR); //chest plates
@@ -228,7 +229,10 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<TravelTerminal>(SceneObjectType::TRAVELTERMINAL);
 	objectFactory.registerObject<GuildTerminal>(SceneObjectType::GUILDTERMINAL);
 	objectFactory.registerObject<Jukebox>(SceneObjectType::JUKEBOX);
+	objectFactory.registerObject<ShuttleBeacon>(SceneObjectType::SHUTTLEBEACON);
 	objectFactory.registerObject<FlagGame>(SceneObjectType::FLAGGAME);
+	objectFactory.registerObject<LotteryDroid>(SceneObjectType::LOTTERYDROID);
+	objectFactory.registerObject<ScavengerChest>(SceneObjectType::SCAVENGERCHEST);
 	objectFactory.registerObject<GamblingTerminal>(SceneObjectType::GAMBLINGTERMINAL);
 	objectFactory.registerObject<Terminal>(SceneObjectType::CLONING);
 
@@ -240,6 +244,7 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<StructureDeed>(SceneObjectType::INSTALLATIONDEED);
 	objectFactory.registerObject<ResourceDeed>(SceneObjectType::RESOURCEDEED);
 	objectFactory.registerObject<EventPerkDeed>(SceneObjectType::EVENTPERKDEED);
+	objectFactory.registerObject<VetHarvesterDeed>(SceneObjectType::VETHARVESTERDEED);
 
 	objectFactory.registerObject<GroupObject>(SceneObjectType::GROUPOBJECT);
 	objectFactory.registerObject<GuildObject>(SceneObjectType::GUILDOBJECT);
@@ -311,6 +316,7 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<ResourceContainer>(SceneObjectType::ORGANICSTRUCTURAL);
 
 	objectFactory.registerObject<CustomIngredient>(SceneObjectType::QUESTRESOURCE);
+	objectFactory.registerObject<FsCraftingComponentObject>(SceneObjectType::FSCRAFTINGCOMPONENT);
 
 	objectFactory.registerObject<DraftSchematic>(SceneObjectType::DRAFTSCHEMATIC);
 	objectFactory.registerObject<ManufactureSchematic>(SceneObjectType::MANUFACTURINGSCHEMATIC);

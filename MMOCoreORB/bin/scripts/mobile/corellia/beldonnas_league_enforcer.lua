@@ -1,6 +1,7 @@
 beldonnas_league_enforcer = Creature:new {
 	objectName = "@mob/creature_names:beldonnas_enforcer",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "beldonnas_league",
 	faction = "beldonnas_league",
 	level = 23,
@@ -23,7 +24,7 @@ beldonnas_league_enforcer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_thug_human_female_01.iff",

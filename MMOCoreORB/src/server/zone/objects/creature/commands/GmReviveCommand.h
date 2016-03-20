@@ -49,7 +49,9 @@ public:
 
 				String firstArg;
 				String firstName = "";
+				String modName = "";
 				bool buff = false;
+				bool skillmod = false;
 				args.getStringToken(firstArg);
 
 				if (firstArg.toLowerCase() == "buff") { // First argument is buff, get second argument
@@ -57,6 +59,12 @@ public:
 					if (args.hasMoreTokens())
 						args.getStringToken(firstName);
 
+				} else if (firstArg.toLowerCase() == "skillmod") {
+					skillmod = true;
+					if (args.hasMoreTokens())
+						args.getStringToken(modName);
+					else
+						return GENERALERROR;
 				} else { // First argument is not buff, must be a name or area
 					firstName = firstArg;
 				}
@@ -167,6 +175,13 @@ public:
 						return INVALIDTARGET;
 					}
 
+				} else if (skillmod) {
+					if (object != NULL && object->isPlayerCreature()) {
+						patient = cast<CreatureObject*>(object.get());
+						Locker clocker(patient, creature);
+						patient->removeSkillMod(SkillModManager::BUFF, modName, patient->getSkillMod(modName), true);
+					} else
+						return INVALIDTARGET;
 				} else { // Shouldn't ever end up here
 					creature->sendSystemMessage("Syntax: /gmrevive [buff] [ [<name>] | [area [<range>] [imperial | rebel | neutral]] ]");
 					return INVALIDTARGET;
@@ -183,6 +198,17 @@ public:
 	void revivePatient(CreatureObject* creature, CreatureObject* patient) const {
 		Locker clocker(patient, creature);
 
+		ManagedReference<PlayerObject*> targetGhost = patient->getPlayerObject();
+
+		if (targetGhost != NULL) {
+
+			if(targetGhost->getJediState() > 1)
+				targetGhost->setForcePower(targetGhost->getForcePowerMax());
+
+			if(patient->isDead())
+				targetGhost->removeSuiBoxType(SuiWindowType::CLONE_REQUEST);
+		}
+
 		patient->healDamage(creature, CreatureAttribute::HEALTH, 5000);
 		patient->healDamage(creature, CreatureAttribute::ACTION, 5000);
 		patient->healDamage(creature, CreatureAttribute::MIND, 5000);
@@ -195,15 +221,13 @@ public:
 
 		patient->clearDots();
 
+		patient->removeFeignedDeath();
+
 		patient->setPosture(CreaturePosture::UPRIGHT);
 
+		patient->notifyObservers(ObserverEventType::CREATUREREVIVED, creature, 0);
+
 		patient->broadcastPvpStatusBitmask();
-
-		ManagedReference<PlayerObject*> targetGhost = patient->getPlayerObject();
-
-		if (targetGhost != NULL && targetGhost->getJediState() > 1) {
-			targetGhost->setForcePower(targetGhost->getForcePowerMax());
-		}
 
 		if (patient->isPlayerCreature()) {
 			patient->sendSystemMessage("You have been restored.");

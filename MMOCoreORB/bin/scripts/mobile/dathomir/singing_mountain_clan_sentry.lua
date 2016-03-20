@@ -1,6 +1,7 @@
 singing_mountain_clan_sentry = Creature:new {
 	objectName = "@mob/creature_names:singing_mountain_clan_sentry",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "mtn_clan",
 	faction = "mtn_clan",
 	level = 21,
@@ -23,7 +24,7 @@ singing_mountain_clan_sentry = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_sing_mt_clan_sentry.iff"},
@@ -39,7 +40,8 @@ singing_mountain_clan_sentry = Creature:new {
 				{group = "rifles", chance = 1000000},
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
-				{group = "wearables_common", chance = 1000000}
+				{group = "wearables_uncommon", chance = 500000},
+				{group = "tailor_components", chance = 500000}
 			}
 		}
 	},

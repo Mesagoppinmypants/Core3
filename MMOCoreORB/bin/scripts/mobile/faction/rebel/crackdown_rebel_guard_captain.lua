@@ -1,6 +1,7 @@
 crackdown_rebel_guard_captain = Creature:new {
 	objectName = "@mob/creature_names:crackdown_rebel_guard_captain",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 1,
@@ -23,7 +24,7 @@ crackdown_rebel_guard_captain = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

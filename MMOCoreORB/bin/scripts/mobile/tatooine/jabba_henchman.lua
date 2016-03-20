@@ -1,6 +1,7 @@
 jabba_henchman = Creature:new {
 	objectName = "@mob/creature_names:jabba_henchman",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jabba",
 	faction = "jabba",
 	level = 10,
@@ -23,7 +24,7 @@ jabba_henchman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_jabba_henchman.iff"},

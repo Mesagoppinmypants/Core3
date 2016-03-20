@@ -22,9 +22,40 @@ class VisibilityManager : public Singleton<VisibilityManager>, public Logger, pu
 	 * Any player with a visibility greater than or equal to this amount will be
 	 * available on the bounty hunter mission terminal as a player bounty.
 	 */
-	enum {
-		TERMINALVISIBILITYLIMIT = 24
-	};
+
+	float terminalVisThreshold;
+
+	/**
+	 * If a players visibility falls below this value they will be removed from the BH terminals
+	 */
+	float falloffThreshold;
+
+	/**
+	 * This is the maximum visibility that can be gained
+	 */
+	float maxVisibility;
+
+
+
+	/**
+	 * Number of days before complete visibility decay
+	 */
+	unsigned int totalDecayTimeInDays;
+
+	/**
+	 * Number of seconds before rescheduling the decay event. Must be SHORTER than 1 day
+	 */
+	unsigned int visDecayTickRate;
+
+	/**
+	 * Amount of visibility to decay per tick
+	 */
+	float visDecayPerTick;
+
+	/**
+	 * Jedi PVP rating divisor
+	 */
+	float pvpRatingDivisor;
 
 	/**
 	 * Rebel faction string.
@@ -93,10 +124,21 @@ class VisibilityManager : public Singleton<VisibilityManager>, public Logger, pu
 
 public:
 
+	enum { // default visibility modifiers if value does not exist in LUA
+		SABERVISMOD = 10, // equipping saber cost
+		COMBATVISMOD = 25, // Combat action or force power cost
+		BUFFVISMOD = 10 // jedi self buff cost
+	};
+
 	/**
 	 * Constructor.
 	 */
 	VisibilityManager();
+
+	/**
+	 * Load lua configuration for visibility variables
+	 */
+	void loadConfiguration();
 
 	/**
 	 * Login a player and add it to the visibility list if he/she still has visibility.
@@ -115,7 +157,7 @@ public:
 	 * if not already in the list.
 	 * @param creature the player to increase the visibility for.
 	 */
-	void increaseVisibility(CreatureObject* creature);
+	void increaseVisibility(CreatureObject* creature, int visibilityMultiplier);
 
 	/**
 	 * Clear the visibility for a player and remove him/her from the visibility
@@ -129,6 +171,14 @@ public:
 	 * Iterates through all currently online players and decays their visibility.
 	 */
 	void performVisiblityDecay();
+
+	int getPvpRatingDivisor() {
+		return pvpRatingDivisor;
+	}
+
+	unsigned int getVisDecayTickRate() {
+		return visDecayTickRate;
+	}
 };
 
 }

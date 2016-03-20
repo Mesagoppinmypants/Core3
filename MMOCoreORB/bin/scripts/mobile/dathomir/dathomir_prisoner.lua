@@ -1,6 +1,7 @@
 dathomir_prisoner = Creature:new {
 	objectName = "@mob/creature_names:prisoner",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "prisoner",
 	faction = "",
 	level = 12,
@@ -23,7 +24,7 @@ dathomir_prisoner = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

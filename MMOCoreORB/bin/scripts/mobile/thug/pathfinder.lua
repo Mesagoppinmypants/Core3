@@ -1,6 +1,6 @@
 pathfinder = Creature:new {
 	objectName = "",
-	costumName = "Pathfinder",
+	customName = "Pathfinder",
 	socialGroup = "wilder",
 	faction = "",
 	level = 21,
@@ -23,7 +23,7 @@ pathfinder = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_thug_aqualish_male_01.iff",

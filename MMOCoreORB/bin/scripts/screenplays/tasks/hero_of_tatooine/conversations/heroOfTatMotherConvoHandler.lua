@@ -50,12 +50,12 @@ function heroOfTatMotherConvoHandler:runScreenHandlers(conversationTemplate, con
 
 			AiAgent(pDaughter):setFollowObject(conversingNPC)
 			AiAgent(pDaughter):setAiTemplate("follow")
-			CreatureObject(conversingNPC):setOptionsBitmask(128)
+			CreatureObject(conversingNPC):clearOptionBit(CONVERSABLE)
 			AiAgent(conversingNPC):setFollowObject(conversingPlayer)
 			AiAgent(conversingNPC):setAiTemplate("follow")
 			writeData("hero_of_tat:altruismEscortStatus", 1)
 			writeData("hero_of_tat:altruismEscorterID", SceneObject(conversingPlayer):getObjectID())
-			createEvent(2000, "HeroOfTatooineScreenPlay", "escortRangeCheckEvent", conversingPlayer)
+			createEvent(2000, "HeroOfTatooineScreenPlay", "escortRangeCheckEvent", conversingPlayer, "")
 		end
 
 		return conversationScreen

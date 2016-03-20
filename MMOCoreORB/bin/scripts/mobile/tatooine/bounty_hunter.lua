@@ -1,6 +1,7 @@
 bounty_hunter = Creature:new {
 	objectName = "@mob/creature_names:bounty_hunter",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
 	faction = "townsperson",
 	level = 99,
@@ -23,7 +24,7 @@ bounty_hunter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_bounty_hunter_zabrak_female_01.iff"},

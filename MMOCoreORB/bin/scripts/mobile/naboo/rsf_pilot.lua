@@ -1,6 +1,7 @@
 rsf_pilot = Creature:new {
 	objectName = "@mob/creature_names:rsf_pilot",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "naboo_security_force",
 	faction = "naboo_security_force",
 	level = 14,
@@ -23,7 +24,7 @@ rsf_pilot = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rsf_pilot.iff"},

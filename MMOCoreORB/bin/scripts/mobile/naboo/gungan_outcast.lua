@@ -1,6 +1,7 @@
 gungan_outcast = Creature:new {
 	objectName = "@mob/creature_names:gungan_outcast",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "self",
 	faction = "",
 	level = 9,
@@ -23,7 +24,7 @@ gungan_outcast = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gungan_outcast.iff"},

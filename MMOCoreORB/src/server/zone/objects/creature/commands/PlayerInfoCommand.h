@@ -19,9 +19,6 @@
 class PlayerInfoCommand {
 public:
 	static int executeCommand(CreatureObject* creature, uint64 target, const UnicodeString& arguments) {
-		if (!creature->getPlayerObject()->isPrivileged())
-			return 1;
-
 		ManagedReference<CreatureObject*> targetObject;
 
 		if (!arguments.isEmpty()) {
@@ -45,12 +42,16 @@ public:
 		box->setPromptTitle("Player Info"); //Register City
 		//box->setPromptText("@city/city:register_d");
 
+		Locker smodLocker(targetObject->getSkillModMutex());
+
 		SkillModList* skillModList = targetObject->getSkillModList();
 
 		StringBuffer promptText;
 		promptText << "ObjectID: " << targetObject->getObjectID() << endl;
 		promptText << "SkillMods:" << endl;
 		promptText << skillModList->getPrintableSkillModList() << endl;
+
+		smodLocker.release();
 
 		promptText << "Skills:" << endl;
 		SkillList* list = targetObject->getSkillList();

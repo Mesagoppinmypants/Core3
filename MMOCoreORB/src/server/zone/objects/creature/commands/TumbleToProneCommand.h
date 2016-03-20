@@ -24,6 +24,9 @@ public:
 		if (!checkInvalidLocomotions(creature))
 			return INVALIDLOCOMOTION;
 
+		if (creature->hasAttackDelay() || !creature->checkPostureChangeDelay())
+			return GENERALERROR;
+
 		if (creature->isDizzied() && System::random(100) < 85) {
 			creature->queueDizzyFallEvent();
 		} else {
@@ -34,7 +37,7 @@ public:
 
 			creature->inflictDamage(creature, CreatureAttribute::ACTION, actionCost, true);
 
-			creature->setPosture(CreaturePosture::PRONE, false);
+			creature->setPosture(CreaturePosture::PRONE, false, true);
 
 			Reference<CreatureObject*> defender = server->getZoneServer()->getObject(target).castTo<CreatureObject*>();
 			if (defender == NULL)
@@ -53,10 +56,6 @@ public:
 
 			locker.release();
 
-			CreatureObjectDeltaMessage3* pmsg = new CreatureObjectDeltaMessage3(creature);
-			pmsg->updatePosture();
-			pmsg->close();
-			creature->broadcastMessage(pmsg, true);
 			creature->sendStateCombatSpam("cbt_spam", "tum_prone", 0);
 		}
 

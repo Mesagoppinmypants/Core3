@@ -1,6 +1,7 @@
 feral_selonian = Creature:new {
 	objectName = "@mob/creature_names:feral_selonian",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "self",
 	faction = "",
 	level = 12,
@@ -23,7 +24,7 @@ feral_selonian = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_selonian_m_06.iff"},

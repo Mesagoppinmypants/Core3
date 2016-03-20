@@ -1,6 +1,7 @@
 herald_selonian_diplomat = Creature:new {
 	objectName = "",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a Selonian Diplomat",
 	socialGroup = "selonian",
 	faction = "",
@@ -24,7 +25,7 @@ herald_selonian_diplomat = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

@@ -1,6 +1,7 @@
 rebel_second_lieutenant = Creature:new {
 	objectName = "@mob/creature_names:rebel_second_lieutenant",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 19,
@@ -23,7 +24,7 @@ rebel_second_lieutenant = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -53,7 +54,7 @@ rebel_second_lieutenant = Creature:new {
 	conversationTemplate = "",
 	reactionStf = "@npc_reaction/military",
 	personalityStf = "@hireling/hireling_military",
-	attacks = merge(brawlermaster,marksmanmaster)
+	attacks = merge(brawlermaster,marksmanmaster,riflemanmid)
 }
 
 CreatureTemplates:addCreatureTemplate(rebel_second_lieutenant, "rebel_second_lieutenant")

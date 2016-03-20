@@ -1,6 +1,7 @@
 bedraggled_korga_laborer = Creature:new {
 	objectName = "@mob/creature_names:bedraggled_korga_laborer",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "korga_tribe",
 	faction = "korga_tribe",
 	level = 27,
@@ -23,7 +24,7 @@ bedraggled_korga_laborer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

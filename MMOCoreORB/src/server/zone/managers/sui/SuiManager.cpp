@@ -59,6 +59,8 @@
 #include "server/zone/objects/scene/ObserverEventType.h"
 #include "server/zone/objects/tangible/deed/eventperk/EventPerkDeed.h"
 #include "server/zone/objects/tangible/eventperk/Jukebox.h"
+#include "server/zone/objects/tangible/eventperk/ShuttleBeacon.h"
+#include "server/zone/objects/player/sui/SuiBoxPage.h"
 
 SuiManager::SuiManager() : Logger("SuiManager") {
 	server = NULL;
@@ -66,7 +68,7 @@ SuiManager::SuiManager() : Logger("SuiManager") {
 	setLogging(false);
 }
 
-void SuiManager::handleSuiEventNotification(uint32 boxID, CreatureObject* player, uint32 cancel, Vector<UnicodeString>* args) {
+void SuiManager::handleSuiEventNotification(uint32 boxID, CreatureObject* player, uint32 eventIndex, Vector<UnicodeString>* args) {
 	uint16 windowType = (uint16) boxID;
 
 	Locker _lock(player);
@@ -88,7 +90,37 @@ void SuiManager::handleSuiEventNotification(uint32 boxID, CreatureObject* player
 	Reference<SuiCallback*> callback = suiBox->getCallback();
 
 	if (callback != NULL) {
-		callback->run(player, suiBox, cancel, args);
+		Reference<LuaSuiCallback*> luaCallback = cast<LuaSuiCallback*>(callback.get());
+
+		if (luaCallback != NULL && suiBox->isSuiBoxPage()) {
+			Reference<SuiBoxPage*> boxPage = cast<SuiBoxPage*>(suiBox.get());
+
+			if (boxPage != NULL) {
+				Reference<SuiPageData*> pageData = boxPage->getSuiPageData();
+
+				if (pageData != NULL) {
+					try {
+						Reference<SuiCommand*> suiCommand = pageData->getCommand(eventIndex);
+
+						if (suiCommand != NULL && suiCommand->getCommandType() == SuiCommand::SCT_subscribeToEvent) {
+							StringTokenizer callbackString(suiCommand->getNarrowParameter(2));
+							callbackString.setDelimeter(":");
+
+							String luaPlay = "";
+							String luaCall = "";
+
+							callbackString.getStringToken(luaPlay);
+							callbackString.getStringToken(luaCall);
+
+							callback = new LuaSuiCallback(player->getZoneServer(), luaPlay, luaCall);
+						}
+					} catch(Exception& e) {
+						error(e.getMessage());
+					}
+				}
+			}
+		}
+		callback->run(player, suiBox, eventIndex, args);
 		return;
 	}
 
@@ -98,40 +130,40 @@ void SuiManager::handleSuiEventNotification(uint32 boxID, CreatureObject* player
 
 	switch (windowType) {
 	case SuiWindowType::MEDIC_CONSENT:
-		handleConsentBox(player, suiBox, cancel, args);
+		handleConsentBox(player, suiBox, eventIndex, args);
 		break;
 	case SuiWindowType::DANCING_START:
-		handleStartDancing(player, suiBox, cancel, args);
+		handleStartDancing(player, suiBox, eventIndex, args);
 		break;
 	case SuiWindowType::DANCING_CHANGE:
-		handleStartDancing(player, suiBox, cancel, args);
+		handleStartDancing(player, suiBox, eventIndex, args);
 		break;
 	case SuiWindowType::MUSIC_START:
-		handleStartMusic(player, suiBox, cancel, args);
+		handleStartMusic(player, suiBox, eventIndex, args);
 		break;
 	case SuiWindowType::MUSIC_CHANGE:
-		handleStartMusic(player, suiBox, cancel, args);
+		handleStartMusic(player, suiBox, eventIndex, args);
 		break;
 	case SuiWindowType::BAND_START:
-		handleStartMusic(player, suiBox, cancel, args);
+		handleStartMusic(player, suiBox, eventIndex, args);
 		break;
 	case SuiWindowType::BAND_CHANGE:
-		handleStartMusic(player, suiBox, cancel, args);
+		handleStartMusic(player, suiBox, eventIndex, args);
 		break;
 	case SuiWindowType::BANK_TRANSFER:
-		handleBankTransfer(player, suiBox, cancel, args);
+		handleBankTransfer(player, suiBox, eventIndex, args);
 		break;
 	case SuiWindowType::FISHING:
-		handleFishingAction(player, suiBox, cancel, args);
+		handleFishingAction(player, suiBox, eventIndex, args);
 		break;
 	case SuiWindowType::CHARACTER_BUILDER_LIST:
-		handleCharacterBuilderSelectItem(player, suiBox, cancel, args);
+		handleCharacterBuilderSelectItem(player, suiBox, eventIndex, args);
 		break;
 	case SuiWindowType::MEDIC_DIAGNOSE:
-		handleDiagnose(player, suiBox, cancel, args);
+		handleDiagnose(player, suiBox, eventIndex, args);
 		break;
 	case SuiWindowType::OBJECT_NAME:
-		handleSetObjectName(player, suiBox, cancel, args);
+		handleSetObjectName(player, suiBox, eventIndex, args);
 		break;
 	}
 }
@@ -596,7 +628,7 @@ void SuiManager::handleCharacterBuilderSelectItem(CreatureObject* player, SuiBox
 			}
 
 			if (templatePath.contains("event_perk")) {
-				if (ghost->getEventPerkCount() >= 5) {
+				if (!ghost->hasGodMode() && ghost->getEventPerkCount() >= 5) {
 					player->sendSystemMessage("@event_perk:pro_too_many_perks"); // You cannot rent any more items right now.
 					ghost->addSuiBox(cbSui);
 					player->sendMessage(cbSui->generateMessage());
@@ -629,6 +661,9 @@ void SuiManager::handleCharacterBuilderSelectItem(CreatureObject* player, SuiBox
 				if (item->getServerObjectCRC() == 0x46BD798B) { // Jukebox
 					Jukebox* jbox = cast<Jukebox*>(item.get());
 					jbox->setOwner(player);
+				} else if (item->getServerObjectCRC() == 0x255F612C) { // Shuttle Beacon
+					ShuttleBeacon* beacon = cast<ShuttleBeacon*>(item.get());
+					beacon->setOwner(player);
 				}
 				ghost->addEventPerk(item);
 			}
@@ -882,4 +917,26 @@ void SuiManager::sendTransferBox(SceneObject* usingObject, SceneObject* player, 
 		creature->sendMessage(box->generateMessage());
 		playerObject->addSuiBox(box);
 	}
+}
+
+int32 SuiManager::sendSuiPage(CreatureObject* creature, SuiPageData* pageData, const String& play, const String& callback) {
+
+	if (pageData == NULL)
+		return 0;
+
+	if (creature == NULL || !creature->isPlayerCreature())
+		return 0;
+
+	PlayerObject* playerObject = creature->getPlayerObject();
+
+	if (playerObject != NULL) {
+		ManagedReference<SuiBoxPage*> boxPage = new SuiBoxPage(creature, pageData, 0x00);
+		boxPage->setCallback(new LuaSuiCallback(creature->getZoneServer(), play, callback));
+		creature->sendMessage(boxPage->generateMessage());
+		playerObject->addSuiBox(boxPage);
+
+		return boxPage->getBoxID();
+	}
+
+	return 0;
 }

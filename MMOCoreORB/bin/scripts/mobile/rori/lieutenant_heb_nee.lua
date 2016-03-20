@@ -22,7 +22,7 @@ lieutenant_heb_nee = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/lieutenant_heb_nee.iff"},
@@ -39,7 +39,7 @@ lieutenant_heb_nee = Creature:new {
 	},
 	weapons = {"lt_heb_nee_weapons"},
 	conversationTemplate = "",
-	attacks = merge(brawlermaster,marksmanmaster,fencermaster,riflemanmaster)
+	attacks = merge(brawlermaster,marksmanmaster,fencermaster,riflemanmaster,swordsmanmaster)
 }
 
 CreatureTemplates:addCreatureTemplate(lieutenant_heb_nee, "lieutenant_heb_nee")

@@ -1,6 +1,7 @@
 dantari_strategist = Creature:new {
 	objectName = "@mob/creature_names:dantari_raider_strategist",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "dantari_raiders",
 	faction = "dantari_raiders",
 	level = 29,
@@ -23,7 +24,7 @@ dantari_strategist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

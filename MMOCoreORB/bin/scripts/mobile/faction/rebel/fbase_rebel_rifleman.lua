@@ -1,6 +1,7 @@
 fbase_rebel_rifleman = Creature:new {
 	objectName = "@mob/creature_names:fbase_rebel_rifleman",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 38,
@@ -23,7 +24,7 @@ fbase_rebel_rifleman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -49,7 +50,7 @@ fbase_rebel_rifleman = Creature:new {
 	weapons = {"rebel_weapons_medium"},
 	conversationTemplate = "",
 	reactionStf = "@npc_reaction/military",
-	attacks = merge(brawlermaster,marksmanmaster,riflemannovice)
+	attacks = merge(brawlermaster,marksmanmaster,riflemannovice,pistoleermid)
 }
 
 CreatureTemplates:addCreatureTemplate(fbase_rebel_rifleman, "fbase_rebel_rifleman")

@@ -23,7 +23,7 @@ stormtrooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 	scale = 1.05,
 
@@ -48,7 +48,7 @@ stormtrooper = Creature:new {
 	conversationTemplate = "",
 	reactionStf = "@npc_reaction/stormtrooper",
 	personalityStf = "@hireling/hireling_stormtrooper",		
-	attacks = merge(riflemanmaster,carbineermaster,brawlermaster)
+	attacks = merge(riflemanmaster,carbineermaster,brawlermaster,marksmanmaster)
 }
 
 CreatureTemplates:addCreatureTemplate(stormtrooper, "stormtrooper")

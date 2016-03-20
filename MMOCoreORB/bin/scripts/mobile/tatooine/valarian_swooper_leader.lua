@@ -1,6 +1,7 @@
 valarian_swooper_leader = Creature:new {
 	objectName = "@mob/creature_names:valarian_swooper_leader",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "valarian",
 	faction = "valarian",
 	level = 13,
@@ -23,7 +24,7 @@ valarian_swooper_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

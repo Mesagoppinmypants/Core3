@@ -1,6 +1,7 @@
 rebel_warrant_officer_ii = Creature:new {
 	objectName = "@mob/creature_names:rebel_warrant_officer_ii",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 16,
@@ -23,7 +24,7 @@ rebel_warrant_officer_ii = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

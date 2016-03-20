@@ -1,6 +1,7 @@
 scout_trooper = Creature:new {
 	objectName = "@mob/creature_names:scout_trooper",
-	randomNameType = NAME_SCOUTTROOPER_TAG,
+	randomNameType = NAME_SCOUTTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 23,
@@ -23,7 +24,7 @@ scout_trooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 	scale = 1.05,
 

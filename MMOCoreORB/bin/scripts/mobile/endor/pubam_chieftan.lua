@@ -1,6 +1,7 @@
 pubam_chieftan = Creature:new {
 	objectName = "@mob/creature_names:pubam_chieftan",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "pubam",
 	faction = "pubam",
 	level = 51,
@@ -23,7 +24,7 @@ pubam_chieftan = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

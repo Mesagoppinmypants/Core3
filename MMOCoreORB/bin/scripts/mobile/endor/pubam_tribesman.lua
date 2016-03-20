@@ -1,6 +1,7 @@
 pubam_tribesman = Creature:new {
 	objectName = "@mob/creature_names:pubam_tribesman",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "pubam",
 	faction = "pubam",
 	level = 37,
@@ -23,7 +24,7 @@ pubam_tribesman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

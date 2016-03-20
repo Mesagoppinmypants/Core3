@@ -6,6 +6,7 @@ axkva_min = Creature:new {
 	chanceHit = 30,
 	damageMin = 1645,
 	damageMax = 3000,
+	specialDamageMult = 10,
 	baseXp = 28549,
 	baseHAM = 385000,
 	baseHAMmax = 471000,
@@ -22,7 +23,7 @@ axkva_min = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_nightsister_axkva.iff"},
@@ -37,7 +38,7 @@ axkva_min = Creature:new {
 				{group = "melee_weapons", chance = 2000000},
 				{group = "armor_attachments", chance = 500000},
 				{group = "clothing_attachments", chance = 500000},
-				{group = "wearables_scarce", chance = 500000}
+				{group = "wearables_rare", chance = 500000}
 			}
 		},
 		{
@@ -49,7 +50,7 @@ axkva_min = Creature:new {
 	},
 	weapons = {"mixed_force_weapons"},
 	conversationTemplate = "",
-	attacks = merge(pikemanmaster,brawlermaster,forcepowermaster)
+	attacks = merge(fencermaster,swordsmanmaster,tkamaster,pikemanmaster,brawlermaster,forcepowermaster)
 }
 
 CreatureTemplates:addCreatureTemplate(axkva_min, "axkva_min")

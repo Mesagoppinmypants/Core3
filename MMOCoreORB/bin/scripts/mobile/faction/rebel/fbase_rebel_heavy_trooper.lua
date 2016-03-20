@@ -1,6 +1,7 @@
 fbase_rebel_heavy_trooper = Creature:new {
 	objectName = "@mob/creature_names:fbase_rebel_heavy_trooper",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 50,
@@ -23,7 +24,7 @@ fbase_rebel_heavy_trooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

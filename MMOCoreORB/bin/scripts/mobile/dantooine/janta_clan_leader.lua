@@ -1,6 +1,7 @@
 janta_clan_leader = Creature:new {
 	objectName = "@mob/creature_names:janta_clan_leader",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "janta_tribe",
 	faction = "janta_tribe",
 	level = 75,
@@ -23,7 +24,7 @@ janta_clan_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dantari_male.iff"},

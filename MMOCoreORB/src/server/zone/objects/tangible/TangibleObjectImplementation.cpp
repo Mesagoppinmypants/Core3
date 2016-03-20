@@ -34,6 +34,7 @@
 #include "server/zone/objects/tangible/tool/repair/RepairTool.h"
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/managers/creature/PetManager.h"
+#include "server/zone/managers/faction/FactionManager.h"
 #include "server/zone/objects/tangible/wearables/WearableObject.h"
 #include "server/zone/objects/intangible/PetControlDevice.h"
 #include "server/zone/objects/tangible/tool/antidecay/AntiDecayKit.h"
@@ -47,7 +48,7 @@ void TangibleObjectImplementation::initializeTransientMembers() {
 
 	setLoggingName("TangibleObject");
 
-	if (faction !=  0x16148850 && faction != 0xDB4ACC54) {
+	if (faction !=  FactionManager::FACTIONREBEL && faction != FactionManager::FACTIONIMPERIAL) {
 		faction = 0;
 	}
 }
@@ -156,12 +157,12 @@ void TangibleObjectImplementation::broadcastPvpStatusBitmask() {
 			if (obj != NULL && obj->isCreatureObject()) {
 				CreatureObject* creo = obj->asCreatureObject();
 
-				sendPvpStatusTo(creo);
+				if (creo->isPlayerCreature())
+					sendPvpStatusTo(creo);
 
-				if (thisCreo != NULL)
+				if (thisCreo != NULL && thisCreo->isPlayerCreature())
 					creo->sendPvpStatusTo(thisCreo);
 			}
-
 		}
 	}
 }
@@ -170,6 +171,10 @@ void TangibleObjectImplementation::setPvpStatusBitmask(uint32 bitmask, bool noti
 	pvpStatusBitmask = bitmask;
 
 	broadcastPvpStatusBitmask();
+}
+
+void TangibleObjectImplementation::setIsCraftedEnhancedItem(bool value) {
+	isCraftedEnhancedItem = value;
 }
 
 void TangibleObjectImplementation::setPvpStatusBit(uint32 pvpStatus, bool notifyClient) {
@@ -268,29 +273,25 @@ void TangibleObjectImplementation::setDefender(SceneObject* defender) {
 	int i = 0;
 	for (; i < defenderList.size(); i++) {
 		if (defenderList.get(i) == defender) {
-			if (i == 0)
-				return;
-
-			temp = defenderList.get(0);
-
-			TangibleObjectDeltaMessage6* dtano6 = new TangibleObjectDeltaMessage6(asTangibleObject());
-			dtano6->startUpdate(0x01);
-
-			defenderList.set(0, defender, dtano6, 2);
-			defenderList.set(i, temp, dtano6, 0);
-
-			dtano6->close();
-
-			broadcastMessage(dtano6, true);
-
+			if (i == 0) return;
 			break;
 		}
 	}
 
 	if (i == defenderList.size())
 		addDefender(defender);
-	else
-		setCombatState();
+
+	temp = defenderList.get(0);
+	
+	TangibleObjectDeltaMessage6* dtano6 = new TangibleObjectDeltaMessage6(asTangibleObject());
+	dtano6->startUpdate(0x01);
+
+	defenderList.set(0, defender, dtano6, 2);
+	defenderList.set(i, temp, dtano6, 0);
+
+	dtano6->close();
+
+	broadcastMessage(dtano6, true);
 }
 
 void TangibleObjectImplementation::addDefender(SceneObject* defender) {
@@ -436,6 +437,7 @@ void TangibleObjectImplementation::setCustomizationVariable(const String& type, 
 }
 
 void TangibleObjectImplementation::setCountdownTimer(unsigned int newUseCount, bool notifyClient) {
+
 	if (useCount == newUseCount)
 		return;
 
@@ -457,6 +459,12 @@ void TangibleObjectImplementation::setUseCount(uint32 newUseCount, bool notifyCl
 
 	setCountdownTimer(newUseCount, notifyClient);
 
+
+}
+
+void TangibleObjectImplementation::decreaseUseCount(unsigned int decrementAmount, bool notifyClient) {
+	setUseCount(useCount - decrementAmount, notifyClient);
+
 	if (useCount < 1 && !isCreatureObject()) {
 		destroyObjectFromWorld(true);
 
@@ -464,10 +472,6 @@ void TangibleObjectImplementation::setUseCount(uint32 newUseCount, bool notifyCl
 
 		return;
 	}
-}
-
-void TangibleObjectImplementation::decreaseUseCount() {
-	setUseCount(useCount - 1, true);
 }
 
 void TangibleObjectImplementation::setMaxCondition(int maxCond, bool notifyClient) {
@@ -502,7 +506,7 @@ void TangibleObjectImplementation::setConditionDamage(float condDamage, bool not
 	broadcastMessage(dtano3, true);
 }
 
-int TangibleObjectImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, bool notifyClient) {
+int TangibleObjectImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, bool notifyClient, bool isCombatAction) {
 	if(hasAntiDecayKit())
 		return 0;
 
@@ -523,12 +527,12 @@ int TangibleObjectImplementation::inflictDamage(TangibleObject* attacker, int da
 	}
 
 	if (newConditionDamage >= maxCondition)
-		notifyObjectDestructionObservers(attacker, newConditionDamage);
+		notifyObjectDestructionObservers(attacker, newConditionDamage, isCombatAction);
 
 	return 0;
 }
 
-int TangibleObjectImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, const String& xp, bool notifyClient) {
+int TangibleObjectImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, const String& xp, bool notifyClient, bool isCombatAction) {
 	if(hasAntiDecayKit())
 		return 0;
 
@@ -547,23 +551,23 @@ int TangibleObjectImplementation::inflictDamage(TangibleObject* attacker, int da
 	}
 
 	if (newConditionDamage >= maxCondition)
-		notifyObjectDestructionObservers(attacker, newConditionDamage);
+		notifyObjectDestructionObservers(attacker, newConditionDamage, isCombatAction);
 
 	return 0;
 }
 
-int TangibleObjectImplementation::notifyObjectDestructionObservers(TangibleObject* attacker, int condition) {
+int TangibleObjectImplementation::notifyObjectDestructionObservers(TangibleObject* attacker, int condition, bool isCombatAction) {
 	notifyObservers(ObserverEventType::OBJECTDESTRUCTION, attacker, condition);
 
 	if (threatMap != NULL)
 		threatMap->removeAll();
 
-	dropFromDefenderLists(attacker);
+	dropFromDefenderLists();
 
 	return 1;
 }
 
-void TangibleObjectImplementation::dropFromDefenderLists(TangibleObject* destructor) {
+void TangibleObjectImplementation::dropFromDefenderLists() {
 	if (defenderList.size() == 0)
 		return;
 
@@ -705,8 +709,14 @@ Reference<FactoryCrate*> TangibleObjectImplementation::createFactoryCrate(bool i
 			return NULL;
 		}
 	} else {
-
 		ManagedReference<TangibleObject*> protoclone = cast<TangibleObject*>( objectManager->cloneObject(asTangibleObject()));
+		/*
+		* I really didn't want to do this this way, but I had no other way of making the text on the crate be white
+		* if the item it contained has yellow magic bit set. So I stripped the yellow magic bit off when the item is placed inside
+		* the crate here, and added it back when the item is extracted from the crate if it is a crafted enhanced item.
+		*/
+		if(protoclone->getIsCraftedEnhancedItem())
+			protoclone->removeMagicBit(false);
 
 		if (protoclone == NULL) {
 			crate->destroyObjectFromDatabase(true);
@@ -904,6 +914,12 @@ ThreatMap* TangibleObjectImplementation::getThreatMap() {
 
 	return threatMap;
 }
+bool TangibleObjectImplementation::isAttackableBy(TangibleObject* object) {
+	if(object->isCreatureObject())
+		return isAttackableBy(object->asCreatureObject());
+
+	return false;
+}
 
 bool TangibleObjectImplementation::isAttackableBy(CreatureObject* object) {
 	if (isImperial() && !(object->isRebel())) {
@@ -961,6 +977,18 @@ bool TangibleObjectImplementation::isCityStatue(){
 
 bool TangibleObjectImplementation::isCityFountain(){
 	return (templateObject != NULL && templateObject->getFullTemplateString().contains("object/tangible/furniture/city/fountain"));
+}
+
+bool TangibleObjectImplementation::isRebel() const {
+	return faction == FactionManager::FACTIONREBEL;
+}
+
+bool TangibleObjectImplementation::isImperial() const {
+	return faction == FactionManager::FACTIONIMPERIAL;
+}
+
+bool TangibleObjectImplementation::isNeutral() const {
+	return faction == FactionManager::FACTIONNEUTRAL;
 }
 
 TangibleObject* TangibleObject::asTangibleObject() {

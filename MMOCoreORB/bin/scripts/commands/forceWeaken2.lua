@@ -47,10 +47,12 @@ ForceWeaken2Command = {
 	damageMultiplier = 0,
 	speed = 4.0,
 	forceCost = 400,
+	visMod = 25,
 	accuracySkillMod = "forceweaken_accuracy",
 	attackType = FORCEATTACK,
 
-	animationCRC = hashCode("force_weaken_1_particle_level_1_light"),
+	animation = "force_weaken_1_particle_level_1", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "forceweaken2",
 

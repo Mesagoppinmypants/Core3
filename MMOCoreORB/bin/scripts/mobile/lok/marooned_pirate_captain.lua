@@ -1,6 +1,7 @@
 marooned_pirate_captain = Creature:new {
 	objectName = "@mob/creature_names:marooned_pirate_captain",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "pirate",
 	faction = "pirate",
 	level = 24,
@@ -23,7 +24,7 @@ marooned_pirate_captain = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

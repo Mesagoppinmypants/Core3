@@ -140,7 +140,7 @@ public:
 		return true;
 	}
 
-	bool canPerformSkill(CreatureObject* creature, CreatureObject* creatureTarget, StimPack* stimPack) const {
+	bool canPerformSkill(CreatureObject* creature, CreatureObject* creatureTarget, StimPack* stimPack, int mindCostNew) const {
 		if (!creature->canTreatInjuries()) {
 			creature->sendSystemMessage("@healing_response:healing_must_wait"); //You must wait before you can do that.
 			return false;
@@ -151,7 +151,7 @@ public:
 			return false;
 		}
 
-		if (creature->getHAM(CreatureAttribute::MIND) < mindCost) {
+		if (creature->getHAM(CreatureAttribute::MIND) < mindCostNew) {
 			creature->sendSystemMessage("@healing_response:not_enough_mind"); //You do not have enough mind to do that.
 			return false;
 		}
@@ -270,6 +270,8 @@ public:
 	void handleArea(CreatureObject* creature, CreatureObject* areaCenter, StimPack* pharma,
 			float range) const {
 
+		// TODO: Replace this with a CombatManager::getAreaTargets() call
+		
 		Zone* zone = creature->getZone();
 
 		if (zone == NULL)
@@ -292,12 +294,15 @@ public:
 				if (object == areaCenter || object->isDroidObject())
 					continue;
 
-				if (!areaCenter->isInRange(object, range))
+				if (areaCenter->getWorldPosition().distanceTo(object->getWorldPosition()) - object->getTemplateRadius() > range)
 					continue;
 
 				CreatureObject* creatureTarget = cast<CreatureObject*>( object);
 
 				if (creatureTarget->isAttackableBy(creature))
+					continue;
+
+				if (!creatureTarget->isHealableBy(creature))
 					continue;
 
 				//zone->runlock();
@@ -376,7 +381,9 @@ public:
 			}
 		}
 
-		if (!canPerformSkill(creature, targetCreature, stimPack))
+		int mindCostNew = creature->calculateCostAdjustment(CreatureAttribute::FOCUS, mindCost);
+
+		if (!canPerformSkill(creature, targetCreature, stimPack, mindCostNew))
 			return GENERALERROR;
 
 		float rangeToCheck = 7;
@@ -384,7 +391,7 @@ public:
 		if (stimPack->isRangedStimPack())
 			rangeToCheck = (cast<RangedStimPack*>(stimPack.get()))->getRange();
 
-		if (!creature->isInRange(targetCreature, rangeToCheck + targetCreature->getTemplateRadius() + creature->getTemplateRadius()))
+		if(!checkDistance(creature, targetCreature, rangeToCheck))
 			return TOOFAR;
 
 		if (creature != targetCreature && !CollisionManager::checkLineOfSight(creature, targetCreature)) {
@@ -404,7 +411,7 @@ public:
 
 		sendHealMessage(creature, targetCreature, healthHealed, actionHealed);
 
-		creature->inflictDamage(creature, CreatureAttribute::MIND, mindCost, false);
+		creature->inflictDamage(creature, CreatureAttribute::MIND, mindCostNew, false);
 
 		Locker locker(stimPack);
 		stimPack->decreaseUseCount();
@@ -420,7 +427,7 @@ public:
 		}
 
 		if (stimPack->isRangedStimPack()) {
-			doAnimationsRange(creature, targetCreature, stimPack->getObjectID(), creature->getDistanceTo(targetCreature));
+			doAnimationsRange(creature, targetCreature, stimPack->getObjectID(), creature->getWorldPosition().distanceTo(targetCreature->getWorldPosition()));
 		} else {
 			doAnimations(creature, targetCreature);
 		}

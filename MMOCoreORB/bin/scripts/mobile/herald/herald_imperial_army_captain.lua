@@ -1,6 +1,7 @@
 herald_imperial_army_captain = Creature:new {
 	objectName = "@mob/creature_names:imperial_army_captain",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 21,
@@ -23,7 +24,7 @@ herald_imperial_army_captain = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_captain_m.iff"},

@@ -83,6 +83,7 @@ Luna<LuaSceneObject>::RegType LuaSceneObject::Register[] = {
 		{ "addPendingTask", &LuaSceneObject::addPendingTask },
 		{ "cancelPendingTask", &LuaSceneObject::cancelPendingTask },
 		{ "getChildObject", &LuaSceneObject::getChildObject },
+		{ "getContainerOwnerID", &LuaSceneObject::getContainerOwnerID },
 		{ 0, 0 }
 
 };
@@ -723,7 +724,7 @@ int LuaSceneObject::addPendingTask(lua_State* L) {
 	String play = lua_tostring(L, -2);
 	String key = lua_tostring(L, -1);
 
-	Reference<ScreenPlayTask*> task = new ScreenPlayTask(realObject, key, play);
+	Reference<ScreenPlayTask*> task = new ScreenPlayTask(realObject, key, play, "");
 
 	String name = play + ":" + key;
 
@@ -762,6 +763,13 @@ int LuaSceneObject::getChildObject(lua_State* L) {
 		obj->_setUpdated(true);
 		lua_pushlightuserdata(L, obj);
 	}
+
+	return 1;
+}
+
+int LuaSceneObject::getContainerOwnerID(lua_State *L) {
+
+	lua_pushnumber(L, realObject->getContainerPermissions()->getOwnerID());
 
 	return 1;
 }

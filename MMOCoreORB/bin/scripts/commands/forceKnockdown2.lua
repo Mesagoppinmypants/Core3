@@ -47,6 +47,7 @@ ForceKnockdown2Command = {
     damageMultiplier = 0,
 	speed = 4.0,
 	forceCost = 100,
+	visMod = 25,
 	accuracySkillMod = "forceknockdown_accuracy";
 	coneAngle = 40,
 	coneAction = true,
@@ -64,7 +65,7 @@ ForceKnockdown2Command = {
 	},
 	
 	
-	animationCRC = hashCode("force_knockdown_1_arc_particle_level_1"),
+	animation = "force_knockdown_1_arc_particle_level_1",
 
 	combatSpam = "forceknockdown2",
 	

@@ -26,7 +26,7 @@ public:
 		if (tano->isPlayerCreature()) {
 			ManagedReference<PlayerObject*> ghost = (cast<CreatureObject*>(tano))->getPlayerObject();
 
-			if (ghost != NULL && ghost->isPrivileged()) {
+			if (ghost != NULL && ghost->hasGodMode()) {
 				UnicodeString name = tano->getCustomObjectName();
 				UnicodeString tag = PermissionLevelList::instance()->getPermissionTag(ghost->getAdminLevel());
 				insertUnicode(name + " \\#ffff00[" + tag + "]\\#.");
@@ -49,9 +49,7 @@ public:
 
 		insertInt(tano->getOptionsBitmask());
 
-		int count = tano->getDisplayedUseCount();
-
-		insertInt(count); //item count
+		insertInt(tano->getUseCount()); //item count
 
 		insertInt(int(tano->getConditionDamage()));
 		insertInt(tano->getMaxCondition());

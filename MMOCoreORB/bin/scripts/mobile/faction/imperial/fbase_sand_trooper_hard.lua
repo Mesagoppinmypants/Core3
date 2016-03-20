@@ -1,6 +1,7 @@
 fbase_sand_trooper_hard = Creature:new {
 	objectName = "@mob/creature_names:fbase_sand_trooper_hard",
-	randomNameType = NAME_STORMTROOPER_TAG,
+	randomNameType = NAME_STORMTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 80,
@@ -23,7 +24,7 @@ fbase_sand_trooper_hard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 	scale = 1.05,
 

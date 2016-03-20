@@ -1,6 +1,7 @@
 droid_corps_junior_technician = Creature:new {
 	objectName = "@mob/creature_names:imperial_probot_handler",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 10,
@@ -23,7 +24,7 @@ droid_corps_junior_technician = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_brigade_technician_human_male_01.iff"},

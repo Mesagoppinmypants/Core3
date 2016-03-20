@@ -1,6 +1,7 @@
 fbase_rebel_first_lieutenant = Creature:new {
 	objectName = "@mob/creature_names:fbase_rebel_first_lieutenant",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 30,
@@ -23,7 +24,7 @@ fbase_rebel_first_lieutenant = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

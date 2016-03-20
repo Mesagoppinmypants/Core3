@@ -1,6 +1,7 @@
 rebel_lance_corporal = Creature:new {
 	objectName = "@mob/creature_names:rebel_lance_corporal",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 15,
@@ -23,7 +24,7 @@ rebel_lance_corporal = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

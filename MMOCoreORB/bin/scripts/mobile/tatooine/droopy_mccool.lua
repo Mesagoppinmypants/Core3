@@ -22,12 +22,13 @@ droopy_mccool = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/droopy_mccool.iff"},
 	lootGroups = {},
 	weapons = {},
+	outfit = "band_flute_droopy_outfit",
 	conversationTemplate = "",
 	attacks = {
 	}

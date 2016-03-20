@@ -34,6 +34,8 @@ public:
 		if (creature == targetObject || targetObject == NULL)
 			return GENERALERROR;
 
+		//TODO: play coup_de_grace combat animations - ranged_coup_de_grace, melee_coup_de_grace, unarmed_coup_de_grace
+
 		if (targetObject->isPlayerCreature()) {
 			CreatureObject* player = cast<CreatureObject*>( targetObject.get());
 
@@ -44,12 +46,12 @@ public:
 				return GENERALERROR;
 			}
 
-			if (!player->isIncapacitated()){
+			if (!player->isIncapacitated() || player->isFeigningDeath()){
 				creature->sendSystemMessage("@error_message:target_not_incapacitated");
 				return GENERALERROR;
 			}
 
-			if (player->isAttackableBy(creature) && player->isInRange(creature, 5)) {
+			if (player->isAttackableBy(creature) && checkDistance(player, creature, 5)) {
 				PlayerManager* playerManager = server->getPlayerManager();
 
 				playerManager->killPlayer(creature, player, 1);
@@ -69,7 +71,7 @@ public:
 				return GENERALERROR;
 			}
 
-			if (pet->isAttackableBy(creature) && pet->isInRange(creature, 5)) {
+			if (pet->isAttackableBy(creature) && checkDistance(pet, creature, 5)) {
 				PetManager* petManager = server->getZoneServer()->getPetManager();
 
 				petManager->killPet(creature, pet);

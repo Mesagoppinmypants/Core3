@@ -22,14 +22,15 @@ r2_crafted = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/creature/npc/droid/crafted/r2_droid.iff"
-	},		
+	},
 	lootGroups = {},
-	weapons = {},
+	defaultAttack = "attack",
+	defaultWeapon = "object/weapon/ranged/droid/droid_astromech_ranged.iff",
 	conversationTemplate = "",
 }
 

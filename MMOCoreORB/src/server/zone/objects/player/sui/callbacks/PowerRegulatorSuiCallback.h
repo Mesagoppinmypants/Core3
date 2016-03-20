@@ -22,28 +22,30 @@ public:
 	}
 
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (cancelPressed || !suiBox->isListBox() || player == NULL || args->size() <= 0 )
 			return;
 
-		if(player->isDead() || player->isIncapacitated())
+		if (player->isDead() || player->isIncapacitated())
 			return;
 
 		ManagedReference<SceneObject*> obj = suiBox->getUsingObject();
 
-		if(obj == NULL || !obj->isTangibleObject())
+		if (obj == NULL || !obj->isTangibleObject())
 			return;
 
 		ManagedReference<TangibleObject*> powerRegulator = cast<TangibleObject*>(obj.get());
 
 		GCWManager* gcwMan = player->getZone()->getGCWManager();
 
-		if(gcwMan==NULL)
+		if (gcwMan == NULL)
 			return;
 
 		int index = Integer::valueOf(args->get(0).toString());
 
-		gcwMan->handlePowerRegulatorSwitch(player,powerRegulator,index);
+		gcwMan->handlePowerRegulatorSwitch(player, powerRegulator, index);
 	}
 };
 

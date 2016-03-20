@@ -162,7 +162,8 @@ void VendorManager::handleDisplayStatus(CreatureObject* player, TangibleObject* 
 	else
 		statusBox->addMenuItem("@player_structure:vendor_search_disabled");
 
-	statusBox->addMenuItem("\\#32CD32Vendor Operating Normally\\#.");
+	if (!vendorData->isOnStrike() && !vendorData->isEmpty())
+		statusBox->addMenuItem("\\#32CD32Vendor Operating Normally\\#.");
 
 	player->getPlayerObject()->addSuiBox(statusBox);
 	player->sendMessage(statusBox->generateMessage());
@@ -238,10 +239,6 @@ void VendorManager::promptRenameVendorTo(CreatureObject* player, TangibleObject*
 
 	player->sendMessage(input->generateMessage());
 	player->getPlayerObject()->addSuiBox(input);
-}
-
-void VendorManager::handleDestroyCallback(CreatureObject* player, TangibleObject* vendor) {
-	destroyVendor(vendor);
 }
 
 void VendorManager::destroyVendor(SceneObject* vendor) {

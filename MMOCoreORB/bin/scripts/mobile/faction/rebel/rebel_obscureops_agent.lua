@@ -1,6 +1,7 @@
 rebel_obscureops_agent = Creature:new {
 	objectName = "@mob/creature_names:assassin_mission_recruiter_rebel",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 16,
@@ -23,7 +24,7 @@ rebel_obscureops_agent = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

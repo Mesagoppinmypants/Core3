@@ -49,7 +49,8 @@ CreatureAreaComboCommand = {
 	poolsToDamage = RANDOM_ATTRIBUTE,
 
 	combatSpam = "attack",
-	animationCRC = 0,
+	animation = "creature_attack_special_2", 
+	animType = GENERATE_INTENSITY,
 
 	healthCostMultiplier = 0,
 	actionCostMultiplier = 0,

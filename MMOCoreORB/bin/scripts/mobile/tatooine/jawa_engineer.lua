@@ -1,6 +1,7 @@
 jawa_engineer = Creature:new {
 	objectName = "@mob/creature_names:jawa_engineer",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jawa",
 	faction = "jawa",
 	level = 10,
@@ -23,7 +24,7 @@ jawa_engineer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/jawa_male.iff"},

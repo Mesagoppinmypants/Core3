@@ -1,6 +1,7 @@
 valarian_thief = Creature:new {
 	objectName = "@mob/creature_names:valarian_thief",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "valarian",
 	faction = "valarian",
 	level = 10,
@@ -23,7 +24,7 @@ valarian_thief = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_valarian_thief.iff"},

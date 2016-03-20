@@ -47,12 +47,13 @@ AttackCommand = {
 	speedMultiplier = 1,
 
 	combatSpam = "attack",
-	animationCRC = 0,
+	animation = "",
 
 	healthCostMultiplier = 0,
 	actionCostMultiplier = 0,
 	mindCostMultiplier = 0,
 	forceCostMultiplier = 0,
+	visMod = 25,
 
 	range = -1,
 	

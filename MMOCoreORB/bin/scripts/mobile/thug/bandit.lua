@@ -1,6 +1,7 @@
 bandit = Creature:new {
 	objectName = "@mob/creature_names:bandit",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "bandit",
 	faction = "bandit",
 	level = 8,
@@ -23,7 +24,7 @@ bandit = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_plasma_bandit.iff"},

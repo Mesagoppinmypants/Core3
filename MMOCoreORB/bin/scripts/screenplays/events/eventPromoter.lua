@@ -36,7 +36,7 @@ end
 
 function eventPromoterScreenplay:spawnMobiles()
 	local mobiles = self.promoterLocs
-	for i = 1, table.getn(mobiles), 1 do
+	for i = 1, #mobiles, 1 do
 		if isZoneEnabled(mobiles[i].planet) then
 			spawnMobile(mobiles[i].planet, "event_promoter", 1, mobiles[i].x, mobiles[i].z, mobiles[i].y, mobiles[i].angle, mobiles[i].cell)
 		end
@@ -53,7 +53,7 @@ function eventPromoterScreenplay:sendSaleSui(pNpc, pPlayer, screenID)
 	local perkData = self:getPerkTable(screenID)
 
 	local options = { }
-	for i = 1, table.getn(perkData), 1 do
+	for i = 1, #perkData, 1 do
 		table.insert(options, getStringId(perkData[i].displayName) .. " (Cost: " .. perkData[i].cost .. ")")
 	end
 
@@ -84,7 +84,9 @@ function eventPromoterScreenplay:getPerkTable(category)
 	end
 end
 
-function eventPromoterScreenplay:handleSuiPurchase(pPlayer, pSui, cancelPressed, arg0)
+function eventPromoterScreenplay:handleSuiPurchase(pPlayer, pSui, eventIndex, arg0)
+	local cancelPressed = (eventIndex == 1)
+
 	if (pPlayer == nil) then
 		return
 	end
@@ -118,9 +120,14 @@ function eventPromoterScreenplay:giveItem(pPlayer, deedData)
 		elseif (SceneObject(pInventory):isContainerFullRecursive()) then
 			player:sendSystemMessage("@event_perk:promoter_full_inv")
 			return
-		elseif (playerObject:getEventPerkCount() >= 5) then
-			player:sendSystemMessage("@event_perk:pro_too_many_perks")
-			return
+		elseif (not playerObject:isPrivileged()) then
+			if (playerObject:hasEventPerk("shuttle_beacon")) then
+				player:sendSystemMessage("@event_perk:only_one_shuttle_beacon")
+				return
+			elseif (playerObject:getEventPerkCount() >= 5) then
+				player:sendSystemMessage("@event_perk:pro_too_many_perks")
+				return
+			end
 		end
 
 		player:subtractCashCredits(deedData.cost)

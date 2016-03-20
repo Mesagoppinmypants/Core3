@@ -47,6 +47,7 @@ ForceKnockdown1Command = {
 	damageMultiplier = 0,
 	speed = 4.0,
 	forceCost = 75,
+	visMod = 25,
 	accuracySkillMod = "forceknockdown_accuracy";
 
 	stateEffects = {
@@ -61,7 +62,7 @@ ForceKnockdown1Command = {
 	  )
 	},
 
-	animationCRC = hashCode("force_knockdown_1_particle_level_1"),
+	animation = "force_knockdown_1_particle_level_1",
 
 	combatSpam = "forceknockdown1",
 

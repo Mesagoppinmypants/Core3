@@ -24,12 +24,6 @@ public:
 		if (!checkInvalidLocomotions(creature))
 			return INVALIDLOCOMOTION;
 
-		ManagedReference<PlayerObject*> ghost = creature->getPlayerObject();
-
-		//Check privileges
-		if (ghost == NULL || !ghost->isPrivileged())
-			return INSUFFICIENTPERMISSION;
-
 		//Explain syntax
 		if (arguments.isEmpty() && target == 0) {
 			creature->sendSystemMessage("Syntax: /killPlayer [player name] [-area [range]] -wounds [<health> [action] [mind]]");
@@ -289,7 +283,7 @@ public:
 				} else if (targetPlayer->isPet()) {
 					Locker locker(targetPlayer, creature);
 
-					targetPlayer->notifyObjectDestructionObservers(creature, 0);
+					targetPlayer->notifyObjectDestructionObservers(creature, 0, false);
 				}
 			}
 			else {

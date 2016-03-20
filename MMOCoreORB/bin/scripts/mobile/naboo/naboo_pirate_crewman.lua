@@ -1,6 +1,7 @@
 naboo_pirate_crewman = Creature:new {
 	objectName = "",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a Pirate Crewman",
 	socialGroup = "naboo_pirate",
 	faction = "naboo_pirate",
@@ -24,7 +25,7 @@ naboo_pirate_crewman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

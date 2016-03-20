@@ -1,6 +1,7 @@
 freelance_pilot = Creature:new {
 	objectName = "@npc_spawner_n:freelance_pilot",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
 	faction = "townsperson",
 	level = 10,
@@ -23,7 +24,7 @@ freelance_pilot = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_privateer_broker_retired_pilot.iff"},

@@ -1,6 +1,7 @@
 desert_swooper_leader = Creature:new {
 	objectName = "@mob/creature_names:desert_swooper_leader",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "swoop",
 	faction = "swoop",
 	level = 7,
@@ -23,7 +24,7 @@ desert_swooper_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_desert_swooper_leader.iff"},

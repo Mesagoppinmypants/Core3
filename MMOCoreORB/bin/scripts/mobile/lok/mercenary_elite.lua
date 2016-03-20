@@ -1,6 +1,7 @@
 mercenary_elite = Creature:new {
 	objectName = "@mob/creature_names:mercenary_elite",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "lok_mercenaries",
 	faction = "lok_mercenaries",
 	level = 40,
@@ -23,7 +24,7 @@ mercenary_elite = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

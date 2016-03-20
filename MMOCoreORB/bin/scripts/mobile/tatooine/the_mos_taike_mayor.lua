@@ -1,6 +1,7 @@
 the_mos_taike_mayor = Creature:new {
 	objectName = "@mob/creature_names:mos_taike_mayor",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
 	faction = "townsperson",
 	level = 21,
@@ -23,7 +24,7 @@ the_mos_taike_mayor = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_mayor.iff"},

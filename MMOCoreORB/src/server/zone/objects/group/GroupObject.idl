@@ -56,6 +56,9 @@ class GroupObject extends SceneObject {
 	@dirty
 	public native void broadcastMessage(CreatureObject player, BaseMessage msg, boolean sendSelf = false);
 
+	@dirty
+	public native void updatePvPStatusNearCreature(CreatureObject creature);
+
 	/*public native void sendSystemMessage(SceneObject player, final string message, boolean sendToSelf = false);
 	public native void sendSystemMessage(SceneObject player, final string file, final string str, unsigned long targetid = 0, boolean sendToSelf = false);
 	public native void sendSystemMessage(SceneObject player, final string file, final string str, StfParameter param, boolean sendToSelf = false);
@@ -68,7 +71,7 @@ class GroupObject extends SceneObject {
 	@local
 	@dirty
 	public native void sendSystemMessage(@dereferenced StringIdChatParameter param, CreatureObject excluded);
-	
+
 	public native void addMember(SceneObject newMember);
 	@preLocked
 	public native void removeMember(SceneObject member);
@@ -84,6 +87,7 @@ class GroupObject extends SceneObject {
 
 	@preLocked
 	public native void startChatRoom();
+
 	@preLocked
 	public native void destroyChatRoom();
 
@@ -100,7 +104,7 @@ class GroupObject extends SceneObject {
 	}
 
 	@read
-	public ChatRoom getGroupChannel() {
+	public ChatRoom getChatRoom() {
 		return chatRoom;
 	}
 

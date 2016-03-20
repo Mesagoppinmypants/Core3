@@ -1,6 +1,7 @@
 crackdown_command_security_guard = Creature:new {
 	objectName = "@mob/creature_names:crackdown_command_security_guard",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 1,
@@ -23,7 +24,7 @@ crackdown_command_security_guard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

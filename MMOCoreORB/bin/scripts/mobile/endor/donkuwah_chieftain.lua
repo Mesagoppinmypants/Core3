@@ -1,6 +1,7 @@
 donkuwah_chieftain = Creature:new {
 	objectName = "@mob/creature_names:donkuwah_chieftan",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "donkuwah_tribe",
 	faction = "donkuwah_tribe",
 	level = 58,
@@ -23,7 +24,7 @@ donkuwah_chieftain = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dulok_male.iff"},

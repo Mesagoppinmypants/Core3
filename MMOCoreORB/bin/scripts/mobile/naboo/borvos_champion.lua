@@ -1,6 +1,7 @@
 borvos_champion = Creature:new {
 	objectName = "@mob/creature_names:borvos_champion",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "borvo",
 	faction = "borvo",
 	level = 21,
@@ -23,7 +24,7 @@ borvos_champion = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_borvos_champion.iff"},

@@ -37,7 +37,8 @@ public:
 		STUN = 1,
 		DIZZY = 2,
 		BLIND = 4,
-		INTIMIDATE = 8
+		INTIMIDATE = 8,
+		FEIGNDEATH = 16
 	};
 
 	enum {
@@ -234,6 +235,7 @@ public:
 					break;
 				case BATTLE_FATIGUE:
 					message.setTO("@jedi_spam:battle_fatigue");
+					break;
 				default:
 					return false;
 			}

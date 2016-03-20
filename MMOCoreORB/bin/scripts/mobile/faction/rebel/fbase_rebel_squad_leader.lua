@@ -1,6 +1,7 @@
 fbase_rebel_squad_leader = Creature:new {
 	objectName = "@mob/creature_names:fbase_rebel_squad_leader",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 42,
@@ -23,7 +24,7 @@ fbase_rebel_squad_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

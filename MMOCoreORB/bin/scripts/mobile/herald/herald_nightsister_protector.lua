@@ -1,6 +1,7 @@
 herald_nightsister_protector = Creature:new {
 	objectName = "@mob/creature_names:nightsister_protector",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "nightsister",
 	faction = "nightsister",
 	level = 131,
@@ -23,7 +24,7 @@ herald_nightsister_protector = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_nightsister_protector.iff"},

@@ -1,6 +1,7 @@
 rogue_marauder = Creature:new {
 	objectName = "",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a Rogue Marauder",
 	socialGroup = "self",
 	faction = "",
@@ -24,7 +25,7 @@ rogue_marauder = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 	scale = 1.35,
 
@@ -38,9 +39,9 @@ rogue_marauder = Creature:new {
 	lootGroups = {
 		{
 			groups = {
-				{group = "pistols", chance = 1000000},
-				{group = "carbines", chance = 1000000},
-				{group = "rifles", chance = 1000000},
+				{group = "pistols", chance = 750000},
+				{group = "carbines", chance = 750000},
+				{group = "rifles", chance = 750000},
 				{group = "melee_baton", chance = 1000000},
 				{group = "loot_kit_parts", chance = 1000000},
 				{group = "armor_attachments", chance = 500000},
@@ -50,6 +51,7 @@ rogue_marauder = Creature:new {
 				{group = "mabari_armor", chance = 800000},
 				{group = "tantel_armor", chance = 800000},
 				{group = "ubese_armor", chance = 800000},
+				{group = "color_crystals", chance = 750000},
 			}
 		}
 	},

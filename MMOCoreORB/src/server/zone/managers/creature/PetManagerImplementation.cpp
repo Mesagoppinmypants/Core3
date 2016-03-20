@@ -8,6 +8,7 @@
 #include "server/zone/managers/templates/TemplateManager.h"
 #include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/creature/ai/DroidObject.h"
+#include "server/zone/objects/creature/ai/Creature.h"
 #include "server/zone/objects/creature/events/PetIncapacitationRecoverTask.h"
 #include "server/zone/objects/intangible/tasks/PetControlDeviceStoreObjectTask.h"
 #include "server/zone/objects/intangible/PetControlDevice.h"
@@ -206,13 +207,13 @@ void PetManagerImplementation::handleChat(CreatureObject* speaker, AiAgent* pet,
 		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petstay"), "");
 	}
 	else if( isTrainedCommand( pcd, FOLLOW, message ) ){
-		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petfollow"), "", true);
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petfollow"), String::valueOf(speaker->getObjectID()), true);
 	}
 	else if( isTrainedCommand( pcd, STORE, message ) ){
 		enqueueOwnerOnlyPetCommand(speaker, pet, STRING_HASHCODE("petstore"), "");
 	}
 	else if( isTrainedCommand( pcd, ATTACK, message ) ){
-		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petattack"), "");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petattack"), String::valueOf(speaker->getObjectID()));
 	}
 	else if( isTrainedCommand( pcd, GUARD, message ) ){
 		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petguard"), "", true);
@@ -221,7 +222,7 @@ void PetManagerImplementation::handleChat(CreatureObject* speaker, AiAgent* pet,
 		enqueueOwnerOnlyPetCommand(speaker, pet, STRING_HASHCODE("petfriend"), "");
 	}
 	else if( isTrainedCommand( pcd, FOLLOWOTHER, message ) ){
-		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petfollow"), "");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petfollow"), String::valueOf(speaker->getObjectID()));
 	}
 	else if( isTrainedCommand( pcd, TRICK1, message ) ){
 		enqueuePetCommand(speaker, pet, STRING_HASHCODE("pettrick"), "1", true);
@@ -245,10 +246,10 @@ void PetManagerImplementation::handleChat(CreatureObject* speaker, AiAgent* pet,
 		speaker->sendSystemMessage("FORMATION2 pet command is not yet implemented.");
 	}
 	else if( isTrainedCommand( pcd, SPECIAL_ATTACK1, message ) ){
-		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petspecialattack"), "1");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petspecialattack"), "1 " + String::valueOf(speaker->getObjectID()));
 	}
 	else if( isTrainedCommand( pcd, SPECIAL_ATTACK2, message ) ){
-		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petspecialattack"), "2");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petspecialattack"), "2 " + String::valueOf(speaker->getObjectID()));
 	}
 	else if( isTrainedCommand( pcd, RANGED_ATTACK, message ) ){
 		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petrangedattack"), "", true);
@@ -333,7 +334,7 @@ bool PetManagerImplementation::handleCommandTraining(CreatureObject* speaker, Ai
 			message << stf << ":confused";
 			StringIdChatParameter chat;
 			chat.setStringId(message.toString());
-			pet->getZoneServer()->getChatManager()->broadcastMessage(pet,chat,0,0,0);
+			pet->getZoneServer()->getChatManager()->broadcastChatMessage(pet,chat,0,0,0);
 		} else {
 			pet->showFlyText("npc_reaction/flytext","confused", 204, 0, 0);  // "?"
 		}
@@ -351,9 +352,14 @@ bool PetManagerImplementation::handleCommandTraining(CreatureObject* speaker, Ai
 
 		if (!alreadyTrained) {
 			bool success = false;
+			Creature* petCreature = cast<Creature*>(pet);
+
+			if (petCreature == NULL)
+				return false;
 
 			int skill = speaker->getSkillMod("tame_level");
-			int roll = System::random(skill + 30);
+			int level = petCreature->getAdultLevel();
+			int roll = System::random(skill + level);
 
 			if (skill > roll)
 				success = true;
@@ -393,7 +399,7 @@ bool PetManagerImplementation::handleCommandTraining(CreatureObject* speaker, Ai
 			message << stf << ":end_convo";
 			StringIdChatParameter chat;
 			chat.setStringId(message.toString());
-			pet->getZoneServer()->getChatManager()->broadcastMessage(pet,chat,0,0,0);
+			pet->getZoneServer()->getChatManager()->broadcastChatMessage(pet,chat,0,0,0);
 		} else {
 			pet->showFlyText("npc_reaction/flytext","threaten", 204, 0, 0);  // "?"
 			speaker->sendSystemMessage("@pet/pet_menu:pet_learn"); // You teach your pet a new command.
@@ -465,6 +471,7 @@ void PetManagerImplementation::enqueuePetCommand(CreatureObject* player, AiAgent
 		targetID = player->getObjectID();
 	else
 		targetID = player->getTargetID();
+
 	//CreatureObject* pet, uint32 command, const String& args, uint64 target, int priority = -1
 	EnqueuePetCommand* enqueueCommand = new EnqueuePetCommand(pet, command, args, targetID, 1);
 	enqueueCommand->execute();
@@ -482,10 +489,9 @@ void PetManagerImplementation::enqueueOwnerOnlyPetCommand(CreatureObject* player
 	//CreatureObject* pet, uint32 command, const String& args, uint64 target, int priority = -1
 	EnqueuePetCommand* enqueueCommand = new EnqueuePetCommand(pet, command, args, player->getTargetID(), 1);
 	enqueueCommand->execute();
-
 }
 
-int PetManagerImplementation::notifyDestruction(TangibleObject* destructor, AiAgent* destructedObject, int condition) {
+int PetManagerImplementation::notifyDestruction(TangibleObject* destructor, AiAgent* destructedObject, int condition, bool isCombatAction) {
 	if (!destructedObject->isPet() || destructedObject->isDead() || destructedObject->isIncapacitated())
 		return 1;
 
@@ -505,7 +511,7 @@ int PetManagerImplementation::notifyDestruction(TangibleObject* destructor, AiAg
 
 	if (!destructor->isKiller() && petControlDevice != NULL && petControlDevice->getPetType() == CREATUREPET) {
 		destructedObject->setCurrentSpeed(0);
-		destructedObject->setPosture(CreaturePosture::INCAPACITATED, true);
+		destructedObject->setPosture(CreaturePosture::INCAPACITATED, false);
 		destructedObject->updateLocomotion();
 
 		uint32 incapTime = calculateIncapacitationTimer(destructedObject, condition);
@@ -528,7 +534,7 @@ int PetManagerImplementation::notifyDestruction(TangibleObject* destructor, AiAg
 		destructedObject->addPendingTask("incapacitationRecovery", task, incapTime * 1000);
 
 	} else {
-		killPet(destructor, destructedObject);
+		killPet(destructor, destructedObject, isCombatAction);
 	}
 
 	return 0;
@@ -549,7 +555,7 @@ uint32 PetManagerImplementation::calculateIncapacitationTimer(AiAgent* pet, int 
 	return recoveryTime;
 }
 
-void PetManagerImplementation::killPet(TangibleObject* attacker, AiAgent* pet) {
+void PetManagerImplementation::killPet(TangibleObject* attacker, AiAgent* pet, bool isCombatAction) {
 	StringIdChatParameter stringId;
 
 	if (attacker->isPlayerCreature()) {
@@ -560,10 +566,8 @@ void PetManagerImplementation::killPet(TangibleObject* attacker, AiAgent* pet) {
 
 	pet->clearDots();
 
-	pet->setCurrentSpeed(0);
 	pet->clearCombatState(true);
-	pet->setPosture(CreaturePosture::DEAD, true);
-	pet->updateLocomotion();
+	pet->setPosture(CreaturePosture::DEAD, !isCombatAction, !isCombatAction);
 	pet->setOblivious();
 	pet->storeFollowObject();
 

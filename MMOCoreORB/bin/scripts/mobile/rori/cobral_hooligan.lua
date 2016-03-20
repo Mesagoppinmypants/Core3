@@ -1,6 +1,7 @@
 cobral_hooligan = Creature:new {
 	objectName = "",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a Neo-Cobral Hooligan",
 	socialGroup = "cobral",
 	faction = "cobral",
@@ -24,7 +25,7 @@ cobral_hooligan = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

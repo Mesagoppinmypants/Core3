@@ -48,6 +48,7 @@ ForceThrow1Command = {
 	maxDamage = 500,
 	speed = 4.0,
 	forceCost = 28,
+	visMod = 25,
 	accuracySkillMod = "forcethrow_accuracy";
 
 	stateEffects = {
@@ -63,7 +64,8 @@ ForceThrow1Command = {
 	},
 	
 		
-	animationCRC = hashCode("force_throw_1_particle_level_1_light"),
+	animation = "force_throw_1_particle_level_1", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "forcethrow1",
 	

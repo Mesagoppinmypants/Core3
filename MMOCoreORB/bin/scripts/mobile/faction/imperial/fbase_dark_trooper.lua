@@ -1,6 +1,7 @@
 fbase_dark_trooper = Creature:new {
 	objectName = "@mob/creature_names:fbase_dark_trooper",
-	randomNameType = NAME_DARKTROOPER_TAG,
+	randomNameType = NAME_DARKTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 50,
@@ -23,7 +24,7 @@ fbase_dark_trooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE + OVERT,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 	scale = 1.5,
 

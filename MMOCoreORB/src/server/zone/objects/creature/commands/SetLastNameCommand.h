@@ -38,9 +38,19 @@ public:
 
 		CreatureObject* targetCreature = targetObj.castTo<CreatureObject*>();
 
+		String oldFirstName = targetCreature->getFirstName();
+		String oldLastName = targetCreature->getLastName();
+
+		String newFullName;
+		if (newName.isEmpty()) {
+			newFullName = oldFirstName;
+		} else {
+			newFullName = oldFirstName + " " + newName;
+		}
+
 		NameManager* nameManager = server->getNameManager();
 
-		int result = nameManager->validateLastName(newName, targetCreature->getSpecies());
+		int result = nameManager->validateName(newFullName, targetCreature->getSpecies());
 
 		switch (result) {
 		case NameManagerResult::ACCEPTED:
@@ -71,16 +81,6 @@ public:
 			break;
 		}
 
-		String oldFirstName = targetCreature->getFirstName();
-		String oldLastName = targetCreature->getLastName();
-
-		String newFullName;
-		if (newName.isEmpty()) {
-			newFullName = oldFirstName;
-		} else {
-			newFullName = oldFirstName + " " + newName;
-		}
-
 		targetCreature->setCustomObjectName(newFullName, true);
 
 		String creatureLastName = targetCreature->getLastName();
@@ -109,7 +109,7 @@ public:
 		PlayerObject* targetGhost = targetCreature->getPlayerObject();
 		ManagedReference<PlayerManager*> playerManager = server->getPlayerManager();
 
-		if (targetGhost != NULL && targetGhost->isPrivileged() && playerManager != NULL) {
+		if (targetGhost != NULL && targetGhost->hasGodMode() && playerManager != NULL) {
 			playerManager->updatePermissionName(targetCreature, targetGhost->getAdminLevel());
 		}
 

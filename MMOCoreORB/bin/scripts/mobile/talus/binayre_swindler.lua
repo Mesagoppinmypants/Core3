@@ -1,6 +1,7 @@
 binayre_swindler = Creature:new {
 	objectName = "@mob/creature_names:binayre_swindler",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "binayre",
 	faction = "binayre",
 	level = 20,
@@ -23,7 +24,7 @@ binayre_swindler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -32,10 +33,11 @@ binayre_swindler = Creature:new {
 	lootGroups = {
 		{
 			groups = {
-				{group = "junk", chance = 2450000},
+				{group = "junk", chance = 2000000},
 				{group = "tailor_components", chance = 1500000},
 				{group = "loot_kit_parts", chance = 1500000},
-				{group = "binayre_common", chance = 4550000}
+				{group = "binayre_common", chance = 4550000},
+				{group = "color_crystals", chance = 450000}
 			}
 		}
 	},

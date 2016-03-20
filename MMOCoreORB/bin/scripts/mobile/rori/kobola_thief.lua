@@ -1,6 +1,7 @@
 kobola_thief = Creature:new {
 	objectName = "@mob/creature_names:kobola_thief",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "kobola",
 	faction = "kobola",
 	level = 9,
@@ -23,7 +24,7 @@ kobola_thief = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

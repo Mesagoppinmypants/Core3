@@ -1,6 +1,7 @@
 crackdown_imperial_warrant_officer_ii = Creature:new {
 	objectName = "@mob/creature_names:crackdown_imperial_warrant_officer_ii",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 1,
@@ -23,7 +24,7 @@ crackdown_imperial_warrant_officer_ii = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_officer_m.iff"},

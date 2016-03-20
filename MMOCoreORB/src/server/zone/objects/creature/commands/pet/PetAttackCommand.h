@@ -47,6 +47,36 @@ public:
 			return INVALIDTARGET;
 		}
 
+		StringTokenizer tokenizer(arguments.toString());
+
+		if (!tokenizer.hasMoreTokens())
+			return GENERALERROR;
+
+		uint64 playerID = tokenizer.getLongToken();
+
+		Reference<CreatureObject*> player = server->getZoneServer()->getObject(playerID, true).castTo<CreatureObject*>();
+
+		if (player == NULL)
+			return GENERALERROR;
+
+		if (!CollisionManager::checkLineOfSight(player, targetObject)) {
+			pet->showFlyText("npc_reaction/flytext","confused", 204, 0, 0);  // "?!!?!?!"
+			return INVALIDTARGET;
+		}
+
+		Reference<CellObject*> targetCell = targetObject->getParent().castTo<CellObject*>();
+
+		if (targetCell != NULL) {
+			ContainerPermissions* perms = targetCell->getContainerPermissions();
+
+			if (!perms->hasInheritPermissionsFromParent()) {
+				if (!targetCell->checkContainerPermission(player, ContainerPermissions::WALKIN)) {
+					pet->showFlyText("npc_reaction/flytext","confused", 204, 0, 0);  // "?!!?!?!"
+					return INVALIDTARGET;
+				}
+			}
+		}
+
 		ManagedReference<TangibleObject*> targetTano = targetObject.castTo<TangibleObject*>();
 
 		Locker clocker(controlDevice, creature);

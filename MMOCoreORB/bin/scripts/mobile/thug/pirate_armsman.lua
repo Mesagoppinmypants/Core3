@@ -1,6 +1,7 @@
 pirate_armsman = Creature:new {
 	objectName = "@mob/creature_names:naboo_pirate_armsman",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "pirate",
 	faction = "",
 	level = 13,
@@ -23,7 +24,7 @@ pirate_armsman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

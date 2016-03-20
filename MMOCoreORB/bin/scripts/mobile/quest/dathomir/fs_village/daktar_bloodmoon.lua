@@ -9,7 +9,7 @@ daktar_bloodmoon = Creature:new {
 	baseXp = 10921,
 	baseHAM = 24500,
 	baseHAMmax = 30000,
-	armor = 0,
+	armor = 2,
 	resists = {80,80,80,80,80,80,80,80,-1},
 	meatType = "",
 	meatAmount = 0,
@@ -22,7 +22,7 @@ daktar_bloodmoon = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_fs_village_enemy_daktar.iff"},

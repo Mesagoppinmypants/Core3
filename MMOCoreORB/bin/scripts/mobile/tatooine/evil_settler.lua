@@ -1,6 +1,7 @@
 evil_settler = Creature:new {
 	objectName = "@mob/creature_names:evil_settler",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "evil",
 	faction = "",
 	level = 5,
@@ -23,7 +24,7 @@ evil_settler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_evil_settler.iff"},

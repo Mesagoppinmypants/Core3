@@ -1,6 +1,7 @@
 bh_feral_force_wielder = Creature:new {
 	objectName = "@mob/creature_names:feral_force_wilder",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "force",
 	faction = "",
 	level = 115,
@@ -23,7 +24,7 @@ bh_feral_force_wielder = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_feral_force_wielder.iff"},

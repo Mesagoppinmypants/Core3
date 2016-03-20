@@ -61,6 +61,8 @@ Luna<LuaCreatureObject>::RegType LuaCreatureObject::Register[] = {
 		{ "isInRangeWithObject", &LuaSceneObject::isInRangeWithObject },
 		{ "getDistanceTo", &LuaSceneObject::getDistanceTo },
 		{ "getServerObjectCRC", &LuaSceneObject::getServerObjectCRC },
+		{ "isFeigningDeath", &LuaCreatureObject::isFeigningDeath},
+		{ "hasState", &LuaCreatureObject::hasState},
 		{ "setState", &LuaCreatureObject::setState},
 		{ "setLootRights", &LuaCreatureObject::setLootRights},
 		{ "getPosture", &LuaCreatureObject::getPosture},
@@ -93,6 +95,8 @@ Luna<LuaCreatureObject>::RegType LuaCreatureObject::Register[] = {
 		{ "getGroupSize", &LuaCreatureObject::getGroupSize},
 		{ "getGroupMember", &LuaCreatureObject::getGroupMember},
 		{ "setOptionsBitmask", &LuaCreatureObject::setOptionsBitmask},
+		{ "setOptionBit", &LuaCreatureObject::setOptionBit},
+		{ "clearOptionBit", &LuaCreatureObject::clearOptionBit},
 		{ "setPvpStatusBitmask", &LuaTangibleObject::setPvpStatusBitmask},
 		{ "setPvpStatusBit", &LuaTangibleObject::setPvpStatusBit},
 		{ "isChangingFactionStatus", &LuaTangibleObject::isChangingFactionStatus },
@@ -117,6 +121,11 @@ Luna<LuaCreatureObject>::RegType LuaCreatureObject::Register[] = {
 		{ "getCurrentSpeed", &LuaCreatureObject::getCurrentSpeed },
 		{ "isInvisible", &LuaTangibleObject::isInvisible },
 		{ "isInCombat", &LuaCreatureObject::isInCombat },
+		{ "healDamage", &LuaCreatureObject::healDamage },
+		{ "getGroupID", &LuaCreatureObject::getGroupID },
+		{ "enhanceCharacter", &LuaCreatureObject::enhanceCharacter },
+		{ "setWounds", &LuaCreatureObject::setWounds },
+		{ "setShockWounds", &LuaCreatureObject::setShockWounds },
 		{ 0, 0 }
 };
 
@@ -169,6 +178,18 @@ int LuaCreatureObject::addDotState(lua_State* L) {
 	realObject->addDotState(attacker, dotType, objectID, strength, type, duration, potency, defense);
 
 	return 0;
+}
+
+int LuaCreatureObject::isFeigningDeath(lua_State* L) {
+	lua_pushnumber(L, realObject->isFeigningDeath());
+	return 1;
+}
+
+int LuaCreatureObject::hasState(lua_State* L) {
+	uint32 state = (uint32) lua_tonumber(L, -1);
+
+	lua_pushnumber(L, realObject->hasState(state));
+	return 1;
 }
 
 int LuaCreatureObject::setState(lua_State* L) {
@@ -702,6 +723,26 @@ int LuaCreatureObject::setOptionsBitmask(lua_State* L) {
 	return 0;
 }
 
+int LuaCreatureObject::setOptionBit(lua_State* L) {
+	uint32 bit = lua_tointeger(L, -1);
+
+	Locker locker(realObject);
+
+	realObject->setOptionBit(bit, true);
+
+	return 0;
+}
+
+int LuaCreatureObject::clearOptionBit(lua_State* L) {
+	uint32 bit = lua_tointeger(L, -1);
+
+	Locker locker(realObject);
+
+	realObject->clearOptionBit(bit, true);
+
+	return 0;
+}
+
 int LuaCreatureObject::getGroupMember(lua_State* L) {
 	int i = lua_tonumber(L, -1);
 
@@ -794,7 +835,7 @@ int LuaCreatureObject::isDancing(lua_State* L) {
 int LuaCreatureObject::isPlayingMusic(lua_State* L) {
 	bool retVal = realObject->isPlayingMusic();
 
-	lua_pushboolean(L, retVal);
+	lua_pushboolean(L,  retVal);
 
 	return 1;
 }
@@ -860,11 +901,12 @@ int LuaCreatureObject::isCombatDroidPet(lua_State* L) {
 }
 
 int LuaCreatureObject::awardExperience(lua_State* L) {
-	String experienceType = lua_tostring(L, -2);
-	int experienceAmount = lua_tointeger(L, -1);
+	String experienceType = lua_tostring(L, -3);
+	int experienceAmount = lua_tointeger(L, -2);
+	bool sendSysMessage = lua_toboolean(L, -1);
 
 	PlayerManager* playerManager = realObject->getZoneServer()->getPlayerManager();
-	playerManager->awardExperience(realObject, experienceType, experienceAmount, false);
+	playerManager->awardExperience(realObject, experienceType, experienceAmount, sendSysMessage);
 
 	return 0;
 }
@@ -893,4 +935,44 @@ int LuaCreatureObject::isInCombat(lua_State* L) {
 	lua_pushboolean(L, retVal);
 
 	return 1;
+}
+
+int LuaCreatureObject::healDamage(lua_State* L) {
+	int damageHealed = lua_tointeger(L, -2);
+	int pool = lua_tointeger(L, -1);
+
+	realObject->healDamage(realObject, pool, damageHealed, true, true);
+
+	return 0;
+}
+
+int LuaCreatureObject::getGroupID(lua_State* L) {
+
+	lua_pushnumber(L, realObject->getGroupID());
+
+	return 1;
+}
+
+int LuaCreatureObject::enhanceCharacter(lua_State* L) {
+	PlayerManager* playerManager = realObject->getZoneServer()->getPlayerManager();
+	playerManager->enhanceCharacter(realObject);
+
+	return 0;
+}
+
+int LuaCreatureObject::setWounds(lua_State* L) {
+	int amount = lua_tointeger(L, -1);
+	int pool = lua_tointeger(L, -2);
+
+	realObject->setWounds(pool, amount, true);
+
+	return 0;
+}
+
+int LuaCreatureObject::setShockWounds(lua_State* L) {
+	int amount = lua_tointeger(L, -1);
+
+	realObject->setShockWounds(amount, true);
+
+	return 0;
 }

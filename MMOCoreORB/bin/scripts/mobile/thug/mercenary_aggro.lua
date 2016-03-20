@@ -1,6 +1,7 @@
 mercenary_aggro = Creature:new {
 	objectName = "@mob/creature_names:mercenary",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "mercenary",
 	faction = "",
 	level = 12,
@@ -23,7 +24,7 @@ mercenary_aggro = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {	"object/mobile/dressed_mercenary_weak_hum_m.iff",

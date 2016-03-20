@@ -1,6 +1,7 @@
 poacher = Creature:new {
 	objectName = "@mob/creature_names:poacher_talus",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "poacher",
 	faction = "",
 	level = 17,
@@ -23,7 +24,7 @@ poacher = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

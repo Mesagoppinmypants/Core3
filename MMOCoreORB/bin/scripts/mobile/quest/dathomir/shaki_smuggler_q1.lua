@@ -1,6 +1,7 @@
 shaki_smuggler_q1 = Creature:new {
 	objectName = "@mob/creature_names:smuggler",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "thug",
 	faction = "thug",
 	level = 14,
@@ -23,7 +24,7 @@ shaki_smuggler_q1 = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_slicer_human_male_01.iff"},

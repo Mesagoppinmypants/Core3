@@ -1,6 +1,7 @@
 spiderclan_web_dancer = Creature:new {
 	objectName = "@mob/creature_names:spider_nightsister_web_dancer",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "spider_nightsister",
 	faction = "spider_nightsister",
 	level = 87,
@@ -23,7 +24,7 @@ spiderclan_web_dancer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_spider_nightsister_web_dancer.iff"},
@@ -46,7 +47,7 @@ spiderclan_web_dancer = Creature:new {
 	},
 	weapons = {"mixed_force_weapons"},
 	conversationTemplate = "",
-	attacks = merge(brawlermaster,pikemanmaster,forcewielder)
+	attacks = merge(brawlermaster,pikemanmaster,forcewielder,swordsmanmaster)
 }
 
 CreatureTemplates:addCreatureTemplate(spiderclan_web_dancer, "spiderclan_web_dancer")

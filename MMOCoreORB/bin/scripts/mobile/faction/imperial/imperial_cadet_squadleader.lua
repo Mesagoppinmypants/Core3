@@ -1,6 +1,7 @@
 imperial_cadet_squadleader = Creature:new {
 	objectName = "@mob/creature_names:imperial_cadet_squadleader",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 11,
@@ -23,7 +24,7 @@ imperial_cadet_squadleader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_captain_m.iff"},

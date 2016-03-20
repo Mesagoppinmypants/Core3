@@ -1,6 +1,7 @@
 mad_scientist = Creature:new {
 	objectName = "",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a Mad Scientist",
 	socialGroup = "warren_scientist",
 	faction = "",
@@ -24,7 +25,7 @@ mad_scientist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/warren_research_scientist.iff"},

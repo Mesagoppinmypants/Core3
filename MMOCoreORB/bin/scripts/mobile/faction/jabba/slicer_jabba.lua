@@ -1,6 +1,7 @@
 slicer_jabba = Creature:new {
 	objectName = "@mob/creature_names:slicer",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jabba",
 	faction = "jabba",
 	level = 6,
@@ -23,7 +24,7 @@ slicer_jabba = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_assassin_human_female_01.iff",

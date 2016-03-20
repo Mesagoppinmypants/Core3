@@ -1,6 +1,7 @@
 drall_patriot_conqueror = Creature:new {
 	objectName = "@mob/creature_names:drall_patriot_conqueror",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "drall",
 	faction = "drall",
 	level = 19,
@@ -23,7 +24,7 @@ drall_patriot_conqueror = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

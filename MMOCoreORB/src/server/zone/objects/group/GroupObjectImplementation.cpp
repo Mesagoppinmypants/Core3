@@ -49,13 +49,13 @@ void GroupObjectImplementation::destroyChatRoom() {
 	if (chatRoom == NULL)
 		return;
 
-	ManagedReference<ChatRoom*> room = chatRoom->getParent();
-	ManagedReference<ChatRoom*> parent = room->getParent();
-
 	ChatManager* chatManager = server->getZoneServer()->getChatManager();
+	ManagedReference<ChatRoom*> parent = chatRoom->getParent();
 
 	chatManager->destroyRoom(chatRoom);
-	chatManager->destroyRoom(room);
+
+	if (parent != NULL)
+		chatManager->destroyRoom(parent);
 
 	chatRoom = NULL;
 }
@@ -85,6 +85,27 @@ void GroupObjectImplementation::broadcastMessage(CreatureObject* player, BaseMes
 	delete msg;
 }
 
+void GroupObjectImplementation::updatePvPStatusNearCreature(CreatureObject* creature) {
+	CloseObjectsVector* creatureCloseObjects = (CloseObjectsVector*) creature->getCloseObjects();
+	SortedVector<QuadTreeEntry*> closeObjectsVector;
+
+	creatureCloseObjects->safeCopyTo(closeObjectsVector);
+
+	for (int i = 0; i < groupMembers.size(); i++) {
+		SceneObject* member = groupMembers.get(i).get().get();
+
+		if (member->isCreatureObject() && closeObjectsVector.contains(member)) {
+			CreatureObject* memberCreo = member->asCreatureObject();
+
+			if (creature->isPlayerCreature())
+				memberCreo->sendPvpStatusTo(creature);
+
+			if (memberCreo->isPlayerCreature())
+				creature->sendPvpStatusTo(memberCreo);
+		}
+	}
+}
+
 void GroupObjectImplementation::addMember(SceneObject* newMember) {
 	Locker locker(_this.getReferenceUnsafeStaticCast());
 
@@ -107,6 +128,9 @@ void GroupObjectImplementation::addMember(SceneObject* newMember) {
 
 		scheduleUpdateNearestMissionForGroup(playerCreature->getPlanetCRC());
 	}
+
+	if (newMember->isCreatureObject())
+		updatePvPStatusNearCreature(newMember->asCreatureObject());
 
 	calcGroupLevel();
 }
@@ -162,6 +186,9 @@ void GroupObjectImplementation::removeMember(SceneObject* member) {
 			scheduleUpdateNearestMissionForGroup(zone->getPlanetCRC());
 		}
 	}
+
+	if (member->isCreatureObject())
+		updatePvPStatusNearCreature(member->asCreatureObject());
 
 	calcGroupLevel();
 }
@@ -220,13 +247,11 @@ void GroupObjectImplementation::makeLeader(SceneObject* player) {
 }
 
 void GroupObjectImplementation::disband() {
-	// this locked
-	ManagedReference<ChatRoom* > chat = chatRoom;
+	//Group is locked
 
 	for (int i = 0; i < groupMembers.size(); i++) {
-		if (groupMembers.get(i) == NULL) {
+		if (groupMembers.get(i) == NULL)
 			continue;
-		}
 
 		Reference<CreatureObject*> groupMember = getGroupMember(i).castTo<CreatureObject*>();
 
@@ -234,40 +259,33 @@ void GroupObjectImplementation::disband() {
 			Locker clocker(groupMember, _this.getReferenceUnsafeStaticCast());
 
 			if (groupMember->isPlayerCreature()) {
-				if (chat != NULL) {
-					chat->removePlayer(groupMember, false);
-					chat->sendDestroyTo(groupMember);
+				PlayerObject* ghost = groupMember->getPlayerObject();
 
-					ChatRoom* room = chat->getParent();
-					room->sendDestroyTo(groupMember);
-				}
-
-				if (groupMember->getPlayerObject() != NULL) {
-					PlayerObject* ghost = groupMember->getPlayerObject();
+				if (ghost != NULL) {
 					ghost->removeWaypointBySpecialType(WaypointObject::SPECIALTYPE_NEARESTMISSIONFORGROUP);
 				}
 			}
 
 			groupMember->updateGroup(NULL);
-			//play->updateGroupId(0);
 
-			//sendClosestWaypointDestroyTo(play);
-
-			//removeSquadLeaderBonuses(play);
 		} catch (Exception& e) {
 			System::out << "Exception in GroupObject::disband(Player* player)\n";
 		}
 	}
 
-	destroyChatRoom();
-
 	if (hasSquadLeader())
 		removeGroupModifiers();
 
-	groupMembers.removeAll();
+	while (groupMembers.size() > 0) {
+		CreatureObject* member = groupMembers.get(0).get().get()->asCreatureObject();
 
-	//The mission waypoints should not be destroyed. They belong to the players.
-	//missionWaypoints.removeAll();
+		if (member != NULL)
+			updatePvPStatusNearCreature(member);
+
+		groupMembers.remove(0);
+	}
+
+	destroyChatRoom();
 }
 
 bool GroupObjectImplementation::hasSquadLeader() {

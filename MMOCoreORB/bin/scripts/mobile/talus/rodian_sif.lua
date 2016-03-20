@@ -1,6 +1,7 @@
 rodian_sif = Creature:new {
 	objectName = "",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a rodian Sif",
 	socialGroup = "sif",
 	faction = "sif",
@@ -24,7 +25,7 @@ rodian_sif = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_talus_sif_mercenary_rodian_01.iff"},

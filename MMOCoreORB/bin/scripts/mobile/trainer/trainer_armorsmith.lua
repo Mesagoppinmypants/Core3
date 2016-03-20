@@ -1,6 +1,7 @@
 trainer_armorsmith = Creature:new {
 	objectName = "@mob/creature_names:trainer_armorsmith",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	faction = "",
 	level = 100,
 	chanceHit = 0.390000,
@@ -30,6 +31,6 @@ trainer_armorsmith = Creature:new {
 		"object/mobile/dressed_armorsmith_trainer_03.iff"
 	},
 	conversationTemplate = "trainer_armorsmith_convotemplate",
-	optionsBitmask = 264
+	optionsBitmask = INVULNERABLE + CONVERSABLE
 }
 CreatureTemplates:addCreatureTemplate(trainer_armorsmith,"trainer_armorsmith")

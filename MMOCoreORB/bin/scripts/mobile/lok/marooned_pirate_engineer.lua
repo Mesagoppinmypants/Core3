@@ -1,6 +1,7 @@
 marooned_pirate_engineer = Creature:new {
 	objectName = "@mob/creature_names:marooned_pirate_engineer",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "pirate",
 	faction = "pirate",
 	level = 19,
@@ -23,7 +24,7 @@ marooned_pirate_engineer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -39,11 +40,12 @@ marooned_pirate_engineer = Creature:new {
 	lootGroups = {
 		{
 			groups = {
-				{group = "junk", chance = 3000000},
+				{group = "junk", chance = 2500000},
 				{group = "wearables_common", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000},
 				{group = "tailor_components", chance = 1000000},
-				{group = "carbines", chance = 2000000}
+				{group = "carbines", chance = 2000000},
+				{group = "color_crystals", chance = 500000}
 			}
 		}
 	},

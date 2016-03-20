@@ -1,6 +1,7 @@
 cobral_mugger = Creature:new {
 	objectName = "",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a Neo-Cobral Mugger",
 	socialGroup = "cobral",
 	faction = "cobral",
@@ -24,7 +25,7 @@ cobral_mugger = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

@@ -1,6 +1,7 @@
 corsec_chief = Creature:new {
 	objectName = "@mob/creature_names:corsec_chief",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "corsec",
 	faction = "corsec",
 	level = 27,
@@ -23,7 +24,7 @@ corsec_chief = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_corellia_local_corsec_chief.iff"},

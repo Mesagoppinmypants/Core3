@@ -137,6 +137,7 @@ public:
 		ADMIN_JEDILIST                     = 184,
 		ADMIN_LIST                     	   = 185,
 		ADMIN_FIND_PLAYER                  = 186,
+		ADMIN_FRSLIST                  	   = 187,
 
 		//Teach 221 - 230
 		TEACH_SKILL                        = 221,
@@ -187,6 +188,16 @@ public:
 
 		// Growable Plant
 		GROWABLE_PLANT					   = 341,
+
+		// Lottery Droid
+		LOTTERY_DURATION_SETUP			   = 351,
+		LOTTERY_PAYOUT_SETUP			   = 352,
+		LOTTERY_COST_SETUP				   = 353,
+		LOTTERY_ADD_CREDITS				   = 354,
+		LOTTERY_ADD_CREDITS_CONFIRM		   = 355,
+		LOTTERY_INFO					   = 356,
+		LOTTERY_REGISTRATION			   = 357,
+
 
 		// Ranger 400 - 401
 		RANGER_TRACK_OPTIONS               = 400,
@@ -251,7 +262,10 @@ public:
 		DROID_MAINTENANCE_RUN_LIST         = 1035,
 		DROID_ADD_STRUCTURE_AMOUNT         = 1036,
 		PET_FIX_DIALOG					   = 1037,
-		JUKEBOX_SELECTION				   = 1038
+		JUKEBOX_SELECTION				   = 1038,
+		SHUTTLE_BEACON					   = 1039,
+		FIELD_FACTION_CHANGE			   = 1040,
+		GOTO_LIST			   = 1041
 	};
 };
 

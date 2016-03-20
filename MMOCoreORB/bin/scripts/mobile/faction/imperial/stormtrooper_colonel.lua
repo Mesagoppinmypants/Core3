@@ -1,6 +1,7 @@
 stormtrooper_colonel = Creature:new {
 	objectName = "@mob/creature_names:fbase_stormtrooper_squad_leader_hard",
-	randomNameType = NAME_STORMTROOPER_TAG,
+	randomNameType = NAME_STORMTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 27,
@@ -23,7 +24,7 @@ stormtrooper_colonel = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 	scale = 1.05,
 

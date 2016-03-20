@@ -44,6 +44,8 @@
 PostureUpAttackCommand = {
         name = "postureupattack",
         combatSpam = "attack",
+        animation = "creature_attack_special_2", 
+	animType = GENERATE_INTENSITY,
 	stateEffects = {
 	  StateEffect( 
 		POSTUREUP_EFFECT, 

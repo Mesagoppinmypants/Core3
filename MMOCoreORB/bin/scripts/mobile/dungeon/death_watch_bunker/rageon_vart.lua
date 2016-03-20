@@ -23,7 +23,7 @@ rageon_vart = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 	scale = 1.15,
 	
@@ -38,7 +38,7 @@ rageon_vart = Creature:new {
 	},
 	weapons = {"death_watch_commander_weapons"},
 	conversationTemplate = "",
-	attacks = merge(carbineermaster,marksmanmaster,brawlermaster)
+	attacks = merge(carbineermaster,marksmanmaster,brawlermaster,pistoleermaster)
 }
 
 CreatureTemplates:addCreatureTemplate(rageon_vart, "rageon_vart")

@@ -1,6 +1,7 @@
 dark_adept = Creature:new {
 	objectName = "@mob/creature_names:dark_adept",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "dark_jedi",
 	faction = "",
 	level = 140,
@@ -23,7 +24,7 @@ dark_adept = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dark_jedi_human_male_01.iff"},

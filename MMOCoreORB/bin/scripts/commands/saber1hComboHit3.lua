@@ -43,13 +43,18 @@
 
 Saber1hComboHit3Command = {
         name = "saber1hcombohit3",
-        
-    damageMultiplier = 3.5,
-	speedMultiplier = 3,
-	forceCostMultiplier = 2.25,
 
-	animationCRC = hashCode("showoff_1_light"),
-	
+	damageMultiplier = 3.5,
+	speedMultiplier = 3,
+	healthCostMultiplier = 0,
+	actionCostMultiplier = 0,
+	mindCostMultiplier = 0,
+	forceCostMultiplier = 2.25,
+	visMod = 25,
+
+	animation = "showoff_1", 
+	animType = GENERATE_INTENSITY,
+
 	stateEffects = {
 	  StateEffect( 
 		POSTUREDOWN_EFFECT, 
@@ -63,9 +68,9 @@ Saber1hComboHit3Command = {
 	},
 
 	combatSpam = "saber1hcombohit3",
-	
+
 	poolsToDamage = HEALTH_ATTRIBUTE + ACTION_ATTRIBUTE + MIND_ATTRIBUTE,
-	
+
 	weaponType = ONEHANDJEDIWEAPON,
 
 	range = -1

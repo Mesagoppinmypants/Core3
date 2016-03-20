@@ -1,6 +1,7 @@
 civil_patrol_captain = Creature:new {
 	objectName = "@mob/creature_names:imperial_civil_patrol_captain",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
 	level = 9,
@@ -23,7 +24,7 @@ civil_patrol_captain = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_officer_m.iff"},

@@ -1,6 +1,7 @@
 coa3_tactical_rebel = Creature:new {
 	objectName = "@mob/creature_names:coa3_tactical_rebel",
-	randomNameType = NAME_GENERIC_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
 	faction = "rebel",
 	level = 25,
@@ -23,7 +24,7 @@ coa3_tactical_rebel = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_brigadier_general_moncal_female.iff"},

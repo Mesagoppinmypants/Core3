@@ -1,6 +1,7 @@
 hero_of_tat_bh = Creature:new {
 	objectName = "@mob/creature_names:quest_hero_of_tatooine_liar_bounty_hunter",
-	randomNameType = NAME_GENERIC_FIRSTNAME_TAG,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "",
 	faction = "",
 	level = 24,
@@ -22,8 +23,8 @@ hero_of_tat_bh = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
-	optionsBitmask = 136,
-	creatureBitmask = PACK,
+	optionsBitmask = AIENABLED + CONVERSABLE,
+	creatureBitmask = NONE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_quest_liar_bh.iff"},
