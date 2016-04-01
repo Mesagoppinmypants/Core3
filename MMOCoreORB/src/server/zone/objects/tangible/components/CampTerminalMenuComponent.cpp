@@ -64,7 +64,7 @@ void CampTerminalMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
 		}
 	}
 
-	Vector < ManagedReference<ActiveArea*> > *areas = camp->getActiveAreas();
+	SortedVector<ManagedReference<ActiveArea*> >* areas = camp->getActiveAreas();
 	ManagedReference<ActiveArea*> area = NULL;
 	for (int i = 0; i < areas->size(); ++i) {
 		area = areas->get(i);
@@ -74,9 +74,9 @@ void CampTerminalMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
 		area == NULL;
 	}
 
-	if (area != NULL && cast<CampSiteActiveArea*> (area.get()) != NULL &&
-			cast<CampSiteActiveArea*> (area.get())->isAbandoned())
+	if (area != NULL && area->isCampArea() && (area.castTo<CampSiteActiveArea*>())->isAbandoned()) {
 		menuResponse->addRadialMenuItem(183, 3, "@camp:mnu_assume_ownership");
+	}
 }
 
 int CampTerminalMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
@@ -102,7 +102,6 @@ int CampTerminalMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
 		return TangibleObjectMenuComponent::handleObjectMenuSelect(sceneObject,
 				player, selectedID);
 	}
-
 
 	return 0;
 }
@@ -144,7 +143,7 @@ void CampTerminalMenuComponent::disbandCamp(SceneObject* sceneObject,
 	}
 
 	// Find Camp Area
-	Vector<ManagedReference<ActiveArea* > >* areas = camp->getActiveAreas();
+	SortedVector<ManagedReference<ActiveArea* > >* areas = camp->getActiveAreas();
 	ManagedReference<ActiveArea*> area = NULL;
 	for(int i = 0; i < areas->size(); ++i) {
 		area = areas->get(i);
@@ -186,7 +185,7 @@ void CampTerminalMenuComponent::assumeCampOwnership(SceneObject* sceneObject,
 	}
 
 	// Find Camp Area
-	Vector<ManagedReference<ActiveArea* > >* areas = camp->getActiveAreas();
+	SortedVector<ManagedReference<ActiveArea* > >* areas = camp->getActiveAreas();
 	ManagedReference<ActiveArea*> area = NULL;
 	for(int i = 0; i < areas->size(); ++i) {
 		area = areas->get(i);
@@ -234,7 +233,7 @@ void CampTerminalMenuComponent::showCampStatus(SceneObject* sceneObject,
 	}
 
 	// Get Camp Area
-	Vector<ManagedReference<ActiveArea* > >* areas = camp->getActiveAreas();
+	SortedVector<ManagedReference<ActiveArea* > >* areas = camp->getActiveAreas();
 	ManagedReference<ActiveArea*> area = NULL;
 	for(int i = 0; i < areas->size(); ++i) {
 		area = areas->get(i);

@@ -42,6 +42,9 @@
 void InstallationObjectImplementation::loadTemplateData(SharedObjectTemplate* templateData) {
 	StructureObjectImplementation::loadTemplateData(templateData);
 
+	if (!templateData->isSharedInstallationObjectTemplate())
+		return;
+
 	SharedInstallationObjectTemplate* inso = dynamic_cast<SharedInstallationObjectTemplate*>(templateData);
 
 	installationType = inso->getInstallationType();
@@ -90,8 +93,10 @@ void InstallationObjectImplementation::fillAttributeList(AttributeListMessage* a
 void InstallationObjectImplementation::broadcastMessage(BasePacket* message, bool sendSelf) {
 	Zone* zone = getZone();
 
-	if (zone == NULL)
+	if (zone == NULL) {
+		delete message;
 		return;
+	}
 
 	Locker zoneLocker(zone);
 
@@ -781,7 +786,11 @@ void InstallationObjectImplementation::createChildObjects() {
 	}
 }
 
-float InstallationObjectImplementation::getHitChance(){
+float InstallationObjectImplementation::getHitChance() {
 		SharedInstallationObjectTemplate* inso = dynamic_cast<SharedInstallationObjectTemplate*>(getObjectTemplate());
+
+		if (inso == NULL)
+			return 0;
+
 		return inso->getChanceHit();
 }

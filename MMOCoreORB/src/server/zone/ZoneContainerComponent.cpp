@@ -51,7 +51,7 @@ bool ZoneContainerComponent::insertActiveArea(Zone* newZone, ActiveArea* activeA
 	newZone->getInRangeObjects(activeArea->getPositionX(), activeArea->getPositionY(), range, &objects, false);
 
 	for (int i = 0; i < objects.size(); ++i) {
-		SceneObject* object = cast<SceneObject*>(objects.get(i));
+		SceneObject* object = static_cast<SceneObject*>(objects.get(i));
 
 		if (!object->isTangibleObject()) {
 			continue;
@@ -94,7 +94,7 @@ bool ZoneContainerComponent::removeActiveArea(Zone* zone, ActiveArea* activeArea
 	zoneLocker.release();
 
 	for (int i = 0; i < objects.size(); ++i) {
-		SceneObject* object = cast<SceneObject*>(objects.get(i));
+		SceneObject* object = static_cast<SceneObject*>(objects.get(i));
 
 	//	Locker olocker(object);
 
@@ -119,6 +119,10 @@ bool ZoneContainerComponent::removeActiveArea(Zone* zone, ActiveArea* activeArea
 
 bool ZoneContainerComponent::transferObject(SceneObject* sceneObject, SceneObject* object, int containmentType, bool notifyClient, bool allowOverflow, bool notifyRoot) const {
 	Zone* newZone = dynamic_cast<Zone*>(sceneObject);
+
+	if (newZone == NULL)
+		return false;
+
 	Zone* zone = object->getZone();
 
 	if (object->isActiveArea())
@@ -279,7 +283,7 @@ bool ZoneContainerComponent::removeObject(SceneObject* sceneObject, SceneObject*
 
 		if (object->isTangibleObject()) {
 			TangibleObject* tano = cast<TangibleObject*>(object);
-			Vector<ManagedReference<ActiveArea*> >* activeAreas = tano->getActiveAreas();
+			SortedVector<ManagedReference<ActiveArea*> >* activeAreas = tano->getActiveAreas();
 
 			while (activeAreas->size() > 0) {
 				Locker _alocker(object->getContainerLock());

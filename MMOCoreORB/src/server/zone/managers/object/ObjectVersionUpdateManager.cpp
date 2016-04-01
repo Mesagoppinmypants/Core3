@@ -255,7 +255,10 @@ void ObjectVersionUpdateManager::updateTangibleObjectsVersion6() {
 
 	uint64 dummyKey;
 	ObjectDatabaseIterator schemIterator(schemdb);
-	schemIterator.getNextKey(dummyKey);
+
+	if (!schemIterator.getNextKey(dummyKey))
+		return;
+
 	if(dummyKey == 0)
 		return;
 
@@ -287,7 +290,7 @@ void ObjectVersionUpdateManager::updateTangibleObjectsVersion6() {
 
 			// Add all templates that still have a use Count > 1
 			// Also add all loot schematic templates as well as factory crates
-			if((tanotmp != NULL && tanotmp->getUseCount() > 0) ||
+			if((tanotmp->getUseCount() > 0) ||
 			   (lootSchem != NULL && lootSchem->getTargetUseCount() > 1) ||
 			    tmpl->getGameObjectType() == SceneObjectType::FACTORYCRATE) {
 				templateKeys.put(key);
@@ -311,7 +314,6 @@ void ObjectVersionUpdateManager::updateTangibleObjectsVersion6() {
 					continue;
 				}
 			}
-
 		}
 	}
 

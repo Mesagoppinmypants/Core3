@@ -34,7 +34,11 @@ public:
 
 			player->removePendingTask("areatrack");
 
-			if(!player->isPlayerCreature())
+			if (!player->isPlayerCreature())
+				return;
+
+			Zone* zone = player->getZone();
+			if (zone == NULL)
 				return;
 
 			if (player->getDistanceTo(&initialPosition) > 1) {
@@ -67,15 +71,11 @@ public:
 			bool canGetDirection = player->hasSkill("outdoors_ranger_harvest_01");
 		    bool canGetDistance = player->hasSkill("outdoors_ranger_harvest_03");
 
-			Zone* zone = player->getZone();
-			if(zone == NULL)
-				return;
-
 			SortedVector<ManagedReference<QuadTreeEntry*> > objects(512, 512);
 			zone->getInRangeObjects(player->getPositionX(), player->getPositionY(), 512, &objects, true);
 
 			for (int i = 0; i < objects.size(); ++i) {
-				SceneObject* object = cast<SceneObject*>(objects.get(i).get());
+				SceneObject* object = static_cast<SceneObject*>(objects.get(i).get());
 				results.deleteAll();
 
 				if(object == player || !object->isCreatureObject()) {

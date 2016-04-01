@@ -486,15 +486,10 @@ void CreatureManagerImplementation::placeCreature(CreatureObject* creature, floa
 	if (creature == NULL)
 		return;
 
-	Reference<SceneObject*> cellParent = NULL;
+	Reference<CellObject*> cellParent = NULL;
 
 	if (parentID != 0) {
-		cellParent = zoneServer->getObject(parentID);
-
-		if (cellParent != NULL && !cellParent->isCellObject()) {
-			error("trying to set a parent that is not a cell to creature");
-			cellParent = NULL;
-		}
+		cellParent = zoneServer->getObject(parentID).castTo<CellObject*>();
 	}
 
 	//addCreatureToMap(creature);
@@ -705,10 +700,13 @@ int CreatureManagerImplementation::notifyDestruction(TangibleObject* destructor,
 void CreatureManagerImplementation::droidHarvest(Creature* creature, CreatureObject* droid, int selectedID, int harvestBonus) {
 	// droid and creature are locked coming in.
 	ManagedReference<CreatureObject*> owner = droid->getLinkedCreature();
+
 	if (owner == NULL) {
 		return;
 	}
-	Locker pLock(owner);
+
+	Locker pLock(owner, droid);
+
 	Zone* zone = creature->getZone();
 
 	if (zone == NULL || !creature->isCreature()) {
@@ -716,7 +714,7 @@ void CreatureManagerImplementation::droidHarvest(Creature* creature, CreatureObj
 	}
 
 	// this will perform a range check on the corpse to the droid
-	if (!creature->canDroidHarvestMe(owner,droid)) {
+	if (!creature->canDroidHarvestMe(owner, droid)) {
 		owner->sendSystemMessage("@pet/droid_modules:cannot_access_corpse");
 		return;
 	}
@@ -778,11 +776,13 @@ void CreatureManagerImplementation::droidHarvest(Creature* creature, CreatureObj
 
 	if (creature->getParent().get() != NULL)
 		quantityExtracted = 1;
+
 	int droidBonus = DroidMechanics::determineDroidSkillBonus(ownerSkill,harvestBonus,quantityExtracted);
 
 	quantityExtracted += droidBonus;
 	// add to droid inventory if there is space available, otherwise to player
 	DroidObject* pet = cast<DroidObject*>(droid);
+
 	if (pet == NULL) {
 		error("Incoming droid harvest call didnt include a droid!");
 		return;
@@ -844,8 +844,6 @@ void CreatureManagerImplementation::droidHarvest(Creature* creature, CreatureObj
 			despawn->reschedule(1000);
 		}
 	}
-
-
 }
 
 void CreatureManagerImplementation::harvest(Creature* creature, CreatureObject* player, int selectedID) {
@@ -1184,10 +1182,14 @@ bool CreatureManagerImplementation::addWearableItem(CreatureObject* creature, Ta
 	ChatManager* chatMan = zoneServer->getChatManager();
 
 	SharedTangibleObjectTemplate* tanoData = dynamic_cast<SharedTangibleObjectTemplate*>(clothing->getObjectTemplate());
+
+	if (tanoData == NULL || chatMan == NULL)
+		return false;
+
 	Vector<uint32>* races = tanoData->getPlayerRaces();
 	String race = creature->getObjectTemplate()->getFullTemplateString();
 
-	if(clothing->isWearableObject()) {
+	if (clothing->isWearableObject()) {
 		if (!races->contains(race.hashCode())) {
 			UnicodeString message;
 
@@ -1226,7 +1228,7 @@ bool CreatureManagerImplementation::addWearableItem(CreatureObject* creature, Ta
 	creature->broadcastObject(clothing, true);
 
 	UnicodeString message;
-	if(clothing->isWeaponObject())
+	if (clothing->isWeaponObject())
 		message = "@player_structure:wear_yes_weapon";
 	else
 		message = "@player_structure:wear_yes";

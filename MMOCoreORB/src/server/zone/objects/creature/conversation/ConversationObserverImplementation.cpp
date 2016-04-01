@@ -31,7 +31,8 @@ int ConversationObserverImplementation::notifyObserverEvent(unsigned int eventTy
 	//Try to convert parameters to correct types.
 	CreatureObject* npc = NULL;
 	CreatureObject* player = NULL;
-	int selectedOption;
+	int selectedOption = 0;
+
 	try {
 		npc = cast<CreatureObject* >(observable);
 
@@ -50,40 +51,50 @@ int ConversationObserverImplementation::notifyObserverEvent(unsigned int eventTy
 		return 0;
 	}
 
+	if (npc == NULL)
+		return 0;
+
 	switch (eventType) {
-	case ObserverEventType::POSITIONCHANGED:
-		if (npc != NULL) { //the observable in this case is the player
-			ManagedReference<ConversationSession*> session = npc->getActiveSession(SessionFacadeType::CONVERSATION).castTo<ConversationSession*>();
+	case ObserverEventType::POSITIONCHANGED: {
+		//the observable in this case is the player
+		ManagedReference<ConversationSession*> session = npc->getActiveSession(SessionFacadeType::CONVERSATION).castTo<ConversationSession*>();
 
-			if (session != NULL) {
-				ManagedReference<CreatureObject*> sessionNpc = session->getNPC();
+		if (session != NULL) {
+			ManagedReference<CreatureObject*> sessionNpc = session->getNPC();
 
-				if (sessionNpc == NULL || npc->getDistanceTo(sessionNpc) > 7.f) {
-					cancelConversationSession(npc, session->getNPC().get(), true);
-					return 0;
-				}
+			if (sessionNpc == NULL || npc->getDistanceTo(sessionNpc) > 7.f) {
+				cancelConversationSession(npc, session->getNPC().get(), true);
+				return 0;
 			}
-
 		}
 
 		return 0;
-
+	}
 	case ObserverEventType::STOPCONVERSATION:
-		cancelConversationSession(player, npc);
+		if (player != NULL)
+			cancelConversationSession(player, npc);
+
 		//Keep observer.
 		return 0;
 
 	case ObserverEventType::STARTCONVERSATION: {
-		//Cancel any existing sessions.
-		cancelConversationSession(player, npc);
-		//Create a new session.
-		createConversationSession(player, npc);
-		createPositionObserver(player);
+		if (player != NULL) {
+			//Cancel any existing sessions.
+			cancelConversationSession(player, npc);
+
+			//Create a new session.
+			createConversationSession(player, npc);
+			createPositionObserver(player);
+		}
+
 		break;
 	}
 	default:
 		break;
 	}
+
+	if (player == NULL)
+		return 0;
 
 	//Select next conversation screen.
 	Reference<ConversationScreen*> conversationScreen = getNextConversationScreen(player, selectedOption, npc);

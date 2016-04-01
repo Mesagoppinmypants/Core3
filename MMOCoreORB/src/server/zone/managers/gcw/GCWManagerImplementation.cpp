@@ -26,6 +26,7 @@
 #include "server/zone/managers/gcw/tasks/SecurityRepairTask.h"
 #include "server/zone/managers/gcw/tasks/BaseShutdownTask.h"
 #include "server/zone/managers/gcw/tasks/BaseRebootTask.h"
+#include "server/zone/managers/gcw/GCWBaseShutdownObserver.h"
 
 #include "server/zone/objects/player/sui/messagebox/SuiMessageBox.h"
 #include "server/zone/objects/player/sui/transferbox/SuiTransferBox.h"
@@ -161,6 +162,9 @@ void GCWManagerImplementation::loadLuaConfig() {
 	strongholdsObject.pop();
 
 	info("Loaded " + String::valueOf(imperialStrongholds.size()) + " imperial strongholds and " + String::valueOf(rebelStrongholds.size()) + " rebel strongholds.");
+
+	delete lua;
+	lua = NULL;
 }
 
 void GCWManagerImplementation::performGCWTasks() {
@@ -1420,7 +1424,7 @@ void GCWManagerImplementation::randomizePowerRegulatorSwitches(BuildingObject* b
 		flipPowerSwitch(building, switchStates, System::random(powerSwitchCount - 1));
 
 	// Make sure the switches arent all set on
-	bool doubleCheck = false;
+	bool doubleCheck = true;
 
 	for (int i = 0; i < powerSwitchCount; i++)
 		doubleCheck &= switchStates.get(i);
@@ -1575,7 +1579,7 @@ void GCWManagerImplementation::broadcastBuilding(BuildingObject* building, Strin
 
 	// send message to all the players in range
 	for (int i = 0; i < closeObjects.size(); i++) {
-		SceneObject* targetObject = cast<SceneObject*>(closeObjects.get(i));
+		SceneObject* targetObject = static_cast<SceneObject*>(closeObjects.get(i));
 
 		if (targetObject->isPlayerCreature() && building->isInRange(targetObject, range)) {
 			CreatureObject* targetPlayer = cast<CreatureObject*>(targetObject);
@@ -1598,7 +1602,12 @@ void GCWManagerImplementation::startAbortSequenceDelay(BuildingObject* building,
 
 	creature->sendSystemMessage("@hq:vulnerability_reset_request_received"); // Structure shutdown request received. Please stand by while the command is processed. Remain with the terminal.
 	Reference<Task*> newTask = new BaseShutdownTask(_this.getReferenceUnsafeStaticCast(), building, creature, hqTerminal);
-	newTask->schedule(60000);
+	creature->addPendingTask("base_shutdown", newTask, 60000);
+
+	GCWBaseShutdownObserver* observer = new GCWBaseShutdownObserver();
+	observer->setObserverType(ObserverType::GCWBASESHUTDOWN);
+	creature->registerObserver(ObserverEventType::PARENTCHANGED, observer);
+	creature->registerObserver(ObserverEventType::OBJECTDESTRUCTION, observer);
 }
 
 void GCWManagerImplementation::abortShutdownSequence(BuildingObject* building, CreatureObject* creature) {
@@ -1813,7 +1822,6 @@ void GCWManagerImplementation::notifyInstallationDestruction(InstallationObject*
 	installation->broadcastMessage(explodeLoc, false);
 
 	uint64 ownerid = installation->getOwnerObjectID();
-	BuildingObject* building = NULL;
 
 	ZoneServer* server = zone->getZoneServer();
 
@@ -1834,28 +1842,31 @@ void GCWManagerImplementation::notifyInstallationDestruction(InstallationObject*
 	}
 
 	if (ownerObject->isGCWBase()) {
-		building = cast<BuildingObject*>(ownerObject.get());
+		BuildingObject* building = cast<BuildingObject*>(ownerObject.get());
 
 		Locker _lock(installation);
-		Locker clock(building, installation);
 
-		if (building->containsChildObject(installation)) {
-			building->getChildObjects()->removeElement(installation);
-		}
+		if (building != NULL) {
+			Locker clock(building, installation);
 
-		DestructibleBuildingDataComponent* baseData = getDestructibleBuildingData(building);
+			if (building->containsChildObject(installation)) {
+				building->getChildObjects()->removeElement(installation);
+			}
 
-		if (baseData != NULL && baseData->hasTurret(installation->getObjectID())) {
-			if (installation->isTurret())
-				notifyTurretDestruction(building, installation);
-		} else if (baseData != NULL && baseData->hasMinefield(installation->getObjectID())) {
-			if (installation->isMinefield())
-				notifyMinefieldDestruction(building, installation);
+			DestructibleBuildingDataComponent* baseData = getDestructibleBuildingData(building);
+
+			if (baseData != NULL && baseData->hasTurret(installation->getObjectID())) {
+				if (installation->isTurret())
+					notifyTurretDestruction(building, installation);
+			} else if (baseData != NULL && baseData->hasMinefield(installation->getObjectID())) {
+				if (installation->isMinefield())
+					notifyMinefieldDestruction(building, installation);
+			} else {
+				clock.release();
+				StructureManager::instance()->destroyStructure(installation);
+			}
 		} else {
-			clock.release();
-			Locker tlock(ownerObject, installation);
 			StructureManager::instance()->destroyStructure(installation);
-			tlock.release();
 		}
 	} else if (ownerObject->isCreatureObject()) {
 		Locker plock(ownerObject);

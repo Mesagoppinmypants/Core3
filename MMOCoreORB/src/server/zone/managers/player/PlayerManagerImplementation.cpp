@@ -166,9 +166,9 @@ PlayerManagerImplementation::PlayerManagerImplementation(ZoneServer* zoneServer,
 	loadNameMap();
 }
 
-bool PlayerManagerImplementation::createPlayer(MessageCallback* data) {
+bool PlayerManagerImplementation::createPlayer(ClientCreateCharacterCallback* callback) {
 	PlayerCreationManager* pcm = PlayerCreationManager::instance();
-	return pcm->createCharacter(data);
+	return pcm->createCharacter(callback);
 }
 
 void PlayerManagerImplementation::loadLuaConfig() {
@@ -468,8 +468,7 @@ bool PlayerManagerImplementation::checkExistentNameInDatabase(const String& name
 	return false;
 }
 
-bool PlayerManagerImplementation::checkPlayerName(MessageCallback* messageCallback) {
-	ClientCreateCharacterCallback* callback = cast<ClientCreateCharacterCallback*>( messageCallback);
+bool PlayerManagerImplementation::checkPlayerName(ClientCreateCharacterCallback* callback) {
 	ZoneClientSession* client = callback->getClient();
 
 	NameManager* nm = processor->getNameManager();
@@ -711,13 +710,14 @@ void PlayerManagerImplementation::killPlayer(TangibleObject* attacker, CreatureO
 	ThreatMap* threatMap = player->getThreatMap();
 
 	if (attacker->isPlayerCreature()) {
+		ManagedReference<CreatureObject*> playerRef = player->asCreatureObject();
+
 		stringId.setStringId("base_player", "prose_target_dead");
 		stringId.setTT(player->getDisplayedName());
-		(cast<CreatureObject*>(attacker))->sendSystemMessage(stringId);
+		playerRef->sendSystemMessage(stringId);
 
 		Reference<ThreatMap*> copyThreatMap = new ThreatMap(*threatMap);
 		PlayerManager* pManager = _this.getReferenceUnsafeStaticCast();
-		ManagedReference<CreatureObject*> playerRef = player->asCreatureObject();
 
 		EXECUTE_TASK_3(pManager, playerRef, copyThreatMap, {
 				if (playerRef_p != NULL) {
@@ -752,7 +752,7 @@ void PlayerManagerImplementation::killPlayer(TangibleObject* attacker, CreatureO
 
 	if (attacker->getFaction() != 0) {
 		if (attacker->isPlayerCreature() || attacker->isPet()) {
-			CreatureObject* attackerCreature = cast<CreatureObject*>(attacker);
+			CreatureObject* attackerCreature = attacker->asCreatureObject();
 
 			if (attackerCreature->isPet()) {
 				CreatureObject* owner = attackerCreature->getLinkedCreature().get();
@@ -1212,19 +1212,17 @@ void PlayerManagerImplementation::disseminateExperience(TangibleObject* destruct
 
 			crossLocker.release();
 
-			ManagedReference<SceneObject*> groupLeader = group->getLeader();
+			ManagedReference<CreatureObject*> groupLeader = group->getLeader();
 
 			if (groupLeader == NULL || !groupLeader->isPlayerCreature())
 				continue;
 
-			CreatureObject* squadLeader = groupLeader.castTo<CreatureObject*>();
-
-			Locker squadLock(squadLeader, destructedObject);
+			Locker squadLock(groupLeader, destructedObject);
 
 			//If he is a squad leader, and is in range of this player, then add the combat exp for him to use.
-			if (squadLeader->hasSkill("outdoors_squadleader_novice") && pos.distanceTo(attacker->getWorldPosition()) <= ZoneServer::CLOSEOBJECTRANGE) {
-				int v = slExperience.get(squadLeader) + combatXp;
-				slExperience.put(squadLeader, v);
+			if (groupLeader->hasSkill("outdoors_squadleader_novice") && pos.distanceTo(attacker->getWorldPosition()) <= ZoneServer::CLOSEOBJECTRANGE) {
+				int v = slExperience.get(groupLeader) + combatXp;
+				slExperience.put(groupLeader, v);
 			}
 		}
 	}
@@ -1956,8 +1954,10 @@ void PlayerManagerImplementation::handleVerifyTradeMessage(CreatureObject* playe
 int PlayerManagerImplementation::notifyObserverEvent(uint32 eventType, Observable* observable, ManagedObject* arg1, int64 arg2) {
 
 	if (eventType == ObserverEventType::POSTURECHANGED) {
-		CreatureObject* creature = cast<CreatureObject*>( observable);
+		CreatureObject* creature = cast<CreatureObject*>(observable);
 
+		if (creature == NULL)
+			return 1;
 
 		if (creature->hasState(CreatureState::ALERT)) { // This can apply to TKA AND Jedi meditate since they share the same sysmsgs / moods.
 			creature->sendSystemMessage("@teraskasi:med_end");
@@ -3096,7 +3096,7 @@ CraftingStation* PlayerManagerImplementation::getNearbyCraftingStation(CreatureO
 	vec->safeCopyTo(*closeObjects);
 
 	for (int i = 0; i < closeObjects->size(); ++i) {
-		SceneObject* scno = cast<SceneObject*> (closeObjects->get(i));
+		SceneObject* scno = static_cast<SceneObject*> (closeObjects->get(i));
 		if (scno->isCraftingStation() && (fabs(scno->getPositionZ() - player->getPositionZ()) < 7.0f) && player->isInRange(scno, 7.0f)) {
 
 			station = server->getObject(scno->getObjectID()).castTo<CraftingStation*>();
@@ -4502,10 +4502,10 @@ bool PlayerManagerImplementation::increaseOnlineCharCountIfPossible(ZoneClientSe
 	for (int i = 0; i < clients.size(); ++i) {
 		ZoneClientSession* session = clients.get(i);
 
-		ManagedReference<SceneObject*> player = session->getPlayer();
+		ManagedReference<CreatureObject*> player = session->getPlayer();
 
 		if (player != NULL) {
-			Reference<PlayerObject*> ghost = player->getSlottedObject("ghost").castTo<PlayerObject*>();
+			Reference<PlayerObject*> ghost = player->getPlayerObject();
 
 			if (ghost != NULL && ghost->getAdminLevel() > 0)
 				continue;
@@ -4576,18 +4576,13 @@ bool PlayerManagerImplementation::canGroupMemberHarvestCorpse(CreatureObject* pl
 	int groupSize = group->getGroupSize();
 
 	for (int i = 0; i < groupSize; i++) {
-		ManagedReference<SceneObject*> groupMember = group->getGroupMember(i);
+		ManagedReference<CreatureObject*> groupMember = group->getGroupMember(i);
 
 		if (player->getObjectID() == groupMember->getObjectID())
 			continue;
 
-		if (creature->isInRange(groupMember, 256.0f)) {
-
-			CreatureObject* groupMemberCreature = dynamic_cast<CreatureObject*>(groupMember.get());
-
-			if (creature->hasSkillToHarvestMe(groupMemberCreature)) {
-				return true;
-			}
+		if (creature->isInRange(groupMember, 256.0f) && creature->hasSkillToHarvestMe(groupMember)) {
+			return true;
 		}
 	}
 

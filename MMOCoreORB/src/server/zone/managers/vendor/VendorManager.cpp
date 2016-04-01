@@ -47,6 +47,8 @@ void VendorManager::loadLuaVendors() {
 
 	menu.pop();
 
+	delete lua;
+	lua = NULL;
 }
 
 bool VendorManager::isValidVendorName(const String& name) {
@@ -241,7 +243,7 @@ void VendorManager::promptRenameVendorTo(CreatureObject* player, TangibleObject*
 	player->getPlayerObject()->addSuiBox(input);
 }
 
-void VendorManager::destroyVendor(SceneObject* vendor) {
+void VendorManager::destroyVendor(TangibleObject* vendor) {
 	DataObjectComponentReference* data = vendor->getDataObjectComponent();
 	if(data == NULL || data->get() == NULL || !data->get()->isVendorData()) {
 		error("Vendor has no data component");
@@ -350,6 +352,8 @@ void VendorManager::handleRegisterVendorCallback(CreatureObject* player, Tangibl
 }
 
 void VendorManager::handleUnregisterVendor(CreatureObject* player, TangibleObject* vendor) {
+	if (vendor == NULL)
+		return;
 
 	Zone* zone = vendor->getZone();
 

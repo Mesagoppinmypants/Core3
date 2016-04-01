@@ -1033,7 +1033,7 @@ void StructureManager::promptMaintenanceDroid(StructureObject* structure, Creatu
 
 			if (device->getPetType() == PetManager::DROIDPET) {
 				DroidObject* pet = cast<DroidObject*>(device->getControlledObject());
-				if (pet->isMaintenanceDroid()) {
+				if (pet != NULL && pet->isMaintenanceDroid()) {
 					droids.add(pet);
 				}
 			}
@@ -1071,7 +1071,7 @@ void StructureManager::promptPayUncondemnMaintenance(CreatureObject* creature,
 
 	int uncondemnCost = -structure->getSurplusMaintenance();
 
-	ManagedReference<SuiMessageBox*> sui;
+	ManagedReference<SuiMessageBox*> sui = NULL;
 	String text;
 
 	if (creature->getCashCredits() + creature->getBankCredits()

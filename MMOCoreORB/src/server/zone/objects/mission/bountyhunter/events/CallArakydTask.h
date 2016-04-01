@@ -136,7 +136,7 @@ public:
 		vec->safeCopyTo(closeObjects);
 
 		for (int j = 0; j < closeObjects.size(); j++) {
-			SceneObject* obj = cast<SceneObject*>(closeObjects.get(j));
+			SceneObject* obj = static_cast<SceneObject*>(closeObjects.get(j));
 
 			SharedObjectTemplate* objectTemplate = obj->getObjectTemplate();
 

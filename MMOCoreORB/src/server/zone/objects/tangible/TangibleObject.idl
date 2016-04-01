@@ -228,7 +228,7 @@ class TangibleObject extends SceneObject {
 	 * @param player CreatureObject using the item
 	 * @param value value from packet
 	 */
-	public native abstract void synchronizedUIListen(SceneObject player, int value);
+	public native abstract void synchronizedUIListen(CreatureObject player, int value);
 	
 	/**
 	 * Calls the appropriate UI Stop Listener Function
@@ -237,7 +237,7 @@ class TangibleObject extends SceneObject {
 	 * @param player CreatureObject using the item
 	 * @param value value from packet
 	 */
-	public native abstract void synchronizedUIStopListen(SceneObject player, int value);
+	public native abstract void synchronizedUIStopListen(CreatureObject player, int value);
 	
 	/**
 	 * Sets the active defender
@@ -639,12 +639,7 @@ class TangibleObject extends SceneObject {
 	public void setSliced(boolean slice) {
 		sliced = slice;
 	}
-	
-	@dirty
-	public abstract boolean isPharmaceuticalObject() {
-		return false;
-	}
-	
+
 	public void setCustomizationString(final string vars) {
 		customizationVariables.parseFromClientString(vars);
 	}
@@ -770,7 +765,7 @@ class TangibleObject extends SceneObject {
 
 	@local
 	@dirty
-	public Vector<ActiveArea> getActiveAreas() {
+	public SortedVector<ActiveArea> getActiveAreas() {
 		return activeAreas;
 	}
 

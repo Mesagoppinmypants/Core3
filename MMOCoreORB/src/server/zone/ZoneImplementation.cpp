@@ -391,7 +391,7 @@ void ZoneImplementation::updateActiveAreas(TangibleObject* tano) {
 
 	Locker _alocker(tano->getContainerLock());
 
-	SortedVector<ManagedReference<ActiveArea* > > areas = *dynamic_cast<SortedVector<ManagedReference<ActiveArea* > >* >(tano->getActiveAreas());
+	SortedVector<ManagedReference<ActiveArea* > > areas = *tano->getActiveAreas();
 
 	_alocker.release();
 
@@ -439,7 +439,7 @@ void ZoneImplementation::updateActiveAreas(TangibleObject* tano) {
 		// we update the ones in quadtree.
 		for (int i = 0; i < entryObjects.size(); ++i) {
 			//update in new ones
-			ActiveArea* activeArea = dynamic_cast<ActiveArea*>(entryObjects.get(i).get());
+			ActiveArea* activeArea = static_cast<ActiveArea*>(entryObjects.get(i).get());
 
 			if (!tano->hasActiveArea(activeArea) && activeArea->containsPoint(worldPos.getX(), worldPos.getY(), tano->getParentID())) {
 				//Locker lockerO(object);

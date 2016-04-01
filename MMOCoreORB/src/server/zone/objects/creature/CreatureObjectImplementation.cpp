@@ -183,6 +183,9 @@ void CreatureObjectImplementation::loadTemplateData(
 	SharedCreatureObjectTemplate* creoData =
 			dynamic_cast<SharedCreatureObjectTemplate*> (templateData);
 
+	if (creoData == NULL)
+		return;
+
 	slopeModPercent = creoData->getSlopeModPercent();
 	slopeModAngle = creoData->getSlopeModAngle();
 	swimHeight = creoData->getSwimHeight();
@@ -290,7 +293,7 @@ void CreatureObjectImplementation::sendToOwner(bool doClose) {
 	vec->safeCopyTo(closeObjects);
 
 	for (int i = 0; i < closeObjects.size(); ++i) {
-		SceneObject* obj = cast<SceneObject*> (closeObjects.get(i));
+		SceneObject* obj = static_cast<SceneObject*> (closeObjects.get(i));
 
 		if (obj != asCreatureObject()) {
 			if (obj != grandParent) {
@@ -791,7 +794,7 @@ bool CreatureObjectImplementation::setState(uint64 state, bool notifyClient) {
 					}
 
 					for (int i = 0; i < closeSceneObjects.size(); ++i) {
-						SceneObject* object = cast<SceneObject*> (closeSceneObjects.get(i).get());
+						SceneObject* object = static_cast<SceneObject*> (closeSceneObjects.get(i).get());
 
 						if (object->getParent().get() == getParent().get()) {
 							SitOnObject* soo = new SitOnObject(asCreatureObject(), getPositionX(), getPositionZ(), getPositionY());
@@ -2579,16 +2582,19 @@ void CreatureObjectImplementation::notifyPostureChange(int newPosture) {
 void CreatureObjectImplementation::updateGroupMFDPositions() {
 	Reference<CreatureObject*> creo = _this.getReferenceUnsafeStaticCast();
 
-	if(group != NULL) {
+	if (group != NULL) {
 		GroupList* list = group->getGroupList();
-		if(list != NULL) {
-			for(int i=0; i<list->size(); i++) {
+		if (list != NULL) {
+			for (int i = 0; i < list->size(); i++) {
 
-				Reference<SceneObject*> member = list->get(i).get();
+				Reference<CreatureObject*> member = list->get(i).get();
 
-				CloseObjectsVector* cev =  (CloseObjectsVector*)member->getCloseObjects();
+				if (member == NULL || creo == member)
+					continue;
 
-				if(member == NULL || creo == member || cev == NULL || cev->contains(creo.get()))
+				CloseObjectsVector* cev = (CloseObjectsVector*)member->getCloseObjects();
+
+				if (cev == NULL || cev->contains(creo.get()))
 					continue;
 
 				ClientMfdStatusUpdateMessage *msg = new ClientMfdStatusUpdateMessage(creo);

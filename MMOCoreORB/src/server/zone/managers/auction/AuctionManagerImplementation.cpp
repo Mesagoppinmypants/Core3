@@ -405,7 +405,7 @@ String AuctionManagerImplementation::getVendorUID(SceneObject* vendor) {
 
 int AuctionManagerImplementation::checkSaleItem(CreatureObject* player, SceneObject* object, SceneObject* vendor, int price, bool premium, bool stockroomSale) {
 
-	if(vendor == NULL) {
+	if (vendor == NULL) {
 		error("NULL Vendor");
 		return ItemSoldMessage::UNKNOWNERROR;
 	}
@@ -416,12 +416,13 @@ int AuctionManagerImplementation::checkSaleItem(CreatureObject* player, SceneObj
 	if (player->getPlayerObject()->getVendorCount() > player->getSkillMod("manage_vendor"))
 		return ItemSoldMessage::TOOMANYITEMS;
 
-	if(vendor->isVendor()) {
+	if (vendor->isVendor()) {
 
-		VendorDataComponent* vendorData = NULL;
-		DataObjectComponentReference* data = vendor->getDataObjectComponent();
-		if(data != NULL && data->get() != NULL && data->get()->isVendorData())
-			vendorData = cast<VendorDataComponent*>(data->get());
+		VendorDataComponent* vendorData = cast<VendorDataComponent*>(vendor->getDataObjectComponent()->get());
+
+		if (vendorData == NULL) {
+			return ItemSoldMessage::UNKNOWNERROR;
+		}
 
 		if (player->getObjectID() == vendorData->getOwnerId()) {
 			if (stockroomSale) {
@@ -440,7 +441,7 @@ int AuctionManagerImplementation::checkSaleItem(CreatureObject* player, SceneObj
 			return ItemSoldMessage::INVALIDSALEPRICE;
 	}
 
-	if(vendor->isBazaarTerminal()) {
+	if (vendor->isBazaarTerminal()) {
 		if (auctionMap->getCommodityCount(player) >= MAXSALES)
 			return ItemSoldMessage::TOOMANYITEMS;
 
@@ -1003,9 +1004,9 @@ void AuctionManagerImplementation::refundAuction(AuctionItem* item) {
 
 	// send the player a mail and system message
 	UnicodeString buyerSubject("@auction:subject_auction_cancelled"); // Auction Cancelled
-	StringIdChatParameter buyerBody("auction", "buyer_canceled"); // The auction of "%TO" that you were bidding on has been canceled by %TT.
-	buyerBody.setTO(itemName);
-	buyerBody.setTT(item->getOwnerName());
+	Reference<StringIdChatParameter*> buyerBody = new StringIdChatParameter("auction", "buyer_canceled"); // The auction of "%TO" that you were bidding on has been canceled by %TT.
+	buyerBody->setTO(itemName);
+	buyerBody->setTT(item->getOwnerName());
 
 	if (bidder != NULL) {
 		int itemPrice = item->getPrice();
@@ -1014,11 +1015,12 @@ void AuctionManagerImplementation::refundAuction(AuctionItem* item) {
 				Locker locker(bidder_p);
 
 				bidder_p->addBankCredits(itemPrice_p);
-				bidder_p->sendSystemMessage(buyerBody_p);
+				bidder_p->sendSystemMessage(*(buyerBody_p.get()));
 		});
 	}
+
 	String sender = "auctioner";
-	cman->sendMail(sender, buyerSubject, buyerBody, item->getBidderName());
+	cman->sendMail(sender, buyerSubject, *(buyerBody.get()), item->getBidderName());
 }
 
 void AuctionManagerImplementation::retrieveItem(CreatureObject* player, uint64 objectid, uint64 vendorID) {

@@ -607,8 +607,8 @@ int ResourceSpawner::randomizeValue(int min, int max) {
 	int randomStat = System::random(max - min) + min;
 	bool aboveBreakpoint = System::random(10) == 7;
 
-	if (!(aboveBreakpoint && randomStat > breakpoint) || (!aboveBreakpoint
-			&& randomStat < breakpoint)) {
+	if ((aboveBreakpoint && randomStat < breakpoint) || (!aboveBreakpoint
+			&& randomStat > breakpoint)) {
 
 		if (aboveBreakpoint) {
 			while (randomStat < breakpoint)
@@ -659,7 +659,7 @@ ResourceSpawn* ResourceSpawner::getRecycledVersion(ResourceSpawn* resource) {
 	int recycleType = startingEntry->getRecycleToolType();
 
 	ResourceTreeEntry* recycledEntry = NULL;
-	ManagedReference<ResourceSpawn*> recycledVersion;
+	ManagedReference<ResourceSpawn*> recycledVersion = NULL;
 
 	switch(recycleType) {
 	case RecycleTool::NOTYPE:
@@ -733,6 +733,9 @@ ResourceSpawn* ResourceSpawner::getRecycledVersion(ResourceSpawn* resource) {
 		recycledEntry = resourceTree->getEntry("gemstone_mixed_low_quality");
 		break;
 	}
+
+	if (recycledEntry == NULL)
+		return NULL;
 
 	if (resourceMap->containsType(recycledEntry->getFinalClass())) {
 		recycledVersion = resourceMap->get(recycledEntry->getFinalClass().toLowerCase());
