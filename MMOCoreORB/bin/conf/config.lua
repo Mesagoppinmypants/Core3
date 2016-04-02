@@ -138,6 +138,7 @@ TrePath = "/home/swgemu/Desktop/SWGEmu"
 
 TreFiles = {
 	"terminal_fix.tre",
+	"ui.tre",
 	"default_patch.tre",
 	"patch_sku1_14_00.tre",
 	"patch_14_00.tre",
@@ -188,7 +189,9 @@ TreFiles = {
 	"data_sample_01.tre",
 	"data_sample_00.tre",
 	"data_music_00.tre",
-	"bottom.tre"
+	"bottom.tre",
+	"barc_speeder.tre",
+	"chissbp.tre"
 }
 
 --Status Server Config
