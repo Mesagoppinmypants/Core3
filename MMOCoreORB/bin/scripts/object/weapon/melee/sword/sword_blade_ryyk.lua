@@ -114,8 +114,8 @@ object_weapon_melee_sword_sword_blade_ryyk = object_weapon_melee_sword_shared_sw
 	maxRange = 4,
 	maxRangeAccuracy = -15,
 
-	minDamage = 25,
-	maxDamage = 140,
+	minDamage = 700,
+	maxDamage = 850,
 
 	attackSpeed = 3.3,
 

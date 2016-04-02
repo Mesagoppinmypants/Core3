@@ -1798,12 +1798,12 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 				"Vehicle Deeds",
 				{
 					"Swoop", "object/tangible/deed/vehicle_deed/speederbike_swoop_deed.iff",
-					--"Jetpack", "object/tangible/deed/vehicle_deed/jetpack_deed.iff",
+					"Jetpack", "object/tangible/deed/vehicle_deed/jetpack_deed.iff",
 					"Speederbike", "object/tangible/deed/vehicle_deed/speederbike_deed.iff",
-					--"Speederbike Flash", "object/tangible/deed/vehicle_deed/speederbike_flash_deed.iff",
-					--"Landspeeder av21", "object/tangible/deed/vehicle_deed/landspeeder_av21_deed.iff",
-					--"Landspeeder x31", "object/tangible/deed/vehicle_deed/landspeeder_x31_deed.iff",
-					--"Landspeeder x34", "object/tangible/deed/vehicle_deed/landspeeder_x34_deed.iff"
+					"Speederbike Flash", "object/tangible/deed/vehicle_deed/speederbike_flash_deed.iff",
+					"Landspeeder av21", "object/tangible/deed/vehicle_deed/landspeeder_av21_deed.iff",
+					"Landspeeder x31", "object/tangible/deed/vehicle_deed/landspeeder_x31_deed.iff",
+					"Landspeeder x34", "object/tangible/deed/vehicle_deed/landspeeder_x34_deed.iff"
 				},
 				"Structure Deeds",
 				{
@@ -2758,7 +2758,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 			--		"Sword", "object/weapon/melee/sword/sword_01.iff",
 			--		"Sword (noob)", "object/weapon/melee/sword/sword_01_noob.iff",
 			--		"Curved Sword", "object/weapon/melee/sword/sword_02.iff",
-			--		"Ryyk Blade", "object/weapon/melee/sword/sword_blade_ryyk.iff",
+					"Ryyk Blade", "object/weapon/melee/sword/sword_blade_ryyk.iff",
 			--		"Curved Nyax Sword", "object/weapon/melee/sword/sword_curved_nyax.iff",
 			--		"Nyax Sword", "object/weapon/melee/sword/sword_nyax.iff",
 			--		"Rantok", "object/weapon/melee/sword/sword_rantok.iff",
@@ -2772,7 +2772,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 			--		"Jagged Vibroblade", "object/weapon/melee/knife/knife_vibroblade_quest.iff",
 					"Stun Baton", "object/weapon/melee/baton/baton_stun.iff",
 					"Gaderiffi Baton", "object/weapon/melee/baton/baton_gaderiffi.iff",
-			--		"Black Metal Gaderiffi Baton", "object/weapon/melee/baton/victor_baton_gaderiffi.iff"
+					"Black Metal Gaderiffi Baton", "object/weapon/melee/baton/victor_baton_gaderiffi.iff"
 				},
 				"Pistols",
 				{
@@ -2780,14 +2780,14 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 			--		"CDEF Pistol (noob)", "object/weapon/ranged/pistol/pistol_cdef_noob.iff",
 			--		"Corsec CDEF Pistol", "object/weapon/ranged/pistol/pistol_cdef_corsec.iff",
 			--		"D18 Pistol", "object/weapon/ranged/pistol/pistol_d18.iff",
-			--		"DE-10 Pistol", "object/weapon/ranged/pistol/pistol_de_10.iff",
+					"DE-10 Pistol", "object/weapon/ranged/pistol/pistol_de_10.iff",
 			--		"DH17 Pistol", "object/weapon/ranged/pistol/pistol_dh17.iff",
 			--		"DL44 Pistol", "object/weapon/ranged/pistol/pistol_dl44.iff",
 			--		"DL44 Metal Pistol", "object/weapon/ranged/pistol/pistol_dl44_metal.iff",
 			--		"DX2 Pistol", "object/weapon/ranged/pistol/pistol_dx2.iff",
 					"FWG5 Pistol", "object/weapon/ranged/pistol/pistol_fwg5.iff",
 			--		"Featherweight FWG5 Pistol", "object/weapon/ranged/pistol/pistol_fwg5_quest.iff",
-			--		"Geonosian Sonic Blaster", "object/weapon/ranged/pistol/pistol_geonosian_sonic_blaster_loot.iff",
+					"Geonosian Sonic Blaster", "object/weapon/ranged/pistol/pistol_geonosian_sonic_blaster_loot.iff",
 					"Launcher Pistol", "object/weapon/ranged/pistol/pistol_launcher.iff",
 			--		"Power5 Pistol", "object/weapon/ranged/pistol/pistol_power5.iff",
 					"Republic Blaster", "object/weapon/ranged/pistol/pistol_republic_blaster.iff",
@@ -2813,7 +2813,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 				},
 				"Rifles",
 				{
-			--		"Berserker Rifle", "object/weapon/ranged/rifle/rifle_berserker.iff",
+					"Berserker Rifle", "object/weapon/ranged/rifle/rifle_berserker.iff",
 			--		"Bowcaster", "object/weapon/ranged/rifle/rifle_bowcaster.iff",
 			--		"CDEF Rifle", "object/weapon/ranged/rifle/rifle_cdef.iff",
 			--		"DLT20 Rifle", "object/weapon/ranged/rifle/rifle_dlt20.iff",
@@ -2828,7 +2828,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 			--		"Spraystick", "object/weapon/ranged/rifle/rifle_spraystick.iff",
 			--		"Tenloss DXR-6 Disruptor Rifle", "object/weapon/ranged/rifle/rifle_tenloss_dxr6_disruptor_loot.iff",
 					"T21", "object/weapon/ranged/rifle/rifle_t21.iff",
-			--		"Tusken Rifle", "object/weapon/ranged/rifle/rifle_tusken.iff"
+					"Tusken Rifle", "object/weapon/ranged/rifle/rifle_tusken.iff"
 				},
 				"Two-handed",
 				{

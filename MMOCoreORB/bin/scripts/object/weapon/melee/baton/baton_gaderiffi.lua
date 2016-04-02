@@ -117,10 +117,10 @@ object_weapon_melee_baton_baton_gaderiffi = object_weapon_melee_baton_shared_bat
 	maxRange = 5,
 	maxRangeAccuracy = -10,
 
-	minDamage = 90,
-	maxDamage = 185,
+	minDamage = 600,
+	maxDamage = 800,
 
-	attackSpeed = 4,
+	attackSpeed = 3,
 
 	woundsRatio = 16,
 
