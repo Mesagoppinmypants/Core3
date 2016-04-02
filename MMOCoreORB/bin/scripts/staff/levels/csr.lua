@@ -1,7 +1,7 @@
 csr = {
 	level = 12,
 	name = "csr",
-	tag = "BSS-CSR",
+	tag = "SWGEmu-CSR",
 	skills = {
 		"admin_base",
 		"admin_debug_01",
