@@ -124,7 +124,7 @@ ZonesEnabled = {
 	--"space_yavin4",
 	--"taanab",
 	--"talus",
-	--"tatooine",
+	"tatooine",
 	--"test_wearables",
 	"tutorial",
 	--"umbra",
