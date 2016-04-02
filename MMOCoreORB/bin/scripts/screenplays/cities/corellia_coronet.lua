@@ -464,4 +464,11 @@ function CorelliaCoronetScreenPlay:spawnMobiles()
 
 	-- Chassis dealer.
 	spawnMobile(self.planet, "chassis_dealer", 0, 0.1, 0.6, 72.9, -4, 1855672)
+	
+	-- Recruters Outside Starport
+	spawnMobile(self.planet, "imperial_recruiter",0,-133.9,28,-4716.1,-93,0)
+	spawnMobile(self.planet, "rebel_recruiter",0,-136.7,28,-4733.8,-68,0)
+
+	-- Old Man
+	spawnMobile(self.planet, "old_man",0,-164.6,28,-4742.4,71,0)
 end
