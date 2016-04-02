@@ -2766,7 +2766,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 			--		"EE3 Carbine", "object/weapon/ranged/carbine/carbine_ee3.iff",
 			--		"Elite Carbine", "object/weapon/ranged/carbine/carbine_elite.iff",
 					"Laser Carbine", "object/weapon/ranged/carbine/carbine_laser.iff",
-			--		"Nym's Slug-thrower Carbine", "object/weapon/ranged/carbine/carbine_nym_slugthrower.iff"
+					"Nym's Slug-thrower Carbine", "object/weapon/ranged/carbine/carbine_nym_slugthrower.iff"
 				},
 				"Heavy",
 				{
@@ -2777,7 +2777,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 			--		"Heavy Particle Beam Cannon", "object/weapon/ranged/heavy/heavy_particle_beam.iff",
 			--		"Lightning Beam Cannon", "object/weapon/ranged/heavy/heavy_lightning_beam.iff",
 					"Light Lightning Cannon", "object/weapon/ranged/rifle/rifle_lightning.iff",
-			--		"Rocket Launcher", "object/weapon/ranged/heavy/heavy_rocket_launcher.iff"
+					"Rocket Launcher", "object/weapon/ranged/heavy/heavy_rocket_launcher.iff"
 				},
 				"One-handed",
 				{
@@ -2823,7 +2823,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 			--		"SR Combat Pistol", "object/weapon/ranged/pistol/pistol_srcombat.iff",
 			--		"Striker Pistol", "object/weapon/ranged/pistol/pistol_striker.iff",
 			--		"Striker Pistol (noob)", "object/weapon/ranged/pistol/pistol_striker_noob.iff",
-			--		"Tangle Pistol", "object/weapon/ranged/pistol/pistol_tangle.iff"
+					"Tangle Pistol", "object/weapon/ranged/pistol/pistol_tangle.iff"
 				},
 				"Polearms",
 				{
@@ -2835,7 +2835,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					"Vibro Lance", "object/weapon/melee/polearm/lance_vibrolance.iff",
 					"Long Vibro Axe", "object/weapon/melee/polearm/polearm_vibro_axe.iff",
 			--		"Wood Staff", "object/weapon/melee/polearm/lance_staff_wood_s1.iff",
-			--		"Reinforced Combat Staff", "object/weapon/melee/polearm/lance_staff_wood_s2.iff",
+					"Reinforced Combat Staff", "object/weapon/melee/polearm/lance_staff_wood_s2.iff",
 				},
 				"Rifles",
 				{
@@ -2866,7 +2866,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 			--		"Black Sun Executioner's Hack", "object/weapon/melee/2h_sword/2h_sword_blacksun_hack.iff",
 			--		"Gamorrean Battleaxe", "object/weapon/melee/2h_sword/2h_sword_battleaxe_quest.iff",
 			--		"Heavy Axe", "object/weapon/melee/axe/axe_heavy_duty.iff",
-			--		"Vibro Axe", "object/weapon/melee/axe/axe_vibroaxe.iff"
+					"Vibro Axe", "object/weapon/melee/axe/axe_vibroaxe.iff"
 				},
 				"Unarmed",
 				{
