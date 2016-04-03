@@ -724,7 +724,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 						"Melee Speed IV", "force_sensitive_combat_prowess_melee_speed_04"
 					},
 					"Master", "force_sensitive_combat_prowess_master"
-					},
+					}
 				},
 				"Jedi",
 				{
@@ -750,7 +750,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 							{
 								"Oppressor I", "force_rank_dark_rank_08",
 								"Oppressor II", "force_rank_dark_rank_09"
-							},
+							}
 						},
 						"Jedi Light Rank",
 						{
@@ -772,8 +772,8 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 							{
 								"Arbiter I", "force_rank_light_rank_08",
 								"Arbiter II", "force_rank_light_rank_09"
-							},
-						},
+							}
+						}
 					},
 					"Light Saber",
 					{
@@ -1583,18 +1583,18 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 						"Kashyyykian Hunting Leggings", "object/tangible/wearables/armor/kashyyykian_hunting/armor_kashyyykian_hunting_leggings.iff"
 					}
 				},
-			--	"Chitin Armor",
-			--	{
-			--		"Chitin Left Bicep", "object/tangible/wearables/armor/chitin/armor_chitin_s01_bicep_l.iff",
-			--		"Chitin Right Bicep", "object/tangible/wearables/armor/chitin/armor_chitin_s01_bicep_r.iff",
-			--		"Chitin Boots", "object/tangible/wearables/armor/chitin/armor_chitin_s01_boots.iff",
-			--		"Chitin Left Bracer", "object/tangible/wearables/armor/chitin/armor_chitin_s01_bracer_l.iff",
-			--		"Chitin Right Bracer", "object/tangible/wearables/armor/chitin/armor_chitin_s01_bracer_r.iff",
-			--		"Chitin Chest Plate", "object/tangible/wearables/armor/chitin/armor_chitin_s01_chest_plate.iff",
-			--		"Chitin Gloves", "object/tangible/wearables/armor/chitin/armor_chitin_s01_gloves.iff",
-			--		"Chitin Helmet", "object/tangible/wearables/armor/chitin/armor_chitin_s01_helmet.iff",
-			--		"Chitin Leggings", "object/tangible/wearables/armor/chitin/armor_chitin_s01_leggings.iff"
-			--	},
+				"Chitin Armor",
+				{
+					"Chitin Left Bicep", "object/tangible/wearables/armor/chitin/armor_chitin_s01_bicep_l.iff",
+					"Chitin Right Bicep", "object/tangible/wearables/armor/chitin/armor_chitin_s01_bicep_r.iff",
+					"Chitin Boots", "object/tangible/wearables/armor/chitin/armor_chitin_s01_boots.iff",
+					"Chitin Left Bracer", "object/tangible/wearables/armor/chitin/armor_chitin_s01_bracer_l.iff",
+					"Chitin Right Bracer", "object/tangible/wearables/armor/chitin/armor_chitin_s01_bracer_r.iff",
+					"Chitin Chest Plate", "object/tangible/wearables/armor/chitin/armor_chitin_s01_chest_plate.iff",
+					"Chitin Gloves", "object/tangible/wearables/armor/chitin/armor_chitin_s01_gloves.iff",
+					"Chitin Helmet", "object/tangible/wearables/armor/chitin/armor_chitin_s01_helmet.iff",
+					"Chitin Leggings", "object/tangible/wearables/armor/chitin/armor_chitin_s01_leggings.iff"
+				},
 				"Composite Armor",
 				{
 					"Composite Left Bicep", "object/tangible/wearables/armor/composite/armor_composite_bicep_l.iff",
@@ -1607,10 +1607,10 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					"Composite Helmet", "object/tangible/wearables/armor/composite/armor_composite_helmet.iff",
 					"Composite Leggings", "object/tangible/wearables/armor/composite/armor_composite_leggings.iff"
 				},
-			--	"Singing Mountain Clan Armor",
-			--	{
-			--		"Singing Mountain Clan Bicep", "object/tangible/wearables/armor/bone/armor_smc_s01_bicep_l.iff"
-			--	}
+				"Singing Mountain Clan Armor",
+				{
+					"Singing Mountain Clan Bicep", "object/tangible/wearables/armor/bone/armor_smc_s01_bicep_l.iff"
+				}
 			},
 			"Clothes",
 			{
@@ -1665,7 +1665,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					"Tranna Nougat Cream", "object/tangible/food/crafted/dessert_tranna_nougat_cream.iff",
 					"Vagnerian Canape", "object/tangible/food/crafted/dessert_vagnerian_canape.iff",
 					"Wedding Cake", "object/tangible/food/crafted/dessert_wedding_cake.iff",
-					"Won Won", "object/tangible/food/crafted/dessert_won_won.iff",
+					"Won Won", "object/tangible/food/crafted/dessert_won_won.iff"
 				},
 				"Dishes",
 				{
@@ -2147,24 +2147,24 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					"Rental: Web Filled Tree", "object/tangible/deed/event_perk/web_tree.iff",
 					--"Rental: Wrecked Sandcrawler", "object/tangible/deed/event_perk/wrecked_sandcrawler_deed.iff",
 					"Rental: X-Wing", "object/tangible/deed/event_perk/xwing_static_deed.iff",
-				},
+				}
 			},
 			"Droids",
 			{
 				"Arakyd Probe Droid", "object/tangible/mission/mission_bounty_droid_probot.iff",
 				"Seeker Droid", "object/tangible/mission/mission_bounty_droid_seeker.iff"
 			},
-			--"Fireworks",
-			--{
-				--"Firework 1", "object/tangible/firework/firework_s01.iff",
-				--"Firework 2", "object/tangible/firework/firework_s02.iff",
-				--"Firework 3", "object/tangible/firework/firework_s03.iff",
-				--"Firework 4", "object/tangible/firework/firework_s04.iff",
-				--"Firework 5", "object/tangible/firework/firework_s05.iff",
-				--"Firework 6", "object/tangible/firework/firework_s10.iff",
-				--"Firework 7", "object/tangible/firework/firework_s11.iff",
-				--"Firework 8", "object/tangible/firework/firework_s18.iff",
-			--},
+			"Fireworks",
+			{
+				"Firework 1", "object/tangible/firework/firework_s01.iff",
+				"Firework 2", "object/tangible/firework/firework_s02.iff",
+				"Firework 3", "object/tangible/firework/firework_s03.iff",
+				"Firework 4", "object/tangible/firework/firework_s04.iff",
+				"Firework 5", "object/tangible/firework/firework_s05.iff",
+				"Firework 6", "object/tangible/firework/firework_s10.iff",
+				"Firework 7", "object/tangible/firework/firework_s11.iff",
+				"Firework 8", "object/tangible/firework/firework_s18.iff"
+			},
 			"Veteran Rewards (COMPLETE)",
 			{
 				--90 Day Rewards
@@ -2532,7 +2532,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					"Modern Coffee Table (Style 2)", "object/tangible/furniture/modern/coffee_table_modern_style_02.iff",
 					"Modern End Table - Small", "object/tangible/furniture/modern/end_table_small_modern_style_01.iff",
 					"Modern Sofa Chair", "object/tangible/furniture/modern/sofa_chair_modern_style_01.iff",
-					"Modern Table", "object/tangible/furniture/modern/table_modern_style_01.iff"	
+					"Modern Table", "object/tangible/furniture/modern/table_modern_style_01.iff"
 				},
 				"Camp Furniture",
 				-- Commented items don't have a mouseover hit box, which makes them too difficult to interact with.
@@ -2575,7 +2575,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					"Dark Table (Style 2)", "object/tangible/furniture/jedi/frn_all_table_dark_02.iff",
 					"Light Table (Style 1)", "object/tangible/furniture/jedi/frn_all_table_light_01.iff",
 					"Light Table (Style 2)", "object/tangible/furniture/jedi/frn_all_table_light_02.iff",
-					"Jedi Council Seat", "object/tangible/furniture/all/frn_all_jedi_council_seat.iff",
+					"Jedi Council Seat", "object/tangible/furniture/all/frn_all_jedi_council_seat.iff"
 				},
 				"City Decorations",
 				{
@@ -2608,21 +2608,21 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					"Street Lamp (Style 1) Red", "object/tangible/furniture/city/streetlamp_large_red_02.iff",
 					"Street Lamp (Style 3) Red", "object/tangible/furniture/city/streetlamp_med_red_01.iff",
 					"Street Lamp (Style 4) Red", "object/tangible/furniture/city/streetlamp_med_red_02.iff"
-				},
+				}
 			},
-			--"Intruments",
-			--{
-				--"Bandfill", "object/tangible/instrument/bandfill.iff",
-				--"Fanfar", "object/tangible/instrument/fanfar.iff",
-				--"Fizz", "object/tangible/instrument/fizz.iff",
-				--"Flute Droopy", "object/tangible/instrument/flute_droopy.iff",
-				--"Kloo Horn", "object/tangible/instrument/kloo_horn.iff",
-				--"Mandoviol", "object/tangible/instrument/mandoviol.iff",
-				--"Nalargon", "object/tangible/instrument/nalargon.iff",
-				--"Ommni Box", "object/tangible/instrument/ommni_box.iff",
-				--"Slitherhorn", "object/tangible/instrument/slitherhorn.iff",
-				--"Traz", "object/tangible/instrument/traz.iff"
-			--},
+			"Intruments",
+			{
+				"Bandfill", "object/tangible/instrument/bandfill.iff",
+				"Fanfar", "object/tangible/instrument/fanfar.iff",
+				"Fizz", "object/tangible/instrument/fizz.iff",
+				"Flute Droopy", "object/tangible/instrument/flute_droopy.iff",
+				"Kloo Horn", "object/tangible/instrument/kloo_horn.iff",
+				"Mandoviol", "object/tangible/instrument/mandoviol.iff",
+				"Nalargon", "object/tangible/instrument/nalargon.iff",
+				"Ommni Box", "object/tangible/instrument/ommni_box.iff",
+				"Slitherhorn", "object/tangible/instrument/slitherhorn.iff",
+				"Traz", "object/tangible/instrument/traz.iff"
+			},
 			"Jedi",
 			{
 				"Robes",
@@ -2640,7 +2640,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 						"Sentinel Robe", "object/tangible/wearables/robe/robe_jedi_light_s02.iff",
 						"Consular Robe", "object/tangible/wearables/robe/robe_jedi_light_s03.iff",
 						"Arbiter Robe", "object/tangible/wearables/robe/robe_jedi_light_s04.iff"
-					},
+					}
 				},
 				"Holocrons",
 				{
@@ -2651,7 +2651,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 				{
 					"5th Generation Lightsaber Polearm", "object/weapon/melee/polearm/crafted_saber/sword_lightsaber_polearm_gen5.iff",
 					"One-Handed 4th Generation Mustafar Lightsaber", "object/weapon/melee/sword/crafted_saber/sword_lightsaber_one_handed_gen4_must.iff"
-				},
+				}
 			},
 			"Pharmaceutical",
 			{
@@ -2766,15 +2766,15 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					--"Organic Survey Tool", "object/tangible/survey_tool/survey_tool_organic.iff",
 					"Solar Survey Tool", "object/tangible/survey_tool/survey_tool_solar.iff",
 					"Wind Survey Tool", "object/tangible/survey_tool/survey_tool_wind.iff"
+				},
+				"Repair Tools",
+				{
+					"Armor Repair", "object/tangible/crafting/station/armor_repair.iff",
+					"Clothing Repair", "object/tangible/crafting/station/clothing_repair.iff",
+					"Droid Repair", "object/tangible/crafting/station/droid_repair.iff",
+					"Structure Repair", "object/tangible/crafting/station/structure_repair.iff",
+					"Weapon Repair", "object/tangible/crafting/station/weapon_repair.iff"
 				}
-				--"Repair Tools",
-				--{
-					--"Armor Repair", "object/tangible/crafting/station/armor_repair.iff",
-					--"Clothing Repair", "object/tangible/crafting/station/clothing_repair.iff",
-					--"Droid Repair", "object/tangible/crafting/station/droid_repair.iff",
-					--"Structure Repair", "object/tangible/crafting/station/structure_repair.iff",
-					--"Weapon Repair", "object/tangible/crafting/station/weapon_repair.iff"
-				--}
 			},
 			"Weapons",
 			{
@@ -2861,7 +2861,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					"Vibro Lance", "object/weapon/melee/polearm/lance_vibrolance.iff",
 					"Long Vibro Axe", "object/weapon/melee/polearm/polearm_vibro_axe.iff",
 			--		"Wood Staff", "object/weapon/melee/polearm/lance_staff_wood_s1.iff",
-					"Reinforced Combat Staff", "object/weapon/melee/polearm/lance_staff_wood_s2.iff",
+					"Reinforced Combat Staff", "object/weapon/melee/polearm/lance_staff_wood_s2.iff"
 				},
 				"Rifles",
 				{
@@ -2900,7 +2900,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 			--		"A Blacksun Razor Knuckler", "object/weapon/melee/special/blacksun_razor.iff"
 				}
 			},
-			"CU/NGE Weapons"
+			"CU/NGE Weapons",
 			{
 				"Ranged",
 				{
@@ -2918,12 +2918,12 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					{
 						"Mandalorian Carbine", "object/weapon/ranged/carbine/carbine_mandalorian.iff",
 						"Proton Carbine", "object/weapon/ranged/carbine/carbine_proton.iff"
-					}
+					},
 					"Heavy",
 					{
 						"Heavy Carbonite Rifle", "object/weapon/ranged/heavy/heavy_carbonite_rifle.iff",
 						"Lava Cannon", "object/weapon/ranged/heavy/heavy_som_lava_cannon.iff"
-					},
+					}
 				},
 				"Melee",
 				{
@@ -2946,8 +2946,8 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					{
 						"Xantha Smasher", "object/weapon/melee/baton/xantha_smasher.iff",
 						"Wookiee Knuckler", "object/weapon/melee/special/ep3/wookiee_knuckler.iff"
-					},
-				},
+					}
+				}
 			},
 			"DWB Testing (Temporary)",
 			{
