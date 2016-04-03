@@ -2652,10 +2652,6 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					"5th Generation Lightsaber Polearm", "object/weapon/melee/polearm/crafted_saber/sword_lightsaber_polearm_gen5.iff",
 					"One-Handed 4th Generation Mustafar Lightsaber", "object/weapon/melee/sword/crafted_saber/sword_lightsaber_one_handed_gen4_must.iff"
 				},
-				"NGE Lightsaber Color Crystal"
-				{
-				
-				},
 			},
 			"Pharmaceutical",
 			{
