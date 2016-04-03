@@ -1798,6 +1798,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 			{
 				"Vehicle Deeds",
 				{
+					"Neutral BARC", "object/tangible/deed/vehicle_deed/barc_speeder_deed.iff",
 					"Swoop", "object/tangible/deed/vehicle_deed/speederbike_swoop_deed.iff",
 					"Jetpack", "object/tangible/deed/vehicle_deed/jetpack_deed.iff",
 					"Speederbike", "object/tangible/deed/vehicle_deed/speederbike_deed.iff",
@@ -1993,6 +1994,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					{
 						"Player House Deeds",
 						{
+							"AT-AT House", "object/tangible/deed/player_house_deed/atat_house_deed.iff",
 							"Tatooine Guild Hall Deed", "object/tangible/deed/guild_deed/tatooine_guild_deed.iff",
 							"Tatooine Guild Hall (Style 2) Deed", "object/tangible/deed/guild_deed/tatooine_guild_style_02_deed.iff",
 							"Large Tatooine House Deed", "object/tangible/deed/player_house_deed/tatooine_house_large_deed.iff",
