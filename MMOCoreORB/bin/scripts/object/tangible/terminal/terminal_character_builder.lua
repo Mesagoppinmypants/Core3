@@ -1919,7 +1919,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 						"Emperor's House Deed", "object/tangible/deed/player_house_deed/emperors_house_deed.iff",
 						"Hangar House Deed", "object/tangible/deed/player_house_deed/hangar_house_deed.iff",
 						"Jabba's House Deed", "object/tangible/deed/player_house_deed/jabbas_house_deed.iff",
-						"Jedi House Deed", "object/tangible/deed/player_house_deed/jabbas_house_deed.iff",
+						"Jedi House Deed", "object/tangible/deed/player_house_deed/jedi_house_deed.iff",
 						"Musty House Deed", "object/tangible/deed/player_house_deed/musty_house_deed.iff",
 						"Rebel House Deed", "object/tangible/deed/player_house_deed/rebel_house_deed.iff",
 						"Relaxation House Deed", "object/tangible/deed/player_house_deed/relaxation_house_deed.iff",
@@ -2649,8 +2649,12 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 				},
 				"NGE Lightsabers",
 				{
-					"5th Generation Polearm", "object/weapon/melee/sword_lightsaber_polearm_gen5.iff",
-					"4th Generation Heroic 1 Polearm", "object/weapon/melee/sword_lightsaber_polearm_gen4_heroic.iff",
+					"5th Generation Lightsaber Polearm", "object/weapon/melee/polearm/crafted_saber/sword_lightsaber_polearm_gen5.iff",
+					"One-Handed 4th Generation Mustafar Lightsaber", "object/weapon/melee/sword/crafted_saber/sword_lightsaber_one_handed_gen4_must.iff"
+				},
+				"NGE Lightsaber Color Crystal"
+				{
+				
 				},
 			},
 			"Pharmaceutical",
