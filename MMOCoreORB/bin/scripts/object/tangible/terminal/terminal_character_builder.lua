@@ -1908,8 +1908,28 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 							"Small Dathomir Garden", "object/tangible/deed/city_deed/garden_dathomir_sml_01_deed.iff",
 							"Large Endor Garden", "object/tangible/deed/city_deed/garden_endor_lrg_01_deed.iff",
 							"Medium Endor Garden", "object/tangible/deed/city_deed/garden_endor_med_01_deed.iff",
-							"Small Endor Garden", "object/tangible/deed/city_deed/garden_endor_sml_01_deed.iff"	
+							"Small Endor Garden", "object/tangible/deed/city_deed/garden_endor_sml_01_deed.iff"
 						}
+					},
+					"NGE House Deeds",
+					{
+						"AT-AT House Deed", "object/tangible/deed/player_house_deed/atat_house_deed.iff",
+						"Bespin House Deed", "object/tangible/deed/player_house_deed/bespin_house_deed.iff",
+						"Commando House Deed", "object/tangible/deed/player_house_deed/commando_house_deed.iff",
+						"Emperor's House Deed", "object/tangible/deed/player_house_deed/emperors_house_deed.iff",
+						"Hangar House Deed", "object/tangible/deed/player_house_deed/hangar_house_deed.iff",
+						"Jabba's House Deed", "object/tangible/deed/player_house_deed/jabbas_house_deed.iff",
+						"Jedi House Deed", "object/tangible/deed/player_house_deed/jabbas_house_deed.iff",
+						"Musty House Deed", "object/tangible/deed/player_house_deed/musty_house_deed.iff",
+						"Rebel House Deed", "object/tangible/deed/player_house_deed/rebel_house_deed.iff",
+						"Relaxation House Deed", "object/tangible/deed/player_house_deed/relaxation_house_deed.iff",
+						"Sandcrawler House Deed", "object/tangible/deed/player_house_deed/sandcrawler_house_deed.iff",
+						"Sith House Deed", "object/tangible/deed/player_house_deed/sith_house_deed.iff",
+						"Tree House Deed", "object/tangible/deed/player_house_deed/tree_house_deed.iff",
+						"Vehicle House Deed", "object/tangible/deed/player_house_deed/vehicle_house_deed.iff",
+						"VIP  Bunker House Deed", "object/tangible/deed/player_house_deed/vipbunker_house_deed.iff",
+						"Yoda's House Deed", "object/tangible/deed/player_house_deed/yoda_house_deed.iff",
+						"YT-1300 House Deed", "object/tangible/deed/player_house_deed/yt1300_house_deed.iff"
 					},
 					"Corellia Deeds",
 					{
@@ -1959,7 +1979,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 							"Naboo Guild Hall Deed", "object/tangible/deed/guild_deed/naboo_guild_deed.iff",
 							"Large Naboo House Deed", "object/tangible/deed/player_house_deed/naboo_house_large_deed.iff",
 							"Medium Naboo House Deed", "object/tangible/deed/player_house_deed/naboo_house_medium_deed.iff",
-							--"Medium Naboo House Deed (Style 2)", "object/tangible/deed/player_house_deed/naboo_house_medium_style_02_deed.iff",
+							"Medium Naboo House Deed (Style 2)", "object/tangible/deed/player_house_deed/naboo_house_medium_style_02_deed.iff",
 							"Small Naboo House Deed", "object/tangible/deed/player_house_deed/naboo_house_small_deed.iff",
 							"Small Naboo House Deed (Style 2)", "object/tangible/deed/player_house_deed/naboo_house_small_style_02_deed.iff"
 						},
@@ -1994,7 +2014,6 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					{
 						"Player House Deeds",
 						{
-							"AT-AT House", "object/tangible/deed/player_house_deed/atat_house_deed.iff",
 							"Tatooine Guild Hall Deed", "object/tangible/deed/guild_deed/tatooine_guild_deed.iff",
 							"Tatooine Guild Hall (Style 2) Deed", "object/tangible/deed/guild_deed/tatooine_guild_style_02_deed.iff",
 							"Large Tatooine House Deed", "object/tangible/deed/player_house_deed/tatooine_house_large_deed.iff",
@@ -2627,6 +2646,11 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 				{
 					"Dark SideHolocron", "object/tangible/jedi/jedi_holocron_dark.iff",
 					"Light Side Holocron", "object/tangible/jedi/jedi_holocron_light.iff"
+				},
+				"NGE Lightsabers",
+				{
+					"5th Generation Polearm", "object/weapon/melee/sword_lightsaber_polearm_gen5.iff",
+					"4th Generation Heroic 1 Polearm", "object/weapon/melee/sword_lightsaber_polearm_gen4_heroic.iff",
 				},
 			},
 			"Pharmaceutical",
