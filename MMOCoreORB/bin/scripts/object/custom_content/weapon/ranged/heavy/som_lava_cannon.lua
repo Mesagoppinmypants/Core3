@@ -41,7 +41,7 @@
 --this exception also makes it possible to release a modified version 
 
 
-object_weapon_ranged_heavy_heavy_rocket_launcher = object_weapon_ranged_heavy_shared_heavy_rocket_launcher:new {
+object_weapon_ranged_heavy_heavy_som_lava_cannon = object_weapon_ranged_heavy_heavy_som_lava_cannon:new {
 
 	objectMenuComponent = {"cpp", "FireHeavyWeaponMenuComponent"},
 	
@@ -134,4 +134,4 @@ object_weapon_ranged_heavy_heavy_rocket_launcher = object_weapon_ranged_heavy_sh
 	experimentalCombineType = {0, 0, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1},
 }
 
-ObjectTemplates:addTemplate(object_weapon_ranged_heavy_heavy_rocket_launcher, "object/weapon/ranged/heavy/heavy_rocket_launcher.iff")
+ObjectTemplates:addTemplate(object_weapon_ranged_heavy_heavy_som_lava_cannon, "object/weapon/ranged/heavy/heavy_som_lava_cannon.iff")

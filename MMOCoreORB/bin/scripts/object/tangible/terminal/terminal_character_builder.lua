@@ -2904,6 +2904,55 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 			--		"A Blacksun Razor Knuckler", "object/weapon/melee/special/blacksun_razor.iff"
 				}
 			},
+			"CU/NGE Weapons"
+			{
+				"Ranged",
+				{
+					"Rifle",
+					{
+						"Legendary T21", "object/weapon/ranged/rifle/rifle_t21_legendary.iff",
+						"WESTAR-M5", "object/weapon/ranged/rifle/rifle_westar_m5.iff"
+					},
+					"Pistol",
+					{
+						"Legendary FWG5", "object/weapon/ranged/pistol/pistol_fwg5_legendary.iff",
+						"Deathhammer Pistol", "object/weapon/ranged/pistol/pistol_deathhammer.iff"
+					},
+					"Carbine",
+					{
+						"Mandalorian Carbine", "object/weapon/ranged/carbine/carbine_mandalorian.iff",
+						"Proton Carbine", "object/weapon/ranged/carbine/carbine_proton.iff"
+					}
+					"Heavy",
+					{
+						"Heavy Carbonite Rifle", "object/weapon/ranged/heavy/heavy_carbonite_rifle.iff",
+						"Lava Cannon", "object/weapon/ranged/heavy/heavy_som_lava_cannon.iff"
+					},
+				},
+				"Melee",
+				{
+					"Polearm",
+					{
+						"Obsidian Lance", "object/weapon/melee/polearm/som_lance_obsidian.iff",
+						"Xandank Lance", "object/weapon/melee/polearm/som_lance_xandank.iff"
+					},
+					"Two-Handed",
+					{
+						"Obsidian Sword", "object/weapon/melee/2h_sword/som_2h_sword_obsidian.iff",
+						"Massassi Enforcer", "object/weapon/melee/2h_sword/2h_sword_kun_massassi.iff"
+					},
+					"One-Handed",
+					{
+						"Junti Mace", "object/weapon/melee/sword/sword_mace_junti.iff",
+						"Mandalorian Sword", "object/weapon/melee/sword/sword_mandalorian.iff"
+					},
+					"Unarmed",
+					{
+						"Xantha Smasher", "object/weapon/melee/baton/xantha_smasher.iff",
+						"Wookiee Knuckler", "object/weapon/melee/special/ep3/wookiee_knuckler.iff"
+					},
+				},
+			},
 			"DWB Testing (Temporary)",
 			{
 				"Bounty Hunter Helmet", "object/tangible/wearables/armor/bounty_hunter/armor_bounty_hunter_helmet.iff",
