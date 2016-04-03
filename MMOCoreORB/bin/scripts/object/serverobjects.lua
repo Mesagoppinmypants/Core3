@@ -81,3 +81,11 @@ includeFile("mission_recon_area.lua")
 includeFile("sarlacc_area.lua")
 includeFile("spawn_area.lua")
 includeFile("fs_village_area.lua")
+
+-- New Content
+includeFile("custom_content/building/serverobjects.lua")
+includeFile("custom_content/draft_schematic/serverobjects.lua")
+includeFile("custom_content/intangible/serverobjects.lua")
+includeFile("custom_content/mobile/serverobjects.lua")
+includeFile("custom_content/tangible/serverobjects.lua")
+includeFile("custom_content/weapon/serverobjects.lua")
