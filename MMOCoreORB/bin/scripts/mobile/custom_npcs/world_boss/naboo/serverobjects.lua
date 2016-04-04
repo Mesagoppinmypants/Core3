@@ -1,0 +1,1 @@
+includeFile("naboo/world_boss_naboo.lua")
