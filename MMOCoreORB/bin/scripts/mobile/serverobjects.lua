@@ -42,3 +42,6 @@ includeFile("lair/serverobjects.lua")
 
 -- Outfits
 includeFile("outfits/serverobjects.lua")
+
+-- World Bosses
+includeFile("world_boss/serverobjects.lua")
