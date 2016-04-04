@@ -1799,6 +1799,7 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 				"Vehicle Deeds",
 				{
 					"Neutral BARC", "object/tangible/deed/vehicle_deed/barc_speeder_deed.iff",
+					"Republic Gunship", "object/tangible/deed/vehicle_deed/republic_gunship_deed.iff",
 					"Swoop", "object/tangible/deed/vehicle_deed/speederbike_swoop_deed.iff",
 					"Jetpack", "object/tangible/deed/vehicle_deed/jetpack_deed.iff",
 					"Speederbike", "object/tangible/deed/vehicle_deed/speederbike_deed.iff",
