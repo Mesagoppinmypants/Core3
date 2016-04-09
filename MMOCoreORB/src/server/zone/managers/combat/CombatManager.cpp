@@ -11,9 +11,9 @@
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/player/events/LogoutTask.h"
-#include "server/zone/objects/creature/CreatureState.h"
+#include "templates/params/creature/CreatureState.h"
 #include "server/zone/objects/creature/commands/CombatQueueCommand.h"
-#include "server/zone/objects/creature/CreatureAttribute.h"
+#include "templates/params/creature/CreatureAttribute.h"
 #include "server/zone/packets/object/CombatSpam.h"
 #include "server/zone/packets/object/CombatAction.h"
 #include "server/zone/packets/chat/ChatSystemMessage.h"
@@ -201,7 +201,7 @@ int CombatManager::doCombatAction(CreatureObject* attacker, WeaponObject* weapon
 			weapon->decay(attacker);
 
 		// This method can be called multiple times for area attacks. Let the calling method decrease the powerup once
-		if (data.getAttackType() == CombatManager::WEAPONATTACK)
+		if (!data.isForceAttack())
 			weapon->decreasePowerupUses(attacker);
 	}
 
@@ -297,10 +297,9 @@ int CombatManager::doTargetCombatAction(CreatureObject* attacker, WeaponObject* 
 
 	// need to calculate damage here to get proper client spam
 	int damage = 0;
-	Vector<int> foodMitigation; //used to save the food mitigation value for combat spam sent later.
 
 	if (damageMultiplier != 0)
-		damage = calculateDamage(attacker, weapon, defender, data, foodMitigation) * damageMultiplier;
+		damage = calculateDamage(attacker, weapon, defender, data) * damageMultiplier;
 
 	damageMultiplier = 1.0f;
 
@@ -360,10 +359,6 @@ int CombatManager::doTargetCombatAction(CreatureObject* attacker, WeaponObject* 
 			applyWeaponDots(attacker, defender, weapon);
 
 		}
-
-		//Send defensive buff combat spam last.
-		if (!foodMitigation.isEmpty())
-			sendMitigationCombatSpam(defender, weapon, foodMitigation.get(0), FOOD);
 	}
 
 	broadcastCombatAction(attacker, defender, weapon, data, damage, hitVal, hitLocation);
@@ -403,10 +398,9 @@ int CombatManager::doTargetCombatAction(TangibleObject* attacker, WeaponObject* 
 
 	// need to calculate damage here to get proper client spam
 	int damage = 0;
-	Vector<int> foodMitigation; //used to save the food mitigation value for combat spam sent later.
 
 	if (damageMultiplier != 0)
-		damage = calculateDamage(attacker, weapon, defenderObject, data, foodMitigation) * damageMultiplier;
+		damage = calculateDamage(attacker, weapon, defenderObject, data) * damageMultiplier;
 
 	damageMultiplier = 1.0f;
 	int hitVal = getHitChance(attacker, defenderObject, weapon, damage, data.getAccuracyBonus());
@@ -457,11 +451,6 @@ int CombatManager::doTargetCombatAction(TangibleObject* attacker, WeaponObject* 
 
 		if (damageMultiplier != 0 && damage != 0)
 			damage = applyDamage(attacker, weapon, defenderObject, damage, damageMultiplier, poolsToDamage, hitLocation, data);
-
-
-		//Send defensive buff combat spam last.
-		if (!foodMitigation.isEmpty())
-			sendMitigationCombatSpam(defenderObject, weapon, foodMitigation.get(0), FOOD);
 	} else {
 		damage = 0;
 	}
@@ -518,10 +507,10 @@ void CombatManager::applyDots(CreatureObject* attacker, CreatureObject* defender
 		//info("entering addDotState with CRC:" + String::valueOf(dotCRC), true);
 		float damMod = attacker->isAiAgent() ? cast<AiAgent*>(attacker)->getSpecialDamageMult() : 1.f;
 		defender->addDotState(attacker, dotType, data.getCommand()->getNameCRC(),
-				effect.isDotDamageofHit() ? damageToApply * effect.getPrimaryPercent() / 100.0f 
+				effect.isDotDamageofHit() ? damageToApply * effect.getPrimaryPercent() / 100.0f
 					: effect.getDotStrength() * damMod,
 				pool, effect.getDotDuration(), potency, resist,
-				effect.isDotDamageofHit() ? damageToApply * effect.getSecondaryPercent() / 100.0f 
+				effect.isDotDamageofHit() ? damageToApply * effect.getSecondaryPercent() / 100.0f
 					: effect.getDotStrength() * damMod);
 	}
 }
@@ -561,9 +550,9 @@ void CombatManager::applyWeaponDots(CreatureObject* attacker, CreatureObject* de
 		if (defender->hasDotImmunity(type))
 			continue;
 
-		if (weapon->getDotPotency(i)*(1.f-resist/100.f) > System::random(100) && 
-			defender->addDotState(attacker, type, weapon->getObjectID(), 
-								  weapon->getDotStrength(i), weapon->getDotAttribute(i), 
+		if (weapon->getDotPotency(i)*(1.f-resist/100.f) > System::random(100) &&
+			defender->addDotState(attacker, type, weapon->getObjectID(),
+								  weapon->getDotStrength(i), weapon->getDotAttribute(i),
 								  weapon->getDotDuration(i), -1, 0,
 								  (int)(weapon->getDotStrength(i)/5.f)) > 0) // Unresisted, reduce use count.
 			if (weapon->getDotUses(i) > 0) weapon->setDotUses(weapon->getDotUses(i) - 1, i);
@@ -695,9 +684,9 @@ int CombatManager::getAttackerAccuracyModifier(TangibleObject* attacker, Creatur
 	attackerAccuracy += creoAttacker->getSkillMod("attack_accuracy") + creoAttacker->getSkillMod("dead_eye");
 
 	// FS skill mods
-	if (weapon->getAttackType() == WeaponObject::MELEEATTACK)
+	if (weapon->getAttackType() == SharedWeaponObjectTemplate::MELEEATTACK)
 		attackerAccuracy += creoAttacker->getSkillMod("melee_accuracy");
-	else if (weapon->getAttackType() == WeaponObject::RANGEDATTACK)
+	else if (weapon->getAttackType() == SharedWeaponObjectTemplate::RANGEDATTACK)
 		attackerAccuracy += creoAttacker->getSkillMod("ranged_accuracy");
 
 	// now apply overall weapon defense mods
@@ -726,9 +715,9 @@ int CombatManager::getAttackerAccuracyBonus(CreatureObject* attacker, WeaponObje
 	bonus += attacker->getSkillMod("private_attack_accuracy");
 	bonus += attacker->getSkillMod("private_accuracy_bonus");
 
-	if (weapon->getAttackType() == WeaponObject::MELEEATTACK)
+	if (weapon->getAttackType() == SharedWeaponObjectTemplate::MELEEATTACK)
 		bonus += attacker->getSkillMod("private_melee_accuracy_bonus");
-	if (weapon->getAttackType() == WeaponObject::RANGEDATTACK)
+	if (weapon->getAttackType() == SharedWeaponObjectTemplate::RANGEDATTACK)
 		bonus += attacker->getSkillMod("private_ranged_accuracy_bonus");
 
 	return bonus;
@@ -793,7 +782,7 @@ int CombatManager::getDefenderSecondaryDefenseModifier(CreatureObject* defender)
 	return targetDefense;
 }
 
-float CombatManager::getDefenderToughnessModifier(CreatureObject* defender, int attackType, int damType, float damage, Vector<int>& foodMitigation) {
+float CombatManager::getDefenderToughnessModifier(CreatureObject* defender, int attackType, int damType, float damage) {
 	ManagedReference<WeaponObject*> weapon = defender->getWeapon();
 
 	Vector<String>* defenseToughMods = weapon->getDefenderToughnessModifiers();
@@ -806,15 +795,8 @@ float CombatManager::getDefenderToughnessModifier(CreatureObject* defender, int 
 	}
 
 	int jediToughness = defender->getSkillMod("jedi_toughness");
-	if (damType != WeaponObject::LIGHTSABER && jediToughness > 0)
+	if (damType != SharedWeaponObjectTemplate::LIGHTSABER && jediToughness > 0)
 		damage *= 1.f - (jediToughness / 100.f);
-
-	float foodMitigatedDamage = damage;
-	int foodBonus = defender->getSkillMod("mitigate_damage");
-	if (foodBonus > 0) {
-		damage *= 1.f - (foodBonus / 100.f);
-		foodMitigation.add((int)(foodMitigatedDamage -= damage)); //save value for later combat spam
-	}
 
 	return damage < 0 ? 0 : damage;
 }
@@ -865,10 +847,10 @@ int CombatManager::calculateDamageRange(TangibleObject* attacker, CreatureObject
 	if (defenderGhost != NULL) {
 		String mitString;
 		switch (attackType){
-		case WeaponObject::MELEEATTACK:
+		case SharedWeaponObjectTemplate::MELEEATTACK:
 			mitString = "melee_damage_mitigation_";
 			break;
-		case WeaponObject::RANGEDATTACK:
+		case SharedWeaponObjectTemplate::RANGEDATTACK:
 			mitString = "ranged_damage_mitigation_";
 			break;
 		default:
@@ -894,16 +876,16 @@ int CombatManager::calculateDamageRange(TangibleObject* attacker, CreatureObject
 }
 
 float CombatManager::applyDamageModifiers(CreatureObject* attacker, WeaponObject* weapon, float damage, const CreatureAttackData& data) {
-	if (data.getAttackType() == CombatManager::WEAPONATTACK) {
+	if (!data.isForceAttack()) {
 		Vector<String>* weaponDamageMods = weapon->getDamageModifiers();
 
 		for (int i = 0; i < weaponDamageMods->size(); ++i) {
 			damage += attacker->getSkillMod(weaponDamageMods->get(i));
 		}
 
-		if (weapon->getAttackType() == WeaponObject::MELEEATTACK)
+		if (weapon->getAttackType() == SharedWeaponObjectTemplate::MELEEATTACK)
 			damage += attacker->getSkillMod("private_melee_damage_bonus");
-		if (weapon->getAttackType() == WeaponObject::RANGEDATTACK)
+		if (weapon->getAttackType() == SharedWeaponObjectTemplate::RANGEDATTACK)
 			damage += attacker->getSkillMod("private_ranged_damage_bonus");
 	}
 
@@ -933,10 +915,10 @@ int CombatManager::getSpeedModifier(CreatureObject* attacker, WeaponObject* weap
 
 	speedMods += attacker->getSkillMod("private_speed_bonus");
 
-	if (weapon->getAttackType() == WeaponObject::MELEEATTACK) {
+	if (weapon->getAttackType() == SharedWeaponObjectTemplate::MELEEATTACK) {
 		speedMods += attacker->getSkillMod("private_melee_speed_bonus");
 		speedMods += attacker->getSkillMod("melee_speed");
-	} else if (weapon->getAttackType() == WeaponObject::RANGEDATTACK) {
+	} else if (weapon->getAttackType() == SharedWeaponObjectTemplate::RANGEDATTACK) {
 		speedMods += attacker->getSkillMod("private_ranged_speed_bonus");
 		speedMods += attacker->getSkillMod("ranged_speed");
 	}
@@ -950,31 +932,31 @@ int CombatManager::getArmorObjectReduction(ArmorObject* armor, int damageType) {
 	float resist = 0;
 
 	switch (damageType) {
-	case WeaponObject::KINETIC:
+	case SharedWeaponObjectTemplate::KINETIC:
 		resist = armor->getKinetic();
 		break;
-	case WeaponObject::ENERGY:
+	case SharedWeaponObjectTemplate::ENERGY:
 		resist = armor->getEnergy();
 		break;
-	case WeaponObject::ELECTRICITY:
+	case SharedWeaponObjectTemplate::ELECTRICITY:
 		resist = armor->getElectricity();
 		break;
-	case WeaponObject::STUN:
+	case SharedWeaponObjectTemplate::STUN:
 		resist = armor->getStun();
 		break;
-	case WeaponObject::BLAST:
+	case SharedWeaponObjectTemplate::BLAST:
 		resist = armor->getBlast();
 		break;
-	case WeaponObject::HEAT:
+	case SharedWeaponObjectTemplate::HEAT:
 		resist = armor->getHeat();
 		break;
-	case WeaponObject::COLD:
+	case SharedWeaponObjectTemplate::COLD:
 		resist = armor->getCold();
 		break;
-	case WeaponObject::ACID:
+	case SharedWeaponObjectTemplate::ACID:
 		resist = armor->getAcid();
 		break;
-	case WeaponObject::LIGHTSABER:
+	case SharedWeaponObjectTemplate::LIGHTSABER:
 		resist = armor->getLightSaber();
 		break;
 	}
@@ -1005,31 +987,31 @@ int CombatManager::getArmorNpcReduction(AiAgent* defender, int damageType) {
 	float resist = 0;
 
 	switch (damageType) {
-	case WeaponObject::KINETIC:
+	case SharedWeaponObjectTemplate::KINETIC:
 		resist = defender->getKinetic();
 		break;
-	case WeaponObject::ENERGY:
+	case SharedWeaponObjectTemplate::ENERGY:
 		resist = defender->getEnergy();
 		break;
-	case WeaponObject::ELECTRICITY:
+	case SharedWeaponObjectTemplate::ELECTRICITY:
 		resist = defender->getElectricity();
 		break;
-	case WeaponObject::STUN:
+	case SharedWeaponObjectTemplate::STUN:
 		resist = defender->getStun();
 		break;
-	case WeaponObject::BLAST:
+	case SharedWeaponObjectTemplate::BLAST:
 		resist = defender->getBlast();
 		break;
-	case WeaponObject::HEAT:
+	case SharedWeaponObjectTemplate::HEAT:
 		resist = defender->getHeat();
 		break;
-	case WeaponObject::COLD:
+	case SharedWeaponObjectTemplate::COLD:
 		resist = defender->getCold();
 		break;
-	case WeaponObject::ACID:
+	case SharedWeaponObjectTemplate::ACID:
 		resist = defender->getAcid();
 		break;
-	case WeaponObject::LIGHTSABER:
+	case SharedWeaponObjectTemplate::LIGHTSABER:
 		resist = defender->getLightSaber();
 		break;
 	}
@@ -1041,31 +1023,31 @@ int CombatManager::getArmorVehicleReduction(VehicleObject* defender, int damageT
 	float resist = 0;
 
 	switch (damageType) {
-	case WeaponObject::KINETIC:
+	case SharedWeaponObjectTemplate::KINETIC:
 		resist = defender->getKinetic();
 		break;
-	case WeaponObject::ENERGY:
+	case SharedWeaponObjectTemplate::ENERGY:
 		resist = defender->getEnergy();
 		break;
-	case WeaponObject::ELECTRICITY:
+	case SharedWeaponObjectTemplate::ELECTRICITY:
 		resist = defender->getElectricity();
 		break;
-	case WeaponObject::STUN:
+	case SharedWeaponObjectTemplate::STUN:
 		resist = defender->getStun();
 		break;
-	case WeaponObject::BLAST:
+	case SharedWeaponObjectTemplate::BLAST:
 		resist = defender->getBlast();
 		break;
-	case WeaponObject::HEAT:
+	case SharedWeaponObjectTemplate::HEAT:
 		resist = defender->getHeat();
 		break;
-	case WeaponObject::COLD:
+	case SharedWeaponObjectTemplate::COLD:
 		resist = defender->getCold();
 		break;
-	case WeaponObject::ACID:
+	case SharedWeaponObjectTemplate::ACID:
 		resist = defender->getAcid();
 		break;
-	case WeaponObject::LIGHTSABER:
+	case SharedWeaponObjectTemplate::LIGHTSABER:
 		resist = defender->getLightSaber();
 		break;
 	}
@@ -1076,7 +1058,7 @@ int CombatManager::getArmorVehicleReduction(VehicleObject* defender, int damageT
 int CombatManager::getArmorReduction(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, float damage, int hitLocation, const CreatureAttackData& data) {
 	int damageType = 0, armorPiercing = 1;
 
-	if (data.getAttackType() == CombatManager::WEAPONATTACK) {
+	if (!data.isForceAttack()) {
 		damageType = weapon->getDamageType();
 		armorPiercing = weapon->getArmorPiercing();
 
@@ -1106,7 +1088,7 @@ int CombatManager::getArmorReduction(TangibleObject* attacker, WeaponObject* wea
 		return damage;
 	}
 
-	if (data.getAttackType() == CombatManager::WEAPONATTACK) {
+	if (!data.isForceAttack()) {
 		// Force Armor
 		float rawDamage = damage;
 
@@ -1116,7 +1098,7 @@ int CombatManager::getArmorReduction(TangibleObject* attacker, WeaponObject* wea
 			defender->notifyObservers(ObserverEventType::FORCEBUFFHIT, attacker, dmgAbsorbed);
 			sendMitigationCombatSpam(defender, NULL, (int)dmgAbsorbed, FORCEARMOR);
 		}
-	} else if (data.getAttackType() == CombatManager::FORCEATTACK) {
+	} else {
 		float jediBuffDamage = 0;
 		float rawDamage = damage;
 
@@ -1264,7 +1246,7 @@ float CombatManager::calculateDamage(CreatureObject* attacker, WeaponObject* wea
 	if (attacker->isPlayerCreature())
 		damage *= 1.5;
 
-	if (data.getAttackType() == CombatManager::WEAPONATTACK && weapon->getAttackType() == WeaponObject::MELEEATTACK)
+	if (!data.isForceAttack() && weapon->getAttackType() == SharedWeaponObjectTemplate::MELEEATTACK)
 		damage *= 1.25;
 
 	//info("damage to be dealt is " + String::valueOf(damage), true);
@@ -1314,12 +1296,12 @@ float CombatManager::doDroidDetonation(CreatureObject* droid, CreatureObject* de
 		} else {
 			// player
 			static uint8 bodyHitLocations[] = {HIT_BODY, HIT_BODY, HIT_LARM, HIT_RARM};
-			
+
 			ArmorObject* healthArmor = getArmorObject(defender, bodyHitLocations[System::random(3)]);
 			ArmorObject* mindArmor = getArmorObject(defender, HIT_HEAD);
 			ArmorObject* actionArmor = getArmorObject(defender, HIT_LLEG); // This hits both the pants and feet regardless
 			ArmorObject* psgArmor = getPSGArmor(defender);
-			if (psgArmor != NULL && !psgArmor->isVulnerable(WeaponObject::BLAST)) {
+			if (psgArmor != NULL && !psgArmor->isVulnerable(SharedWeaponObjectTemplate::BLAST)) {
 				float armorReduction =  psgArmor->getBlast();
 				if (armorReduction > 0) damage *= (1.f - (armorReduction / 100.f));
 
@@ -1331,7 +1313,7 @@ float CombatManager::doDroidDetonation(CreatureObject* droid, CreatureObject* de
 			healthDamage = damage;
 			actionDamage = damage;
 			mindDamage = damage;
-			if (healthArmor != NULL && !healthArmor->isVulnerable(WeaponObject::BLAST) && (pool & HEALTH)) {
+			if (healthArmor != NULL && !healthArmor->isVulnerable(SharedWeaponObjectTemplate::BLAST) && (pool & HEALTH)) {
 				float armorReduction = healthArmor->getBlast();
 				if (armorReduction > 0)
 					healthDamage *= (1.f - (armorReduction / 100.f));
@@ -1341,7 +1323,7 @@ float CombatManager::doDroidDetonation(CreatureObject* droid, CreatureObject* de
 				healthArmor->inflictDamage(healthArmor, 0, healthDamage * 0.1, true, true);
 				return (int)healthDamage * 0.1;
 			}
-			if (mindArmor != NULL && !mindArmor->isVulnerable(WeaponObject::BLAST) && (pool & MIND)) {
+			if (mindArmor != NULL && !mindArmor->isVulnerable(SharedWeaponObjectTemplate::BLAST) && (pool & MIND)) {
 				float armorReduction = mindArmor->getBlast();
 				if (armorReduction > 0)
 					mindDamage *= (1.f - (armorReduction / 100.f));
@@ -1351,7 +1333,7 @@ float CombatManager::doDroidDetonation(CreatureObject* droid, CreatureObject* de
 				mindArmor->inflictDamage(mindArmor, 0, mindDamage * 0.1, true, true);
 				return (int)mindDamage * 0.1;
 			}
-			if (actionArmor != NULL && !actionArmor->isVulnerable(WeaponObject::BLAST) && (pool & ACTION)) {
+			if (actionArmor != NULL && !actionArmor->isVulnerable(SharedWeaponObjectTemplate::BLAST) && (pool & ACTION)) {
 				float armorReduction = actionArmor->getBlast();
 				if (armorReduction > 0)
 					actionDamage *= (1.f - (armorReduction / 100.f));
@@ -1380,7 +1362,7 @@ float CombatManager::doDroidDetonation(CreatureObject* droid, CreatureObject* de
 	}
 }
 
-float CombatManager::calculateDamage(CreatureObject* attacker, WeaponObject* weapon, CreatureObject* defender, const CreatureAttackData& data, Vector<int>& foodMitigation) {
+float CombatManager::calculateDamage(CreatureObject* attacker, WeaponObject* weapon, CreatureObject* defender, const CreatureAttackData& data) {
 	float damage = 0;
 	int diff = 0;
 
@@ -1409,17 +1391,17 @@ float CombatManager::calculateDamage(CreatureObject* attacker, WeaponObject* wea
 	if (attacker->isPlayerCreature())
 		damage *= 1.5;
 
-	if (data.getAttackType() == CombatManager::WEAPONATTACK && weapon->getAttackType() == WeaponObject::MELEEATTACK)
+	if (!data.isForceAttack() && weapon->getAttackType() == SharedWeaponObjectTemplate::MELEEATTACK)
 		damage *= 1.25;
 
 	if (defender->isKnockedDown())
 		damage *= 1.5f;
 
 	// Toughness reduction
-	if (data.getAttackType() == CombatManager::FORCEATTACK)
-		damage = getDefenderToughnessModifier(defender, WeaponObject::FORCEATTACK, data.getDamageType(), damage, foodMitigation);
+	if (data.isForceAttack())
+		damage = getDefenderToughnessModifier(defender, SharedWeaponObjectTemplate::FORCEATTACK, data.getDamageType(), damage);
 	else
-		damage = getDefenderToughnessModifier(defender, weapon->getAttackType(), weapon->getDamageType(), damage, foodMitigation);
+		damage = getDefenderToughnessModifier(defender, weapon->getAttackType(), weapon->getDamageType(), damage);
 
 	// PvP Damage Reduction.
 	if (attacker->isPlayerCreature() && defender->isPlayerCreature()) {
@@ -1433,7 +1415,7 @@ float CombatManager::calculateDamage(CreatureObject* attacker, WeaponObject* wea
 	return damage;
 }
 
-float CombatManager::calculateDamage(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, const CreatureAttackData& data, Vector<int>& foodMitigation) {
+float CombatManager::calculateDamage(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, const CreatureAttackData& data) {
 	float damage = 0;
 
 	int diff = calculateDamageRange(attacker, defender, weapon);
@@ -1448,7 +1430,7 @@ float CombatManager::calculateDamage(TangibleObject* attacker, WeaponObject* wea
 		damage *= 1.5f;
 
 	// Toughness reduction
-	damage = getDefenderToughnessModifier(defender, weapon->getAttackType(), weapon->getDamageType(), damage, foodMitigation);
+	damage = getDefenderToughnessModifier(defender, weapon->getAttackType(), weapon->getDamageType(), damage);
 
 	return damage;
 }
@@ -1469,7 +1451,7 @@ int CombatManager::getHitChance(TangibleObject* attacker, CreatureObject* target
 	weaponAccuracy = getWeaponRangeModifier(attacker->getWorldPosition().distanceTo(targetCreature->getWorldPosition()) - targetCreature->getTemplateRadius() - attacker->getTemplateRadius(), weapon);
 	// accounts for steadyaim, general aim, and specific weapon aim, these buffs will clear after a completed combat action
 	if (creoAttacker != NULL) {
-		if (weapon->getAttackType() == WeaponObject::RANGEDATTACK) weaponAccuracy += creoAttacker->getSkillMod("private_aim");
+		if (weapon->getAttackType() == SharedWeaponObjectTemplate::RANGEDATTACK) weaponAccuracy += creoAttacker->getSkillMod("private_aim");
 	}
 	//info("Attacker weapon accuracy is " + String::valueOf(weaponAccuracy), true);
 
@@ -1521,7 +1503,7 @@ int CombatManager::getHitChance(TangibleObject* attacker, CreatureObject* target
 
 		// saber block is special because it's just a % chance to block based on the skillmod
 		if (def == "saber_block") {
-			if (!attacker->isTurret() && (weapon->getAttackType() == WeaponObject::RANGEDATTACK) && ((System::random(100)) < targetCreature->getSkillMod(def)))
+			if (!attacker->isTurret() && (weapon->getAttackType() == SharedWeaponObjectTemplate::RANGEDATTACK) && ((System::random(100)) < targetCreature->getSkillMod(def)))
 				return RICOCHET;
 			else return HIT;
 		}
@@ -1639,7 +1621,7 @@ void CombatManager::doDodge(TangibleObject* attacker, WeaponObject* weapon, Crea
 }
 
 bool CombatManager::applySpecialAttackCost(CreatureObject* attacker, WeaponObject* weapon, const CreatureAttackData& data) {
-	if (attacker->isAiAgent() || data.getAttackType() != CombatManager::WEAPONATTACK)
+	if (attacker->isAiAgent() || data.isForceAttack())
 		return true;
 
 	float force = weapon->getForceCost() * data.getForceCostMultiplier();
@@ -1760,7 +1742,7 @@ void CombatManager::applyStates(CreatureObject* creature, CreatureObject* target
 		if (!failed) {
 			if (effectType == CommandEffect::NEXTATTACKDELAY) {
 				StringIdChatParameter stringId("combat_effects", "delay_applied_other");
-				stringId.setTT(targetCreature);
+				stringId.setTT(targetCreature->getObjectID());
 				stringId.setDI(effect.getStateLength());
 				creature->sendSystemMessage(stringId);
 			}
@@ -1848,7 +1830,7 @@ int CombatManager::applyDamage(TangibleObject* attacker, WeaponObject* weapon, C
 	}
 
 	String xpType;
-	if (data.getAttackType() == CombatManager::FORCEATTACK)
+	if (data.isForceAttack())
 		xpType = "jedi_general";
 	else if (attacker->isPet())
 		xpType = "creaturehandler";
@@ -1864,11 +1846,19 @@ int CombatManager::applyDamage(TangibleObject* attacker, WeaponObject* weapon, C
 	float spillMultPerPool = (0.1f * numSpillOverPools) / MAX(numberOfPoolsDamaged, 1);
 	int totalSpillOver = 0; // Accumulate our total spill damage
 
+	// from screenshots, it appears that food mitigation and armor mitigation were independently calculated
+	// and then added together.
+	int foodBonus = defender->getSkillMod("mitigate_damage");
+	int foodMitigation = 0;
+	if (foodBonus > 0)
+		foodMitigation = (int)(damage * foodBonus / 100.f);
+
 	if (poolsToDamage & HEALTH) {
 		static uint8 bodyLocations[] = {HIT_BODY, HIT_BODY, HIT_LARM, HIT_RARM};
 		hitLocation = bodyLocations[System::random(3)];
 
 		healthDamage = getArmorReduction(attacker, weapon, defender, damage * data.getHealthDamageMultiplier(), hitLocation, data) * damageMultiplier;
+		healthDamage -= MIN(healthDamage, foodMitigation * data.getHealthDamageMultiplier());
 
 		int spilledDamage = (int)(healthDamage*spillMultPerPool); // Cut our damage by the spill percentage
 		healthDamage -= spilledDamage; // subtract spill damage from total damage
@@ -1892,6 +1882,7 @@ int CombatManager::applyDamage(TangibleObject* attacker, WeaponObject* weapon, C
 		hitLocation = legLocations[System::random(1)];
 
 		actionDamage = getArmorReduction(attacker, weapon, defender, damage * data.getActionDamageMultiplier(), hitLocation, data) * damageMultiplier;
+		actionDamage -= MIN(actionDamage, foodMitigation * data.getActionDamageMultiplier());
 
 		int spilledDamage = (int)(actionDamage*spillMultPerPool);
 		actionDamage -= spilledDamage;
@@ -1913,6 +1904,7 @@ int CombatManager::applyDamage(TangibleObject* attacker, WeaponObject* weapon, C
 	if (poolsToDamage & MIND) {
 		hitLocation = HIT_HEAD;
 		mindDamage = getArmorReduction(attacker, weapon, defender, damage * data.getMindDamageMultiplier(), hitLocation, data) * damageMultiplier;
+		mindDamage -= MIN(mindDamage, foodMitigation * data.getMindDamageMultiplier());
 
 		int spilledDamage = (int)(mindDamage*spillMultPerPool);
 		mindDamage -= spilledDamage;
@@ -1952,6 +1944,9 @@ int CombatManager::applyDamage(TangibleObject* attacker, WeaponObject* weapon, C
 	if(attacker->isPlayerCreature())
 		showHitLocationFlyText(attacker->asCreatureObject(), defender, hitLocation);
 
+	//Send defensive buff combat spam last.
+	if (foodMitigation > 0)
+		sendMitigationCombatSpam(defender, weapon, foodMitigation, FOOD);
 
 	return totalDamage;
 }
@@ -1972,7 +1967,7 @@ int CombatManager::applyDamage(CreatureObject* attacker, WeaponObject* weapon, T
 		damage *= damageMultiplier;
 
 	String xpType;
-	if (data.getAttackType() == CombatManager::FORCEATTACK)
+	if (data.isForceAttack())
 		xpType = "jedi_general";
 	else if (attacker->isPet())
 		xpType = "creaturehandler";
@@ -1982,7 +1977,7 @@ int CombatManager::applyDamage(CreatureObject* attacker, WeaponObject* weapon, T
 	if (defender->isTurret()) {
 		int damageType = 0, armorPiercing = 1;
 
-		if (data.getAttackType() == CombatManager::WEAPONATTACK) {
+		if (!data.isForceAttack()) {
 			damageType = weapon->getDamageType();
 			armorPiercing = weapon->getArmorPiercing();
 
@@ -2018,18 +2013,18 @@ void CombatManager::sendMitigationCombatSpam(CreatureObject* defender, TangibleO
 
 	switch (type) {
 	case PSG:
-		color = 0; //white, unconfirmed
+		color = 1; //green, confirmed
 		file = "cbt_spam";
 		stringName = "shield_damaged";
 		break;
 	case FORCESHIELD:
-		color = 0; //white, unconfirmed
+		color = 1; //green, unconfirmed
 		file = "cbt_spam";
 		stringName = "forceshield_hit";
 		item = NULL;
 		break;
 	case FORCEFEEDBACK:
-		color = 0; //white, unconfirmed
+		color = 2; //red, confirmed
 		file = "cbt_spam";
 		stringName = "forcefeedback_hit";
 		item = NULL;
@@ -2041,7 +2036,7 @@ void CombatManager::sendMitigationCombatSpam(CreatureObject* defender, TangibleO
 		item = NULL;
 		break;
 	case FORCEARMOR:
-		color = 0; //white, unconfirmed
+		color = 1; //green, confirmed
 		file = "cbt_spam";
 		stringName = "forcearmor_hit";
 		item = NULL;
@@ -2577,31 +2572,31 @@ int CombatManager::getArmorTurretReduction(CreatureObject* attacker, TangibleObj
 			if (turretData != NULL) {
 
 				switch (damageType) {
-				case WeaponObject::KINETIC:
+				case SharedWeaponObjectTemplate::KINETIC:
 					resist = turretData->getKinetic();
 					break;
-				case WeaponObject::ENERGY:
+				case SharedWeaponObjectTemplate::ENERGY:
 					resist = turretData->getEnergy();
 					break;
-				case WeaponObject::ELECTRICITY:
+				case SharedWeaponObjectTemplate::ELECTRICITY:
 					resist = turretData->getElectricity();
 					break;
-				case WeaponObject::STUN:
+				case SharedWeaponObjectTemplate::STUN:
 					resist = turretData->getStun();
 					break;
-				case WeaponObject::BLAST:
+				case SharedWeaponObjectTemplate::BLAST:
 					resist = turretData->getBlast();
 					break;
-				case WeaponObject::HEAT:
+				case SharedWeaponObjectTemplate::HEAT:
 					resist = turretData->getHeat();
 					break;
-				case WeaponObject::COLD:
+				case SharedWeaponObjectTemplate::COLD:
 					resist = turretData->getCold();
 					break;
-				case WeaponObject::ACID:
+				case SharedWeaponObjectTemplate::ACID:
 					resist = turretData->getAcid();
 					break;
-				case WeaponObject::LIGHTSABER:
+				case SharedWeaponObjectTemplate::LIGHTSABER:
 					resist = turretData->getLightSaber();
 					break;
 				}

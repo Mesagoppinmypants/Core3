@@ -22,7 +22,7 @@
 #include "server/zone/managers/faction/FactionManager.h"
 #include "server/zone/managers/combat/CombatManager.h"
 #include "server/zone/objects/tangible/threat/ThreatMap.h"
-#include "server/zone/managers/templates/TemplateManager.h"
+#include "templates/manager/TemplateManager.h"
 #include "server/zone/managers/stringid/StringIdManager.h"
 #include "server/zone/managers/name/NameManager.h"
 #include "server/zone/managers/collision/CollisionManager.h"
@@ -39,17 +39,17 @@
 #include "server/chat/ChatManager.h"
 #include "server/chat/ChatMessage.h"
 #include "server/zone/managers/loot/LootManager.h"
-#include "server/zone/objects/scene/ObserverEventType.h"
-#include "server/zone/objects/creature/CreatureAttribute.h"
-#include "server/zone/objects/creature/CreatureState.h"
-#include "server/zone/objects/creature/CreaturePosture.h"
+#include "templates/params/ObserverEventType.h"
+#include "templates/params/creature/CreatureAttribute.h"
+#include "templates/params/creature/CreatureState.h"
+#include "templates/params/creature/CreaturePosture.h"
 #include "server/zone/objects/creature/ai/LuaAiAgent.h"
 #include "server/zone/objects/creature/ai/bt/Behavior.h"
 #include "server/zone/objects/area/LuaActiveArea.h"
-#include "server/zone/templates/mobile/ConversationScreen.h"
-#include "server/zone/templates/mobile/ConversationTemplate.h"
-#include "server/zone/templates/mobile/LuaConversationScreen.h"
-#include "server/zone/templates/mobile/LuaConversationTemplate.h"
+#include "server/zone/objects/creature/conversation/ConversationScreen.h"
+#include "server/zone/objects/creature/conversation/ConversationTemplate.h"
+#include "server/zone/objects/creature/conversation/LuaConversationScreen.h"
+#include "server/zone/objects/creature/conversation/LuaConversationTemplate.h"
 #include "server/zone/objects/player/sessions/LuaConversationSession.h"
 #include "server/zone/objects/tangible/terminal/startinglocation/StartingLocationTerminal.h"
 #include "server/zone/objects/area/SpawnArea.h"
@@ -462,9 +462,9 @@ void DirectorManager::initializeLuaEngine(Lua* luaEngine) {
 	luaEngine->setGlobalInt("REACTION_MID", ReactionManager::MID);
 	luaEngine->setGlobalInt("REACTION_MEAN", ReactionManager::MEAN);
 
-	luaEngine->setGlobalLong("FACTIONNEUTRAL", FactionManager::FACTIONNEUTRAL);
-	luaEngine->setGlobalLong("FACTIONIMPERIAL", FactionManager::FACTIONIMPERIAL);
-	luaEngine->setGlobalLong("FACTIONREBEL", FactionManager::FACTIONREBEL);
+	luaEngine->setGlobalLong("FACTIONNEUTRAL", Factions::FACTIONNEUTRAL);
+	luaEngine->setGlobalLong("FACTIONIMPERIAL", Factions::FACTIONIMPERIAL);
+	luaEngine->setGlobalLong("FACTIONREBEL", Factions::FACTIONREBEL);
 
 	// Badges
 	VectorMap<unsigned int, const Badge*>* badges = BadgeList::instance()->getMap();

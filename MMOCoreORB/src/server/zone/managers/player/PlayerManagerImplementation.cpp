@@ -16,13 +16,13 @@
 #include "server/zone/ZoneServer.h"
 #include "server/zone/ZoneProcessServer.h"
 #include "server/zone/managers/name/NameManager.h"
-#include "server/zone/managers/templates/TemplateManager.h"
+#include "templates/manager/TemplateManager.h"
 #include "server/zone/managers/object/ObjectManager.h"
 #include "server/zone/managers/faction/FactionManager.h"
 #include "server/db/ServerDatabase.h"
 #include "server/db/MantisDatabase.h"
 #include "server/chat/ChatManager.h"
-#include "server/conf/ConfigManager.h"
+#include "conf/ConfigManager.h"
 #include "server/zone/managers/objectcontroller/ObjectController.h"
 #include "server/zone/managers/player/VeteranRewardList.h"
 #include "server/zone/managers/combat/CombatManager.h"
@@ -37,7 +37,7 @@
 #include "server/zone/objects/player/sessions/TradeSession.h"
 #include "server/zone/objects/player/sessions/ProposeUnitySession.h"
 #include "server/zone/objects/player/sessions/VeteranRewardSession.h"
-#include "server/zone/objects/tangible/OptionBitmask.h"
+#include "templates/params/OptionBitmask.h"
 #include "server/zone/managers/player/JukeboxSong.h"
 #include "server/zone/managers/player/QuestInfo.h"
 
@@ -47,7 +47,7 @@
 #include "server/zone/objects/group/GroupObject.h"
 
 #include "server/zone/objects/building/BuildingObject.h"
-#include "server/zone/templates/tangible/CloningBuildingObjectTemplate.h"
+#include "templates/building/CloningBuildingObjectTemplate.h"
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/tangible/wearables/ArmorObject.h"
 #include "server/zone/objects/tangible/weapon/WeaponObject.h"
@@ -60,7 +60,7 @@
 #include "server/zone/objects/player/events/LogoutTask.h"
 #include "server/zone/objects/player/sessions/EntertainingSession.h"
 
-#include "server/zone/objects/building/cloning/CloneSpawnPoint.h"
+#include "templates/building/CloneSpawnPoint.h"
 
 #include "server/zone/objects/player/sui/messagebox/SuiMessageBox.h"
 #include "server/zone/objects/player/sui/listbox/SuiListBox.h"
@@ -2910,7 +2910,7 @@ void PlayerManagerImplementation::lootAll(CreatureObject* player, CreatureObject
 
 		StringIdChatParameter param("base_player", "prose_coin_loot"); //You loot %DI credits from %TT.
 		param.setDI(cashCredits);
-		param.setTT(ai);
+		param.setTT(ai->getObjectID());
 
 		player->sendSystemMessage(param);
 	}

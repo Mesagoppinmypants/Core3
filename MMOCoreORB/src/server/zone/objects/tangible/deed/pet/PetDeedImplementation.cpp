@@ -11,8 +11,8 @@
 #include "server/zone/objects/manufactureschematic/ManufactureSchematic.h"
 #include "server/zone/objects/manufactureschematic/ingredientslots/IngredientSlot.h"
 #include "server/zone/objects/manufactureschematic/ingredientslots/ComponentSlot.h"
-#include "server/zone/templates/tangible/PetDeedTemplate.h"
-#include "server/zone/templates/mobile/CreatureTemplate.h"
+#include "templates/tangible/PetDeedTemplate.h"
+#include "server/zone/objects/creature/ai/CreatureTemplate.h"
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/managers/creature/CreatureTemplateManager.h"
 #include "server/zone/objects/intangible/PetControlDevice.h"
@@ -20,13 +20,11 @@
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/creature/ai/Creature.h"
-#include "server/zone/templates/tangible/SharedCreatureObjectTemplate.h"
+#include "templates/creature/SharedCreatureObjectTemplate.h"
 #include "server/zone/objects/tangible/component/genetic/GeneticComponent.h"
 #include "server/zone/managers/creature/CreatureManager.h"
-#include "server/zone/templates/mobile/CreatureTemplate.h"
-#include "server/zone/templates/tangible/PetDeedTemplate.h"
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/managers/customization/CustomizationIdManager.h"
+#include "templates/customization/CustomizationIdManager.h"
 #include "server/zone/objects/scene/variables/CustomizationVariables.h"
 #include "server/zone/managers/stringid/StringIdManager.h"
 #include "server/zone/managers/creature/DnaManager.h"
@@ -269,24 +267,24 @@ void PetDeedImplementation::updateCraftingValues(CraftingValues* values, bool fi
 			dexterity = component->getDexterity();
 			fortitude = component->getFortitude();
 			hardiness = component->getHardiness();
-			if (component->isSpecialResist(WeaponObject::KINETIC))
-				setSpecialResist(WeaponObject::KINETIC);
-			if (component->isSpecialResist(WeaponObject::ELECTRICITY))
-				setSpecialResist(WeaponObject::ELECTRICITY);
-			if (component->isSpecialResist(WeaponObject::ENERGY))
-				setSpecialResist(WeaponObject::ENERGY);
-			if (component->isSpecialResist(WeaponObject::ACID))
-				setSpecialResist(WeaponObject::ACID);
-			if (component->isSpecialResist(WeaponObject::BLAST))
-				setSpecialResist(WeaponObject::BLAST);
-			if (component->isSpecialResist(WeaponObject::COLD))
-				setSpecialResist(WeaponObject::COLD);
-			if (component->isSpecialResist(WeaponObject::HEAT))
-				setSpecialResist(WeaponObject::HEAT);
-			if (component->isSpecialResist(WeaponObject::LIGHTSABER))
-				setSpecialResist(WeaponObject::LIGHTSABER);
-			if (component->isSpecialResist(WeaponObject::STUN))
-				setSpecialResist(WeaponObject::STUN);
+			if (component->isSpecialResist(SharedWeaponObjectTemplate::KINETIC))
+				setSpecialResist(SharedWeaponObjectTemplate::KINETIC);
+			if (component->isSpecialResist(SharedWeaponObjectTemplate::ELECTRICITY))
+				setSpecialResist(SharedWeaponObjectTemplate::ELECTRICITY);
+			if (component->isSpecialResist(SharedWeaponObjectTemplate::ENERGY))
+				setSpecialResist(SharedWeaponObjectTemplate::ENERGY);
+			if (component->isSpecialResist(SharedWeaponObjectTemplate::ACID))
+				setSpecialResist(SharedWeaponObjectTemplate::ACID);
+			if (component->isSpecialResist(SharedWeaponObjectTemplate::BLAST))
+				setSpecialResist(SharedWeaponObjectTemplate::BLAST);
+			if (component->isSpecialResist(SharedWeaponObjectTemplate::COLD))
+				setSpecialResist(SharedWeaponObjectTemplate::COLD);
+			if (component->isSpecialResist(SharedWeaponObjectTemplate::HEAT))
+				setSpecialResist(SharedWeaponObjectTemplate::HEAT);
+			if (component->isSpecialResist(SharedWeaponObjectTemplate::LIGHTSABER))
+				setSpecialResist(SharedWeaponObjectTemplate::LIGHTSABER);
+			if (component->isSpecialResist(SharedWeaponObjectTemplate::STUN))
+				setSpecialResist(SharedWeaponObjectTemplate::STUN);
 			level = Genetics::calculatePetLevel(component);
 		}
 	}
@@ -564,23 +562,23 @@ bool PetDeedImplementation::adjustPetStats(CreatureObject* player, CreatureObjec
 	fortitude = DnaManager::instance()->valueForLevel(DnaManager::ARM_LEVEL,oldLevel);
 	armor = fortitude/500;
 	float effectiveness = (int)(((fortitude - (armor * 500)) / 50) * 5);
-	if (!isSpecialResist(WeaponObject::KINETIC) && kinResist > 0)
+	if (!isSpecialResist(SharedWeaponObjectTemplate::KINETIC) && kinResist > 0)
 		kinResist = effectiveness;
-	if(!isSpecialResist(WeaponObject::ACID) && acidResist > 0)
+	if(!isSpecialResist(SharedWeaponObjectTemplate::ACID) && acidResist > 0)
 		acidResist = effectiveness;
-	if(!isSpecialResist(WeaponObject::BLAST) && blastResist > 0)
+	if(!isSpecialResist(SharedWeaponObjectTemplate::BLAST) && blastResist > 0)
 		blastResist = effectiveness;
-	if(!isSpecialResist(WeaponObject::COLD) && coldResist > 0)
+	if(!isSpecialResist(SharedWeaponObjectTemplate::COLD) && coldResist > 0)
 		coldResist = effectiveness;
-	if(!isSpecialResist(WeaponObject::ELECTRICITY) && elecResist > 0)
+	if(!isSpecialResist(SharedWeaponObjectTemplate::ELECTRICITY) && elecResist > 0)
 		elecResist = effectiveness;
-	if(!isSpecialResist(WeaponObject::ENERGY) && energyResist > 0)
+	if(!isSpecialResist(SharedWeaponObjectTemplate::ENERGY) && energyResist > 0)
 		energyResist = effectiveness;
-	if(!isSpecialResist(WeaponObject::HEAT) && heatResist > 0)
+	if(!isSpecialResist(SharedWeaponObjectTemplate::HEAT) && heatResist > 0)
 		heatResist = effectiveness;
-	if(!isSpecialResist(WeaponObject::LIGHTSABER) && saberResist > 0)
+	if(!isSpecialResist(SharedWeaponObjectTemplate::LIGHTSABER) && saberResist > 0)
 		saberResist = effectiveness;
-	if(!isSpecialResist(WeaponObject::STUN) && stunResist > 0)
+	if(!isSpecialResist(SharedWeaponObjectTemplate::STUN) && stunResist > 0)
 		stunResist = effectiveness;
 
 	// ensure the stats are set

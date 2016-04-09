@@ -12,11 +12,11 @@
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/structure/StructureObject.h"
 
-#include "server/zone/templates/tangible/SharedBuildingObjectTemplate.h"
-#include "server/zone/templates/appearance/PortalLayout.h"
-#include "server/zone/templates/appearance/FloorMesh.h"
-#include "server/zone/templates/appearance/PathNode.h"
-#include "server/zone/templates/appearance/PathGraph.h"
+#include "templates/building/SharedBuildingObjectTemplate.h"
+#include "templates/appearance/PortalLayout.h"
+#include "templates/appearance/FloorMesh.h"
+#include "templates/appearance/PathNode.h"
+#include "templates/appearance/PathGraph.h"
 
 #include "server/zone/objects/player/sui/listbox/SuiListBox.h"
 #include "server/zone/objects/player/sui/inputbox/SuiInputBox.h"

@@ -17,10 +17,10 @@
 #include "server/zone/managers/gcw/GCWManager.h"
 
 #include "engine/util/iffstream/IffStream.h"
-#include "server/zone/templates/snapshot/WorldSnapshotIff.h"
-#include "server/zone/templates/datatables/DataTableIff.h"
-#include "server/zone/templates/datatables/DataTableRow.h"
-#include "server/zone/templates/datatables/DataTableCell.h"
+#include "templates/snapshot/WorldSnapshotIff.h"
+#include "templates/datatables/DataTableIff.h"
+#include "templates/datatables/DataTableRow.h"
+#include "templates/datatables/DataTableCell.h"
 #include "server/zone/managers/stringid/StringIdManager.h"
 
 #include "server/zone/managers/planet/MapLocationType.h"
@@ -39,10 +39,10 @@
 
 #include "server/zone/objects/area/areashapes/CircularAreaShape.h"
 
-#include "server/conf/ConfigManager.h"
+#include "conf/ConfigManager.h"
 
 #include "PlanetTravelPoint.h"
-#include "server/zone/templates/tangible/SharedStructureObjectTemplate.h"
+#include "templates/tangible/SharedStructureObjectTemplate.h"
 #include "server/zone/managers/structure/StructureManager.h"
 #include "server/zone/objects/terrain/layer/boundaries/BoundaryRectangle.h"
 
@@ -596,9 +596,9 @@ void PlanetManagerImplementation::loadClientRegions() {
 			if (gcwManager != NULL) {
 				int strongholdFaction = gcwManager->isStrongholdCity(regionName);
 
-				if (strongholdFaction == FactionManager::FACTIONIMPERIAL || regionName.contains("imperial")) {
+				if (strongholdFaction == Factions::FACTIONIMPERIAL || regionName.contains("imperial")) {
 					scenery = zone->getZoneServer()->createObject(STRING_HASHCODE("object/static/particle/particle_distant_ships_imperial.iff"), 0);
-				} else if (strongholdFaction == FactionManager::FACTIONREBEL || regionName.contains("rebel")) {
+				} else if (strongholdFaction == Factions::FACTIONREBEL || regionName.contains("rebel")) {
 					scenery = zone->getZoneServer()->createObject(STRING_HASHCODE("object/static/particle/particle_distant_ships_rebel.iff"), 0);
 				} else {
 					scenery = zone->getZoneServer()->createObject(STRING_HASHCODE("object/static/particle/particle_distant_ships.iff"), 0);

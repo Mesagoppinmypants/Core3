@@ -6,21 +6,21 @@
  */
 
 #include "gtest/gtest.h"
-#include "server/zone/templates/LootItemTemplate.h"
-#include "server/zone/templates/SharedObjectTemplate.h"
-#include "server/zone/templates/tangible/SharedCreatureObjectTemplate.h"
-#include "server/zone/templates/LootGroupTemplate.h"
+#include "templates/LootItemTemplate.h"
+#include "templates/SharedObjectTemplate.h"
+#include "templates/creature/SharedCreatureObjectTemplate.h"
+#include "templates/LootGroupTemplate.h"
 #include "server/zone/managers/faction/FactionManager.h"
 #include "server/zone/managers/creature/DnaManager.h"
 #include "server/zone/managers/loot/LootGroupMap.h"
 #include "server/zone/managers/creature/CreatureTemplateManager.h"
 #include "server/zone/managers/loot/lootgroup/LootGroupCollectionEntry.h"
-#include "server/conf/ConfigManager.h"
-#include "server/zone/managers/templates/DataArchiveStore.h"
+#include "conf/ConfigManager.h"
+#include "templates/manager/DataArchiveStore.h"
 #include "server/zone/managers/objectcontroller/command/CommandConfigManager.h"
 #include "server/zone/managers/objectcontroller/command/CommandList.h"
 #include "server/zone/managers/creature/SpawnAreaMap.h"
-#include "server/zone/templates/string/StringFile.h"
+#include "templates/string/StringFile.h"
 
 class LuaMobileTest : public ::testing::Test {
 protected:

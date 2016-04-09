@@ -7,10 +7,10 @@
 
 #include "LuaTangibleObject.h"
 #include "server/zone/objects/tangible/TangibleObject.h"
-#include "server/zone/objects/creature/CreatureFlag.h"
-#include "server/zone/templates/params/PaletteColorCustomizationVariable.h"
-#include "server/zone/templates/customization/AssetCustomizationManagerTemplate.h"
-#include "server/zone/templates/appearance/PaletteTemplate.h"
+#include "templates/params/creature/CreatureFlag.h"
+#include "templates/params/PaletteColorCustomizationVariable.h"
+#include "templates/customization/AssetCustomizationManagerTemplate.h"
+#include "templates/appearance/PaletteTemplate.h"
 
 const char LuaTangibleObject::className[] = "LuaTangibleObject";
 

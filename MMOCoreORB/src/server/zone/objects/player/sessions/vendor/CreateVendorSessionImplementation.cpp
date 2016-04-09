@@ -17,8 +17,8 @@
 #include "server/zone/objects/player/PlayerObject.h"
 
 #include "server/zone/objects/tangible/components/vendor/VendorDataComponent.h"
-#include "server/zone/templates/tangible/VendorCreatureTemplate.h"
-#include "server/zone/templates/customization/AssetCustomizationManagerTemplate.h"
+#include "templates/creature/VendorCreatureTemplate.h"
+#include "templates/customization/AssetCustomizationManagerTemplate.h"
 
 int CreateVendorSessionImplementation::initializeSession() {
 

@@ -14,8 +14,8 @@
 #include "server/zone/packets/tangible/TangibleObjectDeltaMessage3.h"
 #include "server/zone/packets/tangible/TangibleObjectDeltaMessage6.h"
 #include "server/zone/packets/scene/AttributeListMessage.h"
-#include "server/zone/templates/SharedTangibleObjectTemplate.h"
-#include "server/zone/objects/creature/CreatureFlag.h"
+#include "templates/SharedTangibleObjectTemplate.h"
+#include "templates/params/creature/CreatureFlag.h"
 #include "server/zone/packets/tangible/UpdatePVPStatusMessage.h"
 #include "server/zone/objects/area/ActiveArea.h"
 #include "server/zone/objects/creature/CreatureObject.h"
@@ -30,7 +30,7 @@
 #include "tasks/ClearDefenderListsTask.h"
 #include "server/zone/objects/manufactureschematic/craftingvalues/CraftingValues.h"
 #include "server/zone/objects/manufactureschematic/ingredientslots/ComponentSlot.h"
-#include "server/zone/templates/tangible/tool/RepairToolTemplate.h"
+#include "templates/tangible/tool/RepairToolTemplate.h"
 #include "server/zone/objects/tangible/tool/repair/RepairTool.h"
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/managers/creature/PetManager.h"
@@ -38,6 +38,7 @@
 #include "server/zone/objects/tangible/wearables/WearableObject.h"
 #include "server/zone/objects/intangible/PetControlDevice.h"
 #include "server/zone/objects/tangible/tool/antidecay/AntiDecayKit.h"
+#include "templates/faction/Factions.h"
 #include "engine/engine.h"
 
 
@@ -48,7 +49,7 @@ void TangibleObjectImplementation::initializeTransientMembers() {
 
 	setLoggingName("TangibleObject");
 
-	if (faction !=  FactionManager::FACTIONREBEL && faction != FactionManager::FACTIONIMPERIAL) {
+	if (faction !=  Factions::FACTIONREBEL && faction != Factions::FACTIONIMPERIAL) {
 		faction = 0;
 	}
 }
@@ -980,15 +981,15 @@ bool TangibleObjectImplementation::isCityFountain(){
 }
 
 bool TangibleObjectImplementation::isRebel() const {
-	return faction == FactionManager::FACTIONREBEL;
+	return faction == Factions::FACTIONREBEL;
 }
 
 bool TangibleObjectImplementation::isImperial() const {
-	return faction == FactionManager::FACTIONIMPERIAL;
+	return faction == Factions::FACTIONIMPERIAL;
 }
 
 bool TangibleObjectImplementation::isNeutral() const {
-	return faction == FactionManager::FACTIONNEUTRAL;
+	return faction == Factions::FACTIONNEUTRAL;
 }
 
 TangibleObject* TangibleObject::asTangibleObject() {

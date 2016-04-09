@@ -14,7 +14,7 @@ import server.zone.objects.area.ActiveArea;
 import engine.util.u3d.Coordinate;
 import server.zone.objects.tangible.components.droid.BaseDroidModuleComponent;
 include server.zone.objects.tangible.tool.CraftingStation;
-import server.zone.templates.SharedObjectTemplate;
+include templates.SharedObjectTemplate;
 import server.zone.objects.structure.StructureObject;
 
 class DroidObject extends AiAgent {
@@ -255,6 +255,10 @@ class DroidObject extends AiAgent {
 	 */
 	@local
 	public native void initDroidModules();
+
+	@local
+	@preLocked
+	public native void initDroidWeapons();
 
 	/**
 	 * Returns a crafting station of the given type if droid has the appropriate module. Returns NULL otherwise.

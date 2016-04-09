@@ -13,10 +13,10 @@ import server.zone.packets.object.ObjectMenuResponse;
 import server.zone.objects.creature.CreatureObject;
 import server.zone.ZoneServer;
 import server.zone.objects.tangible.pharmaceutical.PharmaceuticalObject;
-include server.zone.objects.creature.CreatureAttribute;
+include templates.params.creature.CreatureAttribute;
 import server.zone.objects.manufactureschematic.ManufactureSchematic;
 include server.zone.objects.manufactureschematic.craftingvalues.CraftingValues;
-include server.zone.templates.tangible.WoundPackTemplate;
+include templates.tangible.WoundPackTemplate;
 import server.zone.managers.player.PlayerManager;
 
 class WoundPack extends PharmaceuticalObject {

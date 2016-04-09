@@ -8,7 +8,7 @@
 #include "server/zone/objects/scene/SceneObject.h"
 #include "server/zone/managers/city/CityManager.h"
 #include "server/zone/managers/player/PlayerManager.h"
-#include "server/zone/templates/tangible/SharedStructureObjectTemplate.h"
+#include "templates/tangible/SharedStructureObjectTemplate.h"
 
 class TransferstructureCommand : public QueueCommand {
 public:
@@ -109,7 +109,7 @@ public:
 
 		if (abilityRequired != "" && !ghost->hasAbility(abilityRequired)) {
 			StringIdChatParameter params("@player_structure:not_able_to_own"); //%NT is not able to own this structure.
-			params.setTT(targetCreature);
+			params.setTT(targetCreature->getObjectID());
 			creature->sendSystemMessage(params);
 			return GENERALERROR;
 		}
@@ -152,7 +152,7 @@ public:
 			if ( !bForceTransfer) {
 				System::out << "lotsize: " << lotSize << endl;
 				StringIdChatParameter params("@player_structure:not_able_to_own"); //%NT is not able to own this structure.
-				params.setTT(targetCreature);
+				params.setTT(targetCreature->getObjectID());
 				creature->sendSystemMessage(params);
 			} else {
 

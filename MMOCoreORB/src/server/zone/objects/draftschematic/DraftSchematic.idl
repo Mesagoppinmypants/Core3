@@ -9,10 +9,10 @@ import server.zone.objects.scene.SceneObject;
 import server.zone.packets.scene.AttributeListMessage;
 include server.zone.packets.object.ObjectControllerMessage;
 import server.zone.objects.intangible.IntangibleObject;
-include server.zone.templates.intangible.DraftSchematicObjectTemplate;
-include server.zone.objects.draftschematic.draftslot.DraftSlot;
-include server.zone.objects.draftschematic.resourceweight.ResourceWeight;
-import server.zone.templates.SharedObjectTemplate;
+include templates.intangible.DraftSchematicObjectTemplate;
+include templates.crafting.draftslot.DraftSlot;
+include templates.crafting.resourceweight.ResourceWeight;
+include templates.SharedObjectTemplate;
 import server.zone.objects.creature.CreatureObject;
 import system.util.Vector;
 

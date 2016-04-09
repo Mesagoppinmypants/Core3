@@ -7,9 +7,8 @@
 #include "server/zone/managers/creature/DnaManager.h"
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/tangible/deed/pet/PetDeed.h"
-#include "server/zone/objects/creature/CreatureAttribute.h"
-#include "server/zone/templates/mobile/CreatureTemplate.h"
-#include "server/zone/templates/tangible/DnaSampleTemplate.h"
+#include "templates/params/creature/CreatureAttribute.h"
+#include "server/zone/objects/creature/ai/CreatureTemplate.h"
 #include "server/zone/objects/tangible/component/genetic/GeneticComponent.h"
 #include "engine/engine.h"
 

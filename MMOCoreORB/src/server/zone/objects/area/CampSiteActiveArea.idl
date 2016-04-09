@@ -12,11 +12,11 @@ import server.zone.objects.area.ActiveArea;
 import server.zone.objects.area.CampSiteObserver;
 import server.zone.objects.area.events.CampDespawnTask;
 import server.zone.objects.area.events.CampAbandonTask;
-include server.zone.templates.tangible.CampStructureTemplate;
+include templates.building.CampStructureTemplate;
 include system.thread.Mutex;
 import system.lang.ref.Reference;
 import system.lang.Time;
-include server.zone.templates.TemplateReference;
+include templates.TemplateReference;
 
 class CampSiteActiveArea extends ActiveArea {
 

@@ -8,7 +8,6 @@
 #include "server/zone/objects/structure/StructureObject.h"
 #include "server/zone/ZoneServer.h"
 #include "server/zone/Zone.h"
-#include "server/zone/templates/tangible/SharedStructureObjectTemplate.h"
 #include "server/zone/objects/structure/events/StructureMaintenanceTask.h"
 #include "server/zone/objects/installation/InstallationObject.h"
 #include "server/zone/objects/building/BuildingObject.h"
@@ -27,9 +26,9 @@
 #include "server/zone/objects/player/sui/inputbox/SuiInputBox.h"
 #include "server/zone/objects/player/sui/transferbox/SuiTransferBox.h"
 
-#include "server/zone/templates/appearance/MeshAppearanceTemplate.h"
-#include "server/zone/templates/appearance/PortalLayout.h"
-#include "server/zone/templates/tangible/SharedStructureObjectTemplate.h"
+#include "templates/appearance/MeshAppearanceTemplate.h"
+#include "templates/appearance/PortalLayout.h"
+#include "templates/tangible/SharedStructureObjectTemplate.h"
 #include "server/zone/managers/city/PayPropertyTaxTask.h"
 
 void StructureObjectImplementation::loadTemplateData(SharedObjectTemplate* templateData) {

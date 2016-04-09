@@ -25,7 +25,7 @@
 #include "server/zone/managers/planet/PlanetManager.h"
 #include "server/zone/managers/terrain/TerrainManager.h"
 #include "server/zone/managers/components/ComponentManager.h"
-#include "server/zone/managers/templates/TemplateManager.h"
+#include "templates/manager/TemplateManager.h"
 #include "server/zone/managers/director/DirectorManager.h"
 #include "server/zone/managers/stringid/StringIdManager.h"
 #include "server/zone/packets/object/ObjectMenuResponse.h"
@@ -44,8 +44,8 @@
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/creature/VehicleObject.h"
 #include "server/zone/objects/building/BuildingObject.h"
-#include "server/zone/templates/ChildObject.h"
-#include "server/zone/templates/appearance/MeshAppearanceTemplate.h"
+#include "templates/ChildObject.h"
+#include "templates/appearance/MeshAppearanceTemplate.h"
 #include "server/zone/objects/tangible/terminal/Terminal.h"
 #include "server/zone/objects/scene/components/ZoneComponent.h"
 #include "server/zone/objects/scene/components/ObjectMenuComponent.h"
@@ -65,7 +65,7 @@ void SceneObjectImplementation::initializeTransientMembers() {
 	templateObject = TemplateManager::instance()->getTemplate(serverObjectCRC);
 
 	if (templateObject != NULL) {
-		containerComponent = cast<ContainerComponent*>(templateObject->getContainerComponent());
+		createContainerComponent();
 
 		String zoneComponentClassName = templateObject->getZoneComponent();
 		zoneComponent = ComponentManager::instance()->getComponent<ZoneComponent*>(zoneComponentClassName);
@@ -74,7 +74,7 @@ void SceneObjectImplementation::initializeTransientMembers() {
 			zoneComponent = ComponentManager::instance()->getComponent<ZoneComponent*>("ZoneComponent");
 		}
 
-		objectMenuComponent = cast<ObjectMenuComponent*>(templateObject->getObjectMenuComponent());
+		createObjectMenuComponent();
 	}
 
 	if(dataObjectComponent != NULL) {
@@ -162,14 +162,20 @@ void SceneObjectImplementation::loadTemplateData(SharedObjectTemplate* templateD
 	dataObjectComponent = ComponentManager::instance()->getDataObjectComponent(templateData->getDataObjectComponent());
 }
 
-void SceneObjectImplementation::createContainerComponent() {
-	containerComponent = cast<ContainerComponent*>(templateObject->getContainerComponent());
-}
-
 void SceneObjectImplementation::setZoneComponent(const String& name) {
+	if(name.isEmpty())
+		return;
+	
 	zoneComponent = ComponentManager::instance()->getComponent<ZoneComponent*>(name);
 }
 
+void SceneObjectImplementation::createContainerComponent() {
+	setContainerComponent(templateObject->getContainerComponent());
+}
+
+void SceneObjectImplementation::createObjectMenuComponent() {
+	setObjectMenuComponent(templateObject->getObjectMenuComponent());
+}
 void SceneObjectImplementation::createComponents() {
 	if (templateObject != NULL) {
 		String zoneComponentClassName = templateObject->getZoneComponent();
@@ -180,13 +186,15 @@ void SceneObjectImplementation::createComponents() {
 			info("zone component null " + zoneComponentClassName + " in " + templateObject->getFullTemplateString());
 		}
 
-		objectMenuComponent = cast<ObjectMenuComponent*>(templateObject->getObjectMenuComponent());
+		createObjectMenuComponent();
 
 		String attributeListComponentName = templateObject->getAttributeListComponent();
-		attributeListComponent = ComponentManager::instance()->getComponent<AttributeListComponent*>(attributeListComponentName);
+		if (!attributeListComponentName.isEmpty()) {
+			attributeListComponent = ComponentManager::instance()->getComponent<AttributeListComponent*>(attributeListComponentName);
 
-		if (attributeListComponent == NULL) {
-			info("attributeList component null for " + templateObject->getFullTemplateString());
+			if (attributeListComponent == NULL) {
+				info("attributeList component null for " + templateObject->getFullTemplateString());
+			}
 		}
 
 		createContainerComponent();
@@ -373,6 +381,10 @@ void SceneObjectImplementation::notifyLoadFromDatabase() {
 }
 
 void SceneObjectImplementation::setObjectMenuComponent(const String& name) {
+
+	if (name.isEmpty())
+		return;
+	
 	objectMenuComponent = ComponentManager::instance()->getComponent<ObjectMenuComponent*>(name);
 
 	if (objectMenuComponent == NULL) {
@@ -392,6 +404,9 @@ void SceneObjectImplementation::setObjectMenuComponent(const String& name) {
 }
 
 void SceneObjectImplementation::setContainerComponent(const String& name) {
+	if (name.isEmpty())
+		return;
+	
 	containerComponent = ComponentManager::instance()->getComponent<ContainerComponent*>(name);
 
 	if (containerComponent == NULL) {

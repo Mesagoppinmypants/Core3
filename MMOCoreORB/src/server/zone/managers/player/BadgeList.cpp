@@ -1,7 +1,7 @@
 #include "BadgeList.h"
-#include "server/conf/ConfigManager.h"
-#include "server/zone/templates/datatables/DataTableIff.h"
-#include "server/zone/managers/templates/DataArchiveStore.h"
+#include "conf/ConfigManager.h"
+#include "templates/datatables/DataTableIff.h"
+#include "templates/manager/DataArchiveStore.h"
 
 BadgeList::BadgeList() : Logger("BadgeList") {
 	badges.setNullValue(NULL);

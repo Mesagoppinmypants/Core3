@@ -40,7 +40,7 @@
 # this exception also makes it possible to release a modified version 
 # which carries forward this exception.
 
-AM_CXXFLAGS= $(UNITTEST_DIRECTIVES) -ggdb -Wall -Wextra -Wno-unused -Wno-sign-compare -Wno-multichar -DDEFAULT_DYNAMIC_CAST -Wno-unused-parameter -Wno-overloaded-virtual -Wno-missing-declarations -Werror -std=c++11
+AM_CXXFLAGS= $(UNITTEST_DIRECTIVES) -ggdb -Wall -Wextra -Wno-unused -Wno-sign-compare -Wno-multichar -DDEFAULT_DYNAMIC_CAST -Wno-unused-parameter -Wno-overloaded-virtual -Wno-missing-declarations -Werror -std=c++11 
 
 ENGINE3_PATH=../../../../MMOEngine
 ENGINE3_MOCK_PATH=../../../utils
@@ -384,7 +384,6 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/tangible/misc/CustomIngredientImplementation.cpp \
 		server/zone/objects/tangible/misc/FsCraftingComponentObjectImplementation.cpp \
 		server/zone/managers/player/PermissionLevelList.cpp \
-		server/zone/objects/creature/CreatureAttribute.cpp \
 		server/zone/objects/creature/components/TrainerMenuComponent.cpp \
 		server/zone/objects/creature/components/SarlaccMenuComponent.cpp \
 		server/zone/objects/creature/components/PetMenuComponent.cpp \
@@ -435,7 +434,6 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/managers/creature/LairObserverImplementation.cpp \
 		server/zone/managers/creature/DynamicSpawnObserverImplementation.cpp \
 		server/zone/managers/creature/SpawnObserverImplementation.cpp \
-		server/zone/managers/customization/CustomizationIdManager.cpp \
 		server/zone/managers/director/ScreenPlayObserverImplementation.cpp \
 		server/zone/managers/director/PersistentEventImplementation.cpp \
 		server/zone/managers/director/QuestVectorMapImplementation.cpp \
@@ -508,7 +506,7 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/managers/player/creation/PlayerCreationManager.cpp \
 		tre3/TreeFile.cpp \
 		server/zone/managers/vendor/VendorOutfitManager.cpp \
-		server/conf/ConfigManager.cpp \
+		conf/ConfigManager.cpp \
 		server/features/Features.cpp \
 		server/db/ServerDatabase.cpp \
 		server/db/MantisDatabase.cpp \
@@ -805,8 +803,6 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/managers/objectcontroller/command/CommandConfigManager.cpp \
 		server/zone/managers/terrain/TerrainManager.cpp \
 		server/zone/managers/terrain/TerrainCache.cpp \
-		server/zone/managers/templates/TemplateManager.cpp \
-		server/zone/managers/templates/DataArchiveStore.cpp \
 		server/zone/managers/mission/MissionManagerImplementation.cpp \
 		server/zone/managers/mission/spawnmaps/MissionNpcSpawnMap.cpp \
 		server/zone/managers/mission/spawnmaps/NpcSpawnPoint.cpp \
@@ -855,33 +851,38 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/managers/mission/DestroyMissionLairObserverImplementation.cpp \
 		server/zone/objects/installation/components/TurretObserverImplementation.cpp \
 		server/zone/objects/mission/bountyhunter/BountyHunterDroid.cpp \
-		server/zone/templates/string/StringFile.cpp \
-		server/zone/templates/faction/FactionRanks.cpp \
-		server/zone/templates/mobile/LuaConversationScreen.cpp \
-		server/zone/templates/mobile/CreatureTemplate.cpp \
-		server/zone/templates/mobile/LuaConversationTemplate.cpp \
-		server/zone/templates/datatables/DataTableIff.cpp \
-		server/zone/templates/datatables/DataTableCell.cpp \
-		server/zone/templates/snapshot/WorldSnapshotIff.cpp \
-		server/zone/templates/SharedTangibleObjectTemplate.cpp \
-		server/zone/templates/appearance/FloorMesh.cpp \
-		server/zone/templates/appearance/CellProperty.cpp \
-		server/zone/templates/appearance/MeshAppearanceTemplate.cpp \
-		server/zone/templates/appearance/DetailAppearanceTemplate.cpp \
-		server/zone/templates/appearance/PortalLayout.cpp \
-		server/zone/templates/appearance/PathGraph.cpp \
-		server/zone/templates/intangible/DraftSchematicObjectTemplate.cpp \
-		server/zone/templates/SharedObjectTemplate.cpp \
-		server/zone/templates/params/PaletteColorCustomizationVariables.cpp \
-		server/zone/templates/params/RangedIntCustomizationVariables.cpp \
-		server/zone/templates/tangible/SharedBuildingObjectTemplate.cpp \
-		server/zone/templates/tangible/SharedStructureObjectTemplate.cpp \
-		server/zone/templates/tangible/CampStructureTemplate.cpp \
-		server/zone/templates/tangible/SharedCreatureObjectTemplate.cpp \
-		server/zone/templates/tangible/PlayerCreatureTemplate.cpp \
-		server/zone/templates/tangible/SharedWeaponObjectTemplate.cpp \
-		server/zone/templates/customization/AssetCustomizationManagerTemplate.cpp \
 		server/zone/objects/tangible/components/CityDecorationMenuComponent.cpp \
+		server/zone/objects/creature/conversation/LuaConversationScreen.cpp \
+		server/zone/objects/creature/ai/CreatureTemplate.cpp \
+		server/zone/objects/creature/conversation/LuaConversationTemplate.cpp \
+		templates/SharedObjectTemplate.cpp \
+		templates/SharedTangibleObjectTemplate.cpp \
+		templates/appearance/FloorMesh.cpp \
+		templates/appearance/CellProperty.cpp \
+		templates/appearance/MeshAppearanceTemplate.cpp \
+		templates/appearance/DetailAppearanceTemplate.cpp \
+		templates/appearance/PortalLayout.cpp \
+		templates/appearance/PathGraph.cpp \
+		templates/building/CampStructureTemplate.cpp \
+		templates/building/SharedBuildingObjectTemplate.cpp \
+		templates/crafting/ValuesMap.cpp \
+		templates/creature/PlayerCreatureTemplate.cpp \
+		templates/creature/SharedCreatureObjectTemplate.cpp \
+		templates/customization/AssetCustomizationManagerTemplate.cpp \
+		templates/customization/CustomizationIdManager.cpp \
+		templates/datatables/DataTableIff.cpp \
+		templates/datatables/DataTableCell.cpp \
+		templates/faction/FactionRanks.cpp \
+		templates/intangible/DraftSchematicObjectTemplate.cpp \
+		templates/manager/DataArchiveStore.cpp \
+		templates/manager/TemplateManager.cpp \
+		templates/params/PaletteColorCustomizationVariables.cpp \
+		templates/params/RangedIntCustomizationVariables.cpp \
+		templates/params/creature/CreatureAttribute.cpp \
+		templates/string/StringFile.cpp \
+		templates/snapshot/WorldSnapshotIff.cpp \
+		templates/tangible/SharedStructureObjectTemplate.cpp \
+		templates/tangible/SharedWeaponObjectTemplate.cpp \
 		main.cpp
 		
 
