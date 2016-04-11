@@ -1,1 +1,0 @@
-includeFile("corellia/world_boss_corellia.lua")

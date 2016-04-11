@@ -1,1 +1,0 @@
-includeFile("talus/world_boss_talus.lua")
