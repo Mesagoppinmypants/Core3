@@ -47,3 +47,9 @@ object_mobile_vehicle_shared_barc_speeder = SharedCreatureObjectTemplate:new {
 
 }
 ObjectTemplates:addClientTemplate(object_mobile_vehicle_shared_barc_speeder, "object/mobile/vehicle/shared_barc_speeder.iff")
+
+object_mobile_vehicle_shared_republic_gunship = SharedCreatureObjectTemplate:new {
+	clientTemplateFileName = "object/mobile/vehicle/shared_republic_gunship.iff"
+
+}
+ObjectTemplates:addClientTemplate(object_mobile_vehicle_shared_republic_gunship, "object/mobile/vehicle/shared_republic_gunship.iff")

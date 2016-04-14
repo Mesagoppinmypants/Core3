@@ -41,9 +41,8 @@
 --this exception also makes it possible to release a modified version 
 
 
+object_intangible_vehicle_republic_gunship_pcd = object_intangible_vehicle_shared_republic_gunship_pcd:new {
 
---Children folder includes
+}
 
--- Server Objects
-includeFile("custom_content/intangible/vehicle/barc_speeder_pcd.lua")
-includeFile("custom_content/intangible/vehicle/republic_gunship_pcd.lua")
+ObjectTemplates:addTemplate(object_intangible_vehicle_republic_gunship_pcd, "object/intangible/vehicle/republic_gunship_pcd.iff")

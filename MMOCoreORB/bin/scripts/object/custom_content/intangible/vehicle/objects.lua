@@ -45,6 +45,12 @@ object_intangible_vehicle_shared_barc_speeder_pcd = SharedIntangibleObjectTempla
 	clientTemplateFileName = "object/intangible/vehicle/shared_barc_speeder_pcd.iff"
 }
 ObjectTemplates:addClientTemplate(object_intangible_vehicle_shared_barc_speeder_pcd, "object/intangible/vehicle/shared_barc_speeder_pcd.iff")
+
+-- Republic Gunship
+object_intangible_vehicle_shared_republic_gunship_pcd = SharedIntangibleObjectTemplate:new {
+	clientTemplateFileName = "object/intangible/vehicle/shared_republic_gunship_pcd.iff"
+}
+ObjectTemplates:addClientTemplate(object_intangible_vehicle_shared_republic_gunship_pcd, "object/intangible/vehicle/shared_republic_gunship_pcd.iff")
 --*******************************************************************************************************************************************
 
 object_intangible_vehicle_shared_jetpack_pcd = SharedIntangibleObjectTemplate:new {

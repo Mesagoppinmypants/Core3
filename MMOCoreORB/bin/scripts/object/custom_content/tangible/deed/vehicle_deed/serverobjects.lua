@@ -46,3 +46,4 @@
 
 -- New Objects
 includeFile("custom_content/tangible/deed/vehicle_deed/barc_speeder_deed.lua")
+includeFile("custom_content/tangible/deed/vehicle_deed/republic_gunship_deed.lua")
