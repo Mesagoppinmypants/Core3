@@ -726,6 +726,39 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 					"Master", "force_sensitive_combat_prowess_master"
 					}
 				},
+				"Image Designer",
+				{
+					"Novice", "social_imagedesigner_novice",
+					"Hairstyling",
+					{
+						"Hairstyling I", "social_imagedesigner_hairstyle_01",
+						"Hairstyling II", "social_imagedesigner_hairstyle_02",
+						"Hairstyling III", "social_imagedesigner_hairstyle_03",
+						"Hairstyling IV", "social_imagedesigner_hairstyle_04"
+					},
+					"Face",
+					{
+						"Face I", "social_imagedesigner_exotic_01",
+						"Face II", "social_imagedesigner_exotic_02",
+						"Face III", "social_imagedesigner_exotic_03",
+						"Face IV", "social_imagedesigner_exotic_04"
+					},
+					"Bodyform",
+					{
+						"Bodyform I", "social_imagedesigner_bodyform_01",
+						"Bodyform II", "social_imagedesigner_bodyform_02",
+						"Bodyform III", "social_imagedesigner_bodyform_03",
+						"Bodyform Iv", "social_imagedesigner_bodyform_04"
+					},
+					"Markings",
+					{
+						"Markings I", "social_imagedesigner_markings_01",
+						"Markings II", "social_imagedesigner_markings_02",
+						"Markings III", "social_imagedesigner_markings_03",
+						"Markings IV", "social_imagedesigner_markings_04"
+					},
+					"Master", "social_imagedesigner_master"
+				},
 				"Jedi",
 				{
 					"Rank",
