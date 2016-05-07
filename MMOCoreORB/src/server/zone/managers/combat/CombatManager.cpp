@@ -1713,7 +1713,6 @@ void CombatManager::applyStates(CreatureObject* creature, CreatureObject* target
 			for (int j = 0; j < defenseMods.size(); j++)
 				targetDefense += targetCreature->getSkillMod(defenseMods.get(j));
 
-			targetDefense -= targetCreature->calculateBFRatio();
 			targetDefense /= 1.5;
 			targetDefense += playerLevel;
 
@@ -1721,7 +1720,8 @@ void CombatManager::applyStates(CreatureObject* creature, CreatureObject* target
 				failed = true;
 
 			// no reason to apply jedi defenses if primary defense was successful
-			if (!failed) {
+			// and only perform second roll if the character is a Jedi
+			if (!failed && targetCreature->isPlayerCreature() && targetCreature->getPlayerObject()->isJedi()) {
 				targetDefense = 0.f;
 				Vector<String> jediMods = effect.getDefenderJediStateDefenseModifiers();
 				// second chance for jedi, roll against their special defense "jedi_state_defense"
@@ -1913,9 +1913,7 @@ int CombatManager::applyDamage(TangibleObject* attacker, WeaponObject* weapon, C
 	}
 
 	int totalDamage =  (int) (healthDamage + actionDamage + mindDamage);
-	if(totalDamage != 0) {
-		defender->notifyObservers(ObserverEventType::DAMAGERECEIVED, attacker, totalDamage);
-	}
+	defender->notifyObservers(ObserverEventType::DAMAGERECEIVED, attacker, totalDamage);
 
 	if (poolsToWound.size() > 0 && System::random(100) < ratio) {
 		int poolToWound = poolsToWound.get(System::random(poolsToWound.size() - 1));
@@ -1980,8 +1978,7 @@ int CombatManager::applyDamage(CreatureObject* attacker, WeaponObject* weapon, T
 
 	defender->inflictDamage(attacker, 0, damage, true, xpType, true, true);
 
-	if(damage != 0)
-		defender->notifyObservers(ObserverEventType::DAMAGERECEIVED, attacker, damage);
+	defender->notifyObservers(ObserverEventType::DAMAGERECEIVED, attacker, damage);
 
 	return damage;
 }

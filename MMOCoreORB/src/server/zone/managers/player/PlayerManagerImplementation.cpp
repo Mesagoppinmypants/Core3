@@ -7,7 +7,7 @@
 
 #include "server/zone/managers/player/PlayerManager.h"
 
-#include "server/login/account/Account.h"
+#include "server/login/account/AccountManager.h"
 #include "server/zone/packets/charcreation/ClientCreateCharacter.h"
 #include "server/zone/packets/charcreation/ClientCreateCharacterCallback.h"
 #include "server/zone/packets/charcreation/ClientCreateCharacterSuccess.h"
@@ -411,7 +411,7 @@ bool PlayerManagerImplementation::kickUser(const String& name, const String& adm
 
 	/// 10 min ban
 	if(doBan) {
-		String banMessage = banAccount(adminghost, getAccount(ghost->getAccountID()), 60 * 10, reason);
+		String banMessage = banAccount(adminghost, ghost->getAccount(), 60 * 10, reason);
 		adminplayer->sendSystemMessage(banMessage);
 	}
 
@@ -1262,8 +1262,59 @@ bool PlayerManagerImplementation::checkEncumbrancies(CreatureObject* player, Arm
 
 	if (healthEncumb >= strength || healthEncumb >= constitution ||
 			actionEncumb >= quickness || actionEncumb >= stamina ||
-			mindEncumb >= focus || mindEncumb >= willpower)
+			mindEncumb >= focus || mindEncumb >= willpower) {
+		player->sendSystemMessage("@system_msg:equip_armor_fail"); // You are not healthy enough to wear this armor!
+
+		if (healthEncumb >= strength) {
+			int statStr = (healthEncumb - strength) + 1;
+			StringIdChatParameter params("@system_msg:equip_armor_fail_prose"); // You need %DI more %TT to wear this armor.
+			params.setDI(statStr);
+			params.setTT("@att_n:strength");
+			player->sendSystemMessage(params);
+		}
+
+		if (healthEncumb >= constitution) {
+			int statCon = (healthEncumb - constitution) + 1;
+			StringIdChatParameter params("@system_msg:equip_armor_fail_prose");
+			params.setDI(statCon);
+			params.setTT("@att_n:constitution");
+			player->sendSystemMessage(params);
+		}
+
+		if (actionEncumb >= quickness) {
+			int statQuick = (actionEncumb - quickness) + 1;
+			StringIdChatParameter params("@system_msg:equip_armor_fail_prose");
+			params.setDI(statQuick);
+			params.setTT("@att_n:quickness");
+			player->sendSystemMessage(params);
+		}
+
+		if (actionEncumb >= stamina) {
+			int statStam = (actionEncumb - stamina) + 1;
+			StringIdChatParameter params("@system_msg:equip_armor_fail_prose");
+			params.setDI(statStam);
+			params.setTT("@att_n:stamina");
+			player->sendSystemMessage(params);
+		}
+
+		if (mindEncumb >= focus) {
+			int statFoc = (mindEncumb - focus) + 1;
+			StringIdChatParameter params("@system_msg:equip_armor_fail_prose");
+			params.setDI(statFoc);
+			params.setTT("@att_n:focus");
+			player->sendSystemMessage(params);
+		}
+
+		if (mindEncumb >= willpower) {
+			int statWill = (mindEncumb - willpower) + 1;
+			StringIdChatParameter params("@system_msg:equip_armor_fail_prose");
+			params.setDI(statWill);
+			params.setTT("@att_n:willpower");
+			player->sendSystemMessage(params);
+		}
+
 		return false;
+	}
 	else
 		return true;
 }
@@ -1333,7 +1384,7 @@ void PlayerManagerImplementation::awardBadge(PlayerObject* ghost, uint32 badgeId
 
 void PlayerManagerImplementation::awardBadge(PlayerObject* ghost, const Badge* badge) {
 	if (badge == NULL) {
-		ghost->error("Failed to award null badge.");	
+		ghost->error("Failed to award null badge.");
 		return;
 	}
 
@@ -1351,7 +1402,7 @@ void PlayerManagerImplementation::awardBadge(PlayerObject* ghost, const Badge* b
 	ghost->setBadge(badgeId);
 	stringId.setStringId("badge_n", "prose_grant");
 	player->sendSystemMessage(stringId);
-	
+
 	if (badge->getHasMusic()) {
 		String music = badge->getMusic();
 		PlayMusicMessage* musicMessage = new PlayMusicMessage(music);
@@ -3159,58 +3210,6 @@ void PlayerManagerImplementation::finishHologrind(CreatureObject* player) {
 
 }
 
-Account* PlayerManagerImplementation::getAccount(const String& username) {
-
-	String name = username;
-
-	Database::escapeString(name);
-
-	StringBuffer query;
-	query << "SELECT a.active, a.username, a.password, a.salt, a.account_id, a.station_id, UNIX_TIMESTAMP(a.created), a.admin_level FROM accounts a WHERE a.username = '" << name << "' LIMIT 1;";
-
-	return queryForAccount(query.toString());
-}
-
-Account* PlayerManagerImplementation::getAccount(uint32 accountID) {
-
-	StringBuffer query;
-	query << "SELECT a.active, a.username, a.password, a.salt, a.account_id, a.station_id, UNIX_TIMESTAMP(a.created), a.admin_level FROM accounts a WHERE a.account_id = '" << accountID << "' LIMIT 1;";
-
-	return queryForAccount(query.toString());
-}
-
-Account* PlayerManagerImplementation::queryForAccount(const String& query) {
-	Account* account = NULL;
-
-	Reference<ResultSet*> result;
-
-	try {
-		result = ServerDatabase::instance()->executeQuery(query);
-	} catch (DatabaseException& e) {
-		error(e.getMessage());
-	}
-
-	if (result != NULL && result->next()) {
-
-		account = new Account();
-
-		account->setActive(result->getBoolean(0));
-		account->setUsername(result->getString(1));
-
-		account->setAccountID(result->getUnsignedInt(4));
-		account->setStationID(result->getUnsignedInt(5));
-
-		account->setTimeCreated(result->getUnsignedInt(6));
-		account->setAdminLevel(result->getInt(7));
-
-		account->updateFromDatabase();
-	}
-
-	result = NULL;
-
-	return account;
-}
-
 String PlayerManagerImplementation::banAccount(PlayerObject* admin, Account* account, uint32 seconds, const String& reason) {
 
 	if(admin == NULL || !admin->isPrivileged())
@@ -3231,9 +3230,15 @@ String PlayerManagerImplementation::banAccount(PlayerObject* admin, Account* acc
 		return "Exception banning account: " + e.getMessage();
 	}
 
+	Locker locker(account);
+
+	account->setBanReason(reason);
+	account->setBanExpires(System::getMiliTime() + seconds*1000);
+	account->setBanAdmin(admin->getAccountID());
+	
 	try {
 
-		CharacterList* characters = account->getCharacterList();
+		Reference<CharacterList*> characters = account->getCharacterList();
 		for(int i = 0; i < characters->size(); ++i) {
 			CharacterListEntry* entry = &characters->get(i);
 			if(entry->getGalaxyID() == server->getGalaxyID()) {
@@ -3279,7 +3284,11 @@ String PlayerManagerImplementation::unbanAccount(PlayerObject* admin, Account* a
 	} catch(Exception& e) {
 		return "Exception unbanning account: " + e.getMessage();
 	}
-
+	
+	Locker locker(account);
+	account->setBanExpires(System::getMiliTime());
+	account->setBanReason(reason);
+	
 	return "Account Successfully Unbanned";
 }
 
@@ -3302,11 +3311,32 @@ String PlayerManagerImplementation::banFromGalaxy(PlayerObject* admin, Account* 
 	} catch(Exception& e) {
 		return "Exception banning from galaxy: " + e.getMessage();
 	}
+	
+	Locker locker(account);
+	
+	Time current;
+	Time expires;
+	
+	expires.addMiliTime(seconds*10000);
+	
+	Reference<GalaxyBanEntry*> ban = new GalaxyBanEntry();
+	
+	ban->setAccountID(account->getAccountID());
+	ban->setBanAdmin(admin->getAccountID());
+	ban->setGalaxyID(galaxy);
+	
+	ban->setCreationDate(current);
+	
+	ban->setBanExpiration(expires);
+	
+	ban->setBanReason(reason);
+	
+	account->addGalaxyBan(ban, galaxy);
 
 	try {
 
 		if (server->getGalaxyID() == galaxy) {
-			CharacterList* characters = account->getCharacterList();
+			Reference<CharacterList*> characters = account->getCharacterList();
 			for(int i = 0; i < characters->size(); ++i) {
 				CharacterListEntry* entry = &characters->get(i);
 				if(entry->getGalaxyID() == galaxy) {
@@ -3357,6 +3387,9 @@ String PlayerManagerImplementation::unbanFromGalaxy(PlayerObject* admin, Account
 		return "Exception unbanning from galaxy: " + e.getMessage();
 	}
 
+	Locker locker(account);
+	account->removeGalaxyBan(galaxy);
+	
 	return "Successfully Unbanned from Galaxy";
 }
 
@@ -3374,6 +3407,7 @@ String PlayerManagerImplementation::banCharacter(PlayerObject* admin, Account* a
 	String escapedName = name;
 	Database::escapeString(escapedName);
 
+	
 	try {
 		StringBuffer query;
 		query << "INSERT INTO character_bans values (NULL, " << account->getAccountID() << ", " << admin->getAccountID() << ", " << galaxyID << ", '" << escapedName << "', " <<  "now(), UNIX_TIMESTAMP() + " << seconds << ", '" << escapedReason << "');";
@@ -3382,6 +3416,25 @@ String PlayerManagerImplementation::banCharacter(PlayerObject* admin, Account* a
 	} catch(Exception& e) {
 		return "Exception banning character: " + e.getMessage();
 	}
+	
+	Locker locker(account);
+	
+	Reference<CharacterList*> characters = account->getCharacterList();
+	
+	for (int i=0; i<characters->size(); i++) {
+		CharacterListEntry& entry = characters->get(i);
+		
+		if (entry.getFirstName() == name && entry.getGalaxyID() == galaxyID) {
+			Time expires;
+			expires.addMiliTime(seconds*1000);
+			
+			entry.setBanReason(reason);
+			entry.setBanAdmin(admin->getAccountID());
+			entry.setBanExpiration(expires);
+		}
+	}
+	
+	locker.release();
 
 	try {
 		if (server->getGalaxyID() == galaxyID) {
@@ -3431,6 +3484,15 @@ String PlayerManagerImplementation::unbanCharacter(PlayerObject* admin, Account*
 		return "Exception banning character: " + e.getMessage();
 	}
 
+	Locker locker(account);
+	CharacterListEntry *entry = account->getCharacterBan(galaxyID, name);
+	
+	if (entry != NULL) {
+		Time now;
+		entry->setBanExpiration(now);
+		entry->setBanReason(reason);
+	}
+	
 	return "Character Successfully Unbanned";
 }
 
@@ -3754,7 +3816,7 @@ SortedVector<String> PlayerManagerImplementation::getTeachableSkills(CreatureObj
 
 		if (!(skillName.contains("novice") || skillName.contains("force_sensitive") || skillName.contains("force_rank") || skillName.contains("force_title")) && skillManager->canLearnSkill(skillName, student, false))
 			skills.put(skillName);
-	}	
+	}
 
 	return skills;
 }
@@ -4192,7 +4254,7 @@ void PlayerManagerImplementation::claimVeteranRewards(CreatureObject* player){
 	PlayerObject* playerGhost = player->getPlayerObject();
 
 	// Get account
-	ManagedReference<Account*> account = getAccount( playerGhost->getAccountID() );
+	ManagedReference<Account*> account = playerGhost->getAccount();
 	if( account == NULL )
 		return;
 
@@ -4274,7 +4336,7 @@ void PlayerManagerImplementation::confirmVeteranReward(CreatureObject* player, i
 
 	// Get account
 	PlayerObject* playerGhost = player->getPlayerObject();
-	ManagedReference<Account*> account = getAccount( playerGhost->getAccountID() );
+	ManagedReference<Account*> account = playerGhost->getAccount();
 	if( account == NULL ){
 		player->sendSystemMessage( "@veteran:reward_error"); //	The reward could not be granted.
 		cancelVeteranRewardSession( player );
@@ -4319,7 +4381,7 @@ void PlayerManagerImplementation::generateVeteranReward(CreatureObject* player )
 
 	// Get account
 	PlayerObject* playerGhost = player->getPlayerObject();
-	ManagedReference<Account*> account = getAccount( playerGhost->getAccountID() );
+	ManagedReference<Account*> account = playerGhost->getAccount();
 	if( account == NULL ){
 		player->sendSystemMessage( "@veteran:reward_error"); //	The reward could not be granted.
 		cancelVeteranRewardSession( player );
@@ -4335,26 +4397,11 @@ void PlayerManagerImplementation::generateVeteranReward(CreatureObject* player )
 
 	// Final check to see if milestone has already been claimed on any of the player's characters
 	// (prevent claiming while multi-logged)
-	CharacterList* characters = account->getCharacterList();
+
+
 	bool milestoneClaimed = false;
-	for(int i = 0; i < characters->size(); ++i) {
-		CharacterListEntry* entry = &characters->get(i);
-		if(entry->getGalaxyID() == server->getGalaxyID()) {
-
-			ManagedReference<CreatureObject*> altPlayer = getPlayer(entry->getFirstName());
-			if(altPlayer != NULL && altPlayer->getPlayerObject() != NULL) {
-				Locker alocker(altPlayer, player);
-
-				if( !altPlayer->getPlayerObject()->getChosenVeteranReward( rewardSession->getMilestone() ).isEmpty() ){
-					milestoneClaimed = true;
-					alocker.release();
-					break;
-				}
-
-				alocker.release();
-			}
-		}
-	}
+	if(!playerGhost->getChosenVeteranReward( rewardSession->getMilestone() ).isEmpty() )
+		milestoneClaimed = true;
 
 	if( milestoneClaimed ){
 		player->sendSystemMessage( "@veteran:reward_error"); //	The reward could not be granted.
@@ -4390,18 +4437,8 @@ void PlayerManagerImplementation::generateVeteranReward(CreatureObject* player )
 	player->sendSystemMessage( "@veteran:reward_given");  // Your reward has been placed in your inventory.
 
 	// Record reward in all characters registered to the account
-	for(int i = 0; i < characters->size(); ++i) {
-		CharacterListEntry* entry = &characters->get(i);
-		if(entry->getGalaxyID() == server->getGalaxyID()) {
+	playerGhost->addChosenVeteranReward(rewardSession->getMilestone(), reward.getTemplateFile());
 
-			ManagedReference<CreatureObject*> altPlayer = getPlayer(entry->getFirstName());
-			if(altPlayer != NULL && altPlayer->getPlayerObject() != NULL) {
-				Locker alocker(altPlayer, player);
-				altPlayer->getPlayerObject()->addChosenVeteranReward( rewardSession->getMilestone(), reward.getTemplateFile() );
-				alocker.release();
-			}
-		}
-	}
 
 	cancelVeteranRewardSession( player );
 

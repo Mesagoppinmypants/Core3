@@ -78,6 +78,10 @@ LIBS =	$(SYSTEM_LIBS)  \
 
 bin_PROGRAMS = core3 #odb3
 
+noinst_LIBRARIES = libcore3templates.a libcore3terrain.a
+
+core3_LDADD = libcore3templates.a libcore3terrain.a
+
 #engine/engine.h.gch:
 #	$(CXX) $(INCLUDES) $(ENGINE3_PATH)/src/engine/engine.h
 
@@ -88,16 +92,17 @@ core3_TESTS = 	server/zone/objects/area/areashapes/tests/CircularAreaShapeTest.c
 			  	server/zone/managers/director/tests/BasicScreenPlayTest.cpp \
 			  	server/zone/managers/creature/tests/LuaMobileTest.cpp \
 			  	server/zone/managers/jedi/tests/JediManagerTest.cpp \
-			  	server/zone/managers/terrain/tests/TerrainManagerTest.cpp \
+			  	terrain/manager/tests/TerrainManagerTest.cpp \
 			  	server/zone/objects/creature/ai/bt/tests/BehaviorTest.cpp \
 			  	server/zone/objects/area/areashapes/tests/RectangularAreaShapeTest.cpp \
 			  	server/zone/objects/area/areashapes/tests/RingAreaShapeTest.cpp \
 			  	server/zone/tests/DeadlockTestBase.cpp \
-			  	server/zone/objects/terrain/tests/BasicTerrainTest.cpp \
+			  	terrain/tests/BasicTerrainTest.cpp \
 			  	server/zone/tests/ZoneTest.cpp \
 			  	server/zone/managers/objectcontroller/command/tests/CommandLuaTest.cpp
 
 core3_IDLS =	autogen/server/zone/managers/gcw/GCWBaseShutdownObserver.cpp \
+				autogen/server/zone/objects/creature/buffs/ChannelForceBuff.cpp \
 				autogen/server/zone/objects/tangible/eventperk/ShuttleBeacon.cpp \
 				autogen/server/utils/LambdaObserver.cpp \
 				autogen/server/zone/objects/tangible/misc/FsCraftingComponentObject.cpp \
@@ -377,6 +382,8 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/managers/skill/SkillManager.cpp \
 		server/zone/managers/skill/SkillModManager.cpp \
 		server/login/account/AccountImplementation.cpp \
+		server/login/account/GalaxyAccountInfo.cpp \
+		server/login/account/GalaxyAccountInfoMap.cpp \
 		server/zone/objects/structure/events/StructureMaintenanceTask.cpp \
 		server/zone/objects/tangible/components/ElevatorMenuComponent.cpp \
 		server/zone/objects/tangible/components/ElevatorUpMenuComponent.cpp \
@@ -598,15 +605,6 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/area/areashapes/RectangularAreaShapeImplementation.cpp \
 		server/zone/objects/area/areashapes/RingAreaShapeImplementation.cpp \
 		server/zone/objects/region/RegionImplementation.cpp \
-		server/zone/objects/terrain/ProceduralTerrainAppearance.cpp \
-		server/zone/objects/terrain/SpaceTerrainAppearance.cpp \
-		server/zone/objects/terrain/MapFractal.cpp \
-		server/zone/objects/terrain/TargaBitmap.cpp \
-		server/zone/objects/terrain/TerrainGenerator.cpp \
-		server/zone/objects/terrain/layer/Layer.cpp \
-		server/zone/objects/terrain/layer/affectors/AffectorHeightFractal.cpp \
-		server/zone/objects/terrain/layer/filters/FilterFractal.cpp \
-		server/zone/objects/terrain/layer/filters/FilterBitmap.cpp \
 		server/zone/objects/intangible/IntangibleObjectImplementation.cpp \
 		server/zone/objects/intangible/LuaIntangibleObject.cpp \
 		server/zone/objects/staticobject/StaticObjectImplementation.cpp \
@@ -685,6 +683,7 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/creature/buffs/SquadLeaderBuffObserverImplementation.cpp \
 		server/zone/objects/creature/buffs/PrivateSkillMultiplierBuffImplementation.cpp \
 		server/zone/objects/creature/buffs/BuffList.cpp \
+		server/zone/objects/creature/buffs/ChannelForceBuffImplementation.cpp \
 		server/zone/objects/tangible/components/vendor/VendorContainerComponent.cpp \
 		server/zone/objects/tangible/components/vendor/VendorDataComponent.cpp \
 		server/zone/objects/tangible/components/vendor/VendorMenuComponent.cpp \
@@ -801,8 +800,6 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/chat/WaypointChatParameter.cpp \
 		server/zone/managers/objectcontroller/ObjectControllerImplementation.cpp \
 		server/zone/managers/objectcontroller/command/CommandConfigManager.cpp \
-		server/zone/managers/terrain/TerrainManager.cpp \
-		server/zone/managers/terrain/TerrainCache.cpp \
 		server/zone/managers/mission/MissionManagerImplementation.cpp \
 		server/zone/managers/mission/spawnmaps/MissionNpcSpawnMap.cpp \
 		server/zone/managers/mission/spawnmaps/NpcSpawnPoint.cpp \
@@ -855,7 +852,21 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/creature/conversation/LuaConversationScreen.cpp \
 		server/zone/objects/creature/ai/CreatureTemplate.cpp \
 		server/zone/objects/creature/conversation/LuaConversationTemplate.cpp \
-		templates/SharedObjectTemplate.cpp \
+		main.cpp
+
+libcore3terrain_a_SOURCES = terrain/ProceduralTerrainAppearance.cpp \
+		terrain/SpaceTerrainAppearance.cpp \
+		terrain/MapFractal.cpp \
+		terrain/TargaBitmap.cpp \
+		terrain/TerrainGenerator.cpp \
+		terrain/layer/Layer.cpp \
+		terrain/layer/affectors/AffectorHeightFractal.cpp \
+		terrain/layer/filters/FilterFractal.cpp \
+		terrain/layer/filters/FilterBitmap.cpp \
+		terrain/manager/TerrainManager.cpp \
+		terrain/manager/TerrainCache.cpp
+
+libcore3templates_a_SOURCES = templates/SharedObjectTemplate.cpp \
 		templates/SharedTangibleObjectTemplate.cpp \
 		templates/appearance/FloorMesh.cpp \
 		templates/appearance/CellProperty.cpp \
@@ -882,9 +893,7 @@ core3_SOURCES =	$(core3_IDLS) \
 		templates/string/StringFile.cpp \
 		templates/snapshot/WorldSnapshotIff.cpp \
 		templates/tangible/SharedStructureObjectTemplate.cpp \
-		templates/tangible/SharedWeaponObjectTemplate.cpp \
-		main.cpp
-		
+		templates/tangible/SharedWeaponObjectTemplate.cpp 		
 
 #BUILT_SOURCES = engine/engine.h.gch \
 #				server/zone/objects/scene/SceneObject.h.gch

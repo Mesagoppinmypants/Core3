@@ -79,6 +79,8 @@
 #include "server/zone/managers/jedi/JediManager.h"
 #include "server/zone/objects/player/events/ForceRegenerationEvent.h"
 #include "server/login/account/Account.h"
+#include "server/login/account/AccountManager.h"
+
 #include "server/zone/objects/tangible/deed/eventperk/EventPerkDeed.h"
 #include "server/zone/managers/player/QuestInfo.h"
 #include "server/zone/objects/player/events/ForceMeditateTask.h"
@@ -93,8 +95,41 @@ void PlayerObjectImplementation::initializeTransientMembers() {
 	duelList.setNoDuplicateInsertPlan();
 	chatRooms.setNoDuplicateInsertPlan();
 	ownedChatRooms.setNoDuplicateInsertPlan();
-
 	setLoggingName("PlayerObject");
+
+	initializeAccount();
+}
+
+void PlayerObjectImplementation::initializeAccount() {
+
+	if (accountID == 0) {
+		CreatureObject* creature = dynamic_cast<CreatureObject*>(parent.get().get());
+
+		if (creature == NULL)
+			return;
+
+		ZoneClientSession* owner = creature->getClient();
+
+		if (owner != NULL)
+			accountID = owner->getAccountID();
+	}
+
+	if (account == NULL)
+		account = AccountManager::getAccount(accountID);
+
+	if (account != NULL && galaxyAccountInfo == NULL) {
+
+		Locker locker(account);
+		
+		galaxyAccountInfo = account->getGalaxyAccountInfo(getZoneServer()->getGalaxyName());
+		
+		if (chosenVeteranRewards.size() > 0) {
+			galaxyAccountInfo->updateVetRewardsFromPlayer(chosenVeteranRewards);
+			chosenVeteranRewards.removeAll();
+		}
+	} else {
+		error("NULL Account in initialize transient objects");
+	}
 }
 
 void PlayerObjectImplementation::loadTemplateData(SharedObjectTemplate* templateData) {
@@ -1622,7 +1657,7 @@ void PlayerObjectImplementation::doRecovery(int latency) {
 
 			ManagedReference<SceneObject*> targetObject = zoneServer->getObject(creature->getTargetID());
 			if (targetObject != NULL) {
-				if (targetObject->isInRange(creature, creature->getWeapon()->getMaxRange())) {
+				if (targetObject->isInRange(creature, MAX(10, creature->getWeapon()->getMaxRange()))) {
 					creature->executeObjectControllerAction(STRING_HASHCODE("attack"), creature->getTargetID(), "");
 				} else {
 					CombatSpam* spam = new CombatSpam(creature, NULL, creature, NULL, 0, "cbt_spam", "out_of_range", 2); // That target is out of range. (red)
@@ -2526,29 +2561,16 @@ int PlayerObjectImplementation::getVendorCount() {
 	return ownedVendors.size();
 }
 
-bool PlayerObjectImplementation::hasChosenVeteranReward( const String& rewardTemplate ){
-
-	for( int i = 0; i < chosenVeteranRewards.size(); i++){
-		if( rewardTemplate == chosenVeteranRewards.get(i) ){
-			return true;
-		}
-	}
-
-	return false;
-
-}
-
 int PlayerObjectImplementation::getCharacterAgeInDays() {
 	ManagedReference<CreatureObject*> creature = dynamic_cast<CreatureObject*>(parent.get().get());
 
 	PlayerManager* playerManager = creature->getZoneServer()->getPlayerManager();
 
-	ManagedReference<Account*> account = playerManager->getAccount(getAccountID());
 	if(account == NULL) {
 		return 0;
 	}
 
-	CharacterList* list = account->getCharacterList();
+	Reference<CharacterList*> list = account->getCharacterList();
 	if (list == NULL) {
 		return 0;
 	}
