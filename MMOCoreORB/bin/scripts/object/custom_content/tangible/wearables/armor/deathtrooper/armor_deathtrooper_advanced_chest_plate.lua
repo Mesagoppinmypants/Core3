@@ -41,7 +41,7 @@
 --this exception also makes it possible to release a modified version 
 
 
-object_tangible_wearables_armor_bone_armor_bone_s01_chest_plate = object_tangible_wearables_armor_bone_shared_armor_bone_s01_chest_plate:new {
+object_tangible_wearables_armor_deathtrooper_armor_deathtrooper_advanced_chest_plate = object_tangible_wearables_armor_deathtrooper_shared_armor_deathtrooper_advanced_chest_plate:new {
 	templateType = ARMOROBJECT,
 
 	playerRaces = { "object/creature/player/bothan_male.iff",
@@ -119,4 +119,4 @@ object_tangible_wearables_armor_bone_armor_bone_s01_chest_plate = object_tangibl
 	experimentalCombineType = {0, 0, 4, 1, 1, 1, 1, 1, 1, 4, 4, 4, 1},
 }
 
-ObjectTemplates:addTemplate(object_tangible_wearables_armor_bone_armor_bone_s01_chest_plate, "object/tangible/wearables/armor/bone/armor_bone_s01_chest_plate.iff")
+ObjectTemplates:addTemplate(object_tangible_wearables_armor_deathtrooper_armor_deathtrooper_advanced_chest_plate, "object/tangible/wearables/armor/deathtrooper/armor_deathtrooper_advanced_chest_plate.iff")
