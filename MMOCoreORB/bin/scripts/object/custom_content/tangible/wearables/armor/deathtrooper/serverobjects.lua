@@ -43,5 +43,14 @@
 
 
 --Children folder includes
-includeFile("custom_content/tangible/deed/serverobjects.lua")
-includeFile("custom_content/tangible/wearables/serverobjects.lua")
+
+-- Server Objects
+includeFile("custom_content/tangible/wearables/armor/deathtrooper/armor_deathtrooper_advanced_bicep_l.lua")
+includeFile("custom_content/tangible/wearables/armor/deathtrooper/armor_deathtrooper_advanced_bicep_r.lua")
+includeFile("custom_content/tangible/wearables/armor/deathtrooper/armor_deathtrooper_advanced_boots.lua")
+includeFile("custom_content/tangible/wearables/armor/deathtrooper/armor_deathtrooper_advanced_bracer_l.lua")
+includeFile("custom_content/tangible/wearables/armor/deathtrooper/armor_deathtrooper_advanced_bracer_r.lua")
+includeFile("custom_content/tangible/wearables/armor/deathtrooper/armor_deathtrooper_advanced_chest_plate.lua")
+includeFile("custom_content/tangible/wearables/armor/deathtrooper/armor_deathtrooper_advanced_gloves.lua")
+includeFile("custom_content/tangible/wearables/armor/deathtrooper/armor_deathtrooper_advanced_helmet.lua")
+includeFile("custom_content/tangible/wearables/armor/deathtrooper/armor_deathtrooper_advanced_leggings.lua")
