@@ -115,7 +115,7 @@ object_weapon_ranged_rifle_rifle_t21 = object_weapon_ranged_rifle_shared_rifle_t
 	maxRangeAccuracy = -10,
 
 	minDamage = 700,
-	maxDamage = 1000,
+	maxDamage = 500,
 
 	attackSpeed = 5,
 

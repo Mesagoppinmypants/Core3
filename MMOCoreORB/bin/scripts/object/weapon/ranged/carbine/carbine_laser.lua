@@ -114,8 +114,8 @@ object_weapon_ranged_carbine_carbine_laser = object_weapon_ranged_carbine_shared
 	maxRange = 64,
 	maxRangeAccuracy = -40,
 
-	minDamage = 20,
-	maxDamage = 250,
+	minDamage = 200,
+	maxDamage = 550,
 
 	attackSpeed = 4.4,
 
