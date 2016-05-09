@@ -763,6 +763,12 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 				{
 					"Rank",
 					{
+						"Base",
+						{
+							"Force Sensitive", "force_title_jedi_novice",
+							"Initiate", "force_title_jedi_rank_01",
+							"Padawan", "force_title_jedi_rank_02"
+						},
 						"Jedi Dark Rank",
 						{
 							"Rank Member", "force_rank_dark_novice",
