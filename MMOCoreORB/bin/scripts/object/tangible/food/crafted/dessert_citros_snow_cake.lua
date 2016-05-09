@@ -46,7 +46,8 @@ object_tangible_food_crafted_dessert_citros_snow_cake = object_tangible_food_cra
 
 	duration = 1200,
 	filling = 10,
-	nutrition = 25,
+	useCount = 100,
+	nutrition = 35,
 
 	effectType = 2,
 
