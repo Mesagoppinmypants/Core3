@@ -1,7 +1,6 @@
 giant_kimogila = Creature:new {
 	objectName = "@mob/creature_names:giant_kimogila",
 	socialGroup = "kimogila",
-	pvpFaction = "",
 	faction = "",
 	level = 139,
 	chanceHit = 5.5,
@@ -23,7 +22,7 @@ giant_kimogila = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/giant_kimogila.iff"},
@@ -33,14 +32,14 @@ giant_kimogila = Creature:new {
 	        groups = {
 				{group = "kimogila_common", chance = 10000000}
 			},
-			lootChance = 6500000
+			lootChance = 3780000
 		}
 	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"creatureareaknockdown","knockdownChance=50"},
-		{"dizzyattack","dizzyChance=50"}
+		{"creatureareaknockdown",""},
+		{"dizzyattack",""}
 	}
 }
 

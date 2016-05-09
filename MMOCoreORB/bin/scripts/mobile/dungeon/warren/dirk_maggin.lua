@@ -1,7 +1,6 @@
 dirk_maggin = Creature:new {
 	objectName = "@theme_park/warren/warren_system_messages:name_dirk",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 100,
 	chanceHit = 1,
@@ -22,8 +21,8 @@ dirk_maggin = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = NONE,
-	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	creatureBitmask = NONE,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/warren_dying_loyalist.iff"},

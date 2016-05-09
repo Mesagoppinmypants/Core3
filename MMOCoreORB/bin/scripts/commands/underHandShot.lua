@@ -56,15 +56,18 @@ UnderHandShotCommand = {
 		{ "knockdownRecovery", "lastKnockdown" }, 
 		{ "knockdown_defense" }, 
 		{}, 
-		30, 
-		100, 
+		85, 
+		0, 
 		0 
 	  )
 	},
 
-	animationCRC = hashCode("fire_5_single_medium_face"),
+	animation = "fire_7_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "underhandshot",
+	
+	weaponType = CARBINEWEAPON,
 
 	range = -1
 }

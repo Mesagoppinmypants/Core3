@@ -1,7 +1,6 @@
 diseased_nuna = Creature:new {
 	objectName = "@mob/creature_names:diseased_nuna",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ diseased_nuna = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/nuna_hue.iff"},

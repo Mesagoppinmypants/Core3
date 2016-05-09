@@ -2,7 +2,6 @@ huffs_guard = Creature:new {
 	objectName = "",
 	socialGroup = "",
 	customName = "Huff Darklighter's Guard",
-	pvpFaction = "",
 	faction = "",
 	level = 4,
 	chanceHit = 0.24,
@@ -24,7 +23,7 @@ huffs_guard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_slicer_human_male_01.iff"},

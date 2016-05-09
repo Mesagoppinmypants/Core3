@@ -1,7 +1,8 @@
 canyon_corsair_cutthroat = Creature:new {
 	objectName = "@mob/creature_names:canyon_corsair_cutthroat",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "canyon_corsair",
-	pvpFaction = "canyon_corsair",
 	faction = "canyon_corsair",
 	level = 35,
 	chanceHit = 0.4,
@@ -23,7 +24,7 @@ canyon_corsair_cutthroat = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -31,8 +32,8 @@ canyon_corsair_cutthroat = Creature:new {
 		"object/mobile/dressed_corsair_cutthroat_hum_m.iff",
 		"object/mobile/dressed_corsair_cutthroat_wee_m.iff",
 		"object/mobile/dressed_corsair_cutthroat_zab_m.iff"
-		},
-	
+	},
+
 	lootGroups = {
 		{
 			groups = {
@@ -46,12 +47,12 @@ canyon_corsair_cutthroat = Creature:new {
 				{group = "clothing_attachments", chance = 450000},
 				{group = "armor_attachments", chance = 450000},
 				{group = "canyon_corsair_common", chance = 1500000}
-			},
-			lootChance = 4000000
+			}
 		}
 	},
 	weapons = {"canyon_corsair_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(swordsmanmaster,carbineermaster,tkamaster,brawlermaster,marksmanmaster)
 }
 

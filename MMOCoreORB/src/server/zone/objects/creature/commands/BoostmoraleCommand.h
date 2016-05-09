@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef BOOSTMORALECOMMAND_H_
 #define BOOSTMORALECOMMAND_H_
@@ -57,7 +17,7 @@ public:
 		: SquadLeaderCommand(name, server) {
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
 		if (!checkStateMask(creature))
 			return INVALIDSTATE;
@@ -69,6 +29,15 @@ public:
 			return GENERALERROR;
 
 		ManagedReference<CreatureObject*> player = cast<CreatureObject*>(creature);
+
+		if (player == NULL)
+			return GENERALERROR;
+
+		ManagedReference<PlayerObject*> ghost = player->getPlayerObject();
+
+		if (ghost == NULL)
+			return GENERALERROR;
+
 		ManagedReference<GroupObject*> group = player->getGroup();
 
 		if (!checkGroupLeader(player, group))
@@ -85,29 +54,30 @@ public:
 
 //		shoutCommand(player, group);
 
-		int wounds[9] = {0,0,0,0,0,0,0,0,0};
-		if (!getWounds(player, group, wounds))
+		int wounds[2] = {0,0}; // members affected, total wounds
+		getWounds(player, group, wounds);
+		if (wounds[0] == 0)
 			return GENERALERROR;
 
 		if (!distributeWounds(player, group, wounds))
 			return GENERALERROR;
-			
-		if (player->isPlayerCreature() && player->getPlayerObject()->getCommandMessageString(String("boostmorale").hashCode()).isEmpty()==false && creature->checkCooldownRecovery("command_message")) {
-			UnicodeString shout(player->getPlayerObject()->getCommandMessageString(String("boostmorale").hashCode()));
- 	 	 	server->getChatManager()->broadcastMessage(player, shout, 0, 0, 80);
+
+		if (!ghost->getCommandMessageString(STRING_HASHCODE("boostmorale")).isEmpty() && creature->checkCooldownRecovery("command_message")) {
+			UnicodeString shout(ghost->getCommandMessageString(STRING_HASHCODE("boostmorale")));
+ 	 	 	server->getChatManager()->broadcastChatMessage(player, shout, 0, 0, 80, ghost->getLanguageID());
  	 	 	creature->updateCooldownTimer("command_message", 30 * 1000);
-		}			
+		}
 
 		return SUCCESS;
 	}
 
-	bool getWounds(CreatureObject* leader, GroupObject* group, int* wounds) {
+	void getWounds(CreatureObject* leader, GroupObject* group, int* wounds) const {
 		if (group == NULL || leader == NULL)
-			return false;
+			return;
 
 		for (int i = 0; i < group->getGroupSize(); i++) {
 
-			ManagedReference<SceneObject*> member = group->getGroupMember(i);
+			ManagedReference<CreatureObject*> member = group->getGroupMember(i);
 
 			if (member == NULL)
 				continue;
@@ -115,46 +85,70 @@ public:
 			if (!member->isPlayerCreature())
 				continue;
 
-			CreatureObject* memberPlayer = cast<CreatureObject*>( member.get());
-
-			if (!isValidGroupAbilityTarget(leader, memberPlayer))
+			if (!isValidGroupAbilityTarget(leader, member, false))
 				continue;
 
-			Locker clocker(memberPlayer, leader);
+			Locker clocker(member, leader);
 
 			for (int j = 0; j < 9; j++) {
-				wounds[j] = wounds[j] + memberPlayer->getWounds(j);
-				memberPlayer->setWounds(j, 0);
+				wounds[1] += member->getWounds(j);
+				member->setWounds(j, 0);
 			}
-		}
 
-		return true;
+			wounds[0]++;
+		}
 	}
 
-	bool distributeWounds(CreatureObject* leader, GroupObject* group, int* wounds) {
+	bool distributeWounds(CreatureObject* leader, GroupObject* group, int* wounds) const {
 		if (group == NULL || leader == NULL)
 			return false;
 
-		int groupSize = group->getGroupSize();
+		int woundsPerMember = ceil((float)wounds[1]/(float)wounds[0]);
+		int woundsPerAttribute = ceil((float)woundsPerMember/9.f);
 
-		for (int i = 0; i < groupSize; i++) {
+		int totalWoundsApplied = 0;
+		for (int i = 0; i < group->getGroupSize(); i++) {
 
-			ManagedReference<SceneObject*> member = group->getGroupMember(i);
+			ManagedReference<CreatureObject*> member = group->getGroupMember(i);
+
+			if (member == NULL)
+				continue;
 
 			if (!member->isPlayerCreature())
 				continue;
 
-			CreatureObject* memberPlayer = cast<CreatureObject*>( member.get());
-
-			if (!isValidGroupAbilityTarget(leader, memberPlayer))
+			if (!isValidGroupAbilityTarget(leader, member, false))
 				continue;
 
-			Locker clocker(memberPlayer, leader);
+			Locker clocker(member, leader);
 
-			sendCombatSpam(memberPlayer);
+			sendCombatSpam(member);
 
-			for (int j = 0; j < 9; j++)
-				memberPlayer->addWounds(j, (int) wounds[j] / groupSize);
+			int woundsApplied = 0;
+			for (int j = 0; j < 9; j++) {
+				int woundsToApply = woundsPerAttribute;
+
+				// if we've already applied enough wounds to this member, reduce to the amount we have left
+				if (woundsApplied + woundsToApply > woundsPerMember)
+					woundsToApply = woundsPerMember - woundsApplied;
+
+				// if we've already applied enough wounds to the entire group, reduce to the amount we have left
+				if (totalWoundsApplied + woundsToApply > wounds[1])
+					woundsToApply = wounds[1] - totalWoundsApplied;
+
+				member->addWounds(j, woundsToApply, true, false);
+
+				woundsApplied += woundsToApply;
+				totalWoundsApplied += woundsToApply;
+
+				if (woundsApplied >= woundsPerMember || totalWoundsApplied >= wounds[1])
+					break;
+			}
+
+			checkForTef(leader, member);
+
+			if (totalWoundsApplied >= wounds[1])
+				break;
 		}
 
 		return true;

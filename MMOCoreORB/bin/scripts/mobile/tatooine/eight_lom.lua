@@ -1,7 +1,6 @@
 eight_lom = Creature:new {
 	objectName = "@theme_park_name:lom",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 21,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ eight_lom = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/theme_park_record_keeper_jabba.iff"},

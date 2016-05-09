@@ -1,7 +1,6 @@
 rot_mite = Creature:new {
 	objectName = "@mob/creature_names:rot_mite",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 11,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ rot_mite = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/rot_mite.iff"},
@@ -32,7 +31,7 @@ rot_mite = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

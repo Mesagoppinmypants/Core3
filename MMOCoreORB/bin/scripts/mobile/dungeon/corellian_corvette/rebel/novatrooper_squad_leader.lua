@@ -1,7 +1,8 @@
 novatrooper_squad_leader = Creature:new {
 	objectName = "@mob/creature_names:stormtrooper_novatrooper_squad_leader",
+	randomNameType = NAME_STORMTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 122,
 	chanceHit = 4,
@@ -23,7 +24,7 @@ novatrooper_squad_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_stormtrooper_squad_leader_black_gold.iff"},
@@ -39,12 +40,12 @@ novatrooper_squad_leader = Creature:new {
 				{group = "clothing_attachments", chance = 25000},
 				{group = "armor_attachments", chance = 25000},
 				{group = "wearables_all", chance = 1000000}
-			},
-			lootChance = 2800000
-		}						
+			}
+		}
 	},
 	weapons = {"stormtrooper_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/stormtrooper",
 	attacks = merge(riflemanmaster,carbineermaster,marksmanmaster,brawlermaster)
 }
 

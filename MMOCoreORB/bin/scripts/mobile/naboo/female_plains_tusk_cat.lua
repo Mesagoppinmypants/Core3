@@ -1,7 +1,6 @@
 female_plains_tusk_cat = Creature:new {
 	objectName = "@mob/creature_names:female_great_grass_plains_tusk_cat",
 	socialGroup = "tusk_cat",
-	pvpFaction = "",
 	faction = "",
 	level = 16,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ female_plains_tusk_cat = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/tusk_cat_hue.iff"},
@@ -32,7 +31,8 @@ female_plains_tusk_cat = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"",""},
+		{"stunattack",""}
 	}
 }
 

@@ -2,7 +2,6 @@ sigrix_slix = Creature:new {
 	objectName = "",
 	customName = "Sigrix Slix",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ sigrix_slix = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_sigrix_slix.iff"},

@@ -1,7 +1,6 @@
 glutted_fynock_queen = Creature:new {
 	objectName = "@mob/creature_names:glutted_fynock_queen",
 	socialGroup = "fynock",
-	pvpFaction = "",
 	faction = "",
 	level = 14,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ glutted_fynock_queen = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/glutted_fynock_queen.iff"},
@@ -32,7 +31,7 @@ glutted_fynock_queen = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

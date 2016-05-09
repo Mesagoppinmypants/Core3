@@ -1,7 +1,6 @@
 barn_sinkko = Creature:new {
 	objectName = "@npc_spawner_n:barn_sinkko",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ barn_sinkko = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_greeter_kadaara_imperial_officer.iff"},

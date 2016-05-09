@@ -1,7 +1,8 @@
 garyns_dragoon = Creature:new {
 	objectName = "@mob/creature_names:garyn_dragoon",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "garyn",
-	pvpFaction = "garyn",
 	faction = "garyn",
 	level = 26,
 	chanceHit = 0.36,
@@ -23,26 +24,26 @@ garyns_dragoon = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/mobile/dressed_garyn_dragoon_bith_male_01.iff",
 		"object/mobile/dressed_garyn_dragoon_bith_female_01.iff"},
 	lootGroups = {
-	    {
+		{
 			groups = {
 				{group = "junk", chance = 2000000},
 				{group = "wearables_common", chance = 2000000},
 				{group = "rifles", chance = 2000000},
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000}
-			},
-			lootChance = 3200000
-		}			
+			}
+		}
 	},
 	weapons = {"ranged_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 

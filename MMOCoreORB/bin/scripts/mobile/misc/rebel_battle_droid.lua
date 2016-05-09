@@ -1,7 +1,6 @@
 rebel_battle_droid = Creature:new {
 	objectName = "@mob/creature_names:rebel_battle_droid",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ rebel_battle_droid = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/battle_droid.iff"},

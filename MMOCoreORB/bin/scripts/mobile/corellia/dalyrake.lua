@@ -1,7 +1,6 @@
 dalyrake = Creature:new {
 	objectName = "@mob/creature_names:dalyrake",
 	socialGroup = "dalyrake",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ dalyrake = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/dalyrake.iff"},
@@ -32,7 +31,8 @@ dalyrake = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"",""},
+		{"intimidationattack",""}
 	}
 }
 

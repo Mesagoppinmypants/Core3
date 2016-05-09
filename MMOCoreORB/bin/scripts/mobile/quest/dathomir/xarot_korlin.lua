@@ -2,7 +2,6 @@ xarot_korlin = Creature:new {
 	objectName = "",
 	customName = "Xarot Korlin",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ xarot_korlin = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_xarot_korlin.iff"},

@@ -2,7 +2,6 @@ pashna = Creature:new {
 	objectName = "@npc_name:moncal_base_male",
 	customName = "Pashna Starkiller",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ pashna = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_corvette_rebel_pashna.iff"},

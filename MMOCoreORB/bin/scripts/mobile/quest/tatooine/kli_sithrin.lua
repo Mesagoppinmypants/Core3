@@ -1,7 +1,6 @@
 kli_sithrin = Creature:new {
 	objectName = "",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.31,
@@ -22,7 +21,7 @@ kli_sithrin = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
-	creatureBitmask = PACK + KILLER,
+	creatureBitmask = KILLER,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_thug_zabrak_male_01.iff"},

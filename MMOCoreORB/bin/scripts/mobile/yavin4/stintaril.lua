@@ -1,7 +1,6 @@
 stintaril = Creature:new {
 	objectName = "@mob/creature_names:stintaril",
 	socialGroup = "stinaril",
-	pvpFaction = "",
 	faction = "",
 	level = 14,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ stintaril = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/stintaril.iff"},
@@ -32,7 +31,7 @@ stintaril = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

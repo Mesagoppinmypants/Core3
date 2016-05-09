@@ -7,7 +7,7 @@
 
 class RecycleToolContainerComponent : public ContainerComponent {
 public:
-	int notifyObjectInserted(SceneObject* sceneObject, SceneObject* object) {
+	int notifyObjectInserted(SceneObject* sceneObject, SceneObject* object) const {
 		RecycleTool* recycler = cast <RecycleTool* >(sceneObject);
 
 		TangibleObject* tano = cast <TangibleObject* >(object);
@@ -23,12 +23,12 @@ public:
 		return ContainerComponent::notifyObjectInserted(sceneObject, object);
 	}
 
-	bool removeObject(SceneObject* sceneObject, SceneObject* object, SceneObject* destination, bool notifyClient) {
+	bool removeObject(SceneObject* sceneObject, SceneObject* object, SceneObject* destination, bool notifyClient) const {
 
 		return ContainerComponent::removeObject(sceneObject, object, destination, notifyClient);
 	}
 
-	int canAddObject(SceneObject* sceneObject, SceneObject* object, int containmentType, String& errorDescription) {
+	int canAddObject(SceneObject* sceneObject, SceneObject* object, int containmentType, String& errorDescription) const {
 
 		if (sceneObject->getParentRecursively(SceneObjectType::PLAYERCREATURE) != object->getParentRecursively(SceneObjectType::PLAYERCREATURE))
 			return TransferErrorCode::MUSTBEINPLAYERINVENTORY;
@@ -47,11 +47,6 @@ public:
 		}
 
 		return ContainerComponent::canAddObject(sceneObject, object, containmentType, errorDescription);
-	}
-
-	bool transferObject(SceneObject* sceneObject, SceneObject* object, int containmentType, bool notifyClient, bool allowOverflow = false) {
-
-		return ContainerComponent::transferObject(sceneObject, object, containmentType, notifyClient, allowOverflow);
 	}
 };
 

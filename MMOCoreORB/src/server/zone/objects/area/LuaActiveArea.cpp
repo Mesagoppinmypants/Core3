@@ -25,16 +25,28 @@ Luna<LuaActiveArea>::RegType LuaActiveArea::Register[] = {
 };
 
 LuaActiveArea::LuaActiveArea(lua_State *L) : LuaSceneObject(L) {
+#ifdef DYNAMIC_CAST_LUAOBJECTS
+	realObject = dynamic_cast<ActiveArea*>(_getRealSceneObject());
+
+	assert(!_getRealSceneObject() || realObject != NULL);
+#else
 	realObject = static_cast<ActiveArea*>(lua_touserdata(L, 1));
+#endif
 }
 
 LuaActiveArea::~LuaActiveArea(){
 }
 
 int LuaActiveArea::_setObject(lua_State* L) {
-	realObject = static_cast<ActiveArea*>(lua_touserdata(L, -1));
-
 	LuaSceneObject::_setObject(L);
+
+#ifdef DYNAMIC_CAST_LUAOBJECTS
+	realObject = dynamic_cast<ActiveArea*>(_getRealSceneObject());
+
+	assert(!_getRealSceneObject() || realObject != NULL);
+#else
+	realObject = static_cast<ActiveArea*>(lua_touserdata(L, -1));
+#endif
 
 	return 0;
 }
@@ -47,7 +59,7 @@ int LuaActiveArea::getRadius(lua_State* L) {
 
 int LuaActiveArea::setRadius(lua_State* L) {
 	int radius = lua_tonumber(L, -1);
-
+	Locker realObjectLocker(realObject);
 	realObject->setRadius(radius);
 
 	return 0;
@@ -55,7 +67,7 @@ int LuaActiveArea::setRadius(lua_State* L) {
 
 int LuaActiveArea::setNoBuildArea(lua_State* L) {
 	bool val = lua_toboolean(L, -1);
-
+	Locker realObjectLocker(realObject);
 	realObject->setNoBuildArea(val);
 
 	return 0;
@@ -71,7 +83,7 @@ int LuaActiveArea::isNoBuildArea(lua_State* L) {
 
 int LuaActiveArea::setCellObjectID(lua_State* L) {
 	uint64 val = lua_tointeger(L, -1);
-
+	Locker realObjectLocker(realObject);
 	realObject->setCellObjectID(val);
 
 	return 0;
@@ -87,7 +99,7 @@ int LuaActiveArea::getCellObjectID(lua_State* L) {
 
 int LuaActiveArea::setNoSpawnArea(lua_State* L) {
 	bool val = lua_toboolean(L, -1);
-
+	Locker realObjectLocker(realObject);
 	realObject->setNoSpawnArea(val);
 
 	return 0;

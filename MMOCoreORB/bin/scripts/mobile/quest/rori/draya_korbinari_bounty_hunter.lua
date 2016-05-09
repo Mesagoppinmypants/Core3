@@ -2,7 +2,6 @@ draya_korbinari_bounty_hunter = Creature:new {
 	objectName = "@mob/creature_names:bounty_hunter",
 	customName = "",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 12,
 	chanceHit = 0.27,
@@ -24,7 +23,7 @@ draya_korbinari_bounty_hunter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_kobola_miner_human_male_01.iff"},
@@ -34,8 +33,7 @@ draya_korbinari_bounty_hunter = Creature:new {
 		{
 			groups = {
 				{ group = "junk", chance = 10000000},
-			},
- 			lootChance = 2200000
+			}
 		},
 	},
 	outfit = "",

@@ -1,7 +1,6 @@
 gronda_juggernaut = Creature:new {
 	objectName = "@mob/creature_names:gronda_juggernaut",
 	socialGroup = "gronda",
-	pvpFaction = "",
 	faction = "",
 	level = 70,
 	chanceHit = 0.65,
@@ -23,7 +22,7 @@ gronda_juggernaut = Creature:new {
 	ferocity = 14,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gronda_hue.iff"},
@@ -32,8 +31,8 @@ gronda_juggernaut = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"knockdownattack","knockdownChance=50"}
+		{"knockdownattack",""},
+		{"dizzyattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 scavenger_rat = Creature:new {
 	objectName = "@mob/creature_names:scavenger_rat",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 8,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ scavenger_rat = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/womp_rat.iff"},

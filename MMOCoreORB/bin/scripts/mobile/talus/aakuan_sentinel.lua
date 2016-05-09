@@ -1,7 +1,8 @@
 aakuan_sentinel = Creature:new {
 	objectName = "@mob/creature_names:aakuan_sentinal",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "aakuans",
-	pvpFaction = "aakuans",
 	faction = "aakuans",
 	level = 17,
 	chanceHit = 0.31,
@@ -23,27 +24,27 @@ aakuan_sentinel = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/mobile/dressed_aakuan_sentinal_rodian_female_01.iff",
 		"object/mobile/dressed_aakuan_sentinal_rodian_male_01.iff"},
 	lootGroups = {
-	    {
-		    groups = {
-				{group = "junk", chance = 6600000},
+		{
+			groups = {
+				{group = "junk", chance = 4000000},
+				{group = "wearables_all", chance = 1000000},
+				{group = "data_storage_unit_parts", chance = 1600000},
 				{group = "aakuan_common", chance = 2300000},
-				{group = "armor_attachments", chance = 200000},
-				{group = "rifles", chance = 300000},
-				{group = "carbines", chance = 300000},
-				{group = "pistols", chance = 300000}				
-			},
-		    lootChance = 2200000
-		}	
+				{group = "armor_attachments", chance = 500000},
+				{group = "clothing_attachments", chance = 600000}
+			}
+		}
 	},
 	weapons = {"melee_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/fancy",
 	attacks = brawlermaster
 }
 

@@ -52,11 +52,13 @@ UnarmedLunge1Command = {
 	actionCostMultiplier = 1.0,
 	mindCostMultiplier = 1.0,
 
-	animationCRC = hashCode("lower_posture_unarmed_1"),
+	animation = "lower_posture_unarmed_1",
 
 	combatSpam = "ridingbantha",
 
-	range = 15,
+	range = 20,
+	
+	weaponType = UNARMEDWEAPON,
 
 	stateEffects = {
 	  StateEffect( 
@@ -64,8 +66,8 @@ UnarmedLunge1Command = {
 		{ "postureDownRecovery" }, 
 		{ "posture_change_down_defense" }, 
 		{}, 
-		40, 
 		100, 
+		0, 
 		0 
 	  )
 	}

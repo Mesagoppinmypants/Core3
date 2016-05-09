@@ -1,7 +1,6 @@
 enraged_tabage_mother = Creature:new {
 	objectName = "@mob/creature_names:enraged_tabage_mother",
 	socialGroup = "tabage",
-	pvpFaction = "",
 	faction = "",
 	level = 17,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ enraged_tabage_mother = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/tabage.iff"},
@@ -33,7 +32,7 @@ enraged_tabage_mother = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

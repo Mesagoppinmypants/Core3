@@ -1,7 +1,6 @@
 gaping_spider_broodling = Creature:new {
 	objectName = "@mob/creature_names:gaping_spider_broodling",
 	socialGroup = "spider",
-	pvpFaction = "",
 	faction = "",
 	level = 8,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ gaping_spider_broodling = Creature:new {
 	ferocity = 5,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gaping_spider_broodling.iff"},
@@ -32,6 +31,7 @@ gaping_spider_broodling = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
+		{"",""},
 		{"mildpoison",""}
 	}
 }

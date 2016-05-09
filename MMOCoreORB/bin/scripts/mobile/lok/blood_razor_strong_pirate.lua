@@ -1,7 +1,8 @@
 blood_razor_strong_pirate = Creature:new {
 	objectName = "@mob/creature_names:blood_razor_pirate_strong",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "bloodrazor",
-	pvpFaction = "bloodrazor",
 	faction = "bloodrazor",
 	level = 26,
 	chanceHit = 0.36,
@@ -23,7 +24,7 @@ blood_razor_strong_pirate = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -34,7 +35,7 @@ blood_razor_strong_pirate = Creature:new {
 		"object/mobile/dressed_blood_razor_pirate_strong_tran_m.iff",
 		"object/mobile/dressed_blood_razor_pirate_strong_wee_m.iff",
 		"object/mobile/dressed_blood_razor_pirate_strong_zab_m.iff"
-		},
+	},
 
 	lootGroups = {
 		{
@@ -49,12 +50,12 @@ blood_razor_strong_pirate = Creature:new {
 				{group = "clothing_attachments", chance = 300000},
 				{group = "armor_attachments", chance = 300000},
 				{group = "bloodrazor_common", chance = 2000000}
-			},
-			lootChance = 3500000
+			}
 		}
 	},
 	weapons = {"blood_razer_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(pistoleermaster,pikemanmaster,tkamaster,brawlermaster,marksmanmaster)
 }
 

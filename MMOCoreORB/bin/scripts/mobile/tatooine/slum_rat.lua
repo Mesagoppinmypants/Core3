@@ -1,7 +1,6 @@
 slum_rat = Creature:new {
 	objectName = "@mob/creature_names:womprat_city",
 	socialGroup = "rat",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ slum_rat = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/lesser_desert_womp_rat.iff"},

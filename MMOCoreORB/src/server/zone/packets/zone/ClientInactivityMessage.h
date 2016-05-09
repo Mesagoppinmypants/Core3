@@ -8,14 +8,14 @@
 #ifndef CLIENTINACTIVITYMESSAGE_H_
 #define CLIENTINACTIVITYMESSAGE_H_
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 
 class ClientInactivityMessageCallback : public MessageCallback {
 	byte flag;
 
 public:
 	ClientInactivityMessageCallback(ZoneClientSession* client, ZoneProcessServer* server) :
-		MessageCallback(client, server) {
+		MessageCallback(client, server), flag(0) {
 
 	}
 
@@ -24,7 +24,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<SceneObject*> player = client->getPlayer();
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player != NULL) {
 			StringBuffer msg;

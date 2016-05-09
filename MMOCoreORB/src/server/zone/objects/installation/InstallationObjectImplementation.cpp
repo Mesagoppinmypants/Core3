@@ -28,7 +28,7 @@
 #include "server/zone/objects/resource/ResourceSpawn.h"
 #include "server/zone/objects/resource/ResourceContainer.h"
 #include "server/zone/Zone.h"
-#include "server/zone/templates/tangible/SharedInstallationObjectTemplate.h"
+#include "templates/installation/SharedInstallationObjectTemplate.h"
 #include "SyncrhonizedUiListenInstallationTask.h"
 #include "server/zone/objects/installation/components/TurretObserver.h"
 #include "server/zone/objects/tangible/TangibleObject.h"
@@ -36,11 +36,14 @@
 #include "components/TurretDataComponent.h"
 #include "server/zone/objects/player/FactionStatus.h"
 #include "server/zone/objects/tangible/wearables/ArmorObject.h"
-#include "server/zone/templates/tangible/ArmorObjectTemplate.h"
-#include "server/zone/objects/tangible/OptionBitmask.h"
+#include "templates/params/OptionBitmask.h"
+#include "templates/params/creature/CreatureFlag.h"
 
 void InstallationObjectImplementation::loadTemplateData(SharedObjectTemplate* templateData) {
 	StructureObjectImplementation::loadTemplateData(templateData);
+
+	if (!templateData->isSharedInstallationObjectTemplate())
+		return;
 
 	SharedInstallationObjectTemplate* inso = dynamic_cast<SharedInstallationObjectTemplate*>(templateData);
 
@@ -51,10 +54,10 @@ void InstallationObjectImplementation::loadTemplateData(SharedObjectTemplate* te
 void InstallationObjectImplementation::sendBaselinesTo(SceneObject* player) {
 	//send buios here
 
-	BaseMessage* buio3 = new InstallationObjectMessage3(_this.get());
+	BaseMessage* buio3 = new InstallationObjectMessage3(_this.getReferenceUnsafeStaticCast());
 	player->sendMessage(buio3);
 
-	BaseMessage* buio6 = new InstallationObjectMessage6(_this.get());
+	BaseMessage* buio6 = new InstallationObjectMessage6(_this.getReferenceUnsafeStaticCast());
 	player->sendMessage(buio6);
 
 
@@ -90,8 +93,10 @@ void InstallationObjectImplementation::fillAttributeList(AttributeListMessage* a
 void InstallationObjectImplementation::broadcastMessage(BasePacket* message, bool sendSelf) {
 	Zone* zone = getZone();
 
-	if (zone == NULL)
+	if (zone == NULL) {
+		delete message;
 		return;
+	}
 
 	Locker zoneLocker(zone);
 
@@ -101,7 +106,7 @@ void InstallationObjectImplementation::broadcastMessage(BasePacket* message, boo
 	for (int i = 0; i < closeSceneObjects.size(); ++i) {
 		ManagedReference<SceneObject*> scno = cast<SceneObject*>( closeSceneObjects.get(i).get());
 
-		if (!sendSelf && scno == _this.get())
+		if (!sendSelf && scno == _this.getReferenceUnsafeStaticCast())
 			continue;
 
 		if(!scno->isPlayerCreature())
@@ -133,7 +138,7 @@ void InstallationObjectImplementation::setOperating(bool value, bool notifyClien
 			return;
 		}
 
-		if (basePowerRate != 0 && surplusPower <= 0) {
+		if (getBasePowerRate() != 0 && surplusPower <= 0) {
 			StringIdChatParameter stringId("player_structure", "power_deposit_incomplete");
 			ChatSystemMessage* msg = new ChatSystemMessage(stringId);
 
@@ -165,12 +170,12 @@ void InstallationObjectImplementation::setOperating(bool value, bool notifyClien
 		lastStopTime.updateToCurrentTime();
 	}
 
-	InstallationObjectDeltaMessage3* delta = new InstallationObjectDeltaMessage3(_this.get());
+	InstallationObjectDeltaMessage3* delta = new InstallationObjectDeltaMessage3(_this.getReferenceUnsafeStaticCast());
 	delta->updateOperating(value);
 	delta->updateOptionsBitmask();
 	delta->close();
 
-	InstallationObjectDeltaMessage7* delta7 = new InstallationObjectDeltaMessage7(_this.get());
+	InstallationObjectDeltaMessage7* delta7 = new InstallationObjectDeltaMessage7(_this.getReferenceUnsafeStaticCast());
 	delta7->updateOperating(value);
 	delta7->close();
 
@@ -184,7 +189,7 @@ void InstallationObjectImplementation::setOperating(bool value, bool notifyClien
 		resourceHopperTimestamp.updateToCurrentTime();
 	}
 
-	InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.get());
+	InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.getReferenceUnsafeStaticCast());
 	inso7->updateExtractionRate(getActualRate());
 	inso7->close();
 
@@ -216,7 +221,7 @@ void InstallationObjectImplementation::setActiveResource(ResourceContainer* cont
 
 			ManagedReference<ResourceContainer*> oldEntry = resourceHopper.get(0);
 
-			InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.get());
+			InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.getReferenceUnsafeStaticCast());
 			inso7->updateHopper();
 			inso7->startUpdate(0x0D);
 
@@ -244,7 +249,7 @@ void InstallationObjectImplementation::handleStructureAddEnergy(CreatureObject* 
 		StringBuffer sstext, ssTotalEnergy;
 
 		ManagedReference<SuiTransferBox*> energyBox = new SuiTransferBox(player, SuiWindowType::STRUCTURE_ADD_ENERGY);
-		energyBox->setUsingObject(_this.get());
+		energyBox->setUsingObject(_this.getReferenceUnsafeStaticCast());
 		energyBox->setPromptTitle("@player_structure:add_power");
 
 		sstext	<< "@player_structure:select_power_amount"
@@ -341,7 +346,9 @@ bool InstallationObjectImplementation::updateMaintenance(Time& workingTime) {
 
 	addMaintenance(-1.0f * payAmount);
 
-	if (isOperating()) {
+	int basePowerRate = getBasePowerRate();
+
+	if (isOperating() && basePowerRate != 0) {
 		float energyAmount = (elapsedTime / 3600.0) * basePowerRate;
 
 		if (energyAmount > surplusPower) {
@@ -368,7 +375,7 @@ bool InstallationObjectImplementation::updateMaintenance(Time& workingTime) {
 
 void InstallationObjectImplementation::updateHopper(Time& workingTime, bool shutdownAfterUpdate) {
 
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 	
 	if (getZone() == NULL)
 		return;
@@ -384,6 +391,7 @@ void InstallationObjectImplementation::updateHopper(Time& workingTime, bool shut
 		if(currentSpawn == NULL)
 			return;
 
+		Locker locker(currentSpawn);
 		addResourceToHopper(currentSpawn->createResource(0));
 	}
 
@@ -394,7 +402,7 @@ void InstallationObjectImplementation::updateHopper(Time& workingTime, bool shut
 
 	Time currentTime = workingTime;
 
-	Time spawnExpireTimestamp(currentSpawn->getDespawned());
+	Time spawnExpireTimestamp((uint32)currentSpawn->getDespawned());
 	// if (t1 < t2) return 1 - if spawnTime is sooner currentTime, use spawnTime, else use spawn time
 	uint32 harvestUntil = (spawnExpireTimestamp.compareTo(currentTime) > 0) ? spawnExpireTimestamp.getTime() : currentTime.getTime();
 	uint32 lastHopperUpdate = resourceHopperTimestamp.getTime();
@@ -417,7 +425,11 @@ void InstallationObjectImplementation::updateHopper(Time& workingTime, bool shut
 
 
 	if(harvestAmount > 0 || !isOperating()) {
+		Locker spawnLocker(currentSpawn);
+
 		currentSpawn->extractResource(getZone()->getZoneName(), harvestAmount);
+
+		spawnLocker.release();
 
 		updateResourceContainerQuantity(container, (currentQuantity + harvestAmount), true);
 	}
@@ -435,7 +447,7 @@ void InstallationObjectImplementation::updateHopper(Time& workingTime, bool shut
 	if (shutdownAfterUpdate)
 		setOperating(false);
 
-	/*InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.get());
+	/*InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.getReferenceUnsafeStaticCast());
 	inso7->startUpdate(0x0D);
 	resourceHopper.set(0, container, inso7, 1);
 	inso7->updateHopperSize(getHopperSize());
@@ -458,11 +470,13 @@ void InstallationObjectImplementation::clearResourceHopper() {
 	//lets delete the containers from db
 	for (int i = 0; i < resourceHopper.size(); ++i) {
 		ResourceContainer* container = resourceHopper.get(i);
-
-		container->destroyObjectFromDatabase(true);
+		if (container != NULL) {
+			Locker locker(container);
+			container->destroyObjectFromDatabase(true);
+		}
 	}
 
-	InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.get());
+	InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.getReferenceUnsafeStaticCast());
 	inso7->updateHopper();
 	inso7->startUpdate(0x0D);
 
@@ -483,7 +497,7 @@ void InstallationObjectImplementation::addResourceToHopper(ResourceContainer* co
 
 	Time timeToWorkTill;
 
-	InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.get());
+	InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.getReferenceUnsafeStaticCast());
 	inso7->updateHopper();
 	inso7->startUpdate(0x0D);
 
@@ -522,6 +536,7 @@ void InstallationObjectImplementation::changeActiveResourceID(uint64 spawnID) {
 	ManagedReference<ResourceContainer*> container = getContainerFromHopper(currentSpawn);
 
 	if (container == NULL) {
+		Locker locker(currentSpawn);
 		container = currentSpawn->createResource(0);
 
 		addResourceToHopper(container);
@@ -530,7 +545,7 @@ void InstallationObjectImplementation::changeActiveResourceID(uint64 spawnID) {
 		setActiveResource(container);
 	}
 
-	InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.get());
+	InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.getReferenceUnsafeStaticCast());
 	inso7->updateExtractionRate(getActualRate());
 	inso7->updateActiveResourceSpawn(getActiveResourceSpawnID());
 	inso7->close();
@@ -554,7 +569,7 @@ void InstallationObjectImplementation::activateUiSync() {
 	try {
 
 		if (syncUiTask == NULL)
-			syncUiTask = new SyncrhonizedUiListenInstallationTask(_this.get());
+			syncUiTask = new SyncrhonizedUiListenInstallationTask(_this.getReferenceUnsafeStaticCast());
 
 		if (!syncUiTask->isScheduled())
 			syncUiTask->schedule(5000);
@@ -589,12 +604,15 @@ void InstallationObjectImplementation::destroyObjectFromDatabase(bool destroyCon
 
 	ManagedReference<SceneObject*> deed = getZoneServer()->getObject(deedObjectID);
 
-	if (deed != NULL)
+	if (deed != NULL) {
+		Locker locker(deed);
 		deed->destroyObjectFromDatabase(true);
+	}
 
 	for (int i = 0; i < resourceHopper.size(); ++i) {
 		ResourceContainer* container = resourceHopper.get(i);
 
+		Locker locker(container);
 		container->destroyObjectFromDatabase(true);
 	}
 }
@@ -609,7 +627,7 @@ void InstallationObjectImplementation::updateResourceContainerQuantity(ResourceC
 		ResourceContainer* cont = resourceHopper.get(i);
 
 		if (cont == container) {
-			InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.get());
+			InstallationObjectDeltaMessage7* inso7 = new InstallationObjectDeltaMessage7( _this.getReferenceUnsafeStaticCast());
 			inso7->updateHopper();
 			inso7->startUpdate(0x0D);
 			if(container->getQuantity() == 0 && (!isOperating() || (isOperating() && i != 0)))
@@ -630,7 +648,7 @@ void InstallationObjectImplementation::updateResourceContainerQuantity(ResourceC
 	if(resourceHopper.size() == 0)
 		setOperating(false);
 
-	//broadcastToOperators(new InstallationObjectDeltaMessage7(_this.get()));
+	//broadcastToOperators(new InstallationObjectDeltaMessage7(_this.getReferenceUnsafeStaticCast()));
 }
 
 uint64 InstallationObjectImplementation::getActiveResourceSpawnID() {
@@ -677,9 +695,29 @@ void InstallationObjectImplementation::updateStructureStatus() {
 	}
 }
 
-bool InstallationObjectImplementation::isAttackableBy(CreatureObject* object) {
-	if( !(getPvpStatusBitmask() & CreatureFlag::ATTACKABLE) ) {
+bool InstallationObjectImplementation::isAggressiveTo(CreatureObject* target) {
+	if (!isAttackableBy(target) || target->isVehicleObject())
 		return false;
+
+	if (getFaction() != 0 && target->getFaction() != 0 && getFaction() != target->getFaction())
+		return true;
+
+	return false;
+}
+
+bool InstallationObjectImplementation::isAttackableBy(CreatureObject* object) {
+	if (!(getPvpStatusBitmask() & CreatureFlag::ATTACKABLE)) {
+		return false;
+	}
+
+	unsigned int thisFaction = getFaction();
+	unsigned int otherFaction = object->getFaction();
+
+	if (otherFaction != 0 && thisFaction != 0) {
+		if (otherFaction == thisFaction) {
+			return false;
+		}
+
 	}
 
 	if (object->isPet()) {
@@ -689,70 +727,70 @@ bool InstallationObjectImplementation::isAttackableBy(CreatureObject* object) {
 			return false;
 
 		return isAttackableBy(owner);
-	} else if(object->isPlayerCreature()) {
+
+	} else if (object->isPlayerCreature()) {
 		ManagedReference<PlayerObject*> ghost = object->getPlayerObject();
-		if(ghost == NULL) {
+		if (ghost == NULL) {
 			return false;
 		}
 
-		if(getFaction() == 0) {
-			return true;
-		}
+		if (thisFaction != 0) {
+			if (ghost->getFactionStatus() == 0) {
+				return false;
+			}
 
-		if(getFaction() == object->getFaction()) {
-			return false;
-		}
-
-		if((getPvpStatusBitmask() & CreatureFlag::OVERT) && ghost->getFactionStatus() != FactionStatus::OVERT) {
-			return false;
-		} else if(!(ghost->getFactionStatus() >= FactionStatus::COVERT)) {
-			return false;
+			if ((getPvpStatusBitmask() & CreatureFlag::OVERT) && ghost->getFactionStatus() != FactionStatus::OVERT) {
+				return false;
+			}
 		}
 	}
 
 	return true;
 }
 
-void InstallationObjectImplementation::createChildObjects(){
-	if( isTurret()) {
-
+void InstallationObjectImplementation::createChildObjects() {
+	if (isTurret()) {
 		SharedInstallationObjectTemplate* inso = dynamic_cast<SharedInstallationObjectTemplate*>(getObjectTemplate());
 
-		if(inso != NULL){
-
+		if (inso != NULL) {
 			uint32 defaultWeaponCRC = inso->getWeapon().hashCode();
-			if(getZoneServer() != NULL) {
-					Reference<WeaponObject*> defaultWeapon = (getZoneServer()->createObject(defaultWeaponCRC, 1)).castTo<WeaponObject*>();
 
-					if (defaultWeapon == NULL) {
-							return;
-					} else {
+			if (getZoneServer() != NULL) {
+				Reference<WeaponObject*> defaultWeapon = (getZoneServer()->createObject(defaultWeaponCRC, getPersistenceLevel())).castTo<WeaponObject*>();
 
-						transferObject(defaultWeapon, 4);
+				if (defaultWeapon == NULL) {
+					return;
+				}
 
-						if(dataObjectComponent != NULL){
-							TurretDataComponent* turretData = cast<TurretDataComponent*>(dataObjectComponent.get());
+				if (!transferObject(defaultWeapon, 4)) {
+					defaultWeapon->destroyObjectFromDatabase(true);
+					return;
+				}
 
-							if(turretData != NULL) {
-								turretData->setWeapon(defaultWeapon);
-							}
-						}
+				if (dataObjectComponent != NULL) {
+					TurretDataComponent* turretData = cast<TurretDataComponent*>(dataObjectComponent.get());
+
+					if (turretData != NULL) {
+						turretData->setWeapon(defaultWeapon);
 					}
+				}
 			}
 		}
-	} else if (isMinefield()){
+	} else if (isMinefield()) {
 		this->setContainerDefaultAllowPermission(ContainerPermissions::MOVEIN);
 		this->setContainerDefaultDenyPermission(ContainerPermissions::MOVEOUT);
 		this->setContainerDefaultAllowPermission(ContainerPermissions::OPEN);
 
-
 	} else {
 		StructureObjectImplementation::createChildObjects();
-
 	}
 }
 
-float InstallationObjectImplementation::getHitChance(){
+float InstallationObjectImplementation::getHitChance() {
 		SharedInstallationObjectTemplate* inso = dynamic_cast<SharedInstallationObjectTemplate*>(getObjectTemplate());
+
+		if (inso == NULL)
+			return 0;
+
 		return inso->getChanceHit();
 }

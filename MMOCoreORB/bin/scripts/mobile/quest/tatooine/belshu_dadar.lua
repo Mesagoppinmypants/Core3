@@ -1,7 +1,6 @@
 belshu_dadar = Creature:new {
 	objectName = "@npc_spawner_n:smuggler_pilot",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ belshu_dadar = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_jabba_henchman.iff"},

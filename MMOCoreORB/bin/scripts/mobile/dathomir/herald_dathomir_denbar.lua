@@ -2,7 +2,6 @@ herald_dathomir_denbar = Creature:new {
 	objectName = "",
 	customName = "Denbar",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ herald_dathomir_denbar = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_herald_nsister_rancor_cave_01.iff"},

@@ -1,7 +1,6 @@
 bordok_ancient = Creature:new {
 	objectName = "@mob/creature_names:bordok_ancient",
 	socialGroup = "bordok",
-	pvpFaction = "",
 	faction = "",
 	level = 45,
 	chanceHit = 0.45,
@@ -24,7 +23,7 @@ bordok_ancient = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bordok_hue.iff"},
@@ -33,8 +32,8 @@ bordok_ancient = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"stunattack","stunChance=50"}
+		{"blindattack",""},
+		{"stunattack",""}
 	}
 }
 

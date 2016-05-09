@@ -1,7 +1,6 @@
 sandy_spined_snake = Creature:new {
 	objectName = "@mob/creature_names:sandy_spined_snake",
 	socialGroup = "spine_snake",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ sandy_spined_snake = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/spined_snake_hue.iff"},
@@ -33,8 +32,8 @@ sandy_spined_snake = Creature:new {
 	weapons = {"creature_spit_small_toxicgreen"},
 	conversationTemplate = "",
 	attacks = {
-		{"mediumpoison",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"mediumpoison",""}
 	}
 }
 

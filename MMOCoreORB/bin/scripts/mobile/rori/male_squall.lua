@@ -1,7 +1,6 @@
 male_squall = Creature:new {
 	objectName = "@mob/creature_names:squall_male",
 	socialGroup = "squall",
-	pvpFaction = "",
 	faction = "",
 	level = 11,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ male_squall = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/squall.iff"},
@@ -32,7 +31,8 @@ male_squall = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"",""},
+		{"stunattack",""}
 	}
 }
 

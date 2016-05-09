@@ -1,7 +1,6 @@
 bolle_bol_calf = Creature:new {
 	objectName = "@mob/creature_names:bolle_bol_calf",
 	socialGroup = "bol",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.31,
@@ -24,7 +23,7 @@ bolle_bol_calf = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bolle_bol_calf.iff"},

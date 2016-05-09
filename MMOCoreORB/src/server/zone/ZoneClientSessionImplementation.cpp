@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #include "server/zone/ZoneClientSession.h"
 
@@ -87,7 +47,7 @@ void ZoneClientSessionImplementation::sendMessage(BasePacket* msg) {
 
 //this needs to be run in a different thread
 void ZoneClientSessionImplementation::disconnect(bool doLock) {
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
 	if (disconnecting) {
 		return;
@@ -95,14 +55,14 @@ void ZoneClientSessionImplementation::disconnect(bool doLock) {
 
 	disconnecting = true;
 
-	ManagedReference<SceneObject*> player = this->player.get();
+	ManagedReference<CreatureObject*> player = this->player.get();
 
 	if (session->hasError() || !session->isClientDisconnected()) {
 		if (player != NULL) {
 
-			if (player->getClient() == _this.get().get()) {
+			if (player->getClient() == _this.getReferenceUnsafeStaticCast()) {
 				//((CreatureObject*)player.get())->disconnect(false, true);
-				Reference<DisconnectClientEvent*> task = new DisconnectClientEvent(cast<CreatureObject*>(player.get()), _this.get(), DisconnectClientEvent::DISCONNECT);
+				Reference<DisconnectClientEvent*> task = new DisconnectClientEvent(player, _this.getReferenceUnsafeStaticCast(), DisconnectClientEvent::DISCONNECT);
 				Core::getTaskManager()->executeTask(task);
 			}
 		}
@@ -111,18 +71,18 @@ void ZoneClientSessionImplementation::disconnect(bool doLock) {
 	} else if (player != NULL) {
 		Reference<PlayerObject*> ghost = player->getSlottedObject("ghost").castTo<PlayerObject*>();
 
-		if (ghost->isLoggingOut() && player->getClient() == _this.get().get()) {
+		if (ghost->isLoggingOut() && player->getClient() == _this.getReferenceUnsafeStaticCast()) {
 			//((CreatureObject*)player.get())->logout(true);
-			Reference<DisconnectClientEvent*> task = new DisconnectClientEvent(cast<CreatureObject*>(player.get()), _this.get(), DisconnectClientEvent::LOGOUT);
+			Reference<DisconnectClientEvent*> task = new DisconnectClientEvent(player, _this.getReferenceUnsafeStaticCast(), DisconnectClientEvent::LOGOUT);
 			Core::getTaskManager()->executeTask(task);
 		}
 		else {
 			try {
 				//player->wlock();
 
-				if (player->getClient() == _this.get()) {
+				if (player->getClient() == _this.getReferenceUnsafeStaticCast()) {
 					//((CreatureObject*)player.get())->setLinkDead();
-					Reference<DisconnectClientEvent*> task = new DisconnectClientEvent(cast<CreatureObject*>(player.get()), _this.get(), DisconnectClientEvent::SETLINKDEAD);
+					Reference<DisconnectClientEvent*> task = new DisconnectClientEvent(player, _this.getReferenceUnsafeStaticCast(), DisconnectClientEvent::SETLINKDEAD);
 					Core::getTaskManager()->executeTask(task);
 				}
 
@@ -136,12 +96,12 @@ void ZoneClientSessionImplementation::disconnect(bool doLock) {
 	}
 	
 
-	/*info("references left " + String::valueOf(_this.get()->getReferenceCount()), true);
-	_this.get()->printReferenceHolders();*/
+	/*info("references left " + String::valueOf(_this.getReferenceUnsafeStaticCast()->getReferenceCount()), true);
+	_this.getReferenceUnsafeStaticCast()->printReferenceHolders();*/
 }
 
-void ZoneClientSessionImplementation::setPlayer(SceneObject* playerCreature) {
-	ManagedReference<SceneObject*> player = this->player.get();
+void ZoneClientSessionImplementation::setPlayer(CreatureObject* playerCreature) {
+	ManagedReference<CreatureObject*> player = this->player.get();
 
 	if (playerCreature != player) {
 		if (playerCreature == NULL && player != NULL) {
@@ -151,10 +111,10 @@ void ZoneClientSessionImplementation::setPlayer(SceneObject* playerCreature) {
 			if (zoneServer != NULL) {
 				zoneServer->decreaseOnlinePlayers();
 
-				zoneServer->getPlayerManager()->decreaseOnlineCharCount(_this.get());
+				zoneServer->getPlayerManager()->decreaseOnlineCharCount(_this.getReferenceUnsafeStaticCast());
 
 			}
-		} else if (playerCreature != player) {
+		} else if (playerCreature != NULL) {
 			// TODO: find a proper way to acqure zone server
 			ZoneServer* zoneServer = playerCreature->getZoneServer();
 
@@ -169,7 +129,7 @@ void ZoneClientSessionImplementation::setPlayer(SceneObject* playerCreature) {
 
 
 void ZoneClientSessionImplementation::closeConnection(bool lockPlayer, bool doLock) {
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 	Reference<BaseClientProxy* > session = this->session;
 
 	if (session == NULL)
@@ -178,12 +138,12 @@ void ZoneClientSessionImplementation::closeConnection(bool lockPlayer, bool doLo
 	session->info("disconnecting client \'" + session->getIPAddress() + "\'");
 
 	ZoneServer* server = NULL;
-	ManagedReference<CreatureObject*> play = cast<CreatureObject*>(player.get().get());
+	ManagedReference<CreatureObject*> play = player.get();
 
 	if (play != NULL) {
 		server = play->getZoneServer();
 
-		Reference<ClearClientEvent*> task = new ClearClientEvent(play, _this.get());
+		Reference<ClearClientEvent*> task = new ClearClientEvent(play, _this.getReferenceUnsafeStaticCast());
 		Core::getTaskManager()->executeTask(task);
 
 		setPlayer(NULL); // we must call setPlayer to increase/decrease online player counter
@@ -261,4 +221,8 @@ bool ZoneClientSessionImplementation::hasCharacter(uint64 cid, unsigned int gala
 	
 
 	return false;
+}
+
+Reference<CreatureObject*> ZoneClientSessionImplementation::getPlayer() {
+	return player.get();
 }

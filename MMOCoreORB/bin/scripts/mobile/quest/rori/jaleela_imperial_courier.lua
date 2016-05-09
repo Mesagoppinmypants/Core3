@@ -2,7 +2,6 @@ jaleela_imperial_courier = Creature:new {
 	objectName = "",
 	customName = "(an Imperial Courier)",   
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 30,
 	chanceHit = 0.390000,
@@ -24,7 +23,7 @@ jaleela_imperial_courier = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136, 
+	optionsBitmask = AIENABLED + CONVERSABLE, 
 	diet = HERBIVORE,
 
 	templates = {

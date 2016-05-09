@@ -1,7 +1,6 @@
 wilhalm_skrim = Creature:new {
 	objectName = "@theme_park_name:willhalm_skrim",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ wilhalm_skrim = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_wilhalm_skrim.iff"},

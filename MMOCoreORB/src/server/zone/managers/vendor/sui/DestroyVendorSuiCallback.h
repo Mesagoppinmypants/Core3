@@ -19,7 +19,9 @@ public:
 		: SuiCallback(server) {
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (!suiBox->isMessageBox() || cancelPressed)
 			return;
 
@@ -28,12 +30,17 @@ public:
 
 		ManagedReference<SceneObject*> object = suiBox->getUsingObject();
 
-		if (!object->isVendor() || object == NULL)
+		if (object == NULL || !object->isVendor())
 			return;
 
 		TangibleObject* vendor = cast<TangibleObject*>(object.get());
 
-		VendorManager::instance()->handleDestroyCallback(player, vendor);
+		if (vendor == NULL)
+			return;
+
+		Locker clocker(vendor, player);
+
+		VendorManager::instance()->destroyVendor(vendor);
 	}
 };
 

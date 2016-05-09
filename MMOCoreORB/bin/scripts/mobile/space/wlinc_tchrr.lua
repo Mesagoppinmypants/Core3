@@ -1,7 +1,6 @@
 wlinc_tchrr = Creature:new {
 	objectName = "@npc_spawner_n:wlinc_tchrr",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 19,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ wlinc_tchrr = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_greeter_bestine_bookie.iff"},

@@ -2,7 +2,6 @@ cx_425 = Creature:new {
 	objectName = "",
 	customName = "CX-425",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ cx_425 = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_cx_425.iff"},

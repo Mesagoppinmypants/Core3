@@ -9,7 +9,7 @@
 #include "server/zone/objects/area/MissionSpawnActiveArea.h"
 #include "server/ServerCore.h"
 #include "server/zone/objects/waypoint/WaypointObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/region/Region.h"
 #include "server/zone/Zone.h"
@@ -17,7 +17,7 @@
 #include "server/zone/managers/object/ObjectManager.h"
 #include "server/zone/managers/creature/CreatureManager.h"
 #include "server/zone/managers/mission/MissionManager.h"
-#include "server/zone/managers/terrain/TerrainManager.h"
+#include "terrain/manager/TerrainManager.h"
 #include "server/zone/managers/planet/PlanetManager.h"
 #include "server/zone/packets/object/NpcConversationMessage.h"
 #include "server/zone/packets/object/StartNpcConversation.h"
@@ -59,7 +59,7 @@ bool DeliverMissionObjectiveImplementation::activateWithResult() {
 	ManagedReference<CreatureObject*> owner = getPlayerOwner();
 	ManagedReference<MissionObject* > mission = this->mission.get();
 
-	if (owner == NULL) {
+	if (owner == NULL || mission == NULL) {
 		return false;
 	}
 	Zone* zone = owner->getZone();
@@ -91,10 +91,10 @@ bool DeliverMissionObjectiveImplementation::activateWithResult() {
 	//Select spawn type.
 	int spawnType = NpcSpawnPoint::NEUTRALSPAWN;
 	switch (mission->getFaction()) {
-	case MissionObject::FACTIONIMPERIAL:
+	case Factions::FACTIONIMPERIAL:
 		spawnType = NpcSpawnPoint::IMPERIALSPAWN;
 		break;
-	case MissionObject::FACTIONREBEL:
+	case Factions::FACTIONREBEL:
 		spawnType = NpcSpawnPoint::REBELSPAWN;
 		break;
 	default:
@@ -106,7 +106,7 @@ bool DeliverMissionObjectiveImplementation::activateWithResult() {
 
 	//Target NPC
 	//Find a free spawn point.
-	targetSpawnPoint = missionManager->getRandomFreeNpcSpawnPoint(mission->getStartPlanetCRC(), mission->getStartPositionX(), mission->getStartPositionY(), spawnType);
+	targetSpawnPoint = missionManager->getFreeNpcSpawnPoint(mission->getStartPlanetCRC(), mission->getStartPositionX(), mission->getStartPositionY(), spawnType);
 	if (targetSpawnPoint == NULL) {
 		return false;
 	}
@@ -120,7 +120,7 @@ bool DeliverMissionObjectiveImplementation::activateWithResult() {
 	int retries = 10;
 	destinationSpawnPoint = NULL;
 	while (retries > 0 && (destinationSpawnPoint == NULL || destinationSpawnPoint == targetSpawnPoint)) {
-		destinationSpawnPoint = missionManager->getRandomFreeNpcSpawnPoint(mission->getEndPlanet().hashCode(), mission->getEndPositionX(), mission->getEndPositionY(), spawnType);
+		destinationSpawnPoint = missionManager->getFreeNpcSpawnPoint(mission->getEndPlanet().hashCode(), mission->getEndPositionX(), mission->getEndPositionY(), spawnType);
 		retries--;
 	}
 	if (destinationSpawnPoint == NULL || destinationSpawnPoint == targetSpawnPoint) {
@@ -133,9 +133,7 @@ bool DeliverMissionObjectiveImplementation::activateWithResult() {
 	if (objectiveStatus == 0) {
 		WaypointObject* waypoint = mission->getWaypointToMission();
 
-		if (waypoint == NULL) {
-			waypoint = mission->createWaypoint();
-		}
+		Locker locker(waypoint);
 
 		waypoint->setPlanetCRC(mission->getStartPlanetCRC());
 		waypoint->setPosition(targetPosition->getX(), 0, targetPosition->getY());
@@ -174,6 +172,8 @@ void DeliverMissionObjectiveImplementation::despawnNpcs() {
 
 void DeliverMissionObjectiveImplementation::updateMissionStatus(CreatureObject* player) {
 	ManagedReference<MissionObject* > mission = this->mission.get();
+	if(mission == NULL)
+		return;
 
 	StringBuffer itemEntry;
 	itemEntry << "m" << mission->getMissionNumber();
@@ -183,32 +183,41 @@ void DeliverMissionObjectiveImplementation::updateMissionStatus(CreatureObject* 
 
 	Locker lock(player);
 
-	switch (objectiveStatus) {
-	case 0:
+	if (objectiveStatus == 0) {
 		itemEntry << "l";
 		item = NULL;
 		//TODO: create correct item.
-		item = (player->getZoneServer()->createObject(String("object/tangible/mission/mission_datadisk.iff").hashCode(), 2)).castTo<TangibleObject*>();
+		item = (player->getZoneServer()->createObject(STRING_HASHCODE("object/tangible/mission/mission_datadisk.iff"), 2)).castTo<TangibleObject*>();
 		if (item == NULL) {
+			abort();
 			return;
 		}
 
+		Locker clocker(item, player);
+
 		itemName.setStringId("mission/mission_deliver_neutral_easy", itemEntry.toString());
-		item->setObjectName(itemName);
-		item->sendTo(player, true);
+		item->setObjectName(itemName, false);
 
 		//Give player the item to deliver
-		inventory->transferObject(item, -1, true);
+		if (inventory->transferObject(item, -1, true)) {
+			item->sendTo(player, true);
+		} else {
+			abort();
+			item->destroyObjectFromDatabase(true);
+			return;
+		}
 
 		updateMissionTarget(player);
 
 		objectiveStatus = PICKEDUPSTATUS;
-		break;
-	case 1:
+
+	} else if (objectiveStatus == 1) {
 		// check for item, then remove item
 		if (item == NULL || !inventory->hasObjectInContainer(item->getObjectID())) {
 			return;
 		}
+
+		Locker clocker2(item, player);
 
 		item->destroyObjectFromWorld(true);
 		item->destroyObjectFromDatabase(true);
@@ -216,20 +225,17 @@ void DeliverMissionObjectiveImplementation::updateMissionStatus(CreatureObject* 
 		complete();
 
 		objectiveStatus = DELIVEREDSTATUS;
-		break;
-	default:
-		break;
 	}
 }
 
 bool DeliverMissionObjectiveImplementation::updateMissionTarget(CreatureObject* player) {
 	//Now update the waypoint to the new target
 	ManagedReference<MissionObject* > mission = this->mission.get();
-
+	if(mission == NULL)
+		return false;
 	WaypointObject* waypoint = mission->getWaypointToMission();
-	if (waypoint == NULL) {
-		waypoint = mission->createWaypoint();
-	}
+
+	Locker locker(waypoint);
 
 	waypoint->setPlanetCRC(mission->getEndPlanet().hashCode());
 	waypoint->setPosition(destinationSpawnPoint->getPosition()->getX(), 0, destinationSpawnPoint->getPosition()->getY());

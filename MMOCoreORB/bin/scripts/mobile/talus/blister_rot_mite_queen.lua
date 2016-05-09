@@ -1,7 +1,6 @@
 blister_rot_mite_queen = Creature:new {
 	objectName = "@mob/creature_names:blister_rot_queen",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ blister_rot_mite_queen = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/blister_rot_queen.iff"},
@@ -33,7 +32,7 @@ blister_rot_mite_queen = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"mediumdisease",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

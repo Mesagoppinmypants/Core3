@@ -41,7 +41,7 @@ void FireworkObjectImplementation::loadTemplateData(SharedObjectTemplate* templa
 }
 
 void FireworkObjectImplementation::destroyObjectFromDatabase(bool destroyContainedObjects) {
-	ManagedReference<FireworkObject*> firework = _this.get();
+	ManagedReference<FireworkObject*> firework = _this.getReferenceUnsafeStaticCast();
 
 	if (firework != NULL && firework->isFireworkObject()) {
 
@@ -68,7 +68,7 @@ void FireworkObjectImplementation::destroyObjectFromDatabase(bool destroyContain
 void FireworkObjectImplementation::fillAttributeList(AttributeListMessage* alm, CreatureObject* object) {
 	TangibleObjectImplementation::fillAttributeList(alm, object);
 
-	ManagedReference<FireworkObject*> firework = _this.get();
+	ManagedReference<FireworkObject*> firework = _this.getReferenceUnsafeStaticCast();
 
 	if (firework == NULL)
 		return;
@@ -105,7 +105,7 @@ void FireworkObjectImplementation::fillAttributeList(AttributeListMessage* alm, 
 
 void FireworkObjectImplementation::updateCraftingValues(CraftingValues* values, bool firstUpdate) {
 
-	ManagedReference<FireworkObject*> firework = _this.get();
+	ManagedReference<FireworkObject*> firework = _this.getReferenceUnsafeStaticCast();
 
 	if (firework == NULL)
 		return;
@@ -127,7 +127,7 @@ void FireworkObjectImplementation::updateCraftingValues(CraftingValues* values, 
 
 int FireworkObjectImplementation::getDisplayedUseCount() {
 
-	ManagedReference<FireworkObject*> firework = _this.get();
+	ManagedReference<FireworkObject*> firework = _this.getReferenceUnsafeStaticCast();
 
 	if (firework == NULL)
 		return 0;
@@ -143,7 +143,7 @@ int FireworkObjectImplementation::getDisplayedUseCount() {
 		return fireworkShowData->getTotalFireworkCount();
 	}
 
-	return TangibleObjectImplementation::getDisplayedUseCount();
+	return useCount;
 }
 
 void FireworkObjectImplementation::launch(CreatureObject* player, int removeDelay) {
@@ -155,7 +155,7 @@ void FireworkObjectImplementation::launch(CreatureObject* player, int removeDela
 		return;
 	}
 
-	Reference<FireworkLaunchEvent*> launchEvent = new FireworkLaunchEvent(player, _this.get(), removeDelay);
+	Reference<FireworkLaunchEvent*> launchEvent = new FireworkLaunchEvent(player, _this.getReferenceUnsafeStaticCast(), removeDelay);
 	launchEvent->schedule(delay * 1000);
 }
 
@@ -181,11 +181,13 @@ void FireworkObjectImplementation::completeLaunch(CreatureObject* player, int re
 	int y = player->getPositionY() + cos(angle) * (distance);
 	int z = player->getZone()->getHeight(x, y);
 
+	Locker locker(launcherObject);
+
 	launcherObject->initializePosition(x, z, y);
 	player->getZone()->transferObject(launcherObject, -1, true);
 
 	if (getUseCount() > 1) {
-		setUseCount(getUseCount() - 1, true);
+		decreaseUseCount();
 	} else {
 		destroyObjectFromWorld(true);
 
@@ -202,7 +204,7 @@ void FireworkObjectImplementation::beginShowLaunch(CreatureObject* player) {
 	if (player == NULL || player->getParent() != NULL)
 		return;
 
-	ManagedReference<FireworkObject*> fireworkShow = _this.get();
+	ManagedReference<FireworkObject*> fireworkShow = _this.getReferenceUnsafeStaticCast();
 
 	if (fireworkShow == NULL)
 		return;
@@ -237,7 +239,7 @@ void FireworkObjectImplementation::beginShowLaunch(CreatureObject* player) {
 	int x = player->getPositionX() + sin(angle) * (distance);
 	int y = player->getPositionY() + cos(angle) * (distance);
 	int z = player->getZone()->getHeight(x, y);
-
+	Locker locker(showLauncherObject);
 	showLauncherObject->initializePosition(x, z, y);
 	player->getZone()->transferObject(showLauncherObject, -1, true);
 

@@ -1,7 +1,6 @@
 mutant_bark_mite_soldier = Creature:new {
 	objectName = "@mob/creature_names:mutant_bark_mite_soldier",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 24,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ mutant_bark_mite_soldier = Creature:new {
 	ferocity = 6,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bark_mite.iff"},

@@ -47,7 +47,7 @@ object_draft_schematic_weapon_pistol_blaster_power5 = object_draft_schematic_wea
 
    customObjectName = "Power5 Pistol",
 
-   craftingToolTab = 1, -- (See DraftSchemticImplementation.h)
+   craftingToolTab = 1, -- (See DraftSchematicObjectTemplate.h)
    complexity = 22, 
    size = 3, 
 
@@ -68,6 +68,7 @@ object_draft_schematic_weapon_pistol_blaster_power5 = object_draft_schematic_wea
    resourceTypes = {"iron_plumbum", "metal_ferrous", "metal", "object/tangible/component/weapon/shared_blaster_power_handler.iff", "object/tangible/component/weapon/shared_blaster_pistol_barrel.iff", "object/tangible/component/weapon/shared_scope_weapon.iff"},
    resourceQuantities = {30, 15, 5, 2, 1, 1},
    contribution = {100, 100, 100, 100, 100, 100},
+   ingredientAppearance = {"", "", "", "", "muzzle", "scope"},
 
 
    targetTemplate = "object/weapon/ranged/pistol/pistol_power5.iff",

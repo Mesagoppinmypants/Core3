@@ -1,7 +1,6 @@
 gurrcat = Creature:new {
 	objectName = "@mob/creature_names:gurrcat",
 	socialGroup = "gurrcat",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ gurrcat = Creature:new {
 	ferocity = 1,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gurrcat.iff"},
@@ -31,7 +30,7 @@ gurrcat = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

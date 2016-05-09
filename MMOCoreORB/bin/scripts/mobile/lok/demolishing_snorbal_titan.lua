@@ -1,7 +1,6 @@
 demolishing_snorbal_titan = Creature:new {
 	objectName = "@mob/creature_names:snorbal_titanic_demolisher",
 	socialGroup = "snorbal",
-	pvpFaction = "",
 	faction = "",
 	level = 40,
 	chanceHit = 0.47,
@@ -23,7 +22,7 @@ demolishing_snorbal_titan = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/snorbal_hue.iff"},
@@ -33,8 +32,8 @@ demolishing_snorbal_titan = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
-		{"knockdownattack","knockdownChance=50"}
+		{"intimidationattack",""},
+		{"knockdownattack",""}
 	}
 }
 

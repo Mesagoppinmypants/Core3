@@ -1,7 +1,6 @@
 r2d2 = Creature:new {
 	objectName = "@theme_park_name:r2d2",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ r2d2 = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/r2d2.iff"},

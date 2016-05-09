@@ -1,7 +1,6 @@
 song_rasp = Creature:new {
 	objectName = "@mob/creature_names:song_rasp",
 	socialGroup = "rasp",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ song_rasp = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/flite_rasp_hue.iff"},

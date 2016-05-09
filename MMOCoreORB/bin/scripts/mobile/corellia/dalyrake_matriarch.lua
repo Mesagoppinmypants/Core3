@@ -1,7 +1,6 @@
 dalyrake_matriarch = Creature:new {
 	objectName = "@mob/creature_names:dalyrake_matriarch",
 	socialGroup = "dalyrake",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ dalyrake_matriarch = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/dalyrake_matriarch.iff"},
@@ -33,7 +32,7 @@ dalyrake_matriarch = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"mildpoison",""},
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

@@ -44,13 +44,16 @@
 DrainForceCommand = {
     name = "drainforce",
 	
-	animationCRC = hashCode("force_drain_1"),
+	animation = "force_drain_1",
 
-	combatSpam = "forcedrain",
+	combatSpam = "forcedrain_hit",
 	
-	poolsToDamage = NONE,
+	poolsToDamage = NO_ATTRIBUTE,
+
+	minDamage = 100, --Force drained
 
 	range = 32
+	
 }
 
 AddCommand(DrainForceCommand)

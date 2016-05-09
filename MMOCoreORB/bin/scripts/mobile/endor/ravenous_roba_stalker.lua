@@ -1,7 +1,6 @@
 ravenous_roba_stalker = Creature:new {
 	objectName = "@mob/creature_names:ravenous_roba_stalker",
 	socialGroup = "roba",
-	pvpFaction = "",
 	faction = "",
 	level = 40,
 	chanceHit = 0.44,
@@ -23,7 +22,7 @@ ravenous_roba_stalker = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/roba_hue.iff"},
@@ -33,7 +32,8 @@ ravenous_roba_stalker = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"knockdownattack","knockdownChance=50"}
+		{"",""},
+		{"knockdownattack",""}
 	}
 }
 

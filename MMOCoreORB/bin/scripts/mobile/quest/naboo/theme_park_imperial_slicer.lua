@@ -1,7 +1,6 @@
 theme_park_imperial_slicer = Creature:new {
 	objectName = "",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 10,
 	chanceHit = 0.280000,
@@ -23,7 +22,7 @@ theme_park_imperial_slicer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_crook_zabrak_female_01.iff"},

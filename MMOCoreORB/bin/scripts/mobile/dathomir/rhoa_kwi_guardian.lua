@@ -1,7 +1,6 @@
 rhoa_kwi_guardian = Creature:new {
 	objectName = "@mob/creature_names:rhoa_kwi_guardian",
 	socialGroup = "kwi",
-	pvpFaction = "",
 	faction = "",
 	level = 45,
 	chanceHit = 0.44,
@@ -23,7 +22,7 @@ rhoa_kwi_guardian = Creature:new {
 	ferocity = 6,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kwi_hue.iff"},
@@ -33,8 +32,8 @@ rhoa_kwi_guardian = Creature:new {
 	weapons = {"creature_spit_small_red"},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""},
+		{"dizzyattack",""}
 	}
 }
 

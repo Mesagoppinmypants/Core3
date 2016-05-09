@@ -1,7 +1,6 @@
 spiked_krevol = Creature:new {
 	objectName = "@mob/creature_names:spiked_krevol",
 	socialGroup = "krevol",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ spiked_krevol = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/horned_krevol_hue.iff"},
@@ -32,7 +31,7 @@ spiked_krevol = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

@@ -2,7 +2,6 @@ governor_ian_lago = Creature:new {
 	objectName = "",
 	customName = "Governor Ian Lago",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ governor_ian_lago = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_naboo_govenor_ian_lago.iff"},

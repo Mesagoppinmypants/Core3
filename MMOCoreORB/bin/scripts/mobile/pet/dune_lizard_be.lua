@@ -1,7 +1,6 @@
 dune_lizard_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_dune_lizard",
 	socialGroup = "lizard",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ dune_lizard_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE,
 	creatureBitmask = HERD + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/dune_lizard_hue.iff"},

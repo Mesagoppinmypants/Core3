@@ -1,7 +1,6 @@
 kreetle_swarmling = Creature:new {
 	objectName = "@mob/creature_names:kreetle_swarming",
 	socialGroup = "kreetle",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ kreetle_swarmling = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kreetle.iff"},
@@ -31,7 +30,7 @@ kreetle_swarmling = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 kaadu_male = Creature:new {
 	objectName = "@mob/creature_names:kaadu_male",
 	socialGroup = "kaadu",
-	pvpFaction = "",
 	faction = "",
 	level = 14,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ kaadu_male = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kaadu_hue.iff"},

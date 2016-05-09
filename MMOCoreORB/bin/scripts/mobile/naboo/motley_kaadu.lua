@@ -1,7 +1,6 @@
 motley_kaadu = Creature:new {
 	objectName = "@mob/creature_names:kaadu_motley",
 	socialGroup = "kaadu",
-	pvpFaction = "",
 	faction = "",
 	level = 8,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ motley_kaadu = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kaadu_hue.iff"},

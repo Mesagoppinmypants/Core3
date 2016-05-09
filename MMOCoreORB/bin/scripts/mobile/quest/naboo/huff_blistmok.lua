@@ -1,7 +1,6 @@
 huff_blistmok = Creature:new {
 	objectName = "",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 22,
 	chanceHit = 0.35,
@@ -22,9 +21,9 @@ huff_blistmok = Creature:new {
 	milk = 0,
 	tamingChance = 0,
 	ferocity = 0,
-	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
-	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 0,
+	pvpBitmask = ATTACKABLE,
+	creatureBitmask = NONE,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/voritor_lizard.iff"}, -- Intentional, voritor model used for this quest, blistmok model did not appear ingame until Trials of Obi-Wan. 
@@ -32,7 +31,7 @@ huff_blistmok = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

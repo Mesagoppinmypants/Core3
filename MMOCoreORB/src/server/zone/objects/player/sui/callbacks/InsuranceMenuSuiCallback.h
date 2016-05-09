@@ -11,7 +11,7 @@
 #include "server/zone/objects/player/sui/SuiCallback.h"
 #include "server/zone/objects/player/sui/messagebox/SuiMessageBox.h"
 #include "server/zone/objects/player/sui/callbacks/InsuranceAllConfirmSuiCallback.h"
-#include "server/zone/objects/tangible/OptionBitmask.h"
+#include "templates/params/OptionBitmask.h"
 
 class InsuranceMenuSuiCallback : public SuiCallback {
 public:
@@ -19,7 +19,9 @@ public:
 		: SuiCallback(server) {
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (!suiBox->isListBox() || cancelPressed || player == NULL)
 			return;
 
@@ -87,7 +89,9 @@ public:
 
 				TangibleObject* item = cast<TangibleObject*>( obj.get());
 
-				if (item != NULL && !(item->getOptionsBitmask() & OptionBitmask::INSURED) && (item->isArmorObject() || item->isWearableObject())) {
+				Locker locker(item, player);
+
+				if (!(item->getOptionsBitmask() & OptionBitmask::INSURED) && (item->isArmorObject() || item->isWearableObject())) {
 
 					if (bank < cost) {
 						int diff = cost - bank;

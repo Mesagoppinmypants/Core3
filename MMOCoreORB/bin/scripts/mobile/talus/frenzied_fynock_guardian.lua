@@ -1,7 +1,6 @@
 frenzied_fynock_guardian = Creature:new {
 	objectName = "@mob/creature_names:frenzied_fynock_guardian",
 	socialGroup = "fynock",
-	pvpFaction = "",
 	faction = "",
 	level = 12,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ frenzied_fynock_guardian = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/fynock_hue.iff"},
@@ -33,7 +32,8 @@ frenzied_fynock_guardian = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"",""},
+		{"posturedownattack",""}
 	}
 }
 

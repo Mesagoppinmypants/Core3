@@ -1,7 +1,6 @@
 mountain_vesp = Creature:new {
 	objectName = "@mob/creature_names:mountain_vesp",
 	socialGroup = "vesp",
-	pvpFaction = "",
 	faction = "",
 	level = 24,
 	chanceHit = 0.35,
@@ -11,7 +10,7 @@ mountain_vesp = Creature:new {
 	baseHAM = 6800,
 	baseHAMmax = 8300,
 	armor = 0,
-	resists = {135,10,20,-1,-1,-1,-1,-1,-1},
+	resists = {135,10,120,-1,-1,-1,-1,-1,-1},
 	meatType = "meat_reptilian",
 	meatAmount = 11,
 	hideType = "hide_leathery",
@@ -23,7 +22,7 @@ mountain_vesp = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/vesp_hue.iff"},
@@ -32,8 +31,8 @@ mountain_vesp = Creature:new {
 	lootGroups = {},
 	weapons = {"creature_spit_small_yellow"},
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"dizzyattack","dizzyChance=50"}
+		{"blindattack",""},
+		{"dizzyattack",""}
 	}
 }
 

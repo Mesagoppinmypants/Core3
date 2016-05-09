@@ -25,11 +25,11 @@ end
 function deathWatchHaldoConvoHandler:getInitialScreen(pPlayer, pNpc, pConversationTemplate)
 	return ObjectManager.withCreatureAndPlayerObject(pPlayer, function(player, playerObject)
 		local convoTemplate = LuaConversationTemplate(pConversationTemplate)
-		if (player:hasScreenPlayState(2, "death_watch_foreman_stage") == 0 or player:hasScreenPlayState(4, "death_watch_haldo") == 1) then
+		if (not player:hasScreenPlayState(2, "death_watch_foreman_stage")) then
 			return convoTemplate:getScreen("intro_noquest")
-		elseif (player:hasScreenPlayState(2, "death_watch_haldo") == 1) then
+		elseif (player:hasScreenPlayState(2, "death_watch_haldo")) then
 			return convoTemplate:getScreen("thank_you")
-		elseif (player:hasScreenPlayState(1, "death_watch_haldo") == 1) then
+		elseif (player:hasScreenPlayState(1, "death_watch_haldo")) then
 			return convoTemplate:getScreen("return_intro")
 		else
 			return convoTemplate:getScreen("intro")
@@ -54,13 +54,13 @@ function deathWatchHaldoConvoHandler:runScreenHandlers(conversationTemplate, con
 				end
 			end
 			clonedConversation:addOption("@conversation/death_watch_insane_miner:s_3fb7180e", "medical_droid")
-			--TODO: Add ability to kill haldo
-			--clonedConversation:addOption("@conversation/death_watch_insane_miner:s_4fe1bc67", "wont_help")
+			clonedConversation:addOption("@conversation/death_watch_insane_miner:s_4fe1bc67", "wont_help")
 		elseif (screenID == "please_hurry") then
 			player:setScreenPlayState(1, "death_watch_haldo")
-			DeathWatchBunkerScreenPlay:startForemanQuestStage(1, conversingPlayer)
+		elseif (screenID == "wont_help") then
+			DeathWatchBunkerScreenPlay:spawnAggroHaldo(conversingNPC, conversingPlayer)
 		elseif (screenID == "thank_you") then
-			if (player:hasScreenPlayState(2, "death_watch_haldo") == 0) then
+			if (not player:hasScreenPlayState(2, "death_watch_haldo")) then
 				local pInventory = player:getSlottedObject("inventory")
 				if (pInventory ~= nil) then
 					local pCure = getContainerObjectByTemplate(pInventory, "object/tangible/dungeon/death_watch_bunker/crazed_miner_medicine.iff", true)
@@ -73,7 +73,7 @@ function deathWatchHaldoConvoHandler:runScreenHandlers(conversationTemplate, con
 					SceneObject(pCure):destroyObjectFromWorld()
 					SceneObject(pCure):destroyObjectFromDatabase()
 
-					if (SceneObject(pInventory):hasFullContainerObjects() == true) then
+					if (SceneObject(pInventory):isContainerFullRecursive() == true) then
 						player:sendSystemMessage("@error_message:inv_full")
 						return 0
 					else

@@ -1,7 +1,6 @@
 mountain_ikopi = Creature:new {
 	objectName = "@mob/creature_names:mountain_ikopi",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 17,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ mountain_ikopi = Creature:new {
 	ferocity = 3,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/ikopi_hue.iff"},
@@ -32,7 +31,7 @@ mountain_ikopi = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

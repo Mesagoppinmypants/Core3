@@ -47,7 +47,7 @@ mines_fill_gas = ConvoScreen:new {
 	leftDialog = "@conversation/death_watch_technician:s_45ae332c", -- The mines fill up with allum gas. That stuff can really mess up the men working inside the mines. So all the miners have to wear the rebreather gear in order to work down there, but those things are not always reliable.
 	stopConversation = "false",
 	options = {
-		{"@conversation/death_watch_technician:s_a0c1a32f", "only_way_to_help"}, -- Maybe I can help you out?
+		{"@conversation/death_watch_technician:s_bd5476c4", "only_way_to_help"}, -- Maybe I can help you out?
 		{"@conversation/death_watch_technician:s_72f8ec3a", "yeah_yeah"}, -- Okay, well, good luck with that.
 	}
 }
@@ -58,7 +58,7 @@ aint_that_truth = ConvoScreen:new {
 	leftDialog = "@conversation/death_watch_technician:s_bb18b90f", -- Ain't that the truth. Now, if there isn't anything else, I really need to get back to trying to figure out a way to get those dumb Mandalorians not to trash another one of my droids.
 	stopConversation = "false",
 	options = {
-		{"@conversation/death_watch_technician:s_a0c1a32f", "only_way_to_help"}, -- Maybe I can help you out?
+		{"@conversation/death_watch_technician:s_bd5476c4", "only_way_to_help"}, -- Maybe I can help you out?
 		{"@conversation/death_watch_technician:s_72f8ec3a", "yeah_yeah"}, -- Okay, well, good luck with that.
 	}
 }
@@ -69,7 +69,7 @@ exhaust_ports_offline = ConvoScreen:new {
 	leftDialog = "@conversation/death_watch_technician:s_a8fb8b64", -- The main exhaust ports are offline and I need to send in a droid to fix it. But everytime I send in one of my droids, these dumb Mandalorians shoot it to pieces. Then, they laugh about it all the while yelling at me for not having the ports back online.
 	stopConversation = "false",
 	options = {
-		{"@conversation/death_watch_technician:s_a0c1a32f", "only_way_to_help"}, -- Maybe I can help you out?
+		{"@conversation/death_watch_technician:s_bd5476c4", "only_way_to_help"}, -- Maybe I can help you out?
 		{"@conversation/death_watch_technician:s_72f8ec3a", "yeah_yeah"}, -- Okay, well, good luck with that.
 	}
 }
@@ -141,7 +141,7 @@ should_be_escorting = ConvoScreen:new {
 deathWatchTechnicianConvoTemplate:addScreen(should_be_escorting);
 
 escort_in_progress = ConvoScreen:new {
-	id = "should_be_escorting",
+	id = "escort_in_progress",
 	leftDialog = "@conversation/death_watch_technician:s_1fb416ce", -- Give me a few minutes. I just sent out one of my droids on a dangerous mission with an escort. I am hoping that this works.
 	stopConversation = "true",
 	options = {
@@ -155,8 +155,8 @@ escort_failed = ConvoScreen:new {
 	stopConversation = "false",
 	options = {
 		-- Adjust depending if new droid not built yet
-		{"@conversation/death_watch_technician:s_7d875e15", "release_the_droid"}, -- Give me another chance. I know I can keep that droid alive.
-		{"@conversation/death_watch_technician:s_3bc0260c", "not_first_person"}, -- Those Mandalorians are to much for me.
+		--{"@conversation/death_watch_technician:s_7d875e15", "release_the_droid"}, -- Give me another chance. I know I can keep that droid alive.
+		--{"@conversation/death_watch_technician:s_3bc0260c", "not_first_person"}, -- Those Mandalorians are to much for me.
 	}
 }
 deathWatchTechnicianConvoTemplate:addScreen(escort_failed);
@@ -185,8 +185,8 @@ intro_prev_completed_new_escort = ConvoScreen:new {
 	stopConversation = "false",
 	options = {
 		-- Adjust depending if new droid not built yet
-		{"@conversation/death_watch_technician:s_373533eb", "knew_could_count"}, -- You know it. I will protect that droid.
-		{"@conversation/death_watch_technician:s_cbf95857", "thanks_anyways"}, -- I am sorry, but I can't right now.
+		--{"@conversation/death_watch_technician:s_373533eb", "knew_could_count"}, -- You know it. I will protect that droid.
+		--{"@conversation/death_watch_technician:s_cbf95857", "thanks_anyways"}, -- I am sorry, but I can't right now.
 	}
 }
 deathWatchTechnicianConvoTemplate:addScreen(intro_prev_completed_new_escort);

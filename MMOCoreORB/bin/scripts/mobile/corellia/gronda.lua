@@ -1,7 +1,6 @@
 gronda = Creature:new {
 	objectName = "@mob/creature_names:gronda",
 	socialGroup = "gronda",
-	pvpFaction = "",
 	faction = "",
 	level = 19,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ gronda = Creature:new {
 	ferocity = 1,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gronda.iff"},
@@ -32,7 +31,8 @@ gronda = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"knockdownattack","knockdownChance=50"}
+		{"",""},
+		{"knockdownattack",""}
 	}
 }
 

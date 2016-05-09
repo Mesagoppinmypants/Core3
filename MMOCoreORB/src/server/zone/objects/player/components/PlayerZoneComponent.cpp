@@ -16,7 +16,7 @@
 #include "server/zone/objects/building/BuildingObject.h"
 #include "server/zone/Zone.h"
 
-void PlayerZoneComponent::notifyInsertToZone(SceneObject* sceneObject, Zone* newZone) {
+void PlayerZoneComponent::notifyInsertToZone(SceneObject* sceneObject, Zone* newZone) const {
 	//SceneObject* parent = sceneObject->getParent();
 
 	/*if (parent == NULL && !sceneObject->isInQuadTree() && sceneObject->isPlayerCreature()) {
@@ -33,9 +33,10 @@ void PlayerZoneComponent::notifyInsertToZone(SceneObject* sceneObject, Zone* new
 	}*/
 
 	if (sceneObject->isPlayerCreature() && newZone != NULL) {
-		PlayerObject* ghost = cast<CreatureObject*>(sceneObject)->getPlayerObject();
+		PlayerObject* ghost = sceneObject->asCreatureObject()->getPlayerObject();
 
-		ghost->setSavedTerrainName(newZone->getZoneName());
+		if (ghost != NULL)
+			ghost->setSavedTerrainName(newZone->getZoneName());
 	}
 
 	ZoneComponent::notifyInsertToZone(sceneObject, newZone);
@@ -43,16 +44,16 @@ void PlayerZoneComponent::notifyInsertToZone(SceneObject* sceneObject, Zone* new
 	//sceneObject->info("blia", true);
 }
 
-void PlayerZoneComponent::notifyInsert(SceneObject* sceneObject, QuadTreeEntry* entry) {
-	SceneObject* scno = cast<SceneObject*>( entry);
+void PlayerZoneComponent::notifyInsert(SceneObject* sceneObject, QuadTreeEntry* entry) const {
+	SceneObject* scno = static_cast<SceneObject*>( entry);
 
-	if (scno == NULL || scno == sceneObject)
+	if (scno == sceneObject)
 		return;
 
-	if (scno->isPlayerCreature()) {
-		CreatureObject* player = cast<CreatureObject*>( scno);
+	if (scno->isTangibleObject()) {
+		TangibleObject* tano = scno->asTangibleObject();
 
-		if (player->isInvisible())
+		if (tano->isInvisible())
 			return;
 	}
 
@@ -65,10 +66,10 @@ void PlayerZoneComponent::notifyInsert(SceneObject* sceneObject, QuadTreeEntry* 
 	scno->sendTo(sceneObject, true);
 }
 
-void PlayerZoneComponent::notifyDissapear(SceneObject* sceneObject, QuadTreeEntry* entry) {
-	SceneObject* scno = cast<SceneObject*>( entry);
+void PlayerZoneComponent::notifyDissapear(SceneObject* sceneObject, QuadTreeEntry* entry) const {
+	SceneObject* scno = static_cast<SceneObject*>( entry);
 
-	if (scno == NULL || scno == sceneObject)
+	if (scno == sceneObject)
 		return;
 
 	scno->sendDestroyTo(sceneObject);
@@ -76,41 +77,47 @@ void PlayerZoneComponent::notifyDissapear(SceneObject* sceneObject, QuadTreeEntr
 	//sceneObject->removeNotifiedSentObject(scno);
 }
 
-void PlayerZoneComponent::switchZone(SceneObject* sceneObject, const String& newTerrainName, float newPostionX, float newPositionZ, float newPositionY, uint64 parentID) {
+void PlayerZoneComponent::switchZone(SceneObject* sceneObject, const String& newTerrainName, float newPostionX, float newPositionZ, float newPositionY, uint64 parentID, bool toggleInvisibility) const {
 	if (sceneObject->isPlayerCreature()) {
-		CreatureObject* player = cast<CreatureObject*>( sceneObject);
+		CreatureObject* player = sceneObject->asCreatureObject();
 		PlayerObject* ghost = player->getPlayerObject();
 
 		ManagedReference<SceneObject*> par = sceneObject->getParent();
 
 		if (par != NULL && (par->isVehicleObject() || par->isMount())) {
-			player->executeObjectControllerAction(String("dismount").hashCode());
+			player->executeObjectControllerAction(STRING_HASHCODE("dismount"));
 		}
 
-		ghost->setSavedParentID(0);
+		if (ghost != NULL) {
+			ghost->setSavedParentID(0);
 
-		ghost->setTeleporting(true);
-		ghost->updateLastValidatedPosition();
+			ghost->setTeleporting(true);
+			ghost->setOnLoadScreen(true);
+			ghost->updateLastValidatedPosition();
+			ghost->setClientLastMovementStamp(0);
+
+			ghost->unloadSpawnedChildren();
+		}
+
 		player->setMovementCounter(0);
-		ghost->setClientLastMovementStamp(0);
+
 	}
 
-	ZoneComponent::switchZone(sceneObject, newTerrainName, newPostionX, newPositionZ, newPositionY, parentID);
+	ZoneComponent::switchZone(sceneObject, newTerrainName, newPostionX, newPositionZ, newPositionY, parentID, toggleInvisibility);
 }
 
-void PlayerZoneComponent::teleport(SceneObject* sceneObject, float newPositionX, float newPositionZ, float newPositionY, uint64 parentID) {
-	//sceneObject->setTeleporting(true);
+void PlayerZoneComponent::teleport(SceneObject* sceneObject, float newPositionX, float newPositionZ, float newPositionY, uint64 parentID) const {
 	CreatureObject* player = NULL;
 
 	if (sceneObject->isPlayerCreature()) {
-		player = cast<CreatureObject*>( sceneObject);
+		player = sceneObject->asCreatureObject();
 	}
 
 	if (player != NULL && sceneObject->getParent() != NULL && parentID != 0) {
 		ManagedReference<SceneObject*> par = sceneObject->getParent();
 
 		if (par->isVehicleObject() || par->isMount()) {
-			player->executeObjectControllerAction(String("dismount").hashCode());
+			player->executeObjectControllerAction(STRING_HASHCODE("dismount"));
 		}
 	}
 
@@ -119,10 +126,13 @@ void PlayerZoneComponent::teleport(SceneObject* sceneObject, float newPositionX,
 	if (player != NULL) {
 		PlayerObject* ghost = player->getPlayerObject();
 
-		ghost->setTeleporting(true);
-		ghost->updateLastValidatedPosition();
+		if (ghost != NULL) {
+			ghost->setTeleporting(true);
+			ghost->updateLastValidatedPosition();
+			ghost->setClientLastMovementStamp(0);
+		}
+
 		player->setMovementCounter(0);
-		ghost->setClientLastMovementStamp(0);
 	}
 }
 
@@ -132,25 +142,27 @@ void PlayerZoneComponent::teleport(SceneObject* sceneObject, float newPositionX,
  * @post { this object is locked, in range objects are updated with the new position }
  * @param lightUpdate if true a standalone message is sent to the in range objects
  */
-void PlayerZoneComponent::updateZone(SceneObject* sceneObject, bool lightUpdate, bool sendPackets) {
+void PlayerZoneComponent::updateZone(SceneObject* sceneObject, bool lightUpdate, bool sendPackets) const {
 	ZoneComponent::updateZone(sceneObject, lightUpdate, sendPackets);
 
 	if (sceneObject->isPlayerCreature()) {
-		CreatureObject* player = cast<CreatureObject*>( sceneObject);
+		CreatureObject* player = sceneObject->asCreatureObject();
 		PlayerObject* ghost = player->getPlayerObject();
 
-		ghost->setSavedParentID(0);
+		if (ghost != NULL)
+			ghost->setSavedParentID(0);
 	}
 }
 
-void PlayerZoneComponent::updateZoneWithParent(SceneObject* sceneObject, SceneObject* newParent, bool lightUpdate, bool sendPackets) {
+void PlayerZoneComponent::updateZoneWithParent(SceneObject* sceneObject, SceneObject* newParent, bool lightUpdate, bool sendPackets) const {
 	ZoneComponent::updateZoneWithParent(sceneObject, newParent, lightUpdate, sendPackets);
 
 	if (sceneObject->getParent() != NULL && sceneObject->isPlayerCreature()) {
-		CreatureObject* player = cast<CreatureObject*>( sceneObject);
+		CreatureObject* player = sceneObject->asCreatureObject();
 		PlayerObject* ghost = player->getPlayerObject();
 
-		ghost->setSavedParentID(sceneObject->getParentID());
+		if (ghost != NULL)
+			ghost->setSavedParentID(sceneObject->getParentID());
 	}
 }
 /*
@@ -167,11 +179,11 @@ void PlayerZoneComponent::removeFromBuilding(SceneObject* sceneObject, BuildingO
 
 }*/
 
-void PlayerZoneComponent::notifySelfPositionUpdate(SceneObject* sceneObject) {
+void PlayerZoneComponent::notifySelfPositionUpdate(SceneObject* sceneObject) const {
 	ZoneComponent::notifySelfPositionUpdate(sceneObject);
 
-	if (sceneObject->getZone() == NULL)
-		return;
+	/*if (sceneObject->getZone() == NULL)
+		return;*/
 
 	/*if (activeAreas.size() != 0) {
 		info(String::valueOf(activeAreas.size()) + " areas", true);

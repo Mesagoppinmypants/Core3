@@ -8,7 +8,7 @@
 #ifndef ABORTTRADEMESSAGECALLBACK_H_
 #define ABORTTRADEMESSAGECALLBACK_H_
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 #include "server/zone/managers/player/PlayerManager.h"
 
 class AbortTradeMessageCallback : public MessageCallback {
@@ -25,7 +25,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = static_cast<CreatureObject*>(client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;

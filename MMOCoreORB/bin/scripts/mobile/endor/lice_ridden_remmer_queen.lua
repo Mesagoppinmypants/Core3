@@ -1,7 +1,6 @@
 lice_ridden_remmer_queen = Creature:new {
 	objectName = "@mob/creature_names:lice_ridden_remmer_queen",
 	socialGroup = "remmer",
-	pvpFaction = "",
 	faction = "",
 	level = 37,
 	chanceHit = 0.41,
@@ -23,7 +22,7 @@ lice_ridden_remmer_queen = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/lice_ridden_remmer_queen.iff"},
@@ -32,7 +31,7 @@ lice_ridden_remmer_queen = Creature:new {
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"knockdownattack","knockdownChance=50"},
+		{"knockdownattack",""},
 		{"mediumdisease",""}
 	}
 }

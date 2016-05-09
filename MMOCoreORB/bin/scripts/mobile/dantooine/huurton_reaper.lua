@@ -1,7 +1,6 @@
 huurton_reaper = Creature:new {
 	objectName = "@mob/creature_names:huurton_reaper",
 	socialGroup = "huurton",
-	pvpFaction = "",
 	faction = "",
 	level = 84,
 	chanceHit = 0.9,
@@ -23,7 +22,7 @@ huurton_reaper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/huurton_hue.iff"},
@@ -32,8 +31,8 @@ huurton_reaper = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""},
+		{"dizzyattack",""}
 	}
 }
 

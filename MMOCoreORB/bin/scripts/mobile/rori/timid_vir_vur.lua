@@ -1,7 +1,6 @@
 timid_vir_vur = Creature:new {
 	objectName = "@mob/creature_names:timid_vir_vur",
 	socialGroup = "vir_vur",
-	pvpFaction = "",
 	faction = "",
 	level = 8,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ timid_vir_vur = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/vir_vur_hue.iff"},
@@ -33,7 +32,7 @@ timid_vir_vur = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

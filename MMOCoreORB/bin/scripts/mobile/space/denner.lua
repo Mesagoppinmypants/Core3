@@ -1,7 +1,6 @@
 denner = Creature:new {
 	objectName = "@npc_spawner_n:denner",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ denner = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_imperial_tier3_yavin.iff"},

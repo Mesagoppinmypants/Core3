@@ -2,7 +2,6 @@ wallaw_loowobbli = Creature:new {
 	objectName = "",
 	customName = "Wallaw Loowobbli",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ wallaw_loowobbli = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_wallaw_loowobbli.iff"},

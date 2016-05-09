@@ -1,7 +1,6 @@
 dz70_crafted_advanced = Creature:new {
 	objectName = "@droid_name:dz_70_fugitive_tracker_crafted_advanced",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 4,
 	chanceHit = 0.24,
@@ -23,14 +22,15 @@ dz70_crafted_advanced = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/creature/npc/droid/crafted/dz_70_fugitive_tracker_droid_advanced.iff"
-	},		
+	},
 	lootGroups = {},
-	weapons = {},
+	defaultAttack = "attack",
+	weapons = {"droid_probot_ranged"},
 	conversationTemplate = "",
 }
 

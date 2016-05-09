@@ -1,7 +1,6 @@
 kusak_mauler = Creature:new {
 	objectName = "@mob/creature_names:kusak_mauler",
 	socialGroup = "kusak",
-	pvpFaction = "",
 	faction = "",
 	level = 22,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ kusak_mauler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kusak_hue.iff"},
@@ -33,7 +32,7 @@ kusak_mauler = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

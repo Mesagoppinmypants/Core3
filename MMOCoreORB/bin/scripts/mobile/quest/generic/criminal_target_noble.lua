@@ -1,8 +1,8 @@
 criminal_target_noble = Creature:new {
 	objectName = "@mob/creature_names:noble",
-	generateRandomName = true,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 6,
 	chanceHit = 0.250000,
@@ -24,7 +24,7 @@ criminal_target_noble = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 

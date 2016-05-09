@@ -1,7 +1,6 @@
 foaming_vynock = Creature:new {
 	objectName = "@mob/creature_names:foaming_vynock",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 14,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ foaming_vynock = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/vynock_hue.iff"},
@@ -32,7 +31,7 @@ foaming_vynock = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
+		{"intimidationattack",""},
 		{"milddisease",""}
 	}
 }

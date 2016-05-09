@@ -1,7 +1,6 @@
 librarian = Creature:new {
 	objectName = "@mob/creature_names:trivia_librarian",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 1,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ librarian = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	-- TODO: Find correct template

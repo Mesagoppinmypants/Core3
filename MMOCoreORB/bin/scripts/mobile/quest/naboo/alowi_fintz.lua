@@ -2,7 +2,6 @@ alowi_fintz = Creature:new {
   objectName = "",
   customName = "Alowi Fintz",
   socialGroup = "rebel",
-  pvpFaction = "rebel",
   faction = "rebel",
   level = 20,
   chanceHit = 0.33,
@@ -24,7 +23,7 @@ alowi_fintz = Creature:new {
   ferocity = 0,
   pvpBitmask = NONE,
   creatureBitmask = NONE,
-  optionsBitmask = 136,
+  optionsBitmask = AIENABLED + CONVERSABLE,
   diet = HERBIVORE,
 
   templates = {"object/mobile/dressed_criminal_smuggler_human_female_01.iff"},

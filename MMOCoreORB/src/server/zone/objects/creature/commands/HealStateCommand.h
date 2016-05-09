@@ -1,51 +1,12 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef HEALSTATECOMMAND_H_
 #define HEALSTATECOMMAND_H_
 
 #include "server/zone/objects/scene/SceneObject.h"
+#include "server/chat/StringIdChatParameter.h"
 #include "server/zone/objects/tangible/pharmaceutical/StatePack.h"
 #include "server/zone/objects/tangible/pharmaceutical/RangedStimPack.h"
 #include "server/zone/ZoneServer.h"
@@ -59,16 +20,21 @@ which carries forward this exception.
 class HealStateCommand : public QueueCommand {
 	float mindCost;
 	float range;
+	Vector<uint64> healableStates;
 public:
 
 	HealStateCommand(const String& name, ZoneProcessServer* server)
 		: QueueCommand(name, server) {
-		
+
 		mindCost = 20;
 		range = 6;
+		healableStates.add(CreatureState::STUNNED);
+		healableStates.add(CreatureState::DIZZY);
+		healableStates.add(CreatureState::BLINDED);
+		healableStates.add(CreatureState::INTIMIDATED);
 	}
 
-	void deactivateStateTreatment(CreatureObject* creature) {
+	void deactivateStateTreatment(CreatureObject* creature) const {
 		float modSkill = (float)creature->getSkillMod("healing_injury_speed");
 		int delay = (int)round(20.0f - (modSkill / 5));
 
@@ -90,7 +56,7 @@ public:
 		creature->addPendingTask("stateTreatment", task, delay * 1000);
 	}
 
-	void awardXp(CreatureObject* creature, String type, int power) {
+	void awardXp(CreatureObject* creature, String type, int power) const {
 		if (!creature->isPlayerCreature())
 			return;
 
@@ -105,7 +71,7 @@ public:
 		playerManager->awardExperience(player, type, amount, true);
 	}
 
-	void sendStateMessage(CreatureObject* creature, CreatureObject* creatureTarget, uint64 state) {
+	void sendStateMessage(CreatureObject* creature, CreatureObject* creatureTarget, uint64 state) const {
 		if (!creature->isPlayerCreature())
 			return;
 
@@ -129,8 +95,8 @@ public:
 		}
 	}
 
-	void doAnimations(CreatureObject* creature, CreatureObject* creatureTarget) {
-		creatureTarget->playEffect("clienteffect/healing_healdamage.cef", "");
+	void doAnimations(CreatureObject* creature, CreatureObject* creatureTarget) const {
+		creatureTarget->playEffect("clienteffect/healing_healstate.cef", "");
 
 		if (creature == creatureTarget)
 			creature->doAnimation("heal_self");
@@ -138,7 +104,7 @@ public:
 			creature->doAnimation("heal_other");
 	}
 
-	bool canPerformSkill(CreatureObject* creature, CreatureObject* creatureTarget, StatePack* statePack) {
+	bool canPerformSkill(CreatureObject* creature, CreatureObject* creatureTarget, StatePack* statePack, int mindCostNew) const {
 		if (!creature->canTreatStates()) {
 			creature->sendSystemMessage("@healing_response:healing_must_wait"); //You must wait before you can do that.
 			return false;
@@ -149,22 +115,12 @@ public:
 			return false;
 		}
 
-		if (creature->isProne() || creature->isMeditating()) {
-			creature->sendSystemMessage("@error_message:wrong_state"); //You cannot complete that action while in your current state.
-			return false;
-		}
-
-		if (creature->isRidingMount()) {
-			creature->sendSystemMessage("@error_message:survey_on_mount"); //You cannot perform that action while mounted on a creature or driving a vehicle.
-			return false;
-		}
-
 		if (!creatureTarget->isHealableBy(creature)) {
 			creature->sendSystemMessage("@healing:pvp_no_help");  //It would be unwise to help such a patient.
 			return false;
 		}
 
-		if (creature->getHAM(CreatureAttribute::MIND) < mindCost) {
+		if (creature->getHAM(CreatureAttribute::MIND) < mindCostNew) {
 			creature->sendSystemMessage("@healing_response:not_enough_mind"); //You do not have enough mind to do that.
 			return false;
 		}
@@ -172,7 +128,7 @@ public:
 		return true;
 	}
 
-	StatePack* findStatePack(CreatureObject* creature, uint64 state) {
+	StatePack* findStatePack(CreatureObject* creature, uint64 state) const {
 		SceneObject* inventory = creature->getSlottedObject("inventory");
 
 		int medicineUse = creature->getSkillMod("healing_ability");
@@ -181,20 +137,16 @@ public:
 			for (int i = 0; i < inventory->getContainerObjectsSize(); i++) {
 				SceneObject* object = inventory->getContainerObject(i);
 
-				if (!object->isTangibleObject())
+				if (!object->isPharmaceuticalObject())
 					continue;
 
-				TangibleObject* item = cast<TangibleObject*>( object);
+				PharmaceuticalObject* pharma = cast<PharmaceuticalObject*>(object);
 
-				if (item->isPharmaceuticalObject()) {
-					PharmaceuticalObject* pharma = cast<PharmaceuticalObject*>( item);
+				if (pharma->isStatePack()) {
+					StatePack* statePack = cast<StatePack*>(pharma);
 
-					if (pharma->isStatePack()) {
-						StatePack* statePack = cast<StatePack*>( pharma);
-
-						if (statePack->getMedicineUseRequired() <= medicineUse && statePack->getState() == state)
-							return statePack;
-					}
+					if (statePack->getMedicineUseRequired() <= medicineUse && statePack->getState() == state)
+						return statePack;
 				}
 			}
 		}
@@ -202,7 +154,7 @@ public:
 		return NULL;
 	}
 
-	void parseModifier(const String& modifier, uint64& state, uint64& objectId) {
+	void parseModifier(const String& modifier, uint64& state, uint64& objectId) const {
 		if (!modifier.isEmpty()) {
 			StringTokenizer tokenizer(modifier);
 			tokenizer.setDelimeter("|");
@@ -221,13 +173,12 @@ public:
 		}
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
-		if (!checkStateMask(creature))
-			return INVALIDSTATE;
+		int result = doCommonMedicalCommandChecks(creature);
 
-		if (!checkInvalidLocomotions(creature))
-			return INVALIDLOCOMOTION;
+		if (result != SUCCESS)
+			return result;
 
 		ManagedReference<SceneObject*> object = server->getZoneServer()->getObject(target);
 
@@ -242,14 +193,15 @@ public:
 					return GENERALERROR;
 				}
 			}
-		} else
+		} else {
 			object = creature;
+		}
 
 		CreatureObject* creatureTarget = cast<CreatureObject*>( object.get());
 
 		Locker clocker(creatureTarget, creature);
 
-		if ((creatureTarget->isAiAgent() && !creatureTarget->isPet()) || creatureTarget->isDroidObject() || creatureTarget->isDead() || creatureTarget->isRidingMount() || creatureTarget->isAttackableBy(creature))
+		if ((creatureTarget->isAiAgent() && !creatureTarget->isPet()) || creatureTarget->isDroidObject() || creatureTarget->isVehicleObject() || creatureTarget->isDead() || creatureTarget->isRidingMount() || creatureTarget->isAttackableBy(creature))
 			creatureTarget = creature;
 
 		uint64 state = CreatureState::INVALID;
@@ -257,26 +209,51 @@ public:
 
 		parseModifier(arguments.toString(), state, objectId);
 
-		if (state == CreatureState::INVALID) {
-			creature->sendSystemMessage("@healing_response:healing_response_70"); //You must specify a valid state type.
-			return GENERALERROR;
-		}
-
 		SceneObject* inventory = creature->getSlottedObject("inventory");
 
 		ManagedReference<StatePack*> statePack = NULL;
 
-		if (inventory != NULL) {
-			statePack = inventory->getContainerObject(objectId).castTo<StatePack*>();
+		if(state != CreatureState::INVALID || objectId != 0) {
+			if (inventory != NULL) {
+				statePack = inventory->getContainerObject(objectId).castTo<StatePack*>();
+			}
+
+			if (statePack == NULL)
+				statePack = findStatePack(creature, state);
+		}else {
+			uint64 targetStateBitmask = creatureTarget->getStateBitmask();
+			for(int i=0; i<healableStates.size(); i++) {
+
+				uint64 healableState = healableStates.get(i);
+
+				if(!(targetStateBitmask & healableState))
+					continue;
+
+
+				state = healableState;
+				statePack = findStatePack(creature, healableState);
+
+				if(statePack != NULL) {
+					break;
+				}
+			}
+
+			//if state is INVALID they had no healable states
+			//if it is valid but statePack is NULL they had no valid medicine for *any* state and will error in canPerformSkill
+			if(state == CreatureState::INVALID) {
+				StringIdChatParameter stringId("healing", "no_state_to_heal"); // %TT has no state that you can heal.
+				stringId.setTT(creatureTarget->getDisplayedName());
+				creature->sendSystemMessage(stringId);
+				return GENERALERROR;
+			}
 		}
 
-		if (statePack == NULL)
-			statePack = findStatePack(creature, state);
+		int mindCostNew = creature->calculateCostAdjustment(CreatureAttribute::FOCUS, mindCost);
 
-		if (!canPerformSkill(creature, creatureTarget, statePack))
+		if (!canPerformSkill(creature, creatureTarget, statePack, mindCostNew))
 			return GENERALERROR;
 
-		if (!creatureTarget->isInRange(creature, range))
+		if(!checkDistance(creature, creatureTarget, range))
 			return TOOFAR;
 
 		PlayerManager* playerManager = server->getPlayerManager();
@@ -295,7 +272,7 @@ public:
 			else if (creatureTarget->isPlayerCreature()){
 				StringIdChatParameter msg("healing_response", "healing_response_74"); //%NT has no state of that type to heal.
 				msg.setTT(creatureTarget->getObjectID());
-				creature->sendSystemMessage(msg); 
+				creature->sendSystemMessage(msg);
 			} else {
 				StringBuffer message;
 				message << creatureTarget->getDisplayedName() << " has no state of that type to heal.";
@@ -305,14 +282,16 @@ public:
 			return GENERALERROR;
 		}
 
-		creature->inflictDamage(creature, CreatureAttribute::MIND, mindCost, false);
+		creature->inflictDamage(creature, CreatureAttribute::MIND, mindCostNew, false);
 
 		sendStateMessage(creature, creatureTarget, state);
 
 		deactivateStateTreatment(creature);
 
-		if (statePack != NULL)
+		if (statePack != NULL) {
+			Locker locker(statePack);
 			statePack->decreaseUseCount();
+		}
 
 		if (creatureTarget != creature && !creatureTarget->isPet())
 			awardXp(creature, "medical", 50); //No experience for healing yourself or pets.
@@ -320,6 +299,8 @@ public:
 		doAnimations(creature, creatureTarget);
 
 		creature->notifyObservers(ObserverEventType::MEDPACKUSED);
+
+		checkForTef(creature, creatureTarget);
 
 		return SUCCESS;
 	}

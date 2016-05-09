@@ -9,6 +9,7 @@
 #define WORLDCOORDINATES_H_
 
 #include "engine/engine.h"
+#include "server/zone/objects/cell/CellObject.h"
 
 namespace server {
  namespace zone {
@@ -26,15 +27,33 @@ class WorldCoordinates : public Object {
 protected:
 	Vector3 point;
 
-	ManagedReference<SceneObject*> cell;
+	ManagedReference<CellObject*> cell;
 
 public:
 	WorldCoordinates();
 	WorldCoordinates(const WorldCoordinates& c);
 	WorldCoordinates(SceneObject* obj);
-	WorldCoordinates(const Vector3& position, SceneObject* cell);
+	WorldCoordinates(const Vector3& position, CellObject* cell);
+
+#ifdef CXX11_COMPILER
+	WorldCoordinates(WorldCoordinates&& c) : Object(), point(c.point), cell(std::move(c.cell)) {
+
+	}
+#endif
 
 	WorldCoordinates& operator=(const WorldCoordinates& c);
+
+#ifdef CXX11_COMPILER
+	WorldCoordinates& operator=(WorldCoordinates&& c) {
+		if (this == &c)
+			return *this;
+
+		point = c.point;
+		cell = std::move(c.cell);
+
+		return *this;
+	}
+#endif
 
 	bool operator==(const WorldCoordinates& c) {
 		return (point == c.point) && (cell == c.cell);
@@ -47,7 +66,7 @@ public:
 
 	Vector3 getWorldPosition() const;
 
-	inline void setCell(SceneObject* obj) {
+	inline void setCell(CellObject* obj) {
 		cell = obj;
 	}
 
@@ -71,7 +90,7 @@ public:
 		return point;
 	}
 
-	inline SceneObject* getCell() const {
+	inline CellObject* getCell() const {
 		return cell;
 	}
 
@@ -87,6 +106,12 @@ public:
 		return point.getZ();
 	}
 
+	inline String toString() {
+		StringBuffer sb;
+		sb << point.toString();
+		sb << " in " << String::valueOf(cell != NULL ? cell->getCellNumber() : 0) << ".";
+		return sb.toString();
+	}
 };
 
 

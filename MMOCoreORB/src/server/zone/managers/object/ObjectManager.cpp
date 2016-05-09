@@ -14,17 +14,18 @@
 
 #include "server/zone/Zone.h"
 #include "server/zone/ZoneProcessServer.h"
-#include "server/zone/managers/templates/TemplateManager.h"
+#include "templates/manager/TemplateManager.h"
 #include "server/zone/managers/objectcontroller/ObjectController.h"
-#include "server/zone/templates/SharedObjectTemplate.h"
+#include "templates/SharedObjectTemplate.h"
 #include "server/chat/ChatManager.h"
 #include "engine/db/berkley/BTransaction.h"
 #include "ObjectVersionUpdateManager.h"
 #include "server/ServerCore.h"
 #include "server/zone/objects/scene/SceneObjectType.h"
 #include "DeleteCharactersTask.h"
-#include "server/conf/ConfigManager.h"
+#include "conf/ConfigManager.h"
 #include "server/zone/objects/tangible/wearables/WearableContainerObject.h"
+#include "server/zone/objects/tangible/deed/vetharvester/VetHarvesterDeed.h"
 
 using namespace engine::db;
 
@@ -32,8 +33,8 @@ using namespace engine::db;
 
 // http://tinyurl.com/2g9mqh
 
-uint32 ObjectManager::serverObjectCrcHashCode = String("SceneObject.serverObjectCRC").hashCode();
-uint32 ObjectManager::_classNameHashCode = String("_className").hashCode();
+uint32 ObjectManager::serverObjectCrcHashCode = STRING_HASHCODE("SceneObject.serverObjectCRC");
+uint32 ObjectManager::_classNameHashCode = STRING_HASHCODE("_className");
 
 ObjectManager::ObjectManager() : DOBObjectManager() {
 	server = NULL;
@@ -62,6 +63,7 @@ ObjectManager::ObjectManager() : DOBObjectManager() {
 	databaseManager->loadObjectDatabase("events", true);
 	databaseManager->loadObjectDatabase("questdata", true);
 	databaseManager->loadObjectDatabase("surveys", true);
+	databaseManager->loadObjectDatabase("accounts", true);
 
 	ObjectDatabaseManager::instance()->commitLocalTransaction();
 
@@ -92,7 +94,6 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<FsVillageArea>(SceneObjectType::FSVILLAGEAREA);
 	objectFactory.registerObject<ActiveArea>(SceneObjectType::ACTIVEAREA);
 	objectFactory.registerObject<BadgeActiveArea>(SceneObjectType::BADGEAREA);
-	objectFactory.registerObject<GarageArea>(SceneObjectType::GARAGEAREA);
 	objectFactory.registerObject<MissionSpawnActiveArea>(SceneObjectType::MISSIONSPAWNAREA);
 	objectFactory.registerObject<MissionReconActiveArea>(SceneObjectType::MISSIONRECONAREA);
 	objectFactory.registerObject<SpawnArea>(SceneObjectType::SPAWNAREA);
@@ -109,6 +110,8 @@ void ObjectManager::registerObjectTypes() {
 
 	objectFactory.registerObject<IntangibleObject>(SceneObjectType::INTANGIBLE);
 	objectFactory.registerObject<IntangibleObject>(SceneObjectType::DATA2);
+	objectFactory.registerObject<TheaterObject>(SceneObjectType::THEATEROBJECT);
+	objectFactory.registerObject<TangibleObject>(SceneObjectType::EVENTPERK);
 
 	objectFactory.registerObject<ArmorObject>(SceneObjectType::ARMOR);
 	objectFactory.registerObject<ArmorObject>(SceneObjectType::BODYARMOR); //chest plates
@@ -145,6 +148,7 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<TangibleObject>(SceneObjectType::CAMPKIT);
 	objectFactory.registerObject<Container>(SceneObjectType::STATICLOOTCONTAINER);
 	objectFactory.registerObject<TangibleObject>(SceneObjectType::PLAYERLOOTCRATE);
+	objectFactory.registerObject<PlantObject>(SceneObjectType::GROWABLEPLANT);
 
 	objectFactory.registerObject<SlicingTool>(SceneObjectType::SLICINGTOOL);
 	objectFactory.registerObject<SlicingTool>(SceneObjectType::FLOWANALYZER);
@@ -182,6 +186,7 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<BuildingObject>(SceneObjectType::UNIVERSITYBUILDING);
 	objectFactory.registerObject<BuildingObject>(SceneObjectType::GARAGEBUILDING);
 	objectFactory.registerObject<BuildingObject>(SceneObjectType::SALONBUILDING);
+	objectFactory.registerObject<PoiBuilding>(SceneObjectType::POIBUILDING);
 
 
 	objectFactory.registerObject<InstallationObject>(SceneObjectType::INSTALLATION);
@@ -224,6 +229,11 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<TicketObject>(SceneObjectType::TRAVELTICKET);
 	objectFactory.registerObject<TravelTerminal>(SceneObjectType::TRAVELTERMINAL);
 	objectFactory.registerObject<GuildTerminal>(SceneObjectType::GUILDTERMINAL);
+	objectFactory.registerObject<Jukebox>(SceneObjectType::JUKEBOX);
+	objectFactory.registerObject<ShuttleBeacon>(SceneObjectType::SHUTTLEBEACON);
+	objectFactory.registerObject<FlagGame>(SceneObjectType::FLAGGAME);
+	objectFactory.registerObject<LotteryDroid>(SceneObjectType::LOTTERYDROID);
+	objectFactory.registerObject<ScavengerChest>(SceneObjectType::SCAVENGERCHEST);
 	objectFactory.registerObject<GamblingTerminal>(SceneObjectType::GAMBLINGTERMINAL);
 	objectFactory.registerObject<Terminal>(SceneObjectType::CLONING);
 
@@ -235,6 +245,7 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<StructureDeed>(SceneObjectType::INSTALLATIONDEED);
 	objectFactory.registerObject<ResourceDeed>(SceneObjectType::RESOURCEDEED);
 	objectFactory.registerObject<EventPerkDeed>(SceneObjectType::EVENTPERKDEED);
+	objectFactory.registerObject<VetHarvesterDeed>(SceneObjectType::VETHARVESTERDEED);
 
 	objectFactory.registerObject<GroupObject>(SceneObjectType::GROUPOBJECT);
 	objectFactory.registerObject<GuildObject>(SceneObjectType::GUILDOBJECT);
@@ -248,6 +259,7 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<StatePack>(SceneObjectType::STATEPACK);
 	objectFactory.registerObject<RevivePack>(SceneObjectType::REVIVEPACK);
 	objectFactory.registerObject<VitalityPack>(SceneObjectType::PETMEDECINE);
+	objectFactory.registerObject<FsPuzzlePack>(SceneObjectType::FSPUZZLEPACK);
 
 	//clothing
 	objectFactory.registerObject<ClothingObject>(SceneObjectType::CLOTHING);
@@ -303,7 +315,9 @@ void ObjectManager::registerObjectTypes() {
 	objectFactory.registerObject<ResourceContainer>(SceneObjectType::ORGANICFOOD);
 	objectFactory.registerObject<ResourceContainer>(SceneObjectType::ORGANICHIDE);
 	objectFactory.registerObject<ResourceContainer>(SceneObjectType::ORGANICSTRUCTURAL);
-	objectFactory.registerObject<ResourceContainer>(SceneObjectType::QUESTREOURCE);
+
+	objectFactory.registerObject<CustomIngredient>(SceneObjectType::QUESTRESOURCE);
+	objectFactory.registerObject<FsCraftingComponentObject>(SceneObjectType::FSCRAFTINGCOMPONENT);
 
 	objectFactory.registerObject<DraftSchematic>(SceneObjectType::DRAFTSCHEMATIC);
 	objectFactory.registerObject<ManufactureSchematic>(SceneObjectType::MANUFACTURINGSCHEMATIC);
@@ -540,6 +554,7 @@ SceneObject* ObjectManager::loadObjectFromTemplate(uint32 objectCRC) {
 }*/
 
 SceneObject* ObjectManager::cloneObject(SceneObject* object, bool makeTransient) {
+	
 	ObjectOutputStream objectData(500);
 
 	(cast<ManagedObject*>(object))->writeObject(&objectData);
@@ -580,6 +595,41 @@ SceneObject* ObjectManager::cloneObject(SceneObject* object, bool makeTransient)
 	clonedObject->readObject(&objectInput);
 	clonedObject->createComponents();
 	clonedObject->setParent(NULL);
+    
+	VectorMap<String, ManagedReference<SceneObject*> > slottedObjects;
+	clonedObject->getSlottedObjects(slottedObjects);
+    
+	for (int i=slottedObjects.size()-1; i>=0; i--) {
+		String key = slottedObjects.elementAt(i).getKey();
+        
+		Reference<SceneObject*> obj = slottedObjects.elementAt(i).getValue();
+        
+		clonedObject->removeSlottedObject(i);
+        
+		Reference<SceneObject*> clonedChild = cloneObject(obj, makeTransient);
+		clonedChild->setParent(object);
+        
+		slottedObjects.put(key, clonedChild);
+        
+	}
+	
+	VectorMap<uint64, ManagedReference<SceneObject*> > objects;
+	clonedObject->getContainerObjects(objects);
+	
+	for (int i=objects.size()-1; i>=0; i--) {
+		uint64 key = objects.elementAt(i).getKey();
+		
+		Reference<SceneObject*> obj = objects.elementAt(i).getValue();
+		
+		objects.remove(i);
+		
+		Reference<SceneObject*> clonedChild = cloneObject(obj, makeTransient);
+		clonedChild->setParent(object);
+		
+		objects.put(key, clonedChild);
+	}
+	
+	clonedObject->onCloneObject(object);
 
 	if (clonedObject->isPersistent())
 		updatePersistentObject(clonedObject);

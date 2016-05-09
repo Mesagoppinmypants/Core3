@@ -1,7 +1,8 @@
 grecks_assassin = Creature:new {
 	objectName = "@mob/creature_names:greck_assassin",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "olag_greck",
-	pvpFaction = "olag_greck",
 	faction = "olag_greck",
 	level = 11,
 	chanceHit = 0.29,
@@ -23,7 +24,7 @@ grecks_assassin = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -45,12 +46,12 @@ grecks_assassin = Creature:new {
 				{group = "junk", chance = 7000000},
 				{group = "loot_kit_parts", chance = 2000000},
 				{group = "tailor_components", chance = 1000000}
-			},
-			lootChance = 3000000
-		}	
+			}
+		}
 	},
 	weapons = {"ranged_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermid,marksmanmid)
 }
 

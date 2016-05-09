@@ -2,7 +2,6 @@ ikka_gesul = Creature:new {
 	objectName = "",
 	customName = "Ikka Gesul",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ ikka_gesul = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_ikka_gesul.iff"},

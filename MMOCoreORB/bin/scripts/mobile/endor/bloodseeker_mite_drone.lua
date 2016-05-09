@@ -1,7 +1,6 @@
 bloodseeker_mite_drone = Creature:new {
 	objectName = "@mob/creature_names:bloodseeker_mite_drone",
 	socialGroup = "bloodseeker",
-	pvpFaction = "",
 	faction = "",
 	level = 20,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ bloodseeker_mite_drone = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bloodseeker_mite.iff"},

@@ -1,7 +1,6 @@
 meek_avenging_squall = Creature:new {
 	objectName = "@mob/creature_names:frail_squall_meek_avenger",
 	socialGroup = "squall",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ meek_avenging_squall = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/squall_hue.iff"},

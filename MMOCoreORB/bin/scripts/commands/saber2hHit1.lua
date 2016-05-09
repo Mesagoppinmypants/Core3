@@ -43,16 +43,23 @@
 
 Saber2hHit1Command = {
         name = "saber2hhit1",
-        
-    damageMultiplier = 1.5,
-	speedMultiplier = 1.0,
-	forceCostMultiplier = 1.0, -- Not correct
 
-	animationCRC = hashCode("combo_2a_light"),
+	damageMultiplier = 1.25,
+	speedMultiplier = 1.25,
+	healthCostMultiplier = 0,
+	actionCostMultiplier = 0,
+	mindCostMultiplier = 0,
+	forceCostMultiplier = 1.0,
+	visMod = 25,
+
+	animation = "combo_2c", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "saber2hhit1",
-	
+
 	poolsToDamage = RANDOM_ATTRIBUTE,
+
+	weaponType = TWOHANDJEDIWEAPON,
 
 	range = -1
 }

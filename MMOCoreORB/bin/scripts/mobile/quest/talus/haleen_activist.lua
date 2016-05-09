@@ -1,7 +1,6 @@
 haleen_activist = Creature:new {
 	objectName = "@mob/creature_names:liberation_activist",
 	socialGroup = "liberation_party",
-	pvpFaction = "liberation_party",
 	faction = "liberation_party",
 	level = 21,
 	chanceHit = 0.34,
@@ -23,7 +22,7 @@ haleen_activist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_talus_sif_mercenary_rodian_01.iff"},

@@ -9,7 +9,7 @@
 #define ADDITEMMESSAGECALLBACK_H_
 
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 #include "server/zone/managers/player/PlayerManager.h"
 
 class AddItemMessageCallback : public MessageCallback {
@@ -17,7 +17,7 @@ class AddItemMessageCallback : public MessageCallback {
 
 public:
 	AddItemMessageCallback(ZoneClientSession* client, ZoneProcessServer* server) :
-		MessageCallback(client, server) {
+		MessageCallback(client, server), id(0) {
 
 	}
 
@@ -26,7 +26,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = static_cast<CreatureObject*>(client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;

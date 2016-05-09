@@ -1,7 +1,6 @@
 logro_elsin = Creature:new {
 	objectName = "@npc_spawner_n:logro_elsin",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 23,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ logro_elsin = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tie_fighter_m.iff"},

@@ -1,7 +1,6 @@
 tusken_brute = Creature:new {
 	objectName = "@mob/creature_names:tusken_brute",
 	socialGroup = "tusken_raider",
-	pvpFaction = "tusken_raider",
 	faction = "tusken_raider",
 	level = 34,
 	chanceHit = 0.41,
@@ -23,7 +22,7 @@ tusken_brute = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/tusken_raider.iff"},
@@ -40,9 +39,8 @@ tusken_brute = Creature:new {
 				{group = "clothing_attachments", chance = 500000},
 				{group = "color_crystals", chance = 500000},
 				{group = "crystals_poor", chance = 500000}
-			},
-			lootChance = 2600000
-		}	
+			}
+		}
 	},
 	weapons = {"tusken_weapons"},
 	conversationTemplate = "",

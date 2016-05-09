@@ -67,11 +67,11 @@ WookieeRoarCommand = {
 	},
 
 	combatSpam = "intim",
-	animationCRC = hashCode("intimidate"),
+	animation = "intimidate",
 	effectString = "clienteffect/combat_special_attacker_intimidate.cef",
 	range = 15,
 
-	poolsToDamage = 0
+	poolsToDamage = NO_ATTRIBUTE
 }
 
 AddCommand(WookieeRoarCommand)

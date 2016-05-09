@@ -15,7 +15,9 @@ public:
 	BankTerminalSuiCallback(ZoneServer* serv) : SuiCallback(serv) {
 	}
 
-	void run(CreatureObject* player, SuiBox* sui, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* sui, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (!sui->isBankTransferBox() || player == NULL || cancelPressed) {
 			return;
 		}
@@ -33,8 +35,14 @@ public:
 		if (bankObject == NULL)
 			return;
 
-		if (!player->isInRange(bankObject, 5))
+		if (!player->isInRange(bankObject, 8)){
+			StringIdChatParameter params;
+			params.setStringId("@ui:radial_out_of_range_prose");
+			params.setTT("@terminal_name:terminal_bank");
+			params.setTO("@sui:bank_credits");
+			player->sendSystemMessage(params);
 			return;
+		}
 
 		uint32 currentCash = player->getCashCredits();
 		uint32 currentBank = player->getBankCredits();

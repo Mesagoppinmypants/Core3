@@ -1,7 +1,6 @@
 foul_desecrator = Creature:new {
 	objectName = "@mob/creature_names:kamurith_foul_desecrator",
 	socialGroup = "kamurith",
-	pvpFaction = "",
 	faction = "",
 	level = 60,
 	chanceHit = 0.55,
@@ -23,7 +22,7 @@ foul_desecrator = Creature:new {
 	ferocity = 10,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/voritor_lizard_hue.iff"},
@@ -33,8 +32,8 @@ foul_desecrator = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"creatureareadisease",""},
-		{"strongdisease",""}
+		{"strongdisease",""},
+		{"creatureareadisease",""}
 	}
 }
 

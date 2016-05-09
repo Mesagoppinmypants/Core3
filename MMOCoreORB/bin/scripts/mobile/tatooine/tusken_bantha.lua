@@ -1,7 +1,6 @@
 tusken_bantha = Creature:new {
 	objectName = "@mob/creature_names:tusken_bantha",
 	socialGroup = "tusken_raider",
-	pvpFaction = "tusken_raider",
 	faction = "tusken_raider",
 	level = 25,
 	chanceHit = 0.36,
@@ -24,7 +23,7 @@ tusken_bantha = Creature:new {
 	ferocity = 2,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bantha_saddle_hue.iff",
@@ -34,7 +33,7 @@ tusken_bantha = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

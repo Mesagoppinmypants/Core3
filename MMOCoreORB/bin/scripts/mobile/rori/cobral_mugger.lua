@@ -1,8 +1,9 @@
 cobral_mugger = Creature:new {
 	objectName = "",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a Neo-Cobral Mugger",
 	socialGroup = "cobral",
-	pvpFaction = "cobral",
 	faction = "cobral",
 	level = 9,
 	chanceHit = 0.27,
@@ -24,26 +25,26 @@ cobral_mugger = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/mobile/dressed_cobral_mugger_human_male_01.iff",
 		"object/mobile/dressed_cobral_mugger_human_female_01.iff"},
 	lootGroups = {
-      	{
+		{
 			groups = {
 				{group = "junk", chance = 3000000},
 				{group = "wearables_common", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000},
 				{group = "tailor_components", chance = 1000000},
 				{group = "melee_weapons", chance = 2000000}
-			},
-			lootChance = 3000000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_light"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlernovice,marksmannovice)
 }
 

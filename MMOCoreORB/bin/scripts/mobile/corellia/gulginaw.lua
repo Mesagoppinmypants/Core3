@@ -1,7 +1,6 @@
 gulginaw = Creature:new {
 	objectName = "@mob/creature_names:gulginaw",
 	socialGroup = "gulginaw",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ gulginaw = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gulginaw.iff"},
@@ -31,7 +30,8 @@ gulginaw = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"",""},
+		{"intimidationattack",""}
 	}
 }
 

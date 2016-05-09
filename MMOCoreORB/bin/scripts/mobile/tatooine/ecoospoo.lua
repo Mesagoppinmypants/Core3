@@ -2,7 +2,6 @@ ecoospoo = Creature:new {
 	objectName = "",
 	customName = "Ecoospoo",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ ecoospoo = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_mercenary_messanger_rod_m.iff"},

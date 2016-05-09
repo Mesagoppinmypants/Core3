@@ -1,7 +1,6 @@
 kahmurra = Creature:new {
 	objectName = "@mob/creature_names:kahmurra",
 	socialGroup = "kahmurra",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.31,
@@ -24,7 +23,7 @@ kahmurra = Creature:new {
 	ferocity = 5,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kahmurra.iff"},
@@ -33,7 +32,8 @@ kahmurra = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"",""},
+		{"intimidationattack",""}
 	}
 }
 

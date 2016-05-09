@@ -1,7 +1,8 @@
 alkhara_bandit = Creature:new {
 	objectName = "@mob/creature_names:alkhara_bandit",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "alkhara",
-	pvpFaction = "alkhara",
 	faction = "alkhara",
 	level = 13,
 	chanceHit = 0.3,
@@ -23,25 +24,25 @@ alkhara_bandit = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_alkhara_bandit.iff"},
 	lootGroups = {
-	    {
+		{
 			groups = {
 				{group = "junk", chance = 2550000},
 				{group = "wearables_common", chance = 2000000},
-				{group = "pistols", chance = 2000000},								
+				{group = "pistols", chance = 2000000},
 				{group = "tailor_components", chance = 1500000},
 				{group = "loot_kit_parts", chance = 1500000},
 				{group = "alkhara_common", chance = 450000}
-			},
-			lootChance = 2200000
-		}				
+			}
+		}
 	},
 	weapons = {"ranged_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermid,marksmanmid)
 }
 

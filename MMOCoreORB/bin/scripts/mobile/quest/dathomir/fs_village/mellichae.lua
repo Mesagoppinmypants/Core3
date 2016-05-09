@@ -1,7 +1,6 @@
 mellichae = Creature:new {
 	objectName = "@mob/creature_names:mellichae",
 	socialGroup = "sith_shadow",
-	pvpFaction = "sith_shadow",
 	faction = "sith_shadow",
 	level = 140,
 	chanceHit = 4.750000,
@@ -10,7 +9,7 @@ mellichae = Creature:new {
 	baseXp = 13273,
 	baseHAM = 50000,
 	baseHAMmax = 61000,
-	armor = 0,
+	armor = 2,
 	resists = {80,80,80,80,80,80,80,80,-1},
 	meatType = "",
 	meatAmount = 0,

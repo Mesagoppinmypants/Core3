@@ -1,7 +1,6 @@
 stout_ikopi_buck = Creature:new {
 	objectName = "@mob/creature_names:ikopi_stout_stallion",
 	socialGroup = "ikopi",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ stout_ikopi_buck = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/ikopi_hue.iff"},
@@ -33,8 +32,8 @@ stout_ikopi_buck = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"posturedownattack",""}
 	}
 }
 

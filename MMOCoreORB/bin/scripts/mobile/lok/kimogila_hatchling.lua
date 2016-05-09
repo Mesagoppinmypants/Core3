@@ -1,7 +1,6 @@
 kimogila_hatchling = Creature:new {
 	objectName = "@mob/creature_names:kimogila_hatchling",
 	socialGroup = "kimogila",
-	pvpFaction = "",
 	faction = "",
 	level = 22,
 	chanceHit = 0.33,
@@ -23,17 +22,24 @@ kimogila_hatchling = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kimogila_hatchling.iff"},
 	scale = 0.5,
-	lootGroups = {},
+	lootGroups = {
+	 {
+	        groups = {
+				{group = "kimogila_common", chance = 10000000}
+			},
+			lootChance = 1440000
+		}
+	},
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"stunattack","stunChance=50"}
+		{"dizzyattack",""},
+		{"stunattack",""}
 	}
 }
 

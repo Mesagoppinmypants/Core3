@@ -1,7 +1,6 @@
 bossk = Creature:new {
 	objectName = "@mob/creature_names:bossk",
 	socialGroup = "mercenary",
-	pvpFaction = "",
 	faction = "",
 	level = 100,
 	chanceHit = 1,
@@ -23,8 +22,9 @@ bossk = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.15,
 
 	templates = {"object/mobile/bossk.iff"},
 	lootGroups = {},

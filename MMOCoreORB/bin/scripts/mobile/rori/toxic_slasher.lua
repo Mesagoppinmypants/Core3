@@ -1,7 +1,6 @@
 toxic_slasher = Creature:new {
 	objectName = "@mob/creature_names:vir_vur_toxic_slasher",
 	socialGroup = "vir_vur",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ toxic_slasher = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/vir_vur_hue.iff"},
@@ -34,7 +33,7 @@ toxic_slasher = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"mildpoison",""},
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

@@ -2,7 +2,6 @@ dolac_legasi = Creature:new {
 	objectName = "",
 	customName = "Dolac Legasi",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ dolac_legasi = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dolac_legasi.iff"},

@@ -1,7 +1,6 @@
 warren_agro_droid_boss = Creature:new {
 	objectName = "@mob/creature_names:warren_agro_droid_boss",
 	socialGroup = "warren_imperial",
-	pvpFaction = "",
 	faction = "",
 	level = 46,
 	chanceHit = 0.36,
@@ -23,13 +22,13 @@ warren_agro_droid_boss = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE + AGGRESSIVE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/warren_agro_droid_boss.iff"},
 	lootGroups = {},
 	conversationTemplate = "",
-	defaultAttack = "creaturerangedattack",
+	defaultAttack = "attack",
 	defaultWeapon = "object/weapon/ranged/droid/droid_droideka_ranged.iff"
 }
 

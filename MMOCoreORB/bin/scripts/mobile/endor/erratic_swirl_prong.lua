@@ -1,7 +1,6 @@
 erratic_swirl_prong = Creature:new {
 	objectName = "@mob/creature_names:erratic_swirl_prong",
 	socialGroup = "prong",
-	pvpFaction = "",
 	faction = "",
 	level = 27,
 	chanceHit = 0.36,
@@ -23,7 +22,7 @@ erratic_swirl_prong = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/swirl_prong_hue.iff"},
@@ -32,8 +31,8 @@ erratic_swirl_prong = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""},
+		{"intimidationattack",""}
 	}
 }
 

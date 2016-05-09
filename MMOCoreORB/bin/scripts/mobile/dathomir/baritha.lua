@@ -2,7 +2,6 @@ baritha = Creature:new {
 	objectName = "",
 	customName = "Baritha",
 	socialGroup = "nightsister",
-	pvpFaction = "nightsister",
 	faction = "nightsister",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ baritha = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_baritha.iff"},

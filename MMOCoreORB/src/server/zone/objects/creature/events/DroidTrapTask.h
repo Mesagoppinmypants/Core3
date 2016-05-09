@@ -6,7 +6,7 @@
 #define DROIDTRAPTASK_H_
 
 #include "engine/util/u3d/Coordinate.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/managers/player/PlayerManager.h"
 
@@ -26,7 +26,8 @@ class DroidTrapTask : public Task {
 	short pool;
 	bool hit;
 public:
-	DroidTrapTask(CreatureObject* p, CreatureObject* t,	CreatureObject* dr, Buff* b, StringIdChatParameter m, short po, int d, bool h) : Task(2300) {
+	DroidTrapTask(CreatureObject* p, CreatureObject* t,	CreatureObject* dr, Buff* b,
+			const StringIdChatParameter& m, short po, int d, bool h) : Task(2300) {
 		player = p;
 		target = t;
 		droid = dr;
@@ -52,6 +53,7 @@ public:
 			Locker locker(target, droid);
 
 			if(buff != NULL) {
+				Locker locker(buff);
 				target->addBuff(buff);
 			}
 

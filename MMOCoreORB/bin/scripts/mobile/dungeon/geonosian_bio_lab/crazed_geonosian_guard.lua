@@ -1,7 +1,8 @@
 crazed_geonosian_guard = Creature:new {
 	objectName = "@mob/creature_names:geonosian_crazed_guard",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 65,
 	chanceHit = 0.64,
@@ -23,7 +24,7 @@ crazed_geonosian_guard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -35,8 +36,7 @@ crazed_geonosian_guard = Creature:new {
 			groups = {
 				{group = "geonosian_common", chance = 5000000},
 				{group = "geonosian_relic", chance = 5000000}
-			},
-			lootChance = 3300000
+			}
 		}
 	},
 	weapons = {"geonosian_weapons"},

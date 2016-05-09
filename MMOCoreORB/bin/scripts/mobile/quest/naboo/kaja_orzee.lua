@@ -2,7 +2,6 @@ kaja_orzee = Creature:new {
 	objectName = "@mob/creature_names:kaja_orzee",
 	customName = "Kaja Orzee",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ kaja_orzee = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/kaja_orzee.iff"},

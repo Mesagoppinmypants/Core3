@@ -1,7 +1,6 @@
 bloated_gubbur = Creature:new {
 	objectName = "@mob/creature_names:gubbur_bloated",
 	socialGroup = "gubbur",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ bloated_gubbur = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gubbur_hue.iff"},

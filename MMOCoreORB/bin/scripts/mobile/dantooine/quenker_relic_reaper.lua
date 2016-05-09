@@ -1,7 +1,6 @@
 quenker_relic_reaper = Creature:new {
 	objectName = "@mob/creature_names:quenker_relic_reaper",
 	socialGroup = "quenker",
-	pvpFaction = "",
 	faction = "",
 	level = 45,
 	chanceHit = 0.44,
@@ -23,7 +22,7 @@ quenker_relic_reaper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/quenker_relic_reaper.iff"},
@@ -32,8 +31,8 @@ quenker_relic_reaper = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"intimidationattack","intimidationChance=50"}
+		{"blindattack",""},
+		{"intimidationattack",""}
 	}
 }
 

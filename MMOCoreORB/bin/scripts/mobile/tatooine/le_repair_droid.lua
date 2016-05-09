@@ -1,7 +1,6 @@
 le_repair_droid = Creature:new {
 	objectName = "@mob/creature_names:le_repair_droid",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 100,
 	chanceHit = 1,
@@ -22,8 +21,8 @@ le_repair_droid = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = NONE,
-	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	creatureBitmask = NONE,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/le_repair_droid.iff"},

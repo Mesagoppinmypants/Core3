@@ -1,7 +1,6 @@
 theme_park_imperial_borvos_thug = Creature:new {
 	objectName = "@mob/creature_names:borvos_thug",
 	socialGroup = "borvo",
-	pvpFaction = "borvo",
 	faction = "borvo",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ theme_park_imperial_borvos_thug = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_borvos_thug.iff"},

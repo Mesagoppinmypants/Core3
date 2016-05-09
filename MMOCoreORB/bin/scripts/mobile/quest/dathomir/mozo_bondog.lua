@@ -2,7 +2,6 @@ mozo_bondog = Creature:new {
 	objectName = "",
 	customName = "Mozo Bondog",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ mozo_bondog = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_mozo_bondog.iff"},

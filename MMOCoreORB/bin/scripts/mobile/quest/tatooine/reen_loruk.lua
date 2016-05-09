@@ -1,7 +1,6 @@
 reen_loruk = Creature:new {
 	objectName = "",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 6,
 	chanceHit = 0.250000,
@@ -23,7 +22,7 @@ reen_loruk = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 	
 

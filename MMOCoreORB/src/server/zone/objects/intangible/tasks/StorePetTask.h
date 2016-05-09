@@ -6,6 +6,9 @@
  */
 
 #include "engine/engine.h"
+#include "templates/params/creature/CreatureAttribute.h"
+#include "server/zone/objects/group/GroupObject.h"
+#include "server/zone/managers/group/GroupManager.h"
 
 class StorePetTask : public Task {
 	ManagedReference<CreatureObject*> player;
@@ -22,6 +25,9 @@ public:
 
 		if (pet->containsPendingTask("droid_power"))
 			pet->removePendingTask( "droid_power" );
+          
+		if (pet->containsPendingTask("droid_skill_mod"))
+			pet->removePendingTask( "droid_skill_mod" );
 
 		if (pet->containsPendingTask("store_pet"))
 			pet->removePendingTask( "store_pet" );
@@ -49,8 +55,12 @@ public:
 		pet->setCreatureLink(NULL);
 
 		ManagedReference<PetControlDevice*> controlDevice = pet->getControlDevice().get().castTo<PetControlDevice*>();
-		if( controlDevice != NULL )
+		if( controlDevice != NULL ) {
+			Locker deviceLocker(controlDevice);
 			controlDevice->updateStatus(0);
+			controlDevice->setLastCommandTarget(NULL);
+			controlDevice->setLastCommand(PetManager::FOLLOW);
+		}
 
 
 		CreatureTemplate* creoTemp = pet->getCreatureTemplate();

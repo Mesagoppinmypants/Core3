@@ -21,10 +21,8 @@ class MissionListRequestCallback : public MessageCallback {
 
 public:
 	MissionListRequestCallback(ObjectControllerMessageCallback* objectControllerCallback) :
-			MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()) {
-
-		objectControllerMain = objectControllerCallback;
-
+			MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()),
+			unk1(0), unk2(0), terminalObjectID(0), objectControllerMain(objectControllerCallback) {
 	}
 
 	void parse(Message* message) {
@@ -38,7 +36,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = cast<CreatureObject*>( client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;
@@ -57,9 +55,7 @@ public:
 
 		MissionManager* manager = server->getZoneServer()->getMissionManager();
 		manager->handleMissionListRequest(missionTerminal, player, unk2);
-
 	}
-
 
 };
 

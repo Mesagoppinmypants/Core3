@@ -2,7 +2,6 @@ junk_reggi = Creature:new {
 	objectName = "@mob/creature_names:junk_dealer",
 	customName = "Reggi",
 	socialGroup = "nym",
-	pvpFaction = "nym",
 	faction = "nym",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ junk_reggi = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/junk_reggi.iff"},

@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
- 
-This File is part of Core3.
- 
-This program is free software; you can redistribute 
-it and/or modify it under the terms of the GNU Lesser 
-General Public License as published by the Free Software
-Foundation; either version 2 of the License, 
-or (at your option) any later version.
- 
-This program is distributed in the hope that it will be useful, 
-but WITHOUT ANY WARRANTY; without even the implied warranty of 
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-See the GNU Lesser General Public License for
-more details.
- 
-You should have received a copy of the GNU Lesser General 
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- 
-Linking Engine3 statically or dynamically with other modules 
-is making a combined work based on Engine3. 
-Thus, the terms and conditions of the GNU Lesser General Public License 
-cover the whole combination.
- 
-In addition, as a special exception, the copyright holders of Engine3 
-give you permission to combine Engine3 program with free software 
-programs or libraries that are released under the GNU LGPL and with 
-code included in the standard release of Core3 under the GNU LGPL 
-license (or modified versions of such code, with unchanged license). 
-You may copy and distribute such a system following the terms of the 
-GNU LGPL for Engine3 and the licenses of the other code concerned, 
-provided that you include the source code of that other code when 
-and as the GNU LGPL requires distribution of source code.
- 
-Note that people who make modified versions of Engine3 are not obligated 
-to grant this special exception for their modified versions; 
-it is their choice whether to do so. The GNU Lesser General Public License 
-gives permission to release a modified version without this exception; 
-this exception also makes it possible to release a modified version 
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 package server.zone.objects.structure;
 
@@ -50,7 +10,7 @@ import server.zone.objects.structure.events.StructureMaintenanceTask;
 import server.zone.objects.scene.SceneObject;
 import server.zone.objects.creature.CreatureObject;
 import server.zone.objects.player.PlayerObject;
-import server.zone.templates.SharedObjectTemplate;
+include templates.SharedObjectTemplate;
 import server.zone.objects.area.ActiveArea;
 import engine.util.u3d.AABBTree;
 import engine.util.u3d.AABBNode;
@@ -61,25 +21,22 @@ include server.zone.objects.structure.StructurePermissionList;
 class StructureObject extends TangibleObject {
 	protected transient StructureMaintenanceTask structureMaintenanceTask;
 	//protected transient StructurePowerTask structurePowerTask;
-	
+
 	@dereferenced
 	protected StructurePermissionList structurePermissionList;
-	
+
 	@dereferenced
 	protected Time lastMaintenanceTime;
-	
+
 	@dereferenced
 	protected Time maintenanceExpires;
-	
+
 	@dereferenced
 	protected Time powerExpires;
-	
+
 	protected unsigned long ownerObjectID;
 	protected unsigned long deedObjectID;
-	
-	protected int baseMaintenanceRate;//TODO: Move to template
-	protected int basePowerRate; //TODO: Move to template
-	
+
 	protected float surplusMaintenance;
 	protected float surplusPower;
 
@@ -89,28 +46,24 @@ class StructureObject extends TangibleObject {
 
 	public StructureObject() {
 		Logger.setLoggingName("StructureObject");
-		
+
 		super.staticObject = false;
-		
+
 		ownerObjectID = 0;
-		
+
 		deedObjectID = 0;
-		
-		baseMaintenanceRate = 0;
-		
-		basePowerRate = 0;
-		
+
 		surplusMaintenance = 0;
-		
+
 		surplusPower = 0;
-		
+
 		structureMaintenanceTask = null;
 
 		maintenanceReduced = false;
 
 		permissionsFixed = false;
 	}
-	
+
 	public native void initializeTransientMembers();
 	
 	public native void finalize();
@@ -131,8 +84,11 @@ class StructureObject extends TangibleObject {
 	 */
 	public native void notifyLoadFromDatabase();
 
+	public native void destroyObjectFromWorld(boolean sendSelfDestroy);
+
 	public native void notifyInsertToZone(Zone zone);
 
+	@preLocked
 	public void createChildObjects() {
 		super.createChildObjects();
 	}
@@ -156,18 +112,21 @@ class StructureObject extends TangibleObject {
 	 * Schedules the event that will be fired when maintenance is due to run out.
 	 * This method calls updateStructureStatus before running.
 	 */
+	@preLocked
 	public native void scheduleMaintenanceExpirationEvent();
 
 	/**
 	 * Schedules the maintenance task.
 	 * @param timeFromNow the time till the task should be run.
 	 */
+	@preLocked
 	public native void scheduleMaintenanceTask(int timeFromNow);
 	
 	/**
 	 * This method should be called anytime a method needs up to date information about
 	 * maintenance, power, and condition of the structure.
 	 */
+	@preLocked
 	public native abstract void updateStructureStatus();
 
 	/**
@@ -320,6 +279,7 @@ class StructureObject extends TangibleObject {
 	@dirty
 	public native int getLotSize();
 
+	@preLocked
 	public void setMaintenanceReduced(boolean value) {
 		maintenanceReduced = value;
 	}
@@ -334,7 +294,7 @@ class StructureObject extends TangibleObject {
 	public native int getBaseMaintenanceRate();
 	
 	@dirty
-	public native int getBasePowerRate();
+	public abstract native int getBasePowerRate();
 	
 	@read
 	public int getSurplusMaintenance() {
@@ -355,30 +315,31 @@ class StructureObject extends TangibleObject {
 	public abstract boolean isPrivateStructure() {
 		return false;
 	}
-	
+
+	@preLocked
 	public void setOwner(unsigned long objectID) {
 		ownerObjectID = objectID;
 		structurePermissionList.setOwner(objectID);
 	}
-	
+
+	@preLocked
 	public void setDeedObjectID(unsigned long deedID) {
 		deedObjectID = deedID;
 	}
-	
-	public void setBaseMaintenanceRate(int rate) { //TODO: Move to template
-		baseMaintenanceRate = rate;
-	}
-	
-	public void setBasePowerRate(int rate) { //TODO: Move to template
-		basePowerRate = rate;
-	}
-	
+
+	@preLocked
 	public void setSurplusMaintenance(int surplus) {
 		surplusMaintenance = surplus;
 	}
-	
+
+	@preLocked
 	public void addMaintenance(float add) {
 		surplusMaintenance += add;
+	}
+
+	@preLocked
+	public void subtractMaintenance(float subtract) {
+		surplusMaintenance = surplusMaintenance - subtract;
 	}
 
 	/**
@@ -392,12 +353,16 @@ class StructureObject extends TangibleObject {
 	 * @param cashFirst Indicates if the amount should be withdrawn from
 	 * the player's cash or bank account first.
 	 */
+	@preLocked
+	@arg2preLocked
 	public native void payMaintenance(int maintenance, CreatureObject payer, boolean cashFirst);
-	
+
+	@preLocked
 	public void setSurplusPower(int surplus) {
 		surplusPower = surplus;
 	}
-	
+
+	@preLocked
 	public void addPower(float add) {
 		surplusPower += add;
 	}
@@ -449,6 +414,7 @@ class StructureObject extends TangibleObject {
 	 */
 	@local
 	@dirty
+	@arg1preLocked
 	public native void addTemplateSkillMods(TangibleObject targetObject);
 
 	/*
@@ -457,6 +423,7 @@ class StructureObject extends TangibleObject {
 	 */
 	@local
 	@dirty
+	@arg1preLocked
 	public native void removeTemplateSkillMods(TangibleObject tangibleObject);
 	
 	@dirty
@@ -473,6 +440,10 @@ class StructureObject extends TangibleObject {
 	@dirty
 	public native boolean isCommercialStructure();
 
+	@dirty
+	public native boolean isGuildHall();
+
+	@preLocked
 	public void migratePermissions() {
 		structurePermissionList.migrateLists(super.getZoneServer(), getOwnerObjectID());
 		permissionsFixed = true;

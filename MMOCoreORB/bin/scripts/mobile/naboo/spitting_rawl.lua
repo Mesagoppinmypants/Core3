@@ -1,7 +1,6 @@
 spitting_rawl = Creature:new {
 	objectName = "@mob/creature_names:spitting_rawl",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 24,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ spitting_rawl = Creature:new {
 	ferocity = 9,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/fanned_rawl.iff"},
@@ -33,7 +32,7 @@ spitting_rawl = Creature:new {
 	weapons = {"creature_spit_small_red"},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
+		{"blindattack",""},
 		{"strongpoison",""}
 	}
 }

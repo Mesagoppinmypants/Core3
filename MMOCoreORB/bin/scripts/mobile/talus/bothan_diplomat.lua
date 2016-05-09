@@ -1,7 +1,8 @@
 bothan_diplomat = Creature:new {
 	objectName = "@mob/creature_names:bothan_diplomat",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "spynet",
-	pvpFaction = "",
 	faction = "",
 	level = 3,
 	chanceHit = 0.23,
@@ -21,21 +22,30 @@ bothan_diplomat = Creature:new {
 	milk = 0,
 	tamingChance = 0,
 	ferocity = 0,
-	pvpBitmask = NONE,
+	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
-			"object/mobile/dressed_bth_spynet_pilot_m_01.iff",
-			"object/mobile/dressed_eisley_officer_bothan_female_01.iff",
-			"object/mobile/dressed_eisley_officer_bothan_male_01.iff"
-					},
-	lootGroups = {},
-	weapons = {},
+		"object/mobile/dressed_bth_spynet_pilot_m_01.iff",
+		"object/mobile/dressed_eisley_officer_bothan_female_01.iff",
+		"object/mobile/dressed_eisley_officer_bothan_male_01.iff"
+	},
+	lootGroups = {
+		{
+			groups = {
+				{group = "junk", chance = 4000000},
+				{group = "wearables_common", chance = 2000000},
+				{group = "pistols", chance = 1000000},
+				{group = "tailor_components", chance = 1500000},
+				{group = "loot_kit_parts", chance = 1500000}
+			}
+		}
+	},
 	conversationTemplate = "",
-	attacks = {
-	}
+	weapons = {"pirate_weapons_light"},
+	attacks = merge(marksmannovice,brawlernovice)
 }
 
 CreatureTemplates:addCreatureTemplate(bothan_diplomat, "bothan_diplomat")

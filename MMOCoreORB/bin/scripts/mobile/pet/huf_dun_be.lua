@@ -1,7 +1,6 @@
 huf_dun_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_huf_dun",
 	socialGroup = "huf_dun",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ huf_dun_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/huf_dun_hue.iff"},

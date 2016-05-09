@@ -1,8 +1,7 @@
 daclif_gallamby = Creature:new {
 	objectName = "",
 	customName = "Daclif Gallamby",
-	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
+	socialGroup = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ daclif_gallamby = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_daclif_gallamby.iff"},

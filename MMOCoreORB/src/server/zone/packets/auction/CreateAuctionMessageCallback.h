@@ -9,7 +9,7 @@
 #define CREATEAUCTIONMESSAGECALLBACK_H_
 
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 #include "server/zone/managers/auction/AuctionManager.h"
 
 
@@ -25,7 +25,7 @@ class CreateAuctionMessageCallback : public MessageCallback {
 	byte premium;
 public:
 	CreateAuctionMessageCallback(ZoneClientSession* client, ZoneProcessServer* server) :
-			MessageCallback(client, server) {
+			MessageCallback(client, server), objectID(0), vendorID(0), price(0), duration(0), premium(0) {
 
 	}
 
@@ -44,10 +44,14 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = client->getPlayer().get().castTo<CreatureObject*>();
+		ManagedReference<CreatureObject*> player = client->getPlayer();
+
+		if (player == NULL)
+			return;
+
 		ManagedReference<TangibleObject*> vendor = server->getZoneServer()->getObject(vendorID).castTo<TangibleObject*>();
 
-		if (player == NULL || vendor == NULL)
+		if (vendor == NULL)
 			return;
 
 		if (!vendor->isBazaarTerminal() && !vendor->isVendor())
@@ -57,7 +61,8 @@ public:
 
 		AuctionManager* auctionManager = server->getZoneServer()->getAuctionManager();
 
-		auctionManager->addSaleItem(player, objectID, vendor, description, price, duration, true, premium);
+		if (auctionManager != NULL)
+			auctionManager->addSaleItem(player, objectID, vendor, description, price, duration, true, premium);
 	}
 
 };

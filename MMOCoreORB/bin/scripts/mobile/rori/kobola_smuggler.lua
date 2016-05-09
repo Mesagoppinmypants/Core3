@@ -1,7 +1,8 @@
 kobola_smuggler = Creature:new {
 	objectName = "@mob/creature_names:kobola_smuggler",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "kobola",
-	pvpFaction = "kobola",
 	faction = "kobola",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,25 +24,25 @@ kobola_smuggler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/mobile/dressed_kobola_smuggler_trandoshan_male_01.iff",
 		"object/mobile/dressed_kobola_smuggler_trandoshan_female_01.iff"},
 	lootGroups = {
-	    {
+		{
 			groups = {
 				{group = "junk", chance = 2400000},
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000},
 				{group = "kobola_common", chance = 3600000}
-			},
-			lootChance = 2400000
-		}					
+			}
+		}
 	},
 	weapons = {"pirate_weapons_medium"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlernovice,marksmannovice)
 }
 

@@ -51,9 +51,12 @@ PointBlankSingle1Command = {
 	mindCostMultiplier = 0.5,
 	accuracyBonus = 15,
 
-	animationCRC = hashCode("fire_3_single_medium"),
+	animation = "fire_3_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "pointblankshot",
+	
+	weaponType = RANGEDWEAPON,
 
 	range = 12
 }

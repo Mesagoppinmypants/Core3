@@ -1,7 +1,6 @@
 helfin_hundi = Creature:new {
 	objectName = "",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 16,
 	chanceHit = 0.310000,
@@ -22,8 +21,8 @@ helfin_hundi = Creature:new {
 	tamingChance = 0.000000,
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
-	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	creatureBitmask = NONE,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_smuggler_human_male_01.iff" },

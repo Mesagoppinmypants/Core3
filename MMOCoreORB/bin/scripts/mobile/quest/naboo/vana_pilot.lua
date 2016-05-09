@@ -1,7 +1,6 @@
 vana_pilot = Creature:new {
 	objectName = "@mob/creature_names:rebel_pilot",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 20,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ vana_pilot = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_pilot_rodian_male_01.iff"},

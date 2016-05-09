@@ -13,7 +13,9 @@ public:
 		: SuiCallback(server) {
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (!suiBox->isListBox() || cancelPressed)
 			return;
 
@@ -32,6 +34,8 @@ public:
 
 		if (firework == NULL || !firework->isFireworkObject())
 			return;
+
+		Locker clocker(firework, player);
 
 		ManagedReference<SceneObject*> fireworkShow = suiBox->getUsingObject();
 
@@ -53,6 +57,12 @@ public:
 			if(clone == NULL)
 				return;
 
+			Locker locker(clone);
+
+			if (clone->hasAntiDecayKit()) {
+				clone->removeAntiDecayKit();
+			}
+
 			clone->setParent(NULL);
 			clone->setUseCount(1, false);
 			firework->decreaseUseCount();
@@ -68,8 +78,10 @@ public:
 
 		ManagedReference<TangibleObject*> fireworkShowObject = fireworkShow.castTo<TangibleObject*>();
 
-		if (fireworkShowObject != NULL )
+		if (fireworkShowObject != NULL ) {
+			Locker locker(fireworkShowObject);
 			fireworkShowObject->setUseCount(fireworkShowObject->getUseCount() + 1, true);
+		}
 
 		FireworkShowMenuComponent* showMenu = cast<FireworkShowMenuComponent*>(fireworkShow->getObjectMenuComponent());
 		showMenu->addEvent(player, fireworkShow.castTo<FireworkObject*>());

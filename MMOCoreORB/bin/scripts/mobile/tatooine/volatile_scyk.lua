@@ -1,7 +1,6 @@
 volatile_scyk = Creature:new {
 	objectName = "@mob/creature_names:scyk_volatile",
 	socialGroup = "scyk",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ volatile_scyk = Creature:new {
 	ferocity = 6,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/scyk.iff"},
@@ -33,7 +32,7 @@ volatile_scyk = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"mediumpoison",""}
 	}
 }
 

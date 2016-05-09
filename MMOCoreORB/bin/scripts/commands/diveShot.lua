@@ -51,11 +51,24 @@ DiveShotCommand = {
 	mindCostMultiplier = 0.5,
 	accuracyBonus = 50,
 
-	animationCRC = hashCode("fire_acrobatic"),
+	animation = "fire_acrobatic",
 
 	combatSpam = "diveshot",
+	
+	weaponType = PISTOLWEAPON,
 
-	range = -1
+	range = -1,
+	stateEffects = {
+	  StateEffect( 
+	    ATTACKER_FORCE_PRONE, 
+	    {}, 
+	    {}, 
+	    {}, 
+	    100, 
+	    0, 
+	    0 
+	  )
+	},
 
 }
 

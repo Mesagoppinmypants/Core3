@@ -18,13 +18,15 @@ public:
 		: SuiCallback(server) {
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		ManagedReference<CityTreasuryWithdrawalSession*> session = player->getActiveSession(SessionFacadeType::CITYWITHDRAW).castTo<CityTreasuryWithdrawalSession*>();
 
 		if (session == NULL)
 			return;
 
-		if (!suiBox->isInputBox() || player == NULL || cancelPressed || args->size() <= 0) {
+		if (!suiBox->isInputBox() || cancelPressed || args->size() <= 0) {
 			session->cancelSession();
 			return;
 		}

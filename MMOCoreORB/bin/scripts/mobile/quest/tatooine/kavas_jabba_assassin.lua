@@ -1,7 +1,6 @@
 kavas_jabba_assassin = Creature:new {
 	objectName = "@mob/creature_names:jabba_assassin",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 17,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ kavas_jabba_assassin = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_jabba_assassin.iff"},

@@ -2,7 +2,6 @@ thale_dustrunner = Creature:new {
 	objectName = "",
 	customName = "Thale Dustrunner (Corsec Captain)",
 	socialGroup = "corsec",
-	pvpFaction = "corsec",
 	faction = "corsec",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ thale_dustrunner = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_smuggler_human_male_01.iff"},

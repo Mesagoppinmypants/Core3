@@ -1,7 +1,6 @@
 feeble_kima = Creature:new {
 	objectName = "@mob/creature_names:feeble_kima",
 	socialGroup = "kima",
-	pvpFaction = "",
 	faction = "",
 	level = 11,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ feeble_kima = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kima_hue.iff"},
@@ -32,7 +31,8 @@ feeble_kima = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"",""},
+		{"stunattack",""}
 	}
 }
 

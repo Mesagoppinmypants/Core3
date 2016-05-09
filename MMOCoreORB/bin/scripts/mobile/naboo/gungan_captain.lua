@@ -1,7 +1,8 @@
 gungan_captain = Creature:new {
 	objectName = "@mob/creature_names:gungan_captain",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "gungan",
-	pvpFaction = "gungan",
 	faction = "gungan",
 	level = 21,
 	chanceHit = 0.34,
@@ -23,7 +24,7 @@ gungan_captain = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gungan_male.iff"},
@@ -34,8 +35,7 @@ gungan_captain = Creature:new {
 				{group = "gungan_common", chance = 2000000},
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000}
-			},
-			lootChance = 3200000
+			}
 		}
 	},
 	weapons = {"rebel_weapons_medium"},

@@ -1,7 +1,6 @@
 cannibal_dewback = Creature:new {
 	objectName = "@mob/creature_names:dewback_cannibal",
 	socialGroup = "dewback",
-	pvpFaction = "",
 	faction = "",
 	level = 21,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ cannibal_dewback = Creature:new {
 	ferocity = 6,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/dewback_hue.iff"},
@@ -32,7 +31,8 @@ cannibal_dewback = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"}
+		{"",""},
+		{"dizzyattack",""}
 	}
 }
 

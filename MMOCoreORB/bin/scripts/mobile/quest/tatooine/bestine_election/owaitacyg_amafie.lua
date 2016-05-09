@@ -2,7 +2,6 @@ owaitacyg_amafie = Creature:new {
 	objectName = "@npc_name:zabrak_base_male",
 	customName = "Owaitacyg Amafie",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 13,
 	chanceHit = 0.29,
@@ -24,7 +23,7 @@ owaitacyg_amafie = Creature:new {
 	ferocity = 3,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/dressed_bestine_rumor02.iff"},

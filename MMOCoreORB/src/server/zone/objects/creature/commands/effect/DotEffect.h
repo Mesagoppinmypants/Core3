@@ -18,10 +18,10 @@ protected:
 	bool dotDamageofHit;
 	uint32 dotDuration;
 	uint32 dotStrength;
-	uint32 dotPotency;
-    uint32 dotChance;
-    byte primaryPercent;
-    byte secondaryPercent;
+	int dotPotency;
+        uint32 dotChance;
+        float primaryPercent;
+        float secondaryPercent;
 
 public:
     DotEffect()
@@ -100,8 +100,8 @@ public:
         dotStrength = dot.getIntField("dotStrength");
         dotPotency = dot.getIntField("dotPotency");
         dotChance = dot.getIntField("dotChance");
-        primaryPercent = dot.getByteField("primaryPercent");
-        secondaryPercent = dot.getByteField("secondaryPercent");
+        primaryPercent = dot.getFloatField("primaryPercent");
+        secondaryPercent = dot.getFloatField("secondaryPercent");
 
         LuaObject defMods = dot.getObjectField("defenderStateDefenseModifiers");
         for(int i = 1;i <= defMods.getTableSize();++i){
@@ -125,7 +125,7 @@ public:
         return dotPool;
     }
 
-    uint32 getDotPotency() const
+    int getDotPotency() const
     {
         return dotPotency;
     }
@@ -165,7 +165,7 @@ public:
         this->dotPool = dotPool;
     }
 
-    void setDotPotency(uint32 dotPotency)
+    void setDotPotency(int dotPotency)
     {
         this->dotPotency = dotPotency;
     }
@@ -188,11 +188,11 @@ public:
         this->dotChance = dotChance;
     }
 
-    byte getPrimaryPercent(){
+    float getPrimaryPercent(){
     	return primaryPercent;
     }
 
-    byte getSecondaryPercent(){
+    float getSecondaryPercent(){
     	return secondaryPercent;
     }
 

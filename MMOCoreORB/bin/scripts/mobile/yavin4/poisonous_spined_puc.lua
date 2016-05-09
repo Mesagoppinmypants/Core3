@@ -1,7 +1,6 @@
 poisonous_spined_puc = Creature:new {
 	objectName = "@mob/creature_names:spined_puc_poison",
 	socialGroup = "spined_puc",
-	pvpFaction = "",
 	faction = "",
 	level = 19,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ poisonous_spined_puc = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/spined_puc_hue.iff"},
@@ -34,7 +33,7 @@ poisonous_spined_puc = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"strongpoison",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

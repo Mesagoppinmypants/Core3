@@ -53,9 +53,11 @@ LegShot1Command = {
 
 	poolsToDamage = ACTION_ATTRIBUTE,
 
-	animationCRC = hashCode("test_homing"),
+	animation = "test_homing",
 
 	combatSpam = "leg",
+	
+	weaponType = CARBINEWEAPON,
 
 	range = -1
 

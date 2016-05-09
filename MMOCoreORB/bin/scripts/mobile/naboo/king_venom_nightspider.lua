@@ -1,7 +1,6 @@
 king_venom_nightspider = Creature:new {
 	objectName = "@mob/creature_names:king_venom_nightspider",
 	socialGroup = "spider",
-	pvpFaction = "",
 	faction = "",
 	level = 14,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ king_venom_nightspider = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/king_venom_nightspider.iff"},
@@ -33,7 +32,7 @@ king_venom_nightspider = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"mediumpoison",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

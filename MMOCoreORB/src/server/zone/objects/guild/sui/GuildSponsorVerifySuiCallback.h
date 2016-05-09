@@ -18,7 +18,9 @@ public:
 		: SuiCallback(server) {
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (!suiBox->isMessageBox())
 			return;
 
@@ -34,16 +36,24 @@ public:
 
 		CreatureObject* sponsor = cast<CreatureObject*>( obj.get());
 
-		ManagedReference<GuildObject*> guild = sponsor->getGuildObject();
+		if (!sponsor->isOnline())
+			return;
+
+		if (!sponsor->isInRange(player, 32)) {
+			sponsor->sendSystemMessage("@guild:sponsor_not_found"); // The specified person to sponsor could not be found nearby.
+			return;
+		}
+
+		ManagedReference<GuildObject*> guild = sponsor->getGuildObject().get();
 
 		if (guild == NULL || !guild->hasSponsorPermission(sponsor->getObjectID())) {
-			sponsor->sendSystemMessage("@guild:generic_fail_no_permission"); //You do not have permission to perform that operation.
+			sponsor->sendSystemMessage("@guild:generic_fail_no_permission"); // You do not have permission to perform that operation.
 			return;
 		}
 
 		if (cancelPressed) {
 			StringIdChatParameter params;
-			params.setStringId("@guild:sponsor_decline"); //%TU has declined your sponsorship.
+			params.setStringId("@guild:sponsor_decline"); // %TU has declined your sponsorship.
 			params.setTU(player->getObjectID());
 			sponsor->sendSystemMessage(params);
 		} else {

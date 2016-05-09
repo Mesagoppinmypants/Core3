@@ -1,7 +1,6 @@
 mad_angler = Creature:new {
 	objectName = "@mob/creature_names:mad_angler",
 	socialGroup = "angler",
-	pvpFaction = "",
 	faction = "",
 	level = 95,
 	chanceHit = 0.85,
@@ -23,7 +22,7 @@ mad_angler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/angler_hue.iff"},
@@ -32,8 +31,8 @@ mad_angler = Creature:new {
 	weapons = {"creature_spit_small_toxicgreen"},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"strongpoison",""}
+		{"strongpoison",""},
+		{"blindattack",""}
 	}
 }
 

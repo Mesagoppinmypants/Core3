@@ -1,7 +1,8 @@
 spiderclan_sentry = Creature:new {
 	objectName = "@mob/creature_names:spider_nightsister_sentry",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "spider_nightsister",
-	pvpFaction = "spider_nightsister",
 	faction = "spider_nightsister",
 	level = 27,
 	chanceHit = 0.33,
@@ -23,7 +24,7 @@ spiderclan_sentry = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_spider_nightsister_guardian.iff"},
@@ -40,9 +41,8 @@ spiderclan_sentry = Creature:new {
 				{group = "rifles", chance = 1000000},
 				{group = "carbines", chance = 1000000},
 				{group = "wearables_common", chance = 1000000}
-			},
-			lootChance = 1500000
-		}			
+			}
+		}
 	},
 	weapons = {"mixed_force_weapons"},
 	conversationTemplate = "",

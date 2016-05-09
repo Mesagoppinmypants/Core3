@@ -1,7 +1,6 @@
 tusken_warlord = Creature:new {
 	objectName = "@mob/creature_names:tusken_warlord",
 	socialGroup = "tusken_raider",
-	pvpFaction = "tusken_raider",
 	faction = "tusken_raider",
 	level = 62,
 	chanceHit = 0.62,
@@ -23,7 +22,7 @@ tusken_warlord = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/tusken_raider.iff"},
@@ -40,9 +39,8 @@ tusken_warlord = Creature:new {
 				{group = "clothing_attachments", chance = 500000},
 				{group = "color_crystals", chance = 500000},
 				{group = "crystals_good", chance = 500000}
-			},
-			lootChance = 3200000
-		}	
+			}
+		}
 	},
 	weapons = {"tusken_weapons"},
 	conversationTemplate = "",

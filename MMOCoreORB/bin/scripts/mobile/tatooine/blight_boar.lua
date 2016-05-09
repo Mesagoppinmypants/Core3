@@ -1,7 +1,6 @@
 blight_boar = Creature:new {
 	objectName = "@mob/creature_names:zucca_boar_blight",
 	socialGroup = "boar",
-	pvpFaction = "",
 	faction = "",
 	level = 12,
 	chanceHit = 0.29,
@@ -23,17 +22,17 @@ blight_boar = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/zucca_boar.iff"},
-	controlDeviceTemplate = "object/intangible/pet/zucca_boar_hue.iff",
+	controlDeviceTemplate = "object/intangible/pet/pet_control.iff", -- zucca_boar_hue.iff bugged in client
 	scale = 1.05,
 	lootGroups = {},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

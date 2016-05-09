@@ -1,7 +1,6 @@
 piket_plains_walker = Creature:new {
 	objectName = "@mob/creature_names:piket_plains_walker",
 	socialGroup = "piket",
-	pvpFaction = "",
 	faction = "",
 	level = 32,
 	chanceHit = 0.4,
@@ -24,7 +23,7 @@ piket_plains_walker = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/piket_plains_walker.iff"},
@@ -34,7 +33,7 @@ piket_plains_walker = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"}
+		{"dizzyattack",""}
 	}
 }
 

@@ -1,7 +1,7 @@
 dim_u_bantha = Creature:new {
 	objectName = "@mob/creature_names:dim_u_bantha",
 	socialGroup = "dim_u",
-	pvpFaction = "",
+
 	faction = "",
 	level = 15,
 	chanceHit = 0.3,
@@ -24,7 +24,7 @@ dim_u_bantha = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bantha.iff"},
@@ -33,7 +33,8 @@ dim_u_bantha = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"}
+		{"",""},
+		{"dizzyattack",""}
 	}
 }
 

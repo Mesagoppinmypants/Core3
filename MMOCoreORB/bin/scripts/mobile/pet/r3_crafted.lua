@@ -1,7 +1,6 @@
 r3_crafted = Creature:new {
 	objectName = "@droid_name:r3_crafted",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 4,
 	chanceHit = 0.24,
@@ -23,14 +22,15 @@ r3_crafted = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/creature/npc/droid/crafted/r3_droid.iff"
-	},		
+	},
 	lootGroups = {},
-	weapons = {},
+	defaultAttack = "attack",
+	defaultWeapon = "object/weapon/ranged/droid/droid_astromech_ranged.iff",
 	conversationTemplate = "",
 }
 

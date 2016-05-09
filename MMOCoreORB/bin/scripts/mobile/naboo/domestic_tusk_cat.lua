@@ -1,7 +1,6 @@
 domestic_tusk_cat = Creature:new {
 	objectName = "@mob/creature_names:domestic_tusk_cat",
 	socialGroup = "naboo",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ domestic_tusk_cat = Creature:new {
 	ferocity = 8,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/tusk_cat_hue.iff"},
@@ -31,7 +30,8 @@ domestic_tusk_cat = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"",""},
+		{"blindattack",""}
 	}
 }
 

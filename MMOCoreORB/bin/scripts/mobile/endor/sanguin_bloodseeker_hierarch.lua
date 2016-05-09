@@ -1,7 +1,6 @@
 sanguin_bloodseeker_hierarch = Creature:new {
 	objectName = "@mob/creature_names:bloodseeker_mite_sanguine_hierarch",
 	socialGroup = "bloodseeker",
-	pvpFaction = "",
 	faction = "",
 	level = 23,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ sanguin_bloodseeker_hierarch = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bloodseeker_mite.iff"},

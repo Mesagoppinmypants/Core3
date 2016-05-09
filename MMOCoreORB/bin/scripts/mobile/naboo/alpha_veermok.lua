@@ -1,7 +1,6 @@
 alpha_veermok = Creature:new {
 	objectName = "@mob/creature_names:alpha_veermok",
 	socialGroup = "veermok",
-	pvpFaction = "",
 	faction = "",
 	level = 20,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ alpha_veermok = Creature:new {
 	ferocity = 9,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/alpha_veermok.iff"},
@@ -32,8 +31,8 @@ alpha_veermok = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"knockdownattack","knockdownChance=50"}
+		{"knockdownattack",""},
+		{"dizzyattack",""}
 	}
 }
 

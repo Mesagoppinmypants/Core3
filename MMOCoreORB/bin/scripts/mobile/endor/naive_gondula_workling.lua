@@ -1,7 +1,8 @@
 naive_gondula_workling = Creature:new {
 	objectName = "@mob/creature_names:naive_gondula_workling",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "gondula_tribe",
-	pvpFaction = "gondula_tribe",
 	faction = "gondula_tribe",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,18 +24,18 @@ naive_gondula_workling = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/mobile/dressed_ewok_f_01.iff",
 		"object/mobile/dressed_ewok_m_01.iff"},
 	lootGroups = {
-		 {
-	        groups = {
+		{
+			groups = {
 				{group = "ewok", chance = 10000000}
 			},
-			lootChance = 2300000
+			lootChance = 1180000
 		}
 	},
 	weapons = {"ewok_weapons"},

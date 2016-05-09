@@ -1,7 +1,8 @@
 naboo_police_chief = Creature:new {
 	objectName = "@mob/creature_names:naboo_police_chief",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "naboo_security_force",
-	pvpFaction = "naboo_security_force",
 	faction = "naboo_security_force",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +24,7 @@ naboo_police_chief = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_naboo_police_chief.iff"},
@@ -34,12 +35,12 @@ naboo_police_chief = Creature:new {
 				{group = "wearables_common", chance = 2000000},
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000}
-			},
-			lootChance = 3200000
+			}
 		}
 	},
 	weapons = {"rebel_weapons_heavy"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/townperson",
 	attacks = merge(marksmannovice,brawlernovice)
 }
 

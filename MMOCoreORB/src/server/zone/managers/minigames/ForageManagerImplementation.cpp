@@ -11,7 +11,7 @@
 #include "server/zone/managers/minigames/events/ForagingEvent.h"
 #include "server/zone/objects/area/ForageArea.h"
 #include "server/zone/objects/area/ForageAreaCollection.h"
-#include "server/zone/objects/creature/CreatureAttribute.h"
+#include "templates/params/creature/CreatureAttribute.h"
 #include "server/zone/objects/area/ActiveArea.h"
 
 void ForageManagerImplementation::startForaging(CreatureObject* player, int forageType) {
@@ -120,7 +120,7 @@ void ForageManagerImplementation::finishForaging(CreatureObject* player, int for
 		return;
 
 	Locker playerLocker(player);
-	Locker forageAreasLocker(_this.get());
+	Locker forageAreasLocker(_this.getReferenceUnsafeStaticCast());
 
 	player->removePendingTask("foraging");
 
@@ -131,7 +131,7 @@ void ForageManagerImplementation::finishForaging(CreatureObject* player, int for
 	float playerX = player->getPositionX();
 	float playerY = player->getPositionY();
 
-	if ((abs(playerX - forageX) > 2.0) || (abs(playerY - forageY) > 2.0) || player->getZone()->getZoneName() != zoneName) {
+	if ((fabs(playerX - forageX) > 2.0) || (fabs(playerY - forageY) > 2.0) || player->getZone()->getZoneName() != zoneName) {
 		player->sendSystemMessage("@skl_use:sys_forage_movefail"); //"You fail to forage because you moved."
 		return;
 	}
@@ -221,7 +221,7 @@ bool ForageManagerImplementation::forageGiveItems(CreatureObject* player, int fo
 	}
 
 	//Check if inventory is full.
-	if (inventory->hasFullContainerObjects()) {
+	if (inventory->isContainerFullRecursive()) {
 		player->sendSystemMessage("@skl_use:sys_forage_noroom"); //"Some foraged items were discarded, because your inventory is full."
 		return false;
 	}
@@ -236,7 +236,7 @@ bool ForageManagerImplementation::forageGiveItems(CreatureObject* player, int fo
 	}
 
 	//Discard items if player's inventory does not have enough space.
-	int inventorySpace = inventory->getContainerVolumeLimit() - inventory->getContainerObjectsSize();
+	int inventorySpace = inventory->getContainerVolumeLimit() - inventory->getCountableObjectsRecursive();
 	if (itemCount > inventorySpace) {
 		itemCount = inventorySpace;
 		player->sendSystemMessage("@skl_use:sys_forage_noroom"); //"Some foraged items were discarded, because your inventory is full."

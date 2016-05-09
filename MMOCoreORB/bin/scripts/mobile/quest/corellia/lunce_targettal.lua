@@ -1,7 +1,6 @@
 lunce_targettal = Creature:new {
 	objectName = "",
 	socialGroup = "corsec",
-	pvpFaction = "corsec",
 	faction = "corsec",
 	level = 16,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ lunce_targettal = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_corsec_officer_human_male_01.iff"},

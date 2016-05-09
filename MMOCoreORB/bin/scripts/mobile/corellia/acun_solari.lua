@@ -2,7 +2,6 @@ acun_solari = Creature:new {
 	objectName = "@npc_name:bothan_base_male",
 	customName = "Acun Solari",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ acun_solari = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_army_captain_bothan_male.iff"},

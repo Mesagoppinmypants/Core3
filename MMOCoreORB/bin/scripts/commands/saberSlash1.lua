@@ -42,42 +42,74 @@
 --true = 1, false = 0
 
 SaberSlash1Command = {
-        name = "saberslash1",    
-        
-    damageMultiplier = 1.0,
-	speedMultiplier = 1.5,
+        name = "saberslash1",
+
+	damageMultiplier = 1.0,
+	speedMultiplier = 1.25,
+	healthCostMultiplier = 0,
+	actionCostMultiplier = 0,
+	mindCostMultiplier = 0,
 	forceCostMultiplier = 1.0,
-	
+	visMod = 25,
+
 	dotEffects = {
-	  DotEffect( 
-		BLEEDING, 
-		{ "resistance_bleeding", "bleed_resist", "combat_bleeding_defense" },
+	  DotEffect(
+		BLEEDING,
+		{ "resistance_bleeding", "bleed_resist" },
 		HEALTH,
 		true,
-		125,
-		100,
-		60, 
-		60
-	  )
-	},
-	
-	stateEffects = {
-	  StateEffect( 
-		POSTUREDOWN_EFFECT, 
-		{ "postureDownRecovery" }, 
-		{ "posture_change_down_defense" }, 
-		{}, 
-		40, 
-		100, 
-		0 
-	  )
+		0,
+		25,
+		50,
+		30,
+      		8.33,
+      		8.33
+	  ),
+
+	  	DotEffect(
+		BLEEDING,
+		{ "resistance_bleeding", "bleed_resist" },
+		ACTION,
+		true,
+		0,
+		25,
+		50,
+		30,
+		8.33,
+		8.33
+	  ),
+
+	  	DotEffect(
+		BLEEDING,
+		{ "resistance_bleeding", "bleed_resist" },
+		MIND,
+		true,
+		0,
+		25,
+		50,
+		30,
+		8.33,
+		8.33
+	  ),
 	},
 
-	animationCRC = hashCode("combo_2d_light"),
+	stateEffects = {
+	  StateEffect(
+		POSTUREDOWN_EFFECT,
+		{ "postureDownRecovery" },
+		{ "posture_change_down_defense" },
+		{},
+		100,
+		0,
+		0
+	  )
+	},
 
 	combatSpam = "saberslash1",
-	
+
 	poolsToDamage = RANDOM_ATTRIBUTE,
+
+	weaponType = JEDIWEAPON,
 
 	range = -1
 }

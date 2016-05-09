@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef FINDPLAYERCOMMAND_H_
 #define FINDPLAYERCOMMAND_H_
@@ -48,6 +8,7 @@ which carries forward this exception.
 #include "server/zone/objects/scene/SceneObject.h"
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/player/sui/messagebox/SuiMessageBox.h"
+#include "server/zone/managers/player/PlayerMap.h"
 
 class FindPlayerCommand : public QueueCommand {
 public:
@@ -57,7 +18,7 @@ public:
 
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 		if (!checkStateMask(creature))
 			return INVALIDSTATE;
 
@@ -67,66 +28,55 @@ public:
 		if (!creature->isPlayerCreature())
 			return GENERALERROR;
 
-		CreatureObject* player = cast<CreatureObject*>(creature);
+		ManagedReference<PlayerObject*> ghost = creature->getPlayerObject();
 
-		//TODO: Research if this gets handled already by the absence of the 'admin' skill.
-		ManagedReference<PlayerObject*> ghost = player->getPlayerObject();
-
-		//if (!ghost->isPrivileged())
-			//return GENERALERROR;
-
-		StringTokenizer tokenizer(arguments.toString());
-		tokenizer.setDelimeter(" ");
-
-		if (!tokenizer.hasMoreTokens())
-			return INVALIDPARAMETERS;
-
-		String targetName;
-		tokenizer.getStringToken(targetName);
-
-		PlayerManager* playerManager = server->getZoneServer()->getPlayerManager();
-		uint64 objectid = playerManager->getObjectID(targetName);
-
-		ManagedReference<SceneObject*> obj = server->getZoneServer()->getObject(objectid);
-
-		if (obj == NULL || !obj->isPlayerCreature()) {
-			//Send message about player not existing.
-			StringIdChatParameter params;
-			params.setStringId("@player_structure:modify_list_invalid_player"); //%NO is an invalid player name.
-			params.setTO(targetName);
-			player->sendSystemMessage(params);
+		if (ghost == NULL)
 			return GENERALERROR;
+
+		try {
+			Reference<SceneObject*> targetObject = NULL;
+
+			StringTokenizer tokenizer(arguments.toString());
+			String filter;
+
+			if (tokenizer.hasMoreTokens()) {
+				tokenizer.getStringToken(filter);
+			}
+
+			ChatManager* chatManager = server->getZoneServer()->getChatManager();
+			Locker chatManagerLocker(chatManager);
+
+			PlayerMap* playerMap = chatManager->getPlayerMap();
+			playerMap->resetIterator(false);
+
+			ManagedReference<SuiListBox*> findResults = new SuiListBox(creature, SuiWindowType::ADMIN_FIND_PLAYER);
+			findResults->setCallback(new FindObjectSuiCallback(server->getZoneServer()));
+			findResults->setPromptTitle("Find Player");
+			findResults->setPromptText("Here are the online players that match your search:");
+			findResults->setCancelButton(true, "");
+			findResults->setOkButton(true, "@treasure_map/treasure_map:store_waypoint");
+			findResults->setOtherButton(true, "@go");
+
+			while (playerMap->hasNext(false)) {
+				ManagedReference<CreatureObject*> player = playerMap->getNextValue(false);
+				String name = player->getDisplayedName();
+
+				if (filter.isEmpty() || name.toLowerCase().contains(filter.toLowerCase())) {
+					findResults->addMenuItem(name, player->getObjectID());
+				}
+			}
+
+			if (findResults->getMenuSize() < 1) {
+				creature->sendSystemMessage("No players were found that matched that filter.");
+				return SUCCESS;
+			}
+
+			ghost->addSuiBox(findResults);
+			creature->sendMessage(findResults->generateMessage());
+
+		} catch (Exception& e) {
+			creature->sendSystemMessage("Syntax: /findplayer <string filter>");
 		}
-
-		CreatureObject* targetObject = cast<CreatureObject*>( obj.get());
-		PlayerObject* targetGhost = targetObject->getPlayerObject();
-
-		ManagedReference<SuiMessageBox*> suiBox = new SuiMessageBox(player, 0x00);
-		suiBox->setPromptTitle("Find Player Results");
-
-		StringBuffer text;
-		text << "Player Name:\t  " << targetObject->getDisplayedName() << "\n";
-
-		text << "Online Status:\t  " << (targetGhost->isOffline() ? "\\#ff3300 Offline" : "\\#00ff33 Online") << "\\#.\n";
-
-		if (targetObject->getZone() != NULL)
-			text << "Planet Name:\t " << targetObject->getZone()->getZoneName() << "\n";
-
-		Vector3 worldPosition = targetObject->getWorldPosition();
-		text << "World Position:\t  {x:" << worldPosition.getX() << ", z:" << worldPosition.getZ() << ", y:" << worldPosition.getY() << "} " << "\n";
-
-		if (targetObject->getParent() != NULL && targetObject->getParent().get()->isCellObject()) {
-			ManagedReference<CellObject*> cell = cast<CellObject*>( targetObject->getParent().get().get());
-			Vector3 cellPosition = targetObject->getPosition();
-			text << "Cell Position:\t  {x:" << cellPosition.getX() << ", z:" << cellPosition.getZ() << ", y:" << cellPosition.getY() << "} Cell: " << cell->getCellNumber() << " (" << cell->getObjectID() << ")\n";
-		}
-
-		Quaternion* dir = targetObject->getDirection();
-		text << "Direction:\t\t  {x:" << dir->getX() << ", y:" << dir->getY() << ", z:" << dir->getZ() << ", w:" << dir->getW() << "}\n";
-
-		suiBox->setPromptText(text.toString());
-
-		player->sendMessage(suiBox->generateMessage());
 
 		return SUCCESS;
 	}

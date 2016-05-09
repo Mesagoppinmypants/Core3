@@ -2,7 +2,6 @@ lt_lance = Creature:new {
 	objectName = "",
 	customName = "Lt. Lance",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 20,
 	chanceHit = 0.33,
@@ -24,7 +23,7 @@ lt_lance = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_lieutenant_lance.iff"},

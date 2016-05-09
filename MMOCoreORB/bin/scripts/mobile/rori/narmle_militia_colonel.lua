@@ -1,7 +1,8 @@
 narmle_militia_colonel = Creature:new {
 	objectName = "@mob/creature_names:narmle_colonel",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "narmle",
-	pvpFaction = "narmle",
 	faction = "narmle",
 	level = 21,
 	chanceHit = 0.34,
@@ -23,26 +24,26 @@ narmle_militia_colonel = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/mobile/dressed_narmle_colonel_rodian_male_01.iff",
 		"object/mobile/dressed_narmle_colonel_rodian_female_01.iff"},
 	lootGroups = {
-	    {
+		{
 			groups = {
 				{group = "junk", chance = 2000000},
 				{group = "wearables_common", chance = 2000000},
 				{group = "rifles", chance = 2000000},
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000}
-			},
-			lootChance = 3200000
-		}					
+			}
+		}
 	},
 	weapons = {"ranged_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/townperson",
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 

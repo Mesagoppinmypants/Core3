@@ -43,7 +43,7 @@
 
 object_weapon_ranged_heavy_heavy_lightning_beam = object_weapon_ranged_heavy_shared_heavy_lightning_beam:new {
 
-	objectMenuComponent = {"cpp", "FireHeavyWeaponMenuComponent"},
+	objectMenuComponent = "FireHeavyWeaponMenuComponent",
 
 	playerRaces = { "object/creature/player/bothan_male.iff",
 				"object/creature/player/bothan_female.iff",
@@ -70,7 +70,7 @@ object_weapon_ranged_heavy_heavy_lightning_beam = object_weapon_ranged_heavy_sha
 	-- HEAVYLIGHTNINGBEAMATTACK, HEAVYPARTICLEBEAMATTACK, HEAVYROCKETLAUNCHERATTACK, HEAVYLAUNCHERATTACK
 	attackType = HEAVYLIGHTNINGBEAMATTACK,
 
-	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, FORCE, LIGHTSABER
+	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, LIGHTSABER
 	damageType = ELECTRICITY,
 
 	-- NONE, LIGHT, MEDIUM, HEAVY

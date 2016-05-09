@@ -3,8 +3,8 @@
 #define PETRECHARGEOTHERCOMMAND_H_
 
 #include "server/zone/objects/creature/commands/QueueCommand.h"
-#include "server/zone/objects/creature/AiAgent.h"
-#include "server/zone/objects/creature/DroidObject.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
+#include "server/zone/objects/creature/ai/DroidObject.h"
 
 class PetRechargeOtherCommand : public QueueCommand {
 public:
@@ -13,7 +13,7 @@ public:
 	}
 
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
 		ManagedReference<PetControlDevice*> controlDevice = creature->getControlDevice().castTo<PetControlDevice*>();
 
@@ -36,7 +36,7 @@ public:
 		}
 
 		// Check range between droids
-		if (!droidPet->isInRange(targetDroid, 30.0f)){ // Same range as auto-repair
+		if (!checkDistance(droidPet, targetDroid, 30.0f)){ // Same range as auto-repair
 			droidPet->showFlyText("npc_reaction/flytext","confused", 204, 0, 0);  // "?!!?!?!"
 			return GENERALERROR;
 		}

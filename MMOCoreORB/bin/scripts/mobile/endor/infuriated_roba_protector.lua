@@ -1,7 +1,6 @@
 infuriated_roba_protector = Creature:new {
 	objectName = "@mob/creature_names:roba_infuriated_protectorate",
 	socialGroup = "roba",
-	pvpFaction = "",
 	faction = "",
 	level = 57,
 	chanceHit = 0.55,
@@ -23,7 +22,7 @@ infuriated_roba_protector = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/roba_hue.iff"},
@@ -33,8 +32,8 @@ infuriated_roba_protector = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"},
-		{"stunattack","stunChance=50"}
+		{"posturedownattack",""},
+		{"stunattack",""}
 	}
 }
 

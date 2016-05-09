@@ -2,7 +2,6 @@ ds_297 = Creature:new {
 	objectName = "",
 	customName = "DS-297",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 20,
 	chanceHit = 0.33,
@@ -24,7 +23,7 @@ ds_297 = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tie_fighter_m.iff"},

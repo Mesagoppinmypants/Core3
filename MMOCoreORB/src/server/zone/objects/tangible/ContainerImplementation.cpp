@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
- */
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions. */
 
 #include "server/zone/objects/tangible/Container.h"
 #include "server/zone/packets/object/ObjectMenuResponse.h"
@@ -50,9 +10,9 @@ which carries forward this exception.
 #include "server/zone/objects/player/sui/inputbox/SuiInputBox.h"
 #include "server/zone/objects/player/sessions/SlicingSession.h"
 #include "server/zone/objects/tangible/wearables/WearableContainerObject.h"
-#include "server/zone/templates/tangible/ContainerTemplate.h"
+#include "templates/tangible/ContainerTemplate.h"
 #include "server/zone/Zone.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 
 void ContainerImplementation::initializeTransientMembers() {
 	TangibleObjectImplementation::initializeTransientMembers();
@@ -124,7 +84,7 @@ void ContainerImplementation::fillObjectMenuResponse(ObjectMenuResponse* menuRes
 	TangibleObjectImplementation::fillObjectMenuResponse(menuResponse, player);
 
 	if (checkContainerPermission(player, ContainerPermissions::MOVECONTAINER && getParent().get() != NULL &&
-			getParent().get()->checkContainerPermission(player, ContainerPermissions::MOVEOUT) && !(_this.get()->isRecycleToolObject()) && !(_this.get()->isAntiDecayKitObject())))
+			getParent().get()->checkContainerPermission(player, ContainerPermissions::MOVEOUT) && !(_this.getReferenceUnsafeStaticCast()->isRecycleToolObject()) && !(_this.getReferenceUnsafeStaticCast()->isAntiDecayKitObject())))
 
 		menuResponse->addRadialMenuItem(50, 3, "@base_player:set_name"); //Set Name
 
@@ -141,7 +101,7 @@ int ContainerImplementation::handleObjectMenuSelect(CreatureObject* player, byte
 
 			inputBox->setPromptTitle("@sui:set_name_title");
 			inputBox->setPromptText("@sui:set_name_prompt");
-			inputBox->setUsingObject(_this.get());
+			inputBox->setUsingObject(_this.getReferenceUnsafeStaticCast());
 			inputBox->setMaxInputSize(255);
 
 			inputBox->setDefaultInput(getCustomObjectName().toString());
@@ -163,7 +123,7 @@ int ContainerImplementation::handleObjectMenuSelect(CreatureObject* player, byte
 
 		//Create Session
 		session = new SlicingSession(player);
-		session->initalizeSlicingMenu(player, _this.get());
+		session->initalizeSlicingMenu(player, _this.getReferenceUnsafeStaticCast());
 
 		return 0;
 
@@ -248,7 +208,7 @@ int ContainerImplementation::canAddObject(SceneObject* object, int containmentTy
 		} else {
 			// There's no parent that's a wearable container. Check if this is
 			if (gameObjectType == SceneObjectType::WEARABLECONTAINER) {
-				WearableContainerObject* pack = cast<WearableContainerObject*>(_this.get().get());
+				WearableContainerObject* pack = cast<WearableContainerObject*>(_this.getReferenceUnsafeStaticCast());
 
 				if (pack != NULL && !pack->isEquipped()) {
 				// This is a wearable container, and it's not equipped.
@@ -299,8 +259,14 @@ int ContainerImplementation::canAddObject(SceneObject* object, int containmentTy
 			}
 		}
 
+		ManagedReference<SceneObject*> myParent = getParent();
+
 		// Check if the container is in a building or factory ingredient hopper
-		if (playerParent == NULL) {
+		// If it is a droid object, don't consider these cases as it can still
+		// receive items in a full house.
+		bool isDroid = (myParent != NULL && myParent->isDroidObject());
+
+		if (playerParent == NULL && !isDroid) {
 			ManagedReference<SceneObject*> rootParent = getRootParent();
 
 			if (rootParent != NULL) {
@@ -324,7 +290,6 @@ int ContainerImplementation::canAddObject(SceneObject* object, int containmentTy
 			}
 		}
 
-		ManagedReference<SceneObject*> myParent = getParent();
 		ManagedReference<SceneObject*> otherParent = object->getParent();
 
 		if (myParent != NULL && otherParent != NULL) {

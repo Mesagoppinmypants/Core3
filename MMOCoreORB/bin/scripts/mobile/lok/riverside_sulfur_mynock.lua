@@ -1,7 +1,6 @@
 riverside_sulfur_mynock = Creature:new {
 	objectName = "@mob/creature_names:riverside_sulfur_mynock",
 	socialGroup = "mynock",
-	pvpFaction = "",
 	faction = "",
 	level = 33,
 	chanceHit = 0.4,
@@ -23,7 +22,7 @@ riverside_sulfur_mynock = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/riverside_sulfur_mynock.iff"},
@@ -33,7 +32,7 @@ riverside_sulfur_mynock = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
+		{"blindattack",""},
 		{"mediumdisease",""}
 	}
 }

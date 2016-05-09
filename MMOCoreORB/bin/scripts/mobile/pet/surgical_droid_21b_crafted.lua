@@ -1,7 +1,6 @@
 surgical_droid_21b_crafted = Creature:new {
 	objectName = "@droid_name:b_surgical_droid_crafted",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 4,
 	chanceHit = 0.24,
@@ -23,7 +22,7 @@ surgical_droid_21b_crafted = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

@@ -1,7 +1,8 @@
 crafty_pubam_scout = Creature:new {
 	objectName = "@mob/creature_names:crafty_pubam_scout",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "pubam",
-	pvpFaction = "pubam",
 	faction = "pubam",
 	level = 35,
 	chanceHit = 0.41,
@@ -23,18 +24,18 @@ crafty_pubam_scout = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
-			"object/mobile/dulok_male.iff",
-			"object/mobile/dulok_female.iff"},
+		"object/mobile/dulok_male.iff",
+		"object/mobile/dulok_female.iff"},
 	lootGroups = {
-		 {
-	        groups = {
+		{
+			groups = {
 				{group = "ewok", chance = 10000000},
 			},
-			lootChance = 2300000
+			lootChance = 1700000
 		}
 	},
 	weapons = {},

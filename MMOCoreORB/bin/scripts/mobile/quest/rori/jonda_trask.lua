@@ -2,7 +2,6 @@ jonda_trask = Creature:new {
 	objectName = "",
 	customName = "Jonda Trask",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ jonda_trask = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

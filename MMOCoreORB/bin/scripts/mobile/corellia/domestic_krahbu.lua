@@ -1,7 +1,6 @@
 domestic_krahbu = Creature:new {
 	objectName = "@mob/creature_names:domestic_krahbu",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.26,
@@ -24,7 +23,7 @@ domestic_krahbu = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/krahbu_hue.iff"},

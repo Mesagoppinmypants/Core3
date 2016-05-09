@@ -24,10 +24,8 @@ class ImageDesignRejectMessageCallback : public MessageCallback {
 
 public:
 	ImageDesignRejectMessageCallback(ObjectControllerMessageCallback* objectControllerCallback) :
-			MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()) {
-
-		objectControllerMain = objectControllerCallback;
-
+			MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()),
+			designer(0), target(0), tent(0), type(0), objectControllerMain(objectControllerCallback) {
 	}
 
 	void parse(Message* message) {
@@ -41,7 +39,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = static_cast<CreatureObject*>(client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;

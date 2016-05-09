@@ -9,7 +9,7 @@
 #define BIDAUCTIONMESSAGECALLBACK_H_
 
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 #include "server/zone/managers/auction/AuctionManager.h"
 
 
@@ -20,7 +20,7 @@ class BidAuctionMessageCallback : public MessageCallback {
 
 public:
 	BidAuctionMessageCallback(ZoneClientSession* client, ZoneProcessServer* server) :
-			MessageCallback(client, server) {
+			MessageCallback(client, server), objectid(0), price1(0), price2(0) {
 
 	}
 
@@ -31,7 +31,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = cast<CreatureObject*>( client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;
@@ -40,9 +40,11 @@ public:
 
 		AuctionManager* auctionManager = server->getZoneServer()->getAuctionManager();
 
-		Locker clocker(auctionManager, player);
+		if (auctionManager != NULL) {
+			Locker clocker(auctionManager, player);
 
-		auctionManager->buyItem(player, objectid, price1, price2);
+			auctionManager->buyItem(player, objectid, price1, price2);
+		}
 	}
 
 };

@@ -52,7 +52,8 @@ TorsoShotCommand = {
 
 	poolsToDamage = HEALTH_ATTRIBUTE,
 
-	animationCRC = hashCode("fire_3_special_single_light_face"),
+	animation = "fire_3_special_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "torsoshot",
 
@@ -62,14 +63,16 @@ TorsoShotCommand = {
 		{ "resistance_fire", "fire_resist" },
 		HEALTH,
 		true,
-		125,
+		0,
 		100,
 		30, 
 		30,
-		10,
-		2
+		50,
+		10
 	  )
 	},
+	
+	weaponType = PISTOLWEAPON,
 
 	range = -1
 }

@@ -1,7 +1,6 @@
 langlatch_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_langlatch",
 	socialGroup = "langlatch",
-	pvpFaction = "",
 	faction = "",
 	level = 2,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ langlatch_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/langlatch_hue.iff"},

@@ -65,7 +65,7 @@ float HeightMap::getHeight(float x, float y) {
 	if (reader == NULL)
 		return 0;
 
-	if (isinf(x) || isnan(x) || isinf(y) || isnan(y))
+	if (std::isinf(x) || std::isnan(x) || std::isinf(y) || std::isnan(y))
 		return 0;
 
 	float retHeight = 0;
@@ -234,6 +234,9 @@ void HeightMap::convert(const String& path) {
 	}
 
 	writer->close();
+
+	delete writer;
+	delete reader;
 }
 
 void HeightMap::readPlaneForConversion(FileInputStream* file, float* buffer, int planeX, int planeY) {

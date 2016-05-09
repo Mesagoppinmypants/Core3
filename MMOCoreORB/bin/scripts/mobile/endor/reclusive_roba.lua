@@ -1,7 +1,6 @@
 reclusive_roba = Creature:new {
 	objectName = "@mob/creature_names:reclusive_roba",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 30,
 	chanceHit = 0.39,
@@ -23,7 +22,7 @@ reclusive_roba = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/roba_hue.iff"},
@@ -32,8 +31,8 @@ reclusive_roba = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"blindattack",""}
 	}
 }
 

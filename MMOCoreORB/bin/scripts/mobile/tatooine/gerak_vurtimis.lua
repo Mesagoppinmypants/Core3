@@ -2,7 +2,6 @@ gerak_vurtimis = Creature:new {
 	objectName = "@mob/creature_names:commoner_human_male",
 	customName = "Gerak Vurtimis",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 21,
 	chanceHit = 0.33,
@@ -22,15 +21,16 @@ gerak_vurtimis = Creature:new {
 	milk = 0,
 	tamingChance = 0,
 	ferocity = 0,
-	pvpBitmask = ATTACKABLE,
+	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_commoner_fat_human_male_01.iff"},
 	lootGroups = {},
 	weapons = {},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/townperson",
 	attacks = brawlermaster
 }
 

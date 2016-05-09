@@ -7,7 +7,7 @@
 #include "server/zone/objects/tangible/TangibleObject.h"
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/player/PlayerObject.h"
-#include "server/zone/templates/tangible/tool/RecycleToolTemplate.h"
+#include "templates/tangible/tool/RecycleToolTemplate.h"
 #include "server/zone/packets/object/ObjectMenuResponse.h"
 
 void RecycleToolImplementation::initializeTransientMembers() {
@@ -37,17 +37,17 @@ void RecycleToolImplementation::fillObjectMenuResponse(ObjectMenuResponse* menuR
 
 	String stub = "@recycler_messages:";
 
-	SharedObjectTemplate* templateData = TemplateManager::instance()->getTemplate(_this.get()->getServerObjectCRC());
+	SharedObjectTemplate* templateData = TemplateManager::instance()->getTemplate(_this.getReferenceUnsafeStaticCast()->getServerObjectCRC());
 
 	if (templateData == NULL) {
-		error("No template data for: " + String::valueOf(_this.get()->getServerObjectCRC()));
+		error("No template data for: " + String::valueOf(_this.getReferenceUnsafeStaticCast()->getServerObjectCRC()));
 		return;
 	}
 
 	RecycleToolTemplate* recycleToolData = dynamic_cast<RecycleToolTemplate*>(templateData);
 
 	if (recycleToolData == NULL) {
-		error("No RecycleToolTemplate for: " + String::valueOf(_this.get()->getServerObjectCRC()));
+		error("No RecycleToolTemplate for: " + String::valueOf(_this.getReferenceUnsafeStaticCast()->getServerObjectCRC()));
 		return;
 	}
 
@@ -59,11 +59,11 @@ void RecycleToolImplementation::fillObjectMenuResponse(ObjectMenuResponse* menuR
 }
 
 int RecycleToolImplementation::handleObjectMenuSelect(CreatureObject* player, byte selectedID) {
-	Reference<PlayerObject*> playerObject = player->getPlayerObject();
+	if (isASubChildOf(player)) {
+		SharedObjectTemplate* templateData = TemplateManager::instance()->getTemplate(_this.getReferenceUnsafeStaticCast()->getServerObjectCRC());
 
-	if(isASubChildOf(player)) {
-
-		SharedObjectTemplate* templateData = TemplateManager::instance()->getTemplate(_this.get()->getServerObjectCRC());
+		if (templateData == NULL || !templateData->isRecycleToolTemplate())
+			return 1;
 
 		RecycleToolTemplate* recycleToolData = dynamic_cast<RecycleToolTemplate*>(templateData);
 
@@ -97,6 +97,8 @@ int RecycleToolImplementation::handleObjectMenuSelect(CreatureObject* player, by
 			setSelectedTypeName(resourceTypes.get(5));
 			break;
 		}
+
+		return 0;
 	}
 
 	return TangibleObjectImplementation::handleObjectMenuSelect(player, selectedID);

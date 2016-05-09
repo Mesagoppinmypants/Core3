@@ -2,7 +2,6 @@ death_watch_workshop_droid = Creature:new {
 	objectName = "@droid_name:wed_treadwell_base",
 	customName = "WED15-I643 (a workshop droid)",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 30,
 	chanceHit = 0.390000,
@@ -31,7 +30,7 @@ death_watch_workshop_droid = Creature:new {
 	weapons = {},
 	attacks = {},
 	conversationTemplate = "deathWatchWorkshopDroidConvoTemplate",
-	optionsBitmask = 264
+	optionsBitmask = INVULNERABLE + CONVERSABLE
 }
 
 CreatureTemplates:addCreatureTemplate(death_watch_workshop_droid, "death_watch_workshop_droid")

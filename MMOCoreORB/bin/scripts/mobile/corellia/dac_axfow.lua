@@ -1,7 +1,6 @@
 dac_axfow = Creature:new {
 	objectName = "@npc_spawner_n:dac_axfow",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 23,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ dac_axfow = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_greeter_kor_vella_imperial_officer.iff"},

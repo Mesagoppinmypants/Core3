@@ -1,7 +1,6 @@
 arachne_queen = Creature:new {
 	objectName = "@mob/creature_names:queen_arachne",
 	socialGroup = "arachne",
-	pvpFaction = "",
 	faction = "",
 	level = 63,
 	chanceHit = 0.6,
@@ -23,13 +22,13 @@ arachne_queen = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/queen_arachne.iff"},
 	scale = 1.3,
 	lootGroups = {},
-	weapons = {"creature_spit_small_green","creature_spit_small_green"},
+	weapons = {},
 	conversationTemplate = "",
 	attacks = {
 		{"creatureareapoison",""},

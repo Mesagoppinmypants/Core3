@@ -1,7 +1,6 @@
 cavern_spider_hunter = Creature:new {
 	objectName = "@mob/creature_names:gaping_spider_hunter",
 	socialGroup = "spider",
-	pvpFaction = "",
 	faction = "",
 	level = 46,
 	chanceHit = 0.46,
@@ -23,7 +22,7 @@ cavern_spider_hunter = Creature:new {
 	ferocity = 9,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gaping_spider_hue.iff"},
@@ -32,8 +31,8 @@ cavern_spider_hunter = Creature:new {
 	weapons = {"creature_spit_small_toxicgreen"},
 	conversationTemplate = "",
 	attacks = {
-		{"mediumpoison",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"mediumpoison",""}
 	}
 }
 

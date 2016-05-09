@@ -1,8 +1,8 @@
 gungan_reject = Creature:new {
-	objectName = "",
-	customName = "a Gungan reject",
+	objectName = "@mob/creature_names:mordran_gungan_reject",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "borvo",
-	pvpFaction = "borvo",
 	faction = "borvo",
 	level = 35,
 	chanceHit = 0.41,
@@ -24,7 +24,7 @@ gungan_reject = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gungan_s03_male.iff"},
@@ -35,8 +35,7 @@ gungan_reject = Creature:new {
 				{group = "gungan_common", chance = 2000000},
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000}
-			},
-			lootChance = 3200000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_heavy"},

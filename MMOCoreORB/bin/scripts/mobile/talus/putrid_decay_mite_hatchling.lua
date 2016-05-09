@@ -1,7 +1,6 @@
 putrid_decay_mite_hatchling = Creature:new {
 	objectName = "@mob/creature_names:putrid_decay_mite_hatchling",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,7 +22,7 @@ putrid_decay_mite_hatchling = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/putrid_decay_mite_hatchling.iff"},

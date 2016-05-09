@@ -1,7 +1,6 @@
 carrion_spat_corpsereaver = Creature:new {
 	objectName = "@mob/creature_names:carrion_spat_corpsereaver",
 	socialGroup = "carrion_spat",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ carrion_spat_corpsereaver = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/carrion_spat_hue.iff"},
@@ -33,8 +32,8 @@ carrion_spat_corpsereaver = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"stunattack","stunChance=50"}
+		{"blindattack",""},
+		{"stunattack",""}
 	}
 }
 

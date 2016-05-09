@@ -1,7 +1,6 @@
 female_forest_slice_hound = Creature:new {
 	objectName = "@mob/creature_names:female_forest_slice_hound",
 	socialGroup = "slice_hound",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ female_forest_slice_hound = Creature:new {
 	ferocity = 1,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/forest_slice_hound.iff"},
@@ -33,7 +32,7 @@ female_forest_slice_hound = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

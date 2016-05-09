@@ -1,7 +1,8 @@
 naboo_holy_man = Creature:new {
 	objectName = "@mob/creature_names:naboo_holy_man",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "naboo",
-	pvpFaction = "naboo",
 	faction = "naboo",
 	level = 5,
 	chanceHit = 0.250000,
@@ -26,7 +27,7 @@ naboo_holy_man = Creature:new {
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_naboo_holy_man.iff",
-			"object/mobile/dressed_commoner_naboo_human_female_08.iff"},
+		"object/mobile/dressed_commoner_naboo_human_female_08.iff"},
 	lootGroups = {
 		{
 			groups = {
@@ -34,12 +35,12 @@ naboo_holy_man = Creature:new {
 				{group = "wearables_common", chance = 2000000},
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000}
-			},
-			lootChance = 3200000
+			}
 		}
 	},
 	weapons = {"rebel_weapons_light"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/fancy",
 	attacks = merge(marksmannovice,brawlernovice)
 }
 

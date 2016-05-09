@@ -18,7 +18,9 @@ public:
 		: SuiCallback(server) {
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (!suiBox->isListBox() || cancelPressed)
 			return;
 
@@ -51,7 +53,7 @@ public:
 
 		GuildTerminal* guildTerminal = cast<GuildTerminal*>( terminal);
 
-		ManagedReference<GuildObject*> guild = guildTerminal->getGuildObject();
+		ManagedReference<GuildObject*> guild = player->getGuildObject().get();
 
 		if (guild == NULL)
 			return;
@@ -63,21 +65,14 @@ public:
 
 		CreatureObject* target = cast<CreatureObject*>( playObj.get());
 
-		//Guild Leader doesn't have the set allegiance option, so if this player is the guild leader, then we need to increment the index by 1!
-		if (guild->isGuildLeader(player))
-			++index;
-
 		switch (index) {
-		case 0: //Set Allegiance
-			guildManager->setAllegianceTo(player, memberID, guildTerminal);
+		case 0: //Set Title
+			guildManager->sendGuildSetTitleTo(player, target);
 			break;
 		case 1: //Kick
 			guildManager->sendGuildKickPromptTo(player, target);
 			break;
-		case 2: //Set Title
-			guildManager->sendGuildSetTitleTo(player, target);
-			break;
-		case 3: //Change Permissions
+		case 2: //Change Permissions
 			guildManager->sendMemberPermissionsTo(player, memberID, guildTerminal);
 			break;
 		default:

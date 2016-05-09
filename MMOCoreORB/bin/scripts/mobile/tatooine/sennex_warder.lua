@@ -1,7 +1,8 @@
 sennex_warder = Creature:new {
 	objectName = "@mob/creature_names:sennex_warder",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "sennex",
-	pvpFaction = "pirate",
 	faction = "pirate",
 	level = 20,
 	chanceHit = 0.33,
@@ -23,7 +24,7 @@ sennex_warder = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_sennex_pirate_01.iff",
@@ -39,19 +40,19 @@ sennex_warder = Creature:new {
 		"object/mobile/dressed_sennex_pirate_11.iff",
 		"object/mobile/dressed_sennex_pirate_12.iff"},
 	lootGroups = {
-	    {
+		{
 			groups = {
 				{group = "junk", chance = 3000000},
 				{group = "wearables_common", chance = 2000000},
-				{group = "heavy_weapons", chance = 2000000},				
+				{group = "heavy_weapons", chance = 2000000},
 				{group = "tailor_components", chance = 1500000},
 				{group = "loot_kit_parts", chance = 1500000}
-			},
-			lootChance = 2200000
-		}					
+			}
+		}
 	},
 	weapons = {"pirate_weapons_heavy"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 

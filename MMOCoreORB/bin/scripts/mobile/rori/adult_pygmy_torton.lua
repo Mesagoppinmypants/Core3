@@ -1,7 +1,6 @@
 adult_pygmy_torton = Creature:new {
 	objectName = "@mob/creature_names:torton_pygmy_adult",
 	socialGroup = "torton",
-	pvpFaction = "",
 	faction = "",
 	level = 20,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ adult_pygmy_torton = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/torton_hue.iff"},
@@ -32,8 +31,8 @@ adult_pygmy_torton = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"dizzyattack",""}
 	}
 }
 

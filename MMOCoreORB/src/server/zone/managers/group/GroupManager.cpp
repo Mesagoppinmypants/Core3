@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #include "GroupManager.h"
 
@@ -50,13 +10,21 @@ which carries forward this exception.
 #include "server/chat/room/ChatRoom.h"
 
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/player/PlayerObject.h"
-
 #include "server/zone/objects/group/GroupObject.h"
-#include "server/chat/StringIdChatParameter.h"
+
 #include "server/zone/managers/object/ObjectManager.h"
+#include "server/zone/managers/player/PlayerManager.h"
+#include "server/chat/ChatManager.h"
+
+#include "server/chat/StringIdChatParameter.h"
+#include "server/zone/managers/objectcontroller/ObjectController.h"
 #include "server/zone/objects/player/sessions/EntertainingSession.h"
+#include "server/zone/objects/player/sui/messagebox/SuiMessageBox.h"
+#include "server/zone/objects/player/sui/callbacks/GroupLootChangedSuiCallback.h"
+#include "server/zone/objects/player/sui/callbacks/GroupLootPickLooterSuiCallback.h"
+#include "server/zone/packets/object/OpenLotteryWindow.h"
+#include "server/zone/objects/player/sessions/LootLotterySession.h"
 
 
 GroupManager::GroupManager() {
@@ -104,7 +72,7 @@ void GroupManager::inviteToGroup(CreatureObject* leader, CreatureObject* target)
 	if (target->isGrouped()) {
 		StringIdChatParameter stringId;
 		stringId.setStringId("group", "already_grouped");
-		stringId.setTT(target);
+		stringId.setTT(target->getObjectID());
 		leader->sendSystemMessage(stringId);
 		//leader->sendSystemMessage("group", "already_grouped", player->getObjectID());
 
@@ -114,15 +82,16 @@ void GroupManager::inviteToGroup(CreatureObject* leader, CreatureObject* target)
 	if (target->getGroupInviterID() == leader->getObjectID()) {
 		StringIdChatParameter stringId;
 		stringId.setStringId("group", "considering_your_group");
-		stringId.setTT(target);
+		stringId.setTT(target->getObjectID());
 		leader->sendSystemMessage(stringId);
 		//leader->sendSystemMessage("group", "considering_your_group", player->getObjectID());
 
 		return;
 	} else if (target->getGroupInviterID() != 0) {
-		StringBuffer msg;
-		msg << target->getCreatureName().toString() << " is considering joining another group.";
-		leader->sendSystemMessage(msg.toString());
+		StringIdChatParameter stringId;
+		stringId.setStringId("group", "considering_other_group"); // %TT is considering joining another group.
+		stringId.setTT(target->getObjectID());
+		leader->sendSystemMessage(stringId);
 
 		return;
 	}
@@ -148,7 +117,6 @@ void GroupManager::inviteToGroup(CreatureObject* leader, CreatureObject* target)
 
 		joinGroup(target);
 	}
-
 }
 
 void GroupManager::joinGroup(CreatureObject* player) {
@@ -205,22 +173,28 @@ void GroupManager::joinGroup(CreatureObject* player) {
 
 	player->info("joining group");
 
-	group->addMember(player);
 	player->updateGroup(group);
+	group->addMember(player);
 
 	if (player->isPlayerCreature()) {
 		player->sendSystemMessage("@group:joined_self");
+
+		//Inform new member who the Master Looter is.
+		if (group->getLootRule() == MASTERLOOTER) {
+			StringIdChatParameter masterLooter("group","set_new_master_looter");
+			masterLooter.setTT(group->getMasterLooterID());
+			player->sendSystemMessage(masterLooter);
+		}
 
 		// clear invitee's LFG setting once a group is joined
 		Reference<PlayerObject*> ghost = player->getSlottedObject("ghost").castTo<PlayerObject*>();
 		if (ghost != NULL)
 			ghost->clearCharacterBit(PlayerObject::LFG, true);
 
-		ManagedReference<ChatRoom*> groupChannel = group->getGroupChannel();
-
-		if (groupChannel != NULL) {
-			groupChannel->sendTo(cast<CreatureObject*>(player));
-			groupChannel->addPlayer(cast<CreatureObject*>(player), false);
+		ManagedReference<ChatRoom*> groupChat = group->getChatRoom();
+		if (groupChat != NULL) {
+			groupChat->sendTo(cast<CreatureObject*>(player));
+			server->getChatManager()->handleChatEnterRoomById(player, groupChat->getRoomID(), -1, true);
 		}
 
 		if (player->isPlayingMusic()) {
@@ -259,8 +233,11 @@ GroupObject* GroupManager::createGroup(CreatureObject* leader) {
 	ManagedReference<ZoneServer*> server = leader->getZone()->getZoneServer();
 
 	ManagedReference<GroupObject*> group = cast<GroupObject*>( ObjectManager::instance()->createObject(0x13dcb432, 0, ""));
+
+	Locker locker(group);
+
 	group->initializeLeader(leader);
-	group->startChatRoom();
+	group->startChatRoom(leader);
 	group->setZone(leader->getZone());
 
 	group->sendTo(leader, true);
@@ -285,7 +262,7 @@ GroupObject* GroupManager::createGroup(CreatureObject* leader) {
 			group->setBandSong(session->getPerformanceName());
 
 			for (int i = 0; i < group->getGroupSize(); ++i) {
-				Reference<CreatureObject*> groupMember = (group->getGroupMember(i)).castTo<CreatureObject*>();
+				Reference<CreatureObject*> groupMember = group->getGroupMember(i);
 				if (groupMember == leader) {
 					continue;
 				} else {
@@ -305,7 +282,7 @@ GroupObject* GroupManager::createGroup(CreatureObject* leader) {
 		}
 	} else {
 		for (int i = 0; i < group->getGroupSize(); ++i) {
-			Reference<CreatureObject*> groupMember = (group->getGroupMember(i)).castTo<CreatureObject*>();
+			Reference<CreatureObject*> groupMember = group->getGroupMember(i);
 			if (groupMember->isPlayingMusic()) {
 				ManagedReference<Facade*> facade = groupMember->getActiveSession(SessionFacadeType::ENTERTAINING);
 				ManagedReference<EntertainingSession*> session = dynamic_cast<EntertainingSession*> (facade.get());
@@ -337,17 +314,20 @@ void GroupManager::leaveGroup(ManagedReference<GroupObject*> group, CreatureObje
 		return;
 
 	try {
-		Locker clocker(group, player);
+		ChatRoom* groupChat = group->getChatRoom();
+		if (groupChat != NULL && player->isPlayerCreature()) {
+			CreatureObject* playerCreature = cast<CreatureObject*>(player);
 
-		ChatRoom* groupChannel = group->getGroupChannel();
-		if (groupChannel != NULL && player->isPlayerCreature()) {
-			CreatureObject* playerCreature = cast<CreatureObject*>( player);
-			groupChannel->removePlayer(playerCreature, false);
-			groupChannel->sendDestroyTo(playerCreature);
+			Locker gclocker(groupChat, playerCreature);
+			groupChat->removePlayer(playerCreature);
+			groupChat->sendDestroyTo(playerCreature);
 
-			ChatRoom* room = groupChannel->getParent();
-			room->sendDestroyTo(playerCreature);
+			ChatRoom* parentRoom = groupChat->getParent();
+			if (parentRoom != NULL)
+				parentRoom->sendDestroyTo(playerCreature);
 		}
+
+		Locker clocker(group, player);
 
 		if (!group->isOtherMemberPlayingMusic(player))
 			group->setBandSong("");
@@ -390,31 +370,37 @@ void GroupManager::disbandGroup(ManagedReference<GroupObject*> group, CreatureOb
 	player->unlock();
 
 	try {
-		group->wlock();
+		Locker locker(group);
+
 		//The following should never happen, as a check is made in
 		//ObjectControlMessage.cpp and removes the player from the group
 		//if he's not the leader. Remove?
 		//After Fix 13 feb 2009 - Bankler
 		if (group->getLeader() != player) {
 			player->sendSystemMessage("@group:must_be_leader");
-			group->unlock();
 			player->wlock();
 			return;
 		}
 
 		for (int i = 0; i < group->getGroupSize(); i++) {
-			Reference<CreatureObject*> play = ( group->getGroupMember(i)).castTo<CreatureObject*>();
+			Reference<CreatureObject*> play = group->getGroupMember(i);
 
-			if (play->isPlayerCreature())
-				play->sendSystemMessage("@group:disbanded");
+			if (play->isPlayerCreature()) {
+				play->sendSystemMessage("@group:disbanded"); //"The group has been disbanded."
+
+				//Close any open Group SUIs.
+				ManagedReference<PlayerObject*> ghost = play->getPlayerObject();
+				if (ghost != NULL) {
+					ghost->closeSuiWindowType(SuiWindowType::GROUP_LOOT_RULE);
+					ghost->closeSuiWindowType(SuiWindowType::GROUP_LOOT_CHANGED);
+					ghost->closeSuiWindowType(SuiWindowType::GROUP_LOOT_PICK_LOOTER);
+				}
+			}
 		}
 
 		group->disband();
 
-		group->unlock();
 	} catch (...) {
-		group->unlock();
-
 		player->wlock();
 
 		throw;
@@ -432,28 +418,24 @@ void GroupManager::kickFromGroup(ManagedReference<GroupObject*> group, CreatureO
 	bool disbanded = false;
 
 	try {
-		group->wlock();
+		Locker locker(group);
 
 		if (!group->hasMember(memberToKick)) {
-			group->unlock();
 			player->wlock();
 			return;
 		}
 
-		Reference<CreatureObject*> leader = ( group->getLeader()).castTo<CreatureObject*>();
+		Reference<CreatureObject*> leader = group->getLeader();
 
 		if (player != leader) {
 			player->sendSystemMessage("@group:must_be_leader");
-
-			group->unlock();
-
 			player->wlock();
 			return;
 		}
 
 		if (group->getGroupSize() - 1 < 2) {
 			for (int i = 0; i < group->getGroupSize(); i++) {
-				Reference<CreatureObject*> play = ( group->getGroupMember(i)).castTo<CreatureObject*>();
+				Reference<CreatureObject*> play = group->getGroupMember(i);
 
 				play->sendSystemMessage("@group:disbanded");
 			}
@@ -468,11 +450,7 @@ void GroupManager::kickFromGroup(ManagedReference<GroupObject*> group, CreatureO
 			memberToKick->info("kicking from group");
 		}
 
-		group->unlock();
-
 	} catch (...) {
-		group->unlock();
-
 		player->wlock();
 
 		throw;
@@ -480,16 +458,19 @@ void GroupManager::kickFromGroup(ManagedReference<GroupObject*> group, CreatureO
 
 	if (!disbanded) {
 		try {
-			memberToKick->wlock();
+			Locker mlocker(memberToKick);
 
 			if (memberToKick->isPlayerCreature()) {
-				CreatureObject* pl = cast<CreatureObject*>( memberToKick);
-				ManagedReference<ChatRoom*> groupChannel = group->getGroupChannel();
-				groupChannel->removePlayer(pl, false);
-				groupChannel->sendDestroyTo(pl);
+				ManagedReference<ChatRoom*> groupChat = group->getChatRoom();
+				if(groupChat != NULL) {
+					Locker clocker(groupChat, memberToKick);
+					groupChat->removePlayer(memberToKick);
+					groupChat->sendDestroyTo(memberToKick);
 
-				ManagedReference<ChatRoom*> room = groupChannel->getParent();
-				room->sendDestroyTo(pl);
+					ManagedReference<ChatRoom*> parentRoom = groupChat->getParent();
+					if (parentRoom != NULL)
+						parentRoom->sendDestroyTo(memberToKick);
+				}
 			}
 
 			memberToKick->updateGroup(NULL);
@@ -497,12 +478,8 @@ void GroupManager::kickFromGroup(ManagedReference<GroupObject*> group, CreatureO
 			if (memberToKick->isPlayerCreature())
 				group->sendDestroyTo(memberToKick);
 
-			memberToKick->unlock();
 		} catch (...) {
-			memberToKick->unlock();
-
 			player->wlock();
-
 			throw;
 		}
 	}
@@ -543,14 +520,15 @@ void GroupManager::makeLeader(GroupObject* group, CreatureObject* player, Creatu
 				firstNameLeader= playerLeader->getFirstName();
 		}
 
-		StringBuffer message;
-		message << firstNameLeader << " is now the group leader.\n";
+		StringIdChatParameter message;
+		message.setStringId("group", "new_leader"); // %TU is now the group leader.
+		message.setTU(newLeader->getObjectID());
 
 		for (int i = 0; i < group->getGroupSize(); i++) {
-			Reference<CreatureObject*> play = ( group->getGroupMember(i)).castTo<CreatureObject*>();
+			Reference<CreatureObject*> play = group->getGroupMember(i);
 
 			if (play->isPlayerCreature())
-				play->sendSystemMessage(message.toString());
+				play->sendSystemMessage(message);
 		}
 
 		group->unlock();
@@ -564,3 +542,319 @@ void GroupManager::makeLeader(GroupObject* group, CreatureObject* player, Creatu
 
 	player->wlock();
 }
+
+	void GroupManager::changeLootRule(GroupObject* group, int newRule) {
+		//Pre: group is locked
+		//Post: group is locked
+		if (group == NULL)
+			return;
+
+		if (group->getLootRule() == newRule) //Don't change to the same rule.
+			return;
+
+		//This ensures that the loot rule abbreviations are next to the Leader's name.
+		if (newRule != MASTERLOOTER || group->getMasterLooterID() == 0)
+			group->setMasterLooterID(group->getLeader()->getObjectID());
+
+		String promptText;
+
+		switch (newRule) {
+		case FREEFORALL:
+			promptText = "@group:selected_free4all";
+			break;
+		case MASTERLOOTER:
+			promptText = "@group:selected_master";
+			notifyMasterLooter(group);
+			break;
+		case LOTTERY:
+			promptText = "@group:selected_lotto";
+			break;
+		case RANDOM:
+			promptText = "@group:selected_random";
+			break;
+		default:
+			return; //Invalid Loot Rule Selected. Stop.
+		}
+
+		group->setLootRule(newRule);
+		group->updateLootRules(); //Send update packet to all members.
+
+		//Notify group leader of the new rule with a system message.
+		StringIdChatParameter leaderMsg(promptText);
+		ManagedReference<CreatureObject*> leader = group->getLeader();
+		if (leader != NULL)
+			leader->sendSystemMessage(leaderMsg);
+
+		//Notify group members of the new rule with an SUI box.
+		for (int i = 0; i < group->getGroupSize(); ++i) {
+			ManagedReference<CreatureObject*> member = group->getGroupMember(i);
+
+			if (member == NULL || !member->isPlayerCreature() || member == group->getLeader())
+				continue;
+
+			ManagedReference<PlayerObject*> ghost = member->getPlayerObject();
+			if (ghost == NULL)
+				continue;
+
+			//Close SUI box if already open.
+			ghost->closeSuiWindowType(SuiWindowType::GROUP_LOOT_CHANGED);
+
+			ManagedReference<SuiMessageBox*> sui = new SuiMessageBox(member, SuiWindowType::GROUP_LOOT_CHANGED);
+			sui->setPromptTitle("@group:loot_changed"); //"Loot Type Changed."
+			sui->setPromptText(promptText);
+			sui->setCancelButton(true, "@group:ok");
+			sui->setOkButton(true, "@group:leave_group");
+			sui->setCallback(new GroupLootChangedSuiCallback(member->getZoneServer()));
+
+			ghost->addSuiBox(sui);
+			member->sendMessage(sui->generateMessage());
+		}
+}
+
+	void GroupManager::changeMasterLooter(GroupObject* group, CreatureObject* newLooter, bool enableRule) {
+		//Pre: group is locked
+		//Post: group is locked
+
+		if (group == NULL || newLooter == NULL)
+			return;
+
+		//Cancel if existing ML is the new ML, but allow picking the same ML in order to switch to the ML rule.
+		if (group->getLootRule() == MASTERLOOTER) {
+			if (newLooter->getObjectID() == group->getMasterLooterID())
+				return;
+		}
+
+		//Set the new Master Looter.
+		group->setMasterLooterID(newLooter->getObjectID());
+
+		//If group is not set to Master Looter rule, set it now if applicable.
+		if (enableRule && group->getLootRule() != MASTERLOOTER)
+			changeLootRule(group, MASTERLOOTER);
+		else {
+			group->updateLootRules(); //Sends group delta packet to members.
+			notifyMasterLooter(group);
+		}
+	}
+
+	void GroupManager::sendMasterLooterList(GroupObject* group, CreatureObject* leader) {
+		//Pre: Leader and group are locked
+		//Post: Leader and group are locked
+
+		if (group == NULL || leader == NULL)
+			return;
+
+		ManagedReference<PlayerObject*> ghost = leader->getPlayerObject();
+		if (ghost == NULL)
+			return;
+
+		//Close SUI box if already open.
+		ghost->closeSuiWindowType(SuiWindowType::GROUP_LOOT_PICK_LOOTER);
+
+		//Create Master Looter selection list box.
+		ManagedReference<SuiListBox*> sui = new SuiListBox(leader, SuiWindowType::GROUP_LOOT_PICK_LOOTER);
+		sui->setPromptTitle("@group:master_looter_sui_title"); //"Select Master Looter"
+		sui->setPromptText("@group:choose_master_looter"); //"Choose a Master Looter from the list of available players:"
+		sui->setCancelButton(true, "@ui:cancel");
+		sui->setOkButton(true, "@ui:ok");
+		sui->setCallback(new GroupLootPickLooterSuiCallback(leader->getZoneServer()));
+
+		for (int i = 0; i < group->getGroupSize(); ++i) {
+			ManagedReference<CreatureObject*> member = group->getGroupMember(i);
+				if (member == NULL || !member->isPlayerCreature())
+					continue;
+
+			sui->addMenuItem(member->getFirstName(), member->getObjectID());
+		}
+
+		//Send list box to the group leader.
+		ghost->addSuiBox(sui);
+		leader->sendMessage(sui->generateMessage());
+	}
+
+	void GroupManager::notifyMasterLooter(GroupObject* group) {
+		//Pre: group is locked
+		//Post: group is locked
+
+		if (group == NULL)
+			return;
+
+		StringIdChatParameter notificationLeader("group","new_master_looter"); //"%TU is now the master looter."
+		notificationLeader.setTU(group->getMasterLooterID());
+
+		//Send system message to leader.
+		CreatureObject* groupLeader = group->getLeader();
+		groupLeader->sendSystemMessage(notificationLeader);
+
+		//Send system message to members.
+		if (groupLeader->getObjectID() == group->getMasterLooterID())
+			group->sendSystemMessage(notificationLeader, false);
+		else {
+			StringIdChatParameter notificationOther("group","set_new_master_looter"); //"The Group Leader has set %TT as the master looter."
+			notificationOther.setTT(group->getMasterLooterID());
+			group->sendSystemMessage(notificationOther, false);
+		}
+	}
+
+	void GroupManager::createLottery(GroupObject* group, AiAgent* corpse) {
+		//Pre: Corpse is locked.
+		//Post: Corpse is locked.
+
+		if (group == NULL || corpse == NULL)
+			return;
+
+		//Create new Lottery session.
+		ManagedReference<LootLotterySession*> session = new LootLotterySession(group->getObjectID(), corpse);
+		session->initializeSession();
+		corpse->addActiveSession(SessionFacadeType::LOOTLOTTERY, session);
+
+		//Get the corpse's inventory.
+		SceneObject* lootContainer = corpse->getSlottedObject("inventory");
+		if (lootContainer == NULL)
+			return;
+
+		//Set permissions on all loot items to block theft.
+		for (int i = 0; i < lootContainer->getContainerObjectsSize(); ++i) {
+			SceneObject* lootItem = lootContainer->getContainerObject(i);
+			if (lootItem == NULL)
+				continue;
+
+			ContainerPermissions* itemPerms = lootItem->getContainerPermissions();
+			if (itemPerms == NULL)
+				continue;
+
+			itemPerms->setDenyPermission("player", ContainerPermissions::OPEN);
+			itemPerms->setDenyPermission("player", ContainerPermissions::MOVECONTAINER);
+		}
+
+		Locker clocker(group, corpse);
+
+		//Add group members within range to the Lottery.
+		for (int i = 0; i < group->getGroupSize(); ++i) {
+			ManagedReference<CreatureObject*> member = group->getGroupMember(i);
+			if (member == NULL || !member->isPlayerCreature())
+				continue;
+
+			if (!member->isInRange(corpse, 128.f)) {
+				StringIdChatParameter tooFar("group","too_far_away_for_lottery__");
+				member->sendSystemMessage(tooFar); //"You are too far away from the creature to participate in the lottery."
+				continue;
+			}
+
+			session->addEligiblePlayer(member);
+
+			//Send Lottery window.
+			OpenLotteryWindow* packet = new OpenLotteryWindow(member, lootContainer);
+			member->sendMessage(packet);
+		}
+	}
+
+	void GroupManager::doRandomLoot(GroupObject* group, AiAgent* corpse) {
+		//Pre: Corpse is locked.
+		//Post: Corpse is locked.
+
+		if (group == NULL || corpse == NULL)
+			return;
+
+		Locker glocker(group, corpse);
+
+		//Get the corpse's inventory.
+		SceneObject* lootContainer = corpse->getSlottedObject("inventory");
+		if (lootContainer == NULL)
+			return;
+		int totalItems = lootContainer->getContainerObjectsSize();
+
+		//Determine members eligible to receive loot.
+		Vector<CreatureObject*> candidates;
+		for (int i = 0; i < group->getGroupSize(); ++i) {
+			ManagedReference<CreatureObject*> member = group->getGroupMember(i);
+			if (member == NULL || !member->isPlayerCreature())
+				continue;
+
+			if (!member->isInRange(corpse, 128.f))
+				continue;
+
+			candidates.add(member);
+		}
+
+		glocker.release();
+
+		if (candidates.size() < 1) //Should not happen.
+			return;
+
+		//Loop through each item and attempt to transfer it to a random member.
+		for (int i = totalItems - 1; i >= 0; --i) {
+			//Get the loot item.
+			SceneObject* object = lootContainer->getContainerObject(i);
+				if (object == NULL)
+					continue;
+
+			//Make sure the item is not left on the corpse for another member.
+			ContainerPermissions* itemPerms = object->getContainerPermissions();
+			if (itemPerms == NULL || itemPerms->getOwnerID() != 0)
+				continue;
+
+			//Pick a winner for the item.
+			ManagedReference<CreatureObject*> winner = candidates.get(System::random(candidates.size() - 1));
+			if (winner == NULL)
+				continue;
+
+			Locker wclocker(winner, corpse);
+
+			//Transfer the item to the winner.
+			transferLoot(group, winner, object, true);
+		}
+
+		//Reschedule corpse destruction.
+		ManagedReference<CreatureObject*> leader = group->getLeader();
+		if (leader != NULL) {
+			Locker lclocker(leader, corpse);
+			leader->getZoneServer()->getPlayerManager()->rescheduleCorpseDestruction(leader, corpse);
+			return;
+		}
+	}
+
+	void GroupManager::transferLoot(GroupObject* group, CreatureObject* winner, SceneObject* object, bool stillGrouped) {
+		//Pre: winner and corpse are locked.
+		//Post: winner and corpse are locked.
+
+		if (winner == NULL || object == NULL)
+			return;
+
+		//Set the winner as owner of the item.
+		ContainerPermissions* itemPerms = object->getContainerPermissions();
+		if (itemPerms == NULL)
+			return;
+
+		itemPerms->setOwner(winner->getObjectID());
+
+		//Stop other players being able to take the items if left on the corpse (full inventory).
+		itemPerms->setDenyPermission("player", ContainerPermissions::OPEN);
+		itemPerms->setDenyPermission("player", ContainerPermissions::MOVECONTAINER);
+
+		//Transfer the item to the winner.
+		SceneObject* winnerInventory = winner->getSlottedObject("inventory");
+		if (winnerInventory == NULL)
+			return;
+
+		if (winnerInventory->isContainerFullRecursive()) {
+			StringIdChatParameter full("group", "you_are_full"); //"Your Inventory is full."
+			winner->sendSystemMessage(full);
+			StringIdChatParameter problem("group", "problem_transferring"); //"There was a problem transferring items to your inventory.  You may pick them up from the corpse."
+			winner->sendSystemMessage(problem);
+
+			if (stillGrouped && group != NULL) {
+				StringIdChatParameter unable("group", "unable_to_transfer"); //"Unable to transfer %TO to %TT.  The item is available on the corpse for %TT to retrieve.
+				unable.setTO(object->getObjectID());
+				unable.setTT(winner->getObjectID());
+				group->sendSystemMessage(unable, winner);
+			}
+
+		} else {
+			if (winner->getZoneServer()->getObjectController()->transferObject(object, winnerInventory, -1, true)) {
+				itemPerms->clearDenyPermission("player", ContainerPermissions::OPEN);
+				itemPerms->clearDenyPermission("player", ContainerPermissions::MOVECONTAINER);
+			}
+		}
+
+	}
+

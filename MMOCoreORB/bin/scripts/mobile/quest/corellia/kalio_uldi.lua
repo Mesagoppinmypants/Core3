@@ -1,7 +1,6 @@
 kalio_uldi = Creature:new {
 	objectName = "@mob/creature_names:criminal",
 	socialGroup = "thug",
-	pvpFaction = "thug",
 	faction = "thug",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,7 +22,7 @@ kalio_uldi = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = { "object/mobile/dressed_criminal_thug_rodian_male_01.iff" },

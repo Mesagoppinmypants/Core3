@@ -44,13 +44,15 @@
 CreatureAreaDiseaseCommand = {
         name = "creatureareadisease",
         combatSpam = "attack",
+        animation = "creature_attack_special_1", 
+	animType = GENERATE_INTENSITY,
 	dotEffects = {
 	  DotEffect( 
 		DISEASED, 
 		{ "resistance_disease", "poison_disease_resist" },
-		HEALTH,
+		ATTACK_POOL,
 		true,
-		125,
+		0,
 		50,
 		50, 
 		300

@@ -2,7 +2,6 @@ choster = Creature:new {
 	objectName = "@mob/creature_names:hermit",
 	customName = "Choster (Retired Engineer)",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 4,
 	chanceHit = 0.24,
@@ -24,7 +23,7 @@ choster = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = { "object/mobile/dressed_commoner_naboo_twilek_male_02.iff" },

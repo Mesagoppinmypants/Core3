@@ -1,7 +1,6 @@
 male_plains_tusk_cat = Creature:new {
 	objectName = "@mob/creature_names:male_great_grass_plains_tusk_cat",
 	socialGroup = "tusk_cat",
-	pvpFaction = "",
 	faction = "",
 	level = 16,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ male_plains_tusk_cat = Creature:new {
 	ferocity = 9,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/tusk_cat_hue.iff"},
@@ -33,7 +32,8 @@ male_plains_tusk_cat = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"",""},
+		{"blindattack",""}
 	}
 }
 

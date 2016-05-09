@@ -1,7 +1,6 @@
 female_grassland_slice_hound = Creature:new {
 	objectName = "@mob/creature_names:female_grassland_slice_hound",
 	socialGroup = "slice_hound",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ female_grassland_slice_hound = Creature:new {
 	ferocity = 6,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/female_grassland_slice_hound.iff"},
@@ -33,7 +32,8 @@ female_grassland_slice_hound = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"",""},
+		{"stunattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 infant_brackaset = Creature:new {
 	objectName = "@mob/creature_names:infant_brackaset",
 	socialGroup = "brackaset",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ infant_brackaset = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/infant_brackaset.iff"},

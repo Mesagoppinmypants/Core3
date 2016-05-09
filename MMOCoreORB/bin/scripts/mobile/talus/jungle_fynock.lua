@@ -1,7 +1,6 @@
 jungle_fynock = Creature:new {
 	objectName = "@mob/creature_names:jungle_fynock",
 	socialGroup = "fynock",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ jungle_fynock = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/fynock_hue.iff"},
@@ -33,7 +32,8 @@ jungle_fynock = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"",""},
+		{"posturedownattack",""}
 	}
 }
 

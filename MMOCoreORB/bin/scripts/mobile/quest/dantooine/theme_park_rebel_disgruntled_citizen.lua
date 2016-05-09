@@ -1,7 +1,6 @@
 theme_park_rebel_disgruntled_citizen = Creature:new {
 	objectName = "@mob/creature_names:bounty_hunter",
 	socialGroup = "mercenary",
-	pvpFaction = "",
 	faction = "",
 	level = 24,
 	chanceHit = 0.350000,
@@ -23,7 +22,7 @@ theme_park_rebel_disgruntled_citizen = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_bountyhunter_trainer_01.iff",

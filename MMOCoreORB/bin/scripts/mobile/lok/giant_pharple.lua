@@ -1,7 +1,6 @@
 giant_pharple = Creature:new {
 	objectName = "@mob/creature_names:giant_pharple",
 	socialGroup = "pharple",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,7 +22,7 @@ giant_pharple = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/giant_pharple.iff"},

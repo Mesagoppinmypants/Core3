@@ -1,7 +1,6 @@
 minor_worrt = Creature:new {
 	objectName = "@mob/creature_names:minor_worrt",
 	socialGroup = "worrt",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ minor_worrt = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/worrt_hue.iff"},

@@ -1,7 +1,6 @@
 merlyx_dolv = Creature:new {
 	objectName = "@mob/creature_names:commoner",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 4,
 	chanceHit = 0.24,
@@ -23,7 +22,7 @@ merlyx_dolv = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 	templates = {"object/mobile/dressed_tatooine_valarian_assassin.iff"},
 	lootGroups = {},

@@ -1,7 +1,6 @@
 hostile_thune_mother = Creature:new {
 	objectName = "@mob/creature_names:hostile_thune_mother",
 	socialGroup = "thune",
-	pvpFaction = "",
 	faction = "",
 	level = 30,
 	chanceHit = 0.39,
@@ -24,7 +23,7 @@ hostile_thune_mother = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/thune_hue.iff"},
@@ -33,7 +32,8 @@ hostile_thune_mother = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"",""},
+		{"blindattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 female_snorbal_calf = Creature:new {
 	objectName = "@mob/creature_names:female_snorbal_calf",
 	socialGroup = "snorbal",
-	pvpFaction = "",
 	faction = "",
 	level = 19,
 	chanceHit = 0.33,
@@ -24,7 +23,7 @@ female_snorbal_calf = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/female_snorbal_calf.iff"},
@@ -33,7 +32,7 @@ female_snorbal_calf = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

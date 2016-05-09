@@ -1,7 +1,6 @@
 skreeg_warrior_elite = Creature:new {
 	objectName = "@mob/creature_names:skreeg_warrior_elite",
 	socialGroup = "skreeg",
-	pvpFaction = "",
 	faction = "",
 	level = 30,
 	chanceHit = 0.39,
@@ -23,7 +22,7 @@ skreeg_warrior_elite = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/skreeg_hue.iff"},
@@ -33,8 +32,8 @@ skreeg_warrior_elite = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"dizzyattack",""}
 	}
 }
 

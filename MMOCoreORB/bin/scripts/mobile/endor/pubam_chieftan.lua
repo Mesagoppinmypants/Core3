@@ -1,7 +1,8 @@
 pubam_chieftan = Creature:new {
 	objectName = "@mob/creature_names:pubam_chieftan",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "pubam",
-	pvpFaction = "pubam",
 	faction = "pubam",
 	level = 51,
 	chanceHit = 0.6,
@@ -23,19 +24,19 @@ pubam_chieftan = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
-			"object/mobile/dulok_male.iff",
-			"object/mobile/dulok_female.iff"},
+		"object/mobile/dulok_male.iff",
+		"object/mobile/dulok_female.iff"},
 	lootGroups = {
-		 {
-	        groups = {
+		{
+			groups = {
 				{group = "ewok", chance = 9000000},
 				{group = "wearables_all", chance = 1000000},
 			},
-			lootChance = 2300000
+			lootChance = 2020000
 		}
 	},
 	weapons = {},

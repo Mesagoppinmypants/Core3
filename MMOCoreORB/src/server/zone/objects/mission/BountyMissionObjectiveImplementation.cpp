@@ -17,7 +17,8 @@
 #include "server/zone/objects/mission/MissionObject.h"
 #include "server/zone/objects/mission/MissionObserver.h"
 #include "server/zone/objects/player/PlayerObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
+#include "server/zone/objects/group/GroupObject.h"
 #include "server/chat/ChatManager.h"
 #include "server/zone/objects/mission/bountyhunter/BountyHunterDroid.h"
 #include "server/zone/objects/mission/bountyhunter/events/BountyHunterTargetTask.h"
@@ -45,7 +46,7 @@ void BountyMissionObjectiveImplementation::activate() {
 			startNpcTargetTask();
 		}
 	}
-
+  
 	if (failMission) {
 		getPlayerOwner().get()->sendSystemMessage("@mission/mission_generic:failed"); // Mission failed
 		abort();
@@ -58,6 +59,7 @@ void BountyMissionObjectiveImplementation::deactivate() {
 
 	if (activeDroid != NULL) {
 		if (!activeDroid->isPlayerCreature()) {
+			Locker locker(activeDroid);
 			activeDroid->destroyObjectFromDatabase();
 			activeDroid->destroyObjectFromWorld(true);
 		}
@@ -86,6 +88,7 @@ void BountyMissionObjectiveImplementation::abort() {
 
 	WaypointObject* waypoint = strongRef->getWaypointToMission();
 	if (waypoint != NULL && waypoint->isActive()) {
+		Locker wplocker(waypoint);
 		waypoint->setActive(false);
 	}
 
@@ -106,9 +109,13 @@ void BountyMissionObjectiveImplementation::complete() {
 	cancelAllTasks();
 
 	ManagedReference<MissionObject* > mission = this->mission.get();
+
+	if(mission == NULL)
+		return;
+
 	ManagedReference<CreatureObject*> owner = getPlayerOwner();
 	//Award bountyhunter xp.
-	owner->getZoneServer()->getPlayerManager()->awardExperience(owner, "bountyhunter", mission->getRewardCredits() / 100, true, 1);
+	owner->getZoneServer()->getPlayerManager()->awardExperience(owner, "bountyhunter", mission->getRewardCredits() / 50, true, 1);
 
 	owner->getZoneServer()->getMissionManager()->completePlayerBounty(mission->getTargetObjectId(), owner->getObjectID());
 
@@ -122,7 +129,7 @@ void BountyMissionObjectiveImplementation::spawnTarget(const String& zoneName) {
 
 	ManagedReference<MissionObject* > mission = this->mission.get();
 
-	if ((npcTarget != NULL && npcTarget->isInQuadTree()) || isPlayerTarget()) {
+	if (mission == NULL || (npcTarget != NULL && npcTarget->isInQuadTree()) || isPlayerTarget()) {
 		return;
 	}
 
@@ -163,7 +170,7 @@ int BountyMissionObjectiveImplementation::notifyObserverEvent(MissionObserver* o
 	Locker locker(&syncMutex);
 
 	if (eventType == ObserverEventType::OBJECTDESTRUCTION) {
-		handleNpcTargetKilled(arg1);
+		handleNpcTargetKilled(observable);
 	} else if (eventType == ObserverEventType::DAMAGERECEIVED) {
 		return handleNpcTargetReceivesDamage(arg1);
 	} else if (eventType == ObserverEventType::PLAYERKILLED) {
@@ -182,7 +189,7 @@ void BountyMissionObjectiveImplementation::updateMissionStatus(int informantLeve
 
 	ManagedReference<MissionObject* > mission = this->mission.get();
 
-	if (getPlayerOwner() == NULL) {
+	if (getPlayerOwner() == NULL || mission == NULL) {
 		return;
 	}
 
@@ -218,11 +225,12 @@ void BountyMissionObjectiveImplementation::updateWaypoint() {
 
 	ManagedReference<MissionObject* > mission = this->mission.get();
 
+	if(mission == NULL)
+		return;
+
 	WaypointObject* waypoint = mission->getWaypointToMission();
 
-	if (waypoint == NULL) {
-		waypoint = mission->createWaypoint();
-	}
+	Locker wplocker(waypoint);
 
 	waypoint->setPlanetCRC(getTargetZoneName().hashCode());
 	Vector3 position = getTargetPosition();
@@ -277,9 +285,11 @@ bool BountyMissionObjectiveImplementation::playerHasMissionOfCorrectLevel(int ac
 	Locker locker(&syncMutex);
 
 	ManagedReference<MissionObject* > mission = this->mission.get();
+	if(mission == NULL)
+		return false;
 
 	int levelNeeded = 2;
-	if (action == BountyHunterDroid::CALLDROID || action == BountyHunterDroid::TRANSMITBIOLOGICALSIGNATURE) {
+	if (action == BountyHunterDroid::FINDANDTRACKTARGET) {
 		levelNeeded = 3;
 	}
 
@@ -289,7 +299,12 @@ bool BountyMissionObjectiveImplementation::playerHasMissionOfCorrectLevel(int ac
 Vector3 BountyMissionObjectiveImplementation::getTargetPosition() {
 	Locker locker(&syncMutex);
 
+	Vector3 empty;
+
 	ManagedReference<MissionObject* > mission = this->mission.get();
+
+	if(mission == NULL)
+		return empty;
 
 	if (isPlayerTarget()) {
 		uint64 targetId = mission->getTargetObjectId();
@@ -308,7 +323,6 @@ Vector3 BountyMissionObjectiveImplementation::getTargetPosition() {
 		}
 	}
 
-	Vector3 empty;
 	return empty;
 }
 
@@ -351,6 +365,8 @@ String BountyMissionObjectiveImplementation::getTargetZoneName() {
 	Locker locker(&syncMutex);
 
 	ManagedReference<MissionObject* > mission = this->mission.get();
+	if(mission == NULL)
+		return "dungeon1";
 
 	if (isPlayerTarget()) {
 		uint64 targetId = mission->getTargetObjectId();
@@ -380,7 +396,7 @@ void BountyMissionObjectiveImplementation::addToBountyLock() {
 
 	ManagedReference<PlayerObject*> ghost = getPlayerOwner().get()->getPlayerObject();
 
-	if (ghost == NULL) {
+	if (ghost == NULL || mission == NULL) {
 		return;
 	}
 
@@ -394,7 +410,7 @@ void BountyMissionObjectiveImplementation::removeFromBountyLock(bool immediately
 
 	ManagedReference<PlayerObject*> ghost = getPlayerOwner().get()->getPlayerObject();
 
-	if (ghost == NULL) {
+	if (ghost == NULL || mission == NULL) {
 		return;
 	}
 
@@ -406,6 +422,9 @@ void BountyMissionObjectiveImplementation::removePlayerTargetObservers() {
 
 	ManagedReference<MissionObject* > mission = this->mission.get();
 	ManagedReference<CreatureObject*> owner = getPlayerOwner();
+
+	if(owner == NULL || mission == NULL)
+		return;
 
 	removeObserver(5, ObserverEventType::DEFENDERDROPPED, owner);
 	removeObserver(4, ObserverEventType::DEFENDERADDED, owner);
@@ -460,7 +479,7 @@ void BountyMissionObjectiveImplementation::removeObserver(int observerNumber, un
 }
 
 void BountyMissionObjectiveImplementation::addObserverToCreature(unsigned int observerType, CreatureObject* creature) {
-	ManagedReference<MissionObserver*> observer = new MissionObserver(_this.get());
+	ManagedReference<MissionObserver*> observer = new MissionObserver(_this.getReferenceUnsafeStaticCast());
 	addObserver(observer, true);
 
 	creature->registerObserver(observerType, observer);
@@ -471,6 +490,9 @@ bool BountyMissionObjectiveImplementation::addPlayerTargetObservers() {
 
 	ManagedReference<MissionObject* > mission = this->mission.get();
 	ManagedReference<CreatureObject*> owner = getPlayerOwner();
+
+	if(mission == NULL || owner == NULL)
+		return false;
 
 	ZoneServer* zoneServer = owner->getZoneServer();
 
@@ -502,6 +524,9 @@ void BountyMissionObjectiveImplementation::startNpcTargetTask() {
 	Locker locker(&syncMutex);
 
 	ManagedReference<MissionObject* > mission = this->mission.get();
+	if(mission == NULL)
+		return;
+
 
 	targetTask = new BountyHunterTargetTask(mission, getPlayerOwner().get(), mission->getEndPlanet());
 
@@ -512,32 +537,30 @@ void BountyMissionObjectiveImplementation::startNpcTargetTask() {
 
 bool BountyMissionObjectiveImplementation::isPlayerTarget() {
 	ManagedReference<MissionObject* > mission = this->mission.get();
+	if(mission == NULL)
+		return false;
 
 	return mission->getTargetOptionalTemplate() == "";
 }
 
-void BountyMissionObjectiveImplementation::handleNpcTargetKilled(ManagedObject* arg1) {
-	CreatureObject* attacker = NULL;
-
-	attacker = cast<CreatureObject*>(arg1);
-
-	ManagedReference<MissionObject* > mission = this->mission.get();
+void BountyMissionObjectiveImplementation::handleNpcTargetKilled(Observable* observable) {
+	CreatureObject* target =  cast<CreatureObject*>(observable);
 	ManagedReference<CreatureObject*> owner = getPlayerOwner();
 
-	if (owner == NULL)
+	if (owner == NULL || target == NULL)
 		return;
 
-	if (attacker != NULL && attacker->getObjectID() == owner->getObjectID() && attacker->isPlayerCreature()) {
+	SceneObject* targetInventory = target->getSlottedObject("inventory");
+
+	if (targetInventory == NULL)
+		return;
+
+	uint64 lootOwnerID = targetInventory->getContainerPermissions()->getOwnerID();
+	GroupObject* group = owner->getGroup();
+
+	if (lootOwnerID == owner->getObjectID() || (group != NULL && lootOwnerID == group->getObjectID())) {
 		//Target killed by player, complete mission.
 		complete();
-	} else if (attacker != NULL && attacker->isPet()) {
-		// Target killed by pet
-		ManagedReference<CreatureObject*> petOwner = attacker->getLinkedCreature().get();
-
-		if (petOwner != NULL && petOwner->getObjectID() == owner->getObjectID()) {
-			// Pet is owned by mission owner, complete mission.
-			complete();
-		}
 	} else {
 		//Target killed by other player, fail mission.
 		owner->sendSystemMessage("@mission/mission_generic:failed"); // Mission failed
@@ -554,7 +577,7 @@ int BountyMissionObjectiveImplementation::handleNpcTargetReceivesDamage(ManagedO
 	ManagedReference<MissionObject* > mission = this->mission.get();
 	ManagedReference<CreatureObject*> owner = getPlayerOwner();
 
-	if (owner != NULL && target != NULL && target->getFirstName() == owner->getFirstName() &&
+	if (mission != NULL && owner != NULL && target != NULL && target->getFirstName() == owner->getFirstName() &&
 			target->isPlayerCreature() && objectiveStatus == HASBIOSIGNATURESTATUS) {
 		updateMissionStatus(mission->getMissionLevel());
 
@@ -565,7 +588,7 @@ int BountyMissionObjectiveImplementation::handleNpcTargetReceivesDamage(ManagedO
 			diffString = "medium";
 		}
 
-		target->getZoneServer()->getChatManager()->broadcastMessage(npcTarget, "@mission/mission_bounty_neutral_" + diffString + ":m" + String::valueOf(mission->getMissionNumber()) + "v", 0, 0, 0);
+		target->getZoneServer()->getChatManager()->broadcastChatMessage(npcTarget, "@mission/mission_bounty_neutral_" + diffString + ":m" + String::valueOf(mission->getMissionNumber()) + "v", 0, 0, 0);
 		return 1;
 	}
 
@@ -580,6 +603,9 @@ void BountyMissionObjectiveImplementation::handlePlayerKilled(ManagedObject* arg
 	ManagedReference<MissionObject* > mission = this->mission.get();
 	ManagedReference<CreatureObject*> owner = getPlayerOwner();
 
+	if(mission == NULL)
+		return;
+
 	if (owner != NULL && killer != NULL) {
 		if (owner->getObjectID() == killer->getObjectID()) {
 			//Target killed by player, complete mission.
@@ -587,9 +613,22 @@ void BountyMissionObjectiveImplementation::handlePlayerKilled(ManagedObject* arg
 			if (zoneServer != NULL) {
 				ManagedReference<CreatureObject*> target = zoneServer->getObject(mission->getTargetObjectId()).castTo<CreatureObject*>();
 				if (target != NULL) {
-					VisibilityManager::instance()->clearVisibility(target);
-					owner->getZoneServer()->getPlayerManager()->awardExperience(target, "jedi_general", -30000, true);
+					int minXpLoss = -50000;
+					int maxXpLoss = -500000;
 
+					VisibilityManager::instance()->clearVisibility(target);
+					int xpLoss = mission->getRewardCredits() * -2;
+
+					if (xpLoss > minXpLoss)
+						xpLoss = minXpLoss;
+					else if (xpLoss < maxXpLoss)
+						xpLoss = maxXpLoss;
+
+					owner->getZoneServer()->getPlayerManager()->awardExperience(target, "jedi_general", xpLoss, true);
+					StringIdChatParameter message("base_player","prose_revoke_xp");
+					message.setDI(xpLoss * -1);
+					message.setTO("exp_n", "jedi_general");
+					target->sendSystemMessage(message);
 				}
 			}
 
@@ -612,7 +651,7 @@ void BountyMissionObjectiveImplementation::handleDefenderAdded(ManagedObject* ar
 	ManagedReference<MissionObject* > mission = this->mission.get();
 	ManagedReference<CreatureObject*> owner = getPlayerOwner();
 
-	if (owner != NULL && defender != NULL) {
+	if (mission != NULL && owner != NULL && defender != NULL) {
 		if (owner->getObjectID() == defender->getObjectID() ||
 				mission->getTargetObjectId() == defender->getObjectID()) {
 			addToBountyLock();
@@ -628,7 +667,7 @@ void BountyMissionObjectiveImplementation::handleDefenderDropped(ManagedObject* 
 	ManagedReference<MissionObject* > mission = this->mission.get();
 	ManagedReference<CreatureObject*> owner = getPlayerOwner();
 
-	if (owner != NULL && defender != NULL) {
+	if (owner != NULL && defender != NULL && mission != NULL) {
 		if (owner->getObjectID() == defender->getObjectID() ||
 				mission->getTargetObjectId() == defender->getObjectID()) {
 			removeFromBountyLock(false);

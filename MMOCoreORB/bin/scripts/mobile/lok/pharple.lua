@@ -1,7 +1,6 @@
 pharple = Creature:new {
 	objectName = "@mob/creature_names:pharple",
 	socialGroup = "pharple",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ pharple = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/pharple.iff"},

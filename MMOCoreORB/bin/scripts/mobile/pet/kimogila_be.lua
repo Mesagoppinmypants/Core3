@@ -1,7 +1,6 @@
 kimogila_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_kimogila",
 	socialGroup = "kimogila",
-	pvpFaction = "",
 	faction = "",
 	level = 40,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ kimogila_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kimogila_hue.iff"},

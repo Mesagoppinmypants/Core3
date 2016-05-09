@@ -1,7 +1,8 @@
 strong_mercenary = Creature:new {
 	objectName = "@mob/creature_names:mercenary_strong",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "lok_mercenaries",
-	pvpFaction = "lok_mercenaries",
 	faction = "lok_mercenaries",
 	level = 36,
 	chanceHit = 0.42,
@@ -23,15 +24,15 @@ strong_mercenary = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
-			"object/mobile/dressed_mercenary_strong_hum_m.iff",
-			"object/mobile/dressed_mercenary_strong_hum_f.iff",
-			"object/mobile/dressed_mercenary_strong_rod_m.iff",
-			"object/mobile/dressed_mercenary_strong_tran_m.iff"
-			},
+		"object/mobile/dressed_mercenary_strong_hum_m.iff",
+		"object/mobile/dressed_mercenary_strong_hum_f.iff",
+		"object/mobile/dressed_mercenary_strong_rod_m.iff",
+		"object/mobile/dressed_mercenary_strong_tran_m.iff"
+	},
 	lootGroups = {
 		{
 			groups = {
@@ -47,12 +48,12 @@ strong_mercenary = Creature:new {
 				{group = "clothing_attachments", chance = 300000},
 				{group = "armor_attachments", chance = 300000},
 				{group = "wearables_common", chance = 500000}
-			},
-			lootChance = 3500000
+			}
 		}
 	},
 	weapons = {"rebel_weapons_heavy"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(riflemanmaster,carbineermaster,brawlermaster)
 }
 

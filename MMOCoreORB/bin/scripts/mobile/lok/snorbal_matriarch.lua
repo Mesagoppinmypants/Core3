@@ -1,7 +1,6 @@
 snorbal_matriarch = Creature:new {
 	objectName = "@mob/creature_names:snorbal_matriarch",
 	socialGroup = "snorbal",
-	pvpFaction = "",
 	faction = "",
 	level = 45,
 	chanceHit = 0.47,
@@ -24,7 +23,7 @@ snorbal_matriarch = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/snorbal_matriarch.iff"},
@@ -33,8 +32,8 @@ snorbal_matriarch = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""},
+		{"dizzyattack",""}
 	}
 }
 

@@ -2,7 +2,6 @@ junk_sheani = Creature:new {
 	objectName = "@mob/creature_names:junk_dealer",
 	customName = "Sheani",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ junk_sheani = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/junk_sheani.iff"},

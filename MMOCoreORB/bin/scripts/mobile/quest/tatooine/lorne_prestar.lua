@@ -2,7 +2,6 @@ lorne_prestar = Creature:new {
 	objectName = "@mob/creature_names:mos_taike_guard_old",
 	customName = "Lorne Prestar",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 20,
 	chanceHit = 0.33,
@@ -24,7 +23,7 @@ lorne_prestar = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/mos_taike_guard_old.iff"},

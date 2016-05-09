@@ -1,7 +1,6 @@
 ruwan_tokai = Creature:new {
   objectName = "@mob/creature_names:sergeant_ruwan_tokai",
   socialGroup = "imperial",
-  pvpFaction = "imperial",
   faction = "imperial",
   level = 100,
   chanceHit = 1.000000,
@@ -23,7 +22,7 @@ ruwan_tokai = Creature:new {
   ferocity = 0,
   pvpBitmask = NONE,
   creatureBitmask = NONE,
-  optionsBitmask = 136,
+  optionsBitmask = AIENABLED + CONVERSABLE,
   diet = HERBIVORE,
 
   templates = {"object/mobile/dressed_ruwan_tokai.iff"},

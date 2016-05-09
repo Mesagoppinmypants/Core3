@@ -1,7 +1,6 @@
 eg6_power_droid = Creature:new {
 	objectName = "@mob/creature_names:eg6_power_droid",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 100,
 	chanceHit = 1,
@@ -22,8 +21,8 @@ eg6_power_droid = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = NONE,
-	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	creatureBitmask = NONE,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/eg6_power_droid.iff"},

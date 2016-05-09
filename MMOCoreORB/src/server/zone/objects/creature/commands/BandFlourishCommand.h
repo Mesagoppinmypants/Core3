@@ -1,52 +1,12 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef BANDFLOURISHCOMMAND_H_
 #define BANDFLOURISHCOMMAND_H_
 
 #include "server/zone/objects/scene/SceneObject.h"
-#include "server/zone/objects/creature/DroidObject.h"
+#include "server/zone/objects/creature/ai/DroidObject.h"
 #include "server/zone/objects/tangible/Instrument.h"
 #include "server/zone/objects/player/sessions/EntertainingSession.h"
 #include "server/zone/objects/player/sui/listbox/SuiListBox.h"
@@ -81,7 +41,7 @@ public:
 			}
 
 			if (session->isAcceptingBandFlourishes()) {
-				session->doFlourish(Integer::valueOf(number));
+				session->doFlourish(Integer::valueOf(number), true);
 			}
 
 			return;
@@ -94,13 +54,13 @@ public:
 				}
 				player->sendSystemMessage("@performance:flourish_perform_band_self"); //"Your band performs a flourish."
 				if (player->isPlayingMusic() && leaderInstrument == instrumentType && session->isAcceptingBandFlourishes()) {
-					session->doFlourish(Integer::valueOf(number));
+					session->doFlourish(Integer::valueOf(number), true);
 				}
 
 			} else { //no instrument specified.
 				player->sendSystemMessage("@performance:flourish_perform_band_self"); //"Your band performs a flourish."
 				if (session->isAcceptingBandFlourishes()) {
-					session->doFlourish(Integer::valueOf(number));
+					session->doFlourish(Integer::valueOf(number), true);
 				}
 			}
 
@@ -116,21 +76,19 @@ public:
 			Locker locker(group);
 
 			for (int i = 0; i < group->getGroupSize(); i++) {
-				Reference<CreatureObject*> groupMember = (group->getGroupMember(i)).castTo<CreatureObject*>();
+				Reference<CreatureObject*> groupMember = group->getGroupMember(i);
 
 				Locker clocker(groupMember, group);
 
 				if (groupMember != player && groupMember->isPlayerCreature()) {
-					CreatureObject* member = cast<CreatureObject*>(groupMember.get());
-
-					ManagedReference<Facade*> pfacade = member->getActiveSession(SessionFacadeType::ENTERTAINING);
+					ManagedReference<Facade*> pfacade = groupMember->getActiveSession(SessionFacadeType::ENTERTAINING);
 
 					ManagedReference<EntertainingSession*> psession = dynamic_cast<EntertainingSession*>(pfacade.get());
 
 					if (psession == NULL)
 						continue;
 
-					ManagedReference<Instrument*> pinstrument = psession->getInstrument(member);
+					ManagedReference<Instrument*> pinstrument = psession->getInstrument(groupMember);
 					int playerInstrumentType = pinstrument == NULL ? -1 : pinstrument->getInstrumentType();
 
 					if (psession->isAcceptingBandFlourishes()) {
@@ -138,27 +96,30 @@ public:
 						//Handle dance flourish
 						if (!musicflourish && psession->isDancing()) {
 							params.setStringId("performance", "flourish_perform_band_member");
-							member->sendSystemMessage(params);
-							psession->doFlourish(Integer::valueOf(number));
+							groupMember->sendSystemMessage(params);
+							psession->doFlourish(Integer::valueOf(number), false);
 						}
 
 						//Handle music flourish
 						if (musicflourish && psession->isPlayingMusic()) {
 							if (instrumentType < 1 || (playerInstrumentType == instrumentType)) {
 								params.setStringId("performance", "flourish_perform_band_member");
-								member->sendSystemMessage(params);
-								psession->doFlourish(Integer::valueOf(number));
+								groupMember->sendSystemMessage(params);
+								psession->doFlourish(Integer::valueOf(number), false);
 							}
 						}
 					}
 				}
-				if(groupMember != player && groupMember->isDroidObject()) {
+
+				if (groupMember != player && groupMember->isDroidObject()) {
 					// is the droid playing music?
 					DroidObject* droid = cast<DroidObject*>(groupMember.get());
 					BaseDroidModuleComponent* module = droid->getModule("playback_module");
-					if(module != NULL) {
+
+					if (module != NULL) {
 						DroidPlaybackModuleDataComponent* entertainer = cast<DroidPlaybackModuleDataComponent*>(module);
-						if(entertainer != NULL) {
+
+						if (entertainer != NULL) {
 							if (entertainer->isActive() && musicflourish && (instrumentType == entertainer->getCurrentInstrument() || instrumentType < 1)) {
 								entertainer->doFlourish(Integer::valueOf(number));
 							}
@@ -255,7 +216,7 @@ public:
 		return;
 	}
 
-	void printStatus(CreatureObject* player) {
+	void printStatus(CreatureObject* player) const {
 		ManagedReference<Facade*> facade = player->getActiveSession(SessionFacadeType::ENTERTAINING);
 		ManagedReference<EntertainingSession*> session = dynamic_cast<EntertainingSession*>(facade.get());
 
@@ -267,7 +228,7 @@ public:
 		return;
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
 		if (!checkStateMask(creature))
 			return INVALIDSTATE;

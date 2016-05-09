@@ -1,7 +1,6 @@
 wed_treadwell_crafted_advanced = Creature:new {
 	objectName = "@droid_name:wed_treadwell_crafted_advanced",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 4,
 	chanceHit = 0.24,
@@ -23,7 +22,7 @@ wed_treadwell_crafted_advanced = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

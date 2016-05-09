@@ -1,7 +1,6 @@
 triggo_binz = Creature:new {
 	objectName = "@mob/creature_names:thug",
 	socialGroup = "thug",
-	pvpFaction = "thug",
 	faction = "thug",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,20 +22,19 @@ triggo_binz = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE + AGGRESSIVE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_organized_twilek_male_01.iff"},
 	lootGroups = {
 		{
-	        groups = {
-			{group = "junk", chance = 6000000},
-			{group = "rifles", chance = 1000000},
-			{group = "pistols", chance = 1000000},
-			{group = "melee_weapons", chance = 1000000},
-			{group = "carbines", chance = 1000000},
-		},
-			lootChance = 2600000
+			groups = {
+				{group = "junk", chance = 6000000},
+				{group = "rifles", chance = 1000000},
+				{group = "pistols", chance = 1000000},
+				{group = "melee_weapons", chance = 1000000},
+				{group = "carbines", chance = 1000000},
+			}
 		}
 },
 	weapons = {"pirate_weapons_light"},

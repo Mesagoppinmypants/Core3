@@ -47,6 +47,8 @@ void VendorManager::loadLuaVendors() {
 
 	menu.pop();
 
+	delete lua;
+	lua = NULL;
 }
 
 bool VendorManager::isValidVendorName(const String& name) {
@@ -59,7 +61,7 @@ bool VendorManager::isValidVendorName(const String& name) {
 		return false;
 	}
 
-	return nameManager->validateName(name) == 7;
+	return nameManager->validateVendorName(name) == NameManagerResult::ACCEPTED;
 }
 
 void VendorManager::handleDisplayStatus(CreatureObject* player, TangibleObject* vendor) {
@@ -162,7 +164,8 @@ void VendorManager::handleDisplayStatus(CreatureObject* player, TangibleObject* 
 	else
 		statusBox->addMenuItem("@player_structure:vendor_search_disabled");
 
-	statusBox->addMenuItem("\\#32CD32Vendor Operating Normally\\#.");
+	if (!vendorData->isOnStrike() && !vendorData->isEmpty())
+		statusBox->addMenuItem("\\#32CD32Vendor Operating Normally\\#.");
 
 	player->getPlayerObject()->addSuiBox(statusBox);
 	player->sendMessage(statusBox->generateMessage());
@@ -240,11 +243,7 @@ void VendorManager::promptRenameVendorTo(CreatureObject* player, TangibleObject*
 	player->getPlayerObject()->addSuiBox(input);
 }
 
-void VendorManager::handleDestroyCallback(CreatureObject* player, TangibleObject* vendor) {
-	destroyVendor(vendor);
-}
-
-void VendorManager::destroyVendor(SceneObject* vendor) {
+void VendorManager::destroyVendor(TangibleObject* vendor) {
 	DataObjectComponentReference* data = vendor->getDataObjectComponent();
 	if(data == NULL || data->get() == NULL || !data->get()->isVendorData()) {
 		error("Vendor has no data component");
@@ -272,8 +271,12 @@ void VendorManager::destroyVendor(SceneObject* vendor) {
 		vendor->getZone()->unregisterObjectWithPlanetaryMap(vendor);
 	}
 
+	Locker locker(vendor);
+
 	vendor->destroyObjectFromWorld(true);
 	vendor->destroyObjectFromDatabase(true);
+
+	locker.release();
 
 	auctionsMap->deleteTerminalItems(vendor);
 }
@@ -349,6 +352,8 @@ void VendorManager::handleRegisterVendorCallback(CreatureObject* player, Tangibl
 }
 
 void VendorManager::handleUnregisterVendor(CreatureObject* player, TangibleObject* vendor) {
+	if (vendor == NULL)
+		return;
 
 	Zone* zone = vendor->getZone();
 
@@ -416,9 +421,5 @@ void VendorManager::handleRenameVendor(CreatureObject* player, TangibleObject* v
 		player->sendSystemMessage("@player_structure:vendor_rename_unreg");
 	} else
 		player->sendSystemMessage("@player_structure:vendor_rename");
-
-}
-
-void VendorManager::randomizeCustomization(TangibleObject* vendor) {
 
 }

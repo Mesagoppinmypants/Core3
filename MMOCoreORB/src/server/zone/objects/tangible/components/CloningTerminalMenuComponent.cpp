@@ -18,22 +18,40 @@
 #include "server/zone/objects/building/BuildingObject.h"
 #include "server/zone/objects/player/sui/SuiCallback.h"
 #include "server/zone/objects/player/sui/callbacks/CloningStoreSuiCallback.h"
+#include "server/zone/objects/region/CityRegion.h"
 #include "server/zone/Zone.h"
 #include "server/zone/ZoneServer.h"
 
-void CloningTerminalMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) {
+void CloningTerminalMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 
 	TangibleObjectMenuComponent::fillObjectMenuResponse(sceneObject, menuResponse, player);
 }
 
-int CloningTerminalMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) {
+int CloningTerminalMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) const {
 	if (!sceneObject->isTangibleObject())
 		return 0;
 
 	if (!player->isPlayerCreature())
 		return 0;
 
+	ManagedReference<CityRegion* > region = sceneObject->getCityRegion().get();
+
+	if (region != NULL) {
+		if (region->isBanned(player->getObjectID())) {
+				player->sendSystemMessage("@city/city:banned_services"); // You are banned from using this city's services.
+				return 0;
+		}
+	}
+
 	if(selectedID == 20) {
+
+		ManagedReference<PlayerObject*> ghost = player->getPlayerObject();
+		ManagedReference<BuildingObject*> cloner = sceneObject->getRootParent().get().castTo<BuildingObject*>();
+
+		if (cloner != NULL && (ghost->getCloningFacility() == cloner->getObjectID())) {
+			player->sendSystemMessage("Your clone data is already stored here.");
+			return 0;
+		}
 
 		ZoneServer* server = player->getZoneServer();
 
@@ -46,7 +64,7 @@ int CloningTerminalMenuComponent::handleObjectMenuSelect(SceneObject* sceneObjec
 
 		cloneConfirm->setCallback(new CloningStoreSuiCallback(server));
 
-		player->getPlayerObject()->addSuiBox(cloneConfirm);
+		ghost->addSuiBox(cloneConfirm);
 		player->sendMessage(cloneConfirm->generateMessage());
 	}
 

@@ -1,7 +1,6 @@
 vine_rawl = Creature:new {
 	objectName = "@mob/creature_names:vine_rawl",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 19,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ vine_rawl = Creature:new {
 	ferocity = 3,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/fanned_rawl.iff"},
@@ -33,8 +32,8 @@ vine_rawl = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"creatureareadisease",""},
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""},
+		{"mediumpoison",""}
 	}
 }
 

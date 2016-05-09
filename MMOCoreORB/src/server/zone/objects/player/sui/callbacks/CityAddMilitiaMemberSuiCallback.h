@@ -30,13 +30,13 @@ class CityAddMilitiaMemberSuiCallback : public SuiCallback {
 	ManagedWeakReference<CityRegion*> cityRegion;
 
 public:
-	CityAddMilitiaMemberSuiCallback(ZoneServer* server, CityRegion* city)
-		: SuiCallback(server) {
-
+	CityAddMilitiaMemberSuiCallback(ZoneServer* server, CityRegion* city) : SuiCallback(server) {
 		cityRegion = city;
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		ManagedReference<CityRegion*> city = cityRegion.get();
 
 		if (city == NULL)

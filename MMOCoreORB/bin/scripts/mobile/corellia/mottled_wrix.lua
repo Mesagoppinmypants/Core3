@@ -1,7 +1,6 @@
 mottled_wrix = Creature:new {
 	objectName = "@mob/creature_names:mottled_wrix",
 	socialGroup = "wrix",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ mottled_wrix = Creature:new {
 	ferocity = 4,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/wrix.iff"},
@@ -33,8 +32,8 @@ mottled_wrix = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"mediumdisease",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"mediumdisease",""}
 	}
 }
 

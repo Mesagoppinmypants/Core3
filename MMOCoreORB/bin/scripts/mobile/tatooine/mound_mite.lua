@@ -1,7 +1,6 @@
 mound_mite = Creature:new {
 	objectName = "@mob/creature_names:mound_mite",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ mound_mite = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mound_mite.iff"},
@@ -33,7 +32,8 @@ mound_mite = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"",""},
+		{"stunattack",""}
 	}
 }
 

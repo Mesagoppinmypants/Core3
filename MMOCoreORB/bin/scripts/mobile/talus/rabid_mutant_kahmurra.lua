@@ -1,7 +1,6 @@
 rabid_mutant_kahmurra = Creature:new {
 	objectName = "@mob/creature_names:rabid_mutant_kahmurra",
 	socialGroup = "kahmurra",
-	pvpFaction = "",
 	faction = "",
 	level = 41,
 	chanceHit = 0.44,
@@ -23,7 +22,7 @@ rabid_mutant_kahmurra = Creature:new {
 	ferocity = 6,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mutated_kahmurra.iff"},
@@ -34,7 +33,7 @@ rabid_mutant_kahmurra = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"strongdisease",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

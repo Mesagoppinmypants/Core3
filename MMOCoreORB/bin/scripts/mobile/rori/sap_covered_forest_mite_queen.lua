@@ -1,7 +1,6 @@
 sap_covered_forest_mite_queen = Creature:new {
 	objectName = "@mob/creature_names:sap_covered_forest_mite_queen",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 20,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ sap_covered_forest_mite_queen = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/forest_mite.iff"},
@@ -32,7 +31,7 @@ sap_covered_forest_mite_queen = Creature:new {
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

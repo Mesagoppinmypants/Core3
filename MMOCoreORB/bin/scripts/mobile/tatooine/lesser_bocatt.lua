@@ -1,7 +1,6 @@
 lesser_bocatt = Creature:new {
 	objectName = "@mob/creature_names:lesser_bocatt",
 	socialGroup = "bocatt",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ lesser_bocatt = Creature:new {
 	ferocity = 7,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bocatt_hue.iff"},
@@ -33,8 +32,8 @@ lesser_bocatt = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"},
-		{"stunattack","stunChance=50"}
+		{"posturedownattack",""},
+		{"stunattack",""}
 	}
 }
 

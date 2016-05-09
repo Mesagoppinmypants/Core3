@@ -1,7 +1,6 @@
 vir_vur = Creature:new {
 	objectName = "@mob/creature_names:vir_vur",
 	socialGroup = "vir_vur",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ vir_vur = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD + STALKER,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/vir_vur.iff"},

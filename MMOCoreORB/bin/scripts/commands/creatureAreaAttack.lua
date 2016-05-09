@@ -42,12 +42,13 @@
 --true = 1, false = 0
 
 CreatureAreaAttackCommand = {
-        name = "creatureareattack",
+        name = "creatureareaattack",
 	damageMultiplier = 1.5,
 	speedMultiplier = 1,
 
 	combatSpam = "attack",
-	animationCRC = 0,
+	animation = "creature_attack_special_2", 
+	animType = GENERATE_INTENSITY,
 
 	healthCostMultiplier = 0,
 	actionCostMultiplier = 0,

@@ -51,7 +51,8 @@ PolearmStun1Command = {
 	mindCostMultiplier = 0.5,
 	accuracyBonus = 10,
 
-	animationCRC = hashCode("combo_4a_light"),
+	animation = "combo_4a", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "breathtaker",
 
@@ -62,10 +63,12 @@ PolearmStun1Command = {
 		{ "stun_defense", "resistance_states" }, 
 		{ "jedi_state_defense" }, 
 		100, 
-		100, 
+		0, 
 		30 
 	  )
 	},
+	
+	weaponType = POLEARMWEAPON,
 
 	range = -1
 

@@ -1,7 +1,8 @@
 trainer_1hsword = Creature:new {
 	objectName = "@mob/creature_names:trainer_1hsword",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 100,
 	chanceHit = 0.39,
@@ -23,15 +24,18 @@ trainer_1hsword = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
-	templates = {"object/mobile/dressed_1handsword_trainer_01.iff","object/mobile/dressed_1handsword_trainer_02.iff","object/mobile/dressed_1handsword_trainer_03.iff"},
+	templates = {
+		"object/mobile/dressed_1handsword_trainer_01.iff",
+		"object/mobile/dressed_1handsword_trainer_02.iff",
+		"object/mobile/dressed_1handsword_trainer_03.iff"
+	},
 	lootGroups = {},
 	weapons = {},
 	conversationTemplate = "trainer_1hsword_convotemplate",
-	attacks = {
-	}
+	attacks = {}
 }
 
 CreatureTemplates:addCreatureTemplate(trainer_1hsword, "trainer_1hsword")

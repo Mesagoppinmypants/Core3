@@ -1,7 +1,8 @@
 corsec_trooper = Creature:new {
 	objectName = "@mob/creature_names:corsec_trooper",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "corsec",
-	pvpFaction = "corsec",
 	faction = "corsec",
 	level = 14,
 	chanceHit = 0.3,
@@ -23,7 +24,7 @@ corsec_trooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -31,7 +32,7 @@ corsec_trooper = Creature:new {
 		"object/mobile/dressed_corsec_officer_human_female_01.iff",
 		"object/mobile/dressed_corsec_pilot_human_male_01.iff",
 		"object/mobile/dressed_corsec_pilot_human_female_01.iff"
-		},
+	},
 	lootGroups = {
 		{
 			groups = {
@@ -39,12 +40,12 @@ corsec_trooper = Creature:new {
 				{group = "wearables_common", chance = 2000000},
 				{group = "corsec_weapons", chance = 2500000},
 				{group = "tailor_components", chance = 1500000}
-			},
-			lootChance = 2000000
+			}
 		}
 	},
 	weapons = {"corsec_police_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/military",
 	attacks = merge(brawlermid,marksmanmid)
 }
 

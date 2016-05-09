@@ -1,7 +1,6 @@
 female_mamien = Creature:new {
 	objectName = "@mob/creature_names:mamien_female",
 	socialGroup = "mamien",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.31,
@@ -24,7 +23,7 @@ female_mamien = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mamien_hue.iff"},
@@ -33,7 +32,7 @@ female_mamien = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

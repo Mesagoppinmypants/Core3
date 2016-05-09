@@ -1,7 +1,6 @@
 hermit_spider_guard = Creature:new {
 	objectName = "@mob/creature_names:hermit_spider_guard",
 	socialGroup = "spider",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ hermit_spider_guard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/hermit_spider_hue.iff"},
@@ -32,8 +31,8 @@ hermit_spider_guard = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"mildpoison",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"mildpoison",""}
 	}
 }
 

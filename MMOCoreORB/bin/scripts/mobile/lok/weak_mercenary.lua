@@ -1,7 +1,8 @@
 weak_mercenary = Creature:new {
 	objectName = "@mob/creature_names:mercenary_weak",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "lok_mercenaries",
-	pvpFaction = "lok_mercenaries",
 	faction = "lok_mercenaries",
 	level = 34,
 	chanceHit = 0.41,
@@ -23,17 +24,29 @@ weak_mercenary = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
-			"object/mobile/dressed_mercenary_weak_hum_m.iff",
-			"object/mobile/dressed_mercenary_weak_hum_f.iff",
-			"object/mobile/dressed_mercenary_weak_rod_m.iff"
-			},
-	lootGroups = {},
+		"object/mobile/dressed_mercenary_weak_hum_m.iff",
+		"object/mobile/dressed_mercenary_weak_hum_f.iff",
+		"object/mobile/dressed_mercenary_weak_rod_m.iff"
+	},
+	lootGroups = {
+		{
+			groups = {
+				{group = "junk", chance = 5000000},
+				{group = "rifles", chance = 1000000},
+				{group = "pistols", chance = 1000000},
+				{group = "melee_weapons", chance = 1000000},
+				{group = "carbines", chance = 1000000},
+				{group = "wearables_common", chance = 1000000}
+			}
+		}
+	},
 	weapons = {"rebel_weapons_medium"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(riflemanmaster,carbineermaster,brawlermaster)
 }
 

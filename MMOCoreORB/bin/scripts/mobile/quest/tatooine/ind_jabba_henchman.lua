@@ -1,7 +1,6 @@
 ind_jabba_henchman = Creature:new {
 	objectName = "@mob/creature_names:jabba_henchman",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ ind_jabba_henchman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_jabba_henchman.iff"},

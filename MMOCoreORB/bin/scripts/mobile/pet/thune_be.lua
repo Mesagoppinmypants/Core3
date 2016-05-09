@@ -1,7 +1,6 @@
 thune_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_thune",
 	socialGroup = "thune",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ thune_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/thune_hue.iff"},

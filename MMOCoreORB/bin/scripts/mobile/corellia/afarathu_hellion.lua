@@ -1,7 +1,8 @@
 afarathu_hellion = Creature:new {
 	objectName = "@mob/creature_names:afarathu_cult_hellion",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "afarathu",
-	pvpFaction = "afarathu",
 	faction = "afarathu",
 	level = 15,
 	chanceHit = 0.31,
@@ -23,7 +24,7 @@ afarathu_hellion = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_selonian_f_01.iff",
@@ -56,12 +57,12 @@ afarathu_hellion = Creature:new {
 				{group = "junk", chance = 7000000},
 				{group = "loot_kit_parts", chance = 2000000},
 				{group = "tailor_components", chance = 1000000}
-			},
-			lootChance = 3000000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_medium"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermid,marksmanmid)
 }
 

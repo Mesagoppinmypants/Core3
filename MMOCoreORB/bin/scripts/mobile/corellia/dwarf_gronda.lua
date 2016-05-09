@@ -1,7 +1,6 @@
 dwarf_gronda = Creature:new {
 	objectName = "@mob/creature_names:dwarf_gronda",
 	socialGroup = "gronda",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ dwarf_gronda = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/dwarf_gronda.iff"},
@@ -32,7 +31,7 @@ dwarf_gronda = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

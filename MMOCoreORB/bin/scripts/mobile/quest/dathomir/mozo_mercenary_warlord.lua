@@ -1,7 +1,6 @@
 mozo_mercenary_warlord = Creature:new {
 	objectName = "@mob/creature_names:mercenary_warlord",
 	socialGroup = "lok_mercenaries",
-	pvpFaction = "lok_mercenaries",
 	faction = "lok_mercenaries",
 	level = 44,
 	chanceHit = 0.47,
@@ -23,7 +22,7 @@ mozo_mercenary_warlord = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

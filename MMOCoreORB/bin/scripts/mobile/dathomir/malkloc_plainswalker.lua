@@ -1,7 +1,6 @@
 malkloc_plainswalker = Creature:new {
 	objectName = "@mob/creature_names:malkloc_plainswalker",
 	socialGroup = "malkloc",
-	pvpFaction = "",
 	faction = "",
 	level = 84,
 	chanceHit = 0.7,
@@ -23,7 +22,7 @@ malkloc_plainswalker = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/malkloc_hue.iff"},
@@ -32,8 +31,8 @@ malkloc_plainswalker = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"creatureareaknockdown","knockdownChance=30"},
-		{"dizzyattack","dizzyChance=50"}
+		{"dizzyattack",""},
+		{"creatureareaknockdown",""}
 	}
 }
 

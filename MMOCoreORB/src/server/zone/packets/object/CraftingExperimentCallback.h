@@ -10,7 +10,6 @@
 
 
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/CreatureObject.h"
 #include "ObjectControllerMessageCallback.h"
 #include "server/zone/objects/tangible/tool/CraftingTool.h"
 #include "server/zone/objects/player/sessions/crafting/CraftingSession.h"
@@ -24,9 +23,8 @@ class CraftingExperimentCallback : public MessageCallback {
 	ObjectControllerMessageCallback* objectControllerMain;
 public:
 	CraftingExperimentCallback(ObjectControllerMessageCallback* objectControllerCallback) :
-		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()) {
-
-		objectControllerMain = objectControllerCallback;
+		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()),
+		clientCounter(0), numRowsAttempted(0), objectControllerMain(objectControllerCallback) {
 	}
 
 	void parse(Message* message) {
@@ -52,11 +50,14 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = static_cast<CreatureObject*>(client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
+
+		if (player == NULL)
+			return;
 
 		Reference<CraftingSession*> session = player->getActiveSession(SessionFacadeType::CRAFTING).castTo<CraftingSession*>();
 
-		if(session == NULL) {
+		if (session == NULL) {
 			warning("Trying to experiment when no session exists");
 			return;
 		}
@@ -67,7 +68,7 @@ public:
 			server->getZoneServer()->getPlayerManager()->handleAbortTradeMessage(player);
 		}
 
-		if(session->getState() != 3)
+		if (session->getState() != 3)
 			return;
 
 		Locker locker(session);

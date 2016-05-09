@@ -2,7 +2,6 @@ mand_bunker_foreman = Creature:new {
 	objectName = "",
 	customName = "Japer Witter (a mine Foreman)",
 	socialGroup = "death_watch",
-	pvpFaction = "",
 	faction = "",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ mand_bunker_foreman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_mand_bunker_foreman.iff"},

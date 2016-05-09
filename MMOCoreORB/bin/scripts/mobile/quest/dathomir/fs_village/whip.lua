@@ -1,7 +1,6 @@
 whip = Creature:new {
 	objectName = "@mob/creature_names:whip",
 	socialGroup = "fs_villager",
-	pvpFaction = "fs_villager",
 	faction = "fs_villager",
 	level = 12,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ whip = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_fs_village_whip.iff"},

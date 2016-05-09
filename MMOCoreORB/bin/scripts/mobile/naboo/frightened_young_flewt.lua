@@ -1,7 +1,6 @@
 frightened_young_flewt = Creature:new {
 	objectName = "@mob/creature_names:frightened_young_flewt",
 	socialGroup = "flewt",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ frightened_young_flewt = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/flewt_hue.iff"},

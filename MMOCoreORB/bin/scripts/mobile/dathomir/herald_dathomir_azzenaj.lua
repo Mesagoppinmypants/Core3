@@ -2,7 +2,6 @@ herald_dathomir_azzenaj = Creature:new {
 	objectName = "",
 	customName = "Arch Witch Azzenaj",
 	socialGroup = "mtn_clan",
-	pvpFaction = "mtn_clan",
 	faction = "mtn_clan",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ herald_dathomir_azzenaj = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_herald_dathomir_nsister_cave_azzenaj.iff"},

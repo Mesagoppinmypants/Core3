@@ -2,7 +2,6 @@ quich_marae = Creature:new {
 	objectName = "@npc_name:ishi_tib_base_male",
 	customName = "Quich Marae",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ quich_marae = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/junk_quich.iff"},

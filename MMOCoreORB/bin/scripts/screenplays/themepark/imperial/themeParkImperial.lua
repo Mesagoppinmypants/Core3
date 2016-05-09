@@ -358,8 +358,7 @@ thrawn_missions =
 			rewards =
 			{
 				{ rewardType = "faction", faction = "imperial", amount = 225 },
-				{ rewardType = "loot", lootGroup = "theme_park_reward_imperial_thrawn_helmets"},
-				{ rewardType = "loot", lootGroup = "theme_park_reward_imperial_thrawn_suits"}
+				{ rewardType = "loot_set", lootGroup = "theme_park_reward_imperial_thrawn", setSize = 2}
 			}
 		},
 	}
@@ -449,7 +448,7 @@ veers_missions =
 				{ npcTemplate = "thug", planetName = "naboo", npcName = "a Thug" },
 				{ npcTemplate = "thug", planetName = "naboo", npcName = "a Thug" },
 				{ npcTemplate = "thug", planetName = "naboo", npcName = "a Thug" },
-				{ npcTemplate = "mercenary_aggro", planetName = "naboo", npcName = "a Mercenary" },
+				{ npcTemplate = "theme_park_imperial_mercenary", planetName = "naboo", npcName = "a Mercenary" },
 			},
 			secondarySpawns = {
 			},

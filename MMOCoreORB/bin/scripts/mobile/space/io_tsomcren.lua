@@ -1,7 +1,6 @@
 io_tsomcren = Creature:new {
 	objectName = "@npc_spawner_n:io_tsomcren",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 19,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ io_tsomcren = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_greeter_coronet_shipwright_indifferent.iff"},

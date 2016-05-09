@@ -1,7 +1,6 @@
 verne_calf = Creature:new {
 	objectName = "@mob/creature_names:verne_calf",
 	socialGroup = "verne",
-	pvpFaction = "",
 	faction = "",
 	level = 14,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ verne_calf = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/verne_calf.iff"},

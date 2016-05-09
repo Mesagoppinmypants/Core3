@@ -9,7 +9,7 @@
 #define CHATPERSISTENTMESSAGETOSERVERCALLBACK_H_
 
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 #include "server/chat/ChatManager.h"
 #include "server/zone/managers/city/CityManager.h"
 #include "server/zone/objects/building/BuildingObject.h"
@@ -81,10 +81,10 @@ public:
 		message->parseAscii(recipientName);
 	}
 
-	int sendMail(const String& recipient) {
+	int sendMail(CreatureObject* player, const String& recipient) {
+
 		if (recipient == "guild") {
-			ManagedReference<CreatureObject*> player = cast<CreatureObject*>( client->getPlayer().get().get());
-			ManagedReference<GuildObject*> guild = player->getGuildObject();
+			ManagedReference<GuildObject*> guild = player->getGuildObject().get();
 
 			if (guild == NULL)
 				return 0;
@@ -116,14 +116,12 @@ public:
 
 				CreatureObject* receiverPlayer = cast<CreatureObject*>(receiver.get());
 
-				sendMailToPlayer(receiverPlayer->getFirstName());
+				sendMailToPlayer(player, receiverPlayer->getFirstName());
 			}
 
 			return 0;
 		}
 		else if (recipient == "citizens") {
-
-			ManagedReference<CreatureObject*> player = cast<CreatureObject*>( client->getPlayer().get().get());
 			PlayerObject* ghost = player->getPlayerObject();
 			if (ghost == NULL)
 				return 0;
@@ -138,9 +136,9 @@ public:
 
 			// Player must be the mayor of the city where he resides
 			ManagedReference<CityRegion*> declaredCity = declaredResidence->getCityRegion();
-			if( declaredCity != NULL && declaredCity->isMayor(player->getObjectID()) ){
+			if (declaredCity != NULL && declaredCity->isMayor(player->getObjectID())) {
 
-				Locker cityLocker( declaredCity );
+				Locker cityLocker(declaredCity);
 
 				CitizenList* citizenList = declaredCity->getCitizenList();
 				if (citizenList == NULL)
@@ -164,28 +162,24 @@ public:
 				cityLocker.release();
 
 				for (int i = 0; i < players.size(); ++i) {
-					sendMailToPlayer(players.get(i));
+					sendMailToPlayer(player, players.get(i));
 				}
 
 				return 0;
-			}
-			else{
+			} else {
 				player->sendSystemMessage("@error_message:insufficient_permissions");
 				return 0;
 			}
-
 		}
 
-		return sendMailToPlayer(recipient);
+		return sendMailToPlayer(player, recipient);
 	}
 
-	int sendMailToPlayer(const String& recipientName) {
-		ManagedReference<CreatureObject*> player = cast<CreatureObject*>( client->getPlayer().get().get());
-		
-		if (player == NULL)
-			return 0;
-			
+	int sendMailToPlayer(CreatureObject* player, const String& recipientName) {
 		ChatManager* chatManager = server->getChatManager();
+
+		if (chatManager == NULL)
+			return 0;
 
 		uint64 receiverObjectID = server->getPlayerManager()->getObjectID(recipientName);
 
@@ -194,23 +188,22 @@ public:
 		}
 
 		ManagedReference<SceneObject*> receiver = server->getZoneServer()->getObject(receiverObjectID);
-		ManagedReference<PlayerObject*> sender = NULL;
-		sender = player->getPlayerObject();
+		ManagedReference<PlayerObject*> sender = player->getPlayerObject();
 
 		if (receiver == NULL || !receiver->isPlayerCreature() || sender == NULL)
 			return 0;
 
-		bool privileged = false;
+		bool godMode = false;
 
-		if (sender->isPrivileged())
-			privileged = true;
+		if (sender->hasGodMode())
+			godMode = true;
 
 		Locker locker(receiver);
 
 		CreatureObject* receiverPlayer = cast<CreatureObject*>(receiver.get());
 		ManagedReference<PlayerObject*> ghost = receiverPlayer->getPlayerObject();
 
-		if (ghost == NULL || (ghost->isIgnoring(player->getFirstName().toLowerCase()) && !privileged)) {
+		if (ghost == NULL || (ghost->isIgnoring(player->getFirstName().toLowerCase()) && !godMode)) {
 			StringIdChatParameter err("ui_pm", "recipient_ignored_prose");
 			err.setTT(recipientName);
 			player->sendSystemMessage(err);
@@ -222,7 +215,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = cast<CreatureObject*>( client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;
@@ -240,7 +233,7 @@ public:
 			while (tokenizer.hasMoreTokens()) {
 				tokenizer.getStringToken(receiver);
 
-				sendMail(receiver);
+				sendMail(player, receiver);
 
 				if ((incr++) > 80) {
 					player->error("recipient count exceeded!");
@@ -248,7 +241,7 @@ public:
 				}
 			}
 		} else {
-			result = sendMailToPlayer(recipientName);
+			result = sendMailToPlayer(player, recipientName);
 		}
 
 		ChatOnSendPersistentMessage* cospm = new ChatOnSendPersistentMessage(sequence, result);

@@ -1,7 +1,8 @@
 rebel_commandant = Creature:new {
 	objectName = "@mob/creature_names:corvette_rebel_commandant",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 151,
 	chanceHit = 8.5,
@@ -23,13 +24,13 @@ rebel_commandant = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_general_human_female_02.iff"},
 	lootGroups = {
 		{
-	        groups = {
+			groups = {
 				{group = "color_crystals", chance = 300000},
 				{group = "junk", chance = 4150000},
 				{group = "rifles", chance = 1000000},
@@ -40,13 +41,13 @@ rebel_commandant = Creature:new {
 				{group = "armor_attachments", chance = 300000},
 				{group = "rebel_officer_common", chance = 450000},
 				{group = "wearables_rare", chance = 500000}
-			},
-			lootChance = 3000000
+			}
 		}
 	},
 	weapons = {"rebel_weapons_heavy"},
 	conversationTemplate = "",
-	attacks = merge(commandomaster,marksmanmaster,brawlermaster)
+	reactionStf = "@npc_reaction/military",
+	attacks = merge(commandomaster,marksmanmaster,brawlermaster,pistoleermaster)
 }
 
 CreatureTemplates:addCreatureTemplate(rebel_commandant, "rebel_commandant")

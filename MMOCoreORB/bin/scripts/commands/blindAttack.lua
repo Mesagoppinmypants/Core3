@@ -44,15 +44,16 @@
 BlindAttackCommand = {
 	name = "blindattack",
 	combatSpam = "attack",
-
+	animation = "creature_attack_special_1", 
+	animType = GENERATE_INTENSITY,
 	stateEffects = {
 	  StateEffect( 
 		BLIND_EFFECT, 
 		{}, 
 		{ "blind_defense", "resistance_states" }, 
 		{ "jedi_state_defense" }, 
-		50, 
-		100, 
+		85, 
+		0, 
 		10 
 	  )
 	}

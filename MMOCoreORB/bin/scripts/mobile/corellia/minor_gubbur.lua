@@ -1,7 +1,6 @@
 minor_gubbur = Creature:new {
 	objectName = "@mob/creature_names:minor_gubbur",
 	socialGroup = "gubbur",
-	pvpFaction = "",
 	faction = "",
 	level = 4,
 	chanceHit = 0.24,
@@ -23,7 +22,7 @@ minor_gubbur = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/minor_gubbur.iff"},

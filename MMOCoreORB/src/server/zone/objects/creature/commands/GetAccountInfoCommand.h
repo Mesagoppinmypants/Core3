@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef GETACCOUNTINFOCOMMAND_H_
 #define GETACCOUNTINFOCOMMAND_H_
@@ -58,7 +18,7 @@ public:
 
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
 		if (!checkStateMask(creature))
 			return INVALIDSTATE;
@@ -68,13 +28,8 @@ public:
 
 		Reference<PlayerObject*> admin = creature->getSlottedObject("ghost").castTo<PlayerObject*>();
 
-		if(admin == NULL || !admin->isPrivileged())
-			return INVALIDTARGET;
-
-		if (admin->getAdminLevel() == 13) {
-			creature->sendSystemMessage("QAs cant use this command");
+		if(admin == NULL)
 			return GENERALERROR;
-		}
 
 		ManagedReference<PlayerManagementSession*> session = NULL;
 		ManagedReference<CreatureObject* > targetCreature = NULL;
@@ -111,7 +66,8 @@ public:
 				targetCreature = playerManager->getPlayer(name);
 
 				if (targetCreature != NULL)
-					account = playerManager->getAccount(targetCreature->getPlayerObject()->getAccountID());
+					account = targetCreature->getPlayerObject()->getAccount();
+				
 			} else if(type.toLowerCase() == "-a") {
 
 				while(args.hasMoreTokens()) {
@@ -121,11 +77,11 @@ public:
 					name += " " + token;
 				}
 
-				account = playerManager->getAccount(name);
+				account = AccountManager::getAccount(name, true);
 
 				if(account == NULL) {
 					try {
-						account = playerManager->getAccount(Long::valueOf(name));
+						account = AccountManager::getAccount(Long::valueOf(name), true);
 					} catch(Exception& e) {
 
 					}
@@ -148,9 +104,11 @@ public:
 			return SUCCESS;
 		}
 
+		Locker writeLock(account);
+
 		Time createdTime(account->getTimeCreated());
 
-		CharacterList* characterList = account->getCharacterList();
+		Reference<CharacterList*> characterList = account->getCharacterList();
 
 		ManagedReference<SuiListBox*> box = new SuiListBox(creature, SuiWindowType::ADMIN_ACCOUNTINFO, SuiListBox::HANDLETHREEBUTTON);
 		box->setPromptTitle("Account Info");
@@ -172,10 +130,13 @@ public:
 			header << session->getBanDuration(account->getBanExpires());
 			header << "Reason: "  << account->getBanReason() << endl;
 
-			ManagedReference<Account*> adminAccount = playerManager->getAccount(account->getBanAdmin());
+			ManagedReference<Account*> adminAccount = AccountManager::getAccount(account->getBanAdmin());
 
-			if(adminAccount != NULL)
+			if(adminAccount != NULL) {
+				Locker writeAdminLock(adminAccount);
+
 				header << "Banned by: " << adminAccount->getUsername() << endl;
+			}
 		}
 		
 		
@@ -276,11 +237,15 @@ public:
 		
 		if (!loggedInIp.isEmpty()) {
 			header << endl;
-			header << "Logged in accounts from this ip:" << loggedInIp << endl;
+			header << "Accounts logged in from this ip: " << loggedInIp << endl;
 			SortedVector<uint32> loggedInAccounts = server->getZoneServer()->getPlayerManager()->getOnlineZoneClientMap()->getAccountsLoggedIn(loggedInIp);
 			
 			for (int i = 0; i < loggedInAccounts.size(); ++i){
-				header << "\t" << loggedInAccounts.get(i) << endl;
+				ManagedReference<Account*> otherAccount = AccountManager::getAccount(loggedInAccounts.get(i));
+
+				if (otherAccount != NULL) {
+					header << "\t" << otherAccount->getUsername() << "|" << loggedInAccounts.get(i) << endl;
+				}
 			}
 		}
 		
@@ -291,7 +256,7 @@ public:
 		return SUCCESS;
 	}
 
-	void sendUsage(CreatureObject* creature) {
+	void sendUsage(CreatureObject* creature) const {
 		creature->sendSystemMessage("Usage /getAccountInfo [-a|-b|-c] [args]");
 		creature->sendSystemMessage("	ex: /getAccountInfo -a <accountname>");
 		creature->sendSystemMessage("	ex: /getAccountInfo -b -- Lists bans");

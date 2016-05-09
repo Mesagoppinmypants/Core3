@@ -1,7 +1,6 @@
 jabba_the_hutt = Creature:new {
 	objectName = "@mob/creature_names:jabba_the_hutt",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ jabba_the_hutt = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/jabba_the_hutt.iff"},

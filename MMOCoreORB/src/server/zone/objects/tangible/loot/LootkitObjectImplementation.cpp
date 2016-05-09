@@ -13,12 +13,12 @@
 #include "server/zone/objects/scene/variables/CustomizationVariables.h"
 #include "server/zone/ZoneServer.h"
 #include "server/zone/ZoneProcessServer.h"
-#include "server/zone/templates/tangible/LootkitObjectTemplate.h"
+#include "templates/tangible/LootkitObjectTemplate.h"
 
 void LootkitObjectImplementation::fillAttributeList(AttributeListMessage* alm, CreatureObject* object) {
 	TangibleObjectImplementation::fillAttributeList(alm,object);
 
-	String boolean[] = {"No","Yes"};
+	const String boolean[] = {"No","Yes"};
 
 	StringBuffer componentAttributes;
 	for (int i=0; i<attributes.size();++i) {
@@ -31,15 +31,18 @@ void LootkitObjectImplementation::fillAttributeList(AttributeListMessage* alm, C
 void LootkitObjectImplementation::loadTemplateData(SharedObjectTemplate* templateData) {
 	TangibleObjectImplementation::loadTemplateData(templateData);
 
-	LootkitObjectTemplate* LootkitData = dynamic_cast<LootkitObjectTemplate*>(templateData);
+	LootkitObjectTemplate* lootkitData = dynamic_cast<LootkitObjectTemplate*>(templateData);
 
-	components = LootkitData->getComponents();
-	attributes = LootkitData->getAttributes();
+	if (lootkitData == NULL)
+		return;
 
-	comps = LootkitData->getComps();
-	reward = LootkitData->getReward();
+	components = lootkitData->getComponents();
+	attributes = lootkitData->getAttributes();
 
-	deleteComponents = LootkitData->getDeleteComponents();
+	comps = lootkitData->getComps();
+	reward = lootkitData->getReward();
+
+	deleteComponents = lootkitData->getDeleteComponents();
 }
 
 Reference<CreatureObject*> LootkitObjectImplementation::getPlayer() {
@@ -68,12 +71,10 @@ void LootkitObjectImplementation::addToKit(SceneObject* object) {
 				if (player == NULL)
 					return;
 
-				player->sendSystemMessage("@loot_kit:item_used");
-
-				ManagedReference<SceneObject*> inventory = player->getSlottedObject("inventory");
 				Locker locker(object);
-				Locker iLocker(inventory);
-				//removeObject(object, true);
+
+				player->sendSystemMessage("@loot_kit:item_used"); // The kit accepts the item and quickly disassembles it, leaving nothing recognizable behind.
+
 				object->destroyObjectFromWorld(true);
 
 				if (object->isPersistent())
@@ -104,21 +105,32 @@ void LootkitObjectImplementation::createItem() {
 	ManagedReference<CreatureObject*>  player = getPlayer();
 	if (player != NULL) {
 
-		player->sendSystemMessage("@loot_kit:new_item_created");
-
 		ManagedReference<SceneObject*> inventory = player->getSlottedObject("inventory");
+
+		if (inventory == NULL) {
+			return;
+		}
+
 		ZoneServer* zoneServer = server->getZoneServer();
 
 		ManagedReference<SceneObject*> rewardObject = zoneServer->createObject(reward.get(System::random(reward.size()-1)), 2);
 
-		Locker clocker(inventory, player);
-		rewardObject->sendTo(player, true);
+		if (rewardObject == NULL) {
+			return;
+		}
+
 		if (inventory->transferObject(rewardObject, -1, true)) {
-			//getParent()->removeObject(_this, true);
+			rewardObject->sendTo(player, true);
+			Locker locker(_this.getReferenceUnsafeStaticCast());
 			destroyObjectFromWorld(true);
 
 			if (isPersistent())
 				destroyObjectFromDatabase(true);
+
+			player->sendSystemMessage("@loot_kit:new_item_created"); // A new item was created, but it seems that the kit was destroyed in the process.
+
+		} else {
+			rewardObject->destroyObjectFromDatabase(true);
 		}
 	}
 }
@@ -129,7 +141,7 @@ int LootkitObjectImplementation::canAddObject(SceneObject* object, int containme
 		if (!components.get(object->getServerObjectCRC()) && player != NULL) {
 			ManagedReference<SceneObject*> inventory = player->getSlottedObject("inventory");
 
-			if (inventory->hasFullContainerObjects()) {
+			if (inventory->isContainerFullRecursive()) {
 				errorDescription = "@error_message:inv_full";
 				return 5;
 			}
@@ -139,7 +151,7 @@ int LootkitObjectImplementation::canAddObject(SceneObject* object, int containme
 		} else {
 
 			if (player != NULL) {
-				errorDescription = "@loot_kit:already_contains";
+				errorDescription = "@loot_kit:already_contains"; // That item is already contained by this kit.
 			}
 
 			return 5;
@@ -147,7 +159,7 @@ int LootkitObjectImplementation::canAddObject(SceneObject* object, int containme
 	}
 
 	if (player != NULL) {
-		errorDescription = "@loot_kit:incorrect_item";
+		errorDescription = "@loot_kit:incorrect_item"; // The kit examines the item and rejects it. This kit will only accept items that are compatible with its design. For a list of what items this kit will accept examine it by using its radial menu.
 	}
 
 	return 5;

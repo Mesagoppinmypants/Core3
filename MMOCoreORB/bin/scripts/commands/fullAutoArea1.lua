@@ -51,7 +51,8 @@ FullAutoArea1Command = {
 	mindCostMultiplier = 0.5,
 	accuracyBonus = 25,
 
-	animationCRC = hashCode("fire_defender_posture_change_down"),
+	animation = "fire_area",
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "areashot",
 
@@ -64,8 +65,8 @@ FullAutoArea1Command = {
 		{}, 
 		{ "dizzy_defense", "resistance_states" }, 
 		{ "jedi_state_defense" }, 
-		5, 
-		100, 
+		30, 
+		0, 
 		30 
 	  ),
 	  StateEffect( 
@@ -73,8 +74,8 @@ FullAutoArea1Command = {
 		{}, 
 		{ "blind_defense", "resistance_states" }, 
 		{ "jedi_state_defense" }, 
-		5, 
-		100, 
+		30, 
+		0, 
 		40 
 	  ),
 	  StateEffect( 
@@ -82,13 +83,15 @@ FullAutoArea1Command = {
 		{}, 
 		{ "stun_defense", "resistance_states" }, 
 		{ "jedi_state_defense" }, 
-		5, 
-		100, 
+		30, 
+		0, 
 		30 
 	  )
 	},
 
 	poolsToDamage = RANDOM_ATTRIBUTE,
+	
+	weaponType = CARBINEWEAPON,
 
 	range = -1
 }

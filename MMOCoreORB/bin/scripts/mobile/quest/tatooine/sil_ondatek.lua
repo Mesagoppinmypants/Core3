@@ -1,7 +1,6 @@
 sil_ondatek = Creature:new {
 	objectName = "",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ sil_ondatek = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_jabba_thug.iff"},

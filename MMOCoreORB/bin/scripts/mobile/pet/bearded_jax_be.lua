@@ -1,7 +1,6 @@
 bearded_jax_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_bearded_jax",
 	socialGroup = "jax",
-	pvpFaction = "",
 	faction = "",
 	level = 2,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ bearded_jax_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bearded_jax_hue.iff"},

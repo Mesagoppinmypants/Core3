@@ -1,7 +1,6 @@
 sneeroos = Creature:new {
 	objectName = "",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.250000,
@@ -22,7 +21,7 @@ sneeroos = Creature:new {
 	tamingChance = 0.000000,
 	ferocity = 0,
 	pvpBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	creatureBitmask = NONE,
 	diet = HERBIVORE,
 

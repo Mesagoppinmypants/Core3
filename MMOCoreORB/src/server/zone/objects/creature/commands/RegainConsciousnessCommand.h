@@ -1,112 +1,86 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef REGAINCONSCIOUSNESSCOMMAND_H_
 #define REGAINCONSCIOUSNESSCOMMAND_H_
 
 #include "server/zone/objects/scene/SceneObject.h"
-#include "server/zone/objects/player/events/RegainConsciousnessRegenTask.h"
 #include "server/zone/ZoneServer.h"
 #include "server/zone/managers/player/PlayerManager.h"
-
-class RegainConsciousnessCommand : public QueueCommand {
+#include "server/zone/objects/creature/buffs/PrivateBuff.h"
+class RegainConsciousnessCommand : public JediQueueCommand {
 public:
 
 	RegainConsciousnessCommand(const String& name, ZoneProcessServer* server)
-	: QueueCommand(name, server) {
+	: JediQueueCommand(name, server) {
 
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
-
-		if (!checkStateMask(creature))
-			return INVALIDSTATE;
-
-		if (!checkInvalidLocomotions(creature))
-			return INVALIDLOCOMOTION;
-
-		if (isWearingArmor(creature)) {
-			return NOJEDIARMOR;
-		}
-
-		// Force cost of skill.
-		int forceCost = 1000;
-
-
-		//Check for and deduct Force cost.
-
-		ManagedReference<PlayerObject*> playerObject = creature->getPlayerObject();
-
-
-		if (playerObject->getForcePower() <= forceCost) {
-			creature->sendSystemMessage("@jedi_spam:no_force_power"); //"You do not have enough Force Power to peform that action.
-			return GENERALERROR;
-		}
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
 		// They should be dead...
 		if (creature->isDead()){
-			// Revive user by setting posture to standing.
-			creature->setPosture(CreaturePosture::UPRIGHT);
 
-			// Unsure if this was used in live?
-			 creature->playEffect("clienteffect/pl_force_regain_consciousness_self.cef", "");
+			int res = doCommonJediSelfChecks(creature);
+			if(res != SUCCESS)
+				return res;
 
-			// Do the 1 minute of grogginess suffering (no actions can be taken.)
-			// TODO: Unsure how to do this.
-
-			playerObject->setForcePower(playerObject->getForcePower() - forceCost);
+			doForceCost(creature);
 
 			// Cut Force Regen in Half for 30 Minutes.
+			ManagedReference<PrivateSkillMultiplierBuff *> regenDebuff = new PrivateSkillMultiplierBuff(creature, STRING_HASHCODE("private_force_regen_debuff"), 60*30, BuffType::JEDI);
+			Locker regenLocker(regenDebuff);
+			regenDebuff->setSkillModifier("private_force_regen_divisor", 2);
+			// TODO: Find potential end message for force regen debuff
 
-			playerObject->setForcePowerRegen(playerObject->getForcePowerRegen() / 2);
 
-			// Jedi experience loss.
+			// Apply grogginess debuff
+			ManagedReference<PrivateBuff *> groggyDebuff = new PrivateBuff(creature, STRING_HASHCODE("private_groggy_debuff"), 60, BuffType::JEDI);
+			Locker groggyLocker(groggyDebuff);
+
+			for(int i=0; i<CreatureAttribute::ARRAYSIZE; i++)
+				groggyDebuff->setAttributeModifier(i, -100);
+			// TODO: Find potential end message for groggy debuff
+
+			// Add buffs to creature
+			creature->addBuff(groggyDebuff);
+			creature->addBuff(regenDebuff);
+
+			ManagedReference<PlayerObject*> playerObject = creature->getPlayerObject();
+
+			//close clone window
+			playerObject->removeSuiBoxType(SuiWindowType::CLONE_REQUEST);
+
+			//send hard coded buff messages
+			creature->sendSystemMessage("Your grogginess will expire in 60.0 seconds.");
+			creature->sendSystemMessage("Your force regeneration rate has been temporarily reduced due to your near death experience.");
+
+			// Jedi XP Loss
 			PlayerManager* playerManager = server->getZoneServer()->getPlayerManager();
 			playerManager->awardExperience(creature, "jedi_general", -50000, true);
 
-			Reference<RegainConsciousnessRegenTask*> rcTask = new RegainConsciousnessRegenTask(creature, playerObject);
-			creature->addPendingTask("regainConsciousnessRegenTask", rcTask, (1800 * 1000));
+			StringIdChatParameter message("base_player","prose_revoke_xp");
+			message.setDI(-50000);
+			message.setTO("exp_n", "jedi_general");
+			creature->sendSystemMessage(message);
+
+			// Revive user by setting posture to standing.
+
+			creature->setPosture(CreaturePosture::UPRIGHT);
+
+			if(creature->getHAM(CreatureAttribute::HEALTH) <= 0) {
+				creature->setHAM(CreatureAttribute::HEALTH, 500, true);
+			}
+
+			if(creature->getHAM(CreatureAttribute::ACTION) <= 0) {
+				creature->setHAM(CreatureAttribute::ACTION, 500, true);
+			}
+
+			if(creature->getHAM(CreatureAttribute::MIND) <= 0) {
+				creature->setHAM(CreatureAttribute::MIND, 500, true);
+			}
+
 
 			return SUCCESS;
 		}

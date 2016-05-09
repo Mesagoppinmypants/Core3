@@ -1,7 +1,6 @@
 tortur_bull = Creature:new {
 	objectName = "@mob/creature_names:tortur_bull",
 	socialGroup = "tortur",
-	pvpFaction = "",
 	faction = "",
 	level = 25,
 	chanceHit = 0.36,
@@ -23,7 +22,7 @@ tortur_bull = Creature:new {
 	ferocity = 10,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/meager_tortur.iff"},
@@ -32,8 +31,8 @@ tortur_bull = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"knockdownattack","knockdownChance=50"}
+		{"knockdownattack",""},
+		{"blindattack",""}
 	}
 }
 

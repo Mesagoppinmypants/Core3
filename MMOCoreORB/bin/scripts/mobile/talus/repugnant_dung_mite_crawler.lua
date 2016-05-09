@@ -1,7 +1,6 @@
 repugnant_dung_mite_crawler = Creature:new {
 	objectName = "@mob/creature_names:dung_mite_repugnant_crawler",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,7 +22,7 @@ repugnant_dung_mite_crawler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/dung_mite.iff"},
@@ -33,7 +32,7 @@ repugnant_dung_mite_crawler = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"}
+		{"dizzyattack",""}
 	}
 }
 

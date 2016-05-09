@@ -10,7 +10,7 @@
 
 #include "engine/engine.h"
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/NonPlayerCreatureObject.h"
+#include "server/zone/objects/creature/ai/NonPlayerCreatureObject.h"
 #include "server/zone/objects/creature/VehicleObject.h"
 #include "server/zone/objects/tangible/weapon/WeaponObject.h"
 #include "server/zone/objects/tangible/wearables/ArmorObject.h"
@@ -31,13 +31,6 @@ public:
 	const static int REFLECT = 0x08;
 	const static int REFLECT_TO_TARGET = 0x09;
 
-	// hit locations (for serverside armor checks)
-	const static uint8 NOLOCATION = 0x00;
-	const static uint8 CHEST = 0x01;
-	const static uint8 ARMS = 0x02;
-	const static uint8 LEGS = 0x04;
-	const static uint8 HEAD = 0x08;
-
 	// trails bitmask
 	const static int NOTRAIL = 0x00;
 	const static int LEFTFOOTTRAIL = 0x01;
@@ -47,35 +40,38 @@ public:
 	const static int WEAPONTRAIL = 0x10;
 	const static int DEFAULTTRAIL = 0xFF;
 
+	const static int NONE = 0;
 	const static int HEALTH = 1;
 	const static int ACTION = 2;
 	const static int MIND = 4;
 	const static int RANDOM = 8;
 
-	const static int MELEEWEAPON = 0x1;
-	const static int RANGEDWEAPON = 0x2;
-	const static int THROWNWEAPON = 0x4;
-	const static int HEAVYWEAPON = 0x8;;
-	const static int MINE = 0x10;
-	const static int SPECIALHEAVYWEAPON = 0x20;
-	const static int ONEHANDMELEEWEAPON = 0x40;
-	const static int TWOHANDMELEEWEAPON = 0x80;
-	const static int POLEARM = 0x100;
-	const static int PISTOL = 0x200;
-	const static int CARBINE = 0x400;
-	const static int RIFLE = 0x800;
-	const static int GRENADE = 0x1000;
-	const static int LIGHTNINGRIFLE = 0x2000;
+	// hitLocations
+	enum HitLocations { HIT_NONE, HIT_BODY, HIT_LARM, HIT_RARM, HIT_LLEG, HIT_RLEG, HIT_HEAD };
 
-	// does not need to be bitmasked, these are just used so we know if we use a weapon or not in a command (not a bool for extensibility)
-	const static int WEAPONATTACK = 0x0;
-	const static int FORCEATTACK = 0x1;
+	//Mitigation types
+	const static int PSG = 0x1;
+	const static int FORCESHIELD = 0x02;
+	const static int FORCEFEEDBACK = 0x03;
+	const static int FORCEABSORB = 0x04;
+	const static int FORCEARMOR = 0x5;
+	const static int ARMOR = 0x6;
+	const static int FOOD = 0x7;
+
+
+
+	Vector<uint32> defaultMeleeAttacks;
+	Vector<uint32> defaultRangedAttacks;
+
+private:
+	void initializeDefaultAttacks();
 
 public:
 	CombatManager() {
 		setLoggingName("CombatManager");
 		setGlobalLogging(false);
 		setLogging(false);
+		initializeDefaultAttacks();
 	}
 
 	/**
@@ -116,8 +112,9 @@ public:
 	 * @return returns -1 on failure to start combat or damage on succesfull combat
 	 */
 	int doCombatAction(TangibleObject* attacker, WeaponObject* weapon, TangibleObject* defenderObject, CombatQueueCommand* command);
-	int doCombatAction(CreatureObject* attacker, WeaponObject* weapon, TangibleObject* defenderObject, CombatQueueCommand* command);
 	int doCombatAction(CreatureObject* attacker, WeaponObject* weapon, TangibleObject* defenderObject, const CreatureAttackData& data);
+
+	Reference<SortedVector<ManagedReference<TangibleObject*> >* > getAreaTargets(TangibleObject* attacker, WeaponObject* weapon, TangibleObject* defenderObject, const CreatureAttackData& data);
 
 	/**
 	 * Requests duel
@@ -154,30 +151,27 @@ public:
 	 */
 	void declineDuel(CreatureObject* player, CreatureObject* targetPlayer);
 
+	bool areInDuel(CreatureObject* player1, CreatureObject* player2);
+
 	float calculateWeaponAttackSpeed(CreatureObject* attacker, WeaponObject* weapon, float skillSpeedRatio);
 
-	void broadcastCombatSpam(TangibleObject* attacker, TangibleObject* defender, TangibleObject* weapon, uint32 damage, const String& stringid);
-	void broadcastCombatAction(CreatureObject* attacker, TangibleObject* defenderObject, WeaponObject* weapon, const CreatureAttackData& data, uint8 hit);
+	void sendMitigationCombatSpam(CreatureObject* defender, TangibleObject* item, uint32 damage, int type);
+	void broadcastCombatSpam(TangibleObject* attacker, TangibleObject* defender, TangibleObject* item, int damage, const String& file, const String& stringName, byte color);
 
-	float hitChanceEquation(float attackerAccuracy, float accuracyBonus, float targetDefense);
+	void broadcastCombatAction(CreatureObject* attacker, TangibleObject* defenderObject, WeaponObject* weapon, const CreatureAttackData& data, int damage, uint8 hit, uint8 hitLocation);
+
+	float hitChanceEquation(float attackerAccuracy, float attackerRoll, float targetDefense, float defenderRoll);
 	float doDroidDetonation(CreatureObject* droid, CreatureObject* defender, float damage);
 	//all the combat math will go here
 protected:
 
-	const static uint32 defaultAttacks[9];
-
-
-
 	int doTargetCombatAction(CreatureObject* attacker, WeaponObject* weapon, CreatureObject* defenderObject, const CreatureAttackData& data);
-	int doAreaCombatAction(TangibleObject* attacker, WeaponObject* weapon, TangibleObject* defenderObject, const CreatureAttackData& data);
-	int doAreaCombatAction(CreatureObject* attacker, WeaponObject* weapon, TangibleObject* defenderObject, const CreatureAttackData& data);
 	int doTargetCombatAction(CreatureObject* attacker, WeaponObject* weapon, TangibleObject* defenderObject, const CreatureAttackData& data);
-	void applyDots(CreatureObject* attacker, CreatureObject* defender, const CreatureAttackData& data, int appliedDamage);
+	void applyDots(CreatureObject* attacker, CreatureObject* defender, const CreatureAttackData& data, int appliedDamage, int unmitDamage, int poolsToDamage);
 	void applyWeaponDots(CreatureObject* attacker, CreatureObject* defender, WeaponObject* weapon);
+	uint8 getPoolForDot(uint64 dotType, int poolsToDamage);
 
 	float getWeaponRangeModifier(float currentRange, WeaponObject* weapon);
-
-	uint32 getDefaultAttackAnimation(CreatureObject* creature);
 
 	/**
 	 * @returns 0 - hit, 1 - block, 2 - dodge, 3 - counter-attack, 4 - miss
@@ -187,41 +181,41 @@ protected:
 	int calculatePostureModifier(CreatureObject* creature, WeaponObject* weapon);
 	int calculateTargetPostureModifier(WeaponObject* weapon, CreatureObject* targetCreature);
 
-	int getAttackerAccuracyModifier(TangibleObject* attacker, WeaponObject* weapon);
+	int getAttackerAccuracyModifier(TangibleObject* attacker, CreatureObject* defender, WeaponObject* weapon);
 	int getAttackerAccuracyBonus(CreatureObject* attacker, WeaponObject* weapon);
-	int getDefenderDefenseModifier(CreatureObject* defender, WeaponObject* weapon);
+	int getDefenderDefenseModifier(CreatureObject* defender, WeaponObject* weapon, TangibleObject* attacker);
 	int getDefenderSecondaryDefenseModifier(CreatureObject* defender);
 	float getDefenderToughnessModifier(CreatureObject* defender, int attackType, int damType, float damage);
 	int calculateDamageRange(TangibleObject* attacker, CreatureObject* defender, WeaponObject* weapon);
-	float applyDamageModifiers(CreatureObject* attacker, WeaponObject* weapon, float damage);
+	float applyDamageModifiers(CreatureObject* attacker, WeaponObject* weapon, float damage, const CreatureAttackData& data);
 	int getSpeedModifier(CreatureObject* attacker, WeaponObject* weapon);
 	float calculateDamage(CreatureObject* attacker, WeaponObject* weapon, CreatureObject* defender, const CreatureAttackData& data);
 	float calculateDamage(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, const CreatureAttackData& data);
-	float calculateDamage(CreatureObject* attacker, WeaponObject* weapon, TangibleObject* defender);
+	float calculateDamage(CreatureObject* attacker, WeaponObject* weapon, TangibleObject* defender, const CreatureAttackData& data);
 	bool checkConeAngle(SceneObject* targetCreature, float angle, float creatureVectorX, float creatureVectorY, float directionVectorX, float directionVectorY);
 
-	void doMiss(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage, const String& cbtSpam);
-	void doCounterAttack(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage, const String& cbtSpam);
-	void doBlock(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage, const String& cbtSpam);
-	void doDodge(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage, const String& cbtSpam);
-	void doLightsaberBlock(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage, const String& cbtSpam);
+	void showHitLocationFlyText(CreatureObject *attacker, CreatureObject *defender, uint8 location);
+
+	void doMiss(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage);
+	void doCounterAttack(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage);
+	void doBlock(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage);
+	void doDodge(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage);
+	void doLightsaberBlock(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage);
 
 	int applyDamage(CreatureObject* attacker, WeaponObject* weapon, TangibleObject* defender, int poolsToDamage, const CreatureAttackData& data);
-	int applyDamage(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage, float damageMultiplier, int poolsToDamage, const CreatureAttackData& data);
+	int applyDamage(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, int damage, float damageMultiplier, int poolsToDamage, uint8& hitLocation, const CreatureAttackData& data);
 	void applyStates(CreatureObject* creature, CreatureObject* targetCreature, const CreatureAttackData& data);
 
 	int doTargetCombatAction(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defenderObject, const CreatureAttackData& data);
 	int doTargetCombatAction(TangibleObject* attacker, WeaponObject* weapon, TangibleObject* tano, const CreatureAttackData& data);
-	int getArmorObjectReduction(WeaponObject* weapon, ArmorObject* armor);
-	int getArmorReduction(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, float damage, int poolsToDamage, const CreatureAttackData& data);
-	float getArmorPiercing(TangibleObject* defender, WeaponObject* weapon);
-	int getArmorNpcReduction(AiAgent* defender, WeaponObject* weapon);
-	int getArmorVehicleReduction(VehicleObject* defender, WeaponObject* weapon);
-	int getArmorTurretReduction(CreatureObject* attacker, TangibleObject* defender, WeaponObject* weapon);
+	int getArmorReduction(TangibleObject* attacker, WeaponObject* weapon, CreatureObject* defender, float damage, int hitLocation, const CreatureAttackData& data);
+	float getArmorPiercing(TangibleObject* defender, int armorPiercing);
+	int getArmorObjectReduction(ArmorObject* armor, int damageType);
+	int getArmorNpcReduction(AiAgent* defender, int damageType);
+	int getArmorVehicleReduction(VehicleObject* defender, int damageType);
+	int getArmorTurretReduction(CreatureObject* attacker, TangibleObject* defender, int damageType);
 
-	ArmorObject* getHealthArmor( CreatureObject* defender);
-	ArmorObject* getActionArmor(CreatureObject* defender);
-	ArmorObject* getMindArmor(CreatureObject* defender);
+	ArmorObject* getArmorObject(CreatureObject* defender, uint8 hitLocation);
 	ArmorObject* getPSGArmor(CreatureObject* defender);
 
 	/**

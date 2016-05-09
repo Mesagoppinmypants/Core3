@@ -1,7 +1,6 @@
 blurrg_pup = Creature:new {
 	objectName = "@mob/creature_names:blurrg_pup",
 	socialGroup = "blurrg",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ blurrg_pup = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/blurrg_pup.iff"},

@@ -1,7 +1,6 @@
 imperial_probe_drone = Creature:new {
 	objectName = "@mob/creature_names:imperial_probot_drone",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 14,
 	chanceHit = 0.31,
@@ -23,14 +22,14 @@ imperial_probe_drone = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/probot.iff"},
 	lootGroups = {},
 	conversationTemplate = "",
-	defaultWeapon = "object/weapon/ranged/droid/droid_droideka_ranged.iff",
-	defaultAttack = "creaturerangedattack",
+	weapons = {"droid_probot_ranged"},
+	defaultAttack = "attack",
 
 }
 

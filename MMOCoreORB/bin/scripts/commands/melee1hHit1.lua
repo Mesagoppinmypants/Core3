@@ -51,9 +51,12 @@ Melee1hHit1Command = {
 	mindCostMultiplier = 0.625,
         accuracyBonus = 25,
 
-	animationCRC = hashCode("counter_high_center_light"),
+	animation = "counter_high_center", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "chomai",
+	
+	weaponType = ONEHANDMELEEWEAPON,
 
 	range = -1
 }

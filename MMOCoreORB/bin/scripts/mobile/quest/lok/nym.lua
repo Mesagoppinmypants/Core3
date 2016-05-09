@@ -1,7 +1,6 @@
 nym = Creature:new {
 	objectName = "@mob/creature_names:nym",
 	socialGroup = "nym",
-	pvpFaction = "nym",
 	faction = "nym",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ nym = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/nym.iff"},

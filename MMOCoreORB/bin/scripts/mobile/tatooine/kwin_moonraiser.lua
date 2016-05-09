@@ -2,7 +2,6 @@ kwin_moonraiser = Creature:new {
 	objectName = "",
 	customName = "Kwin Moonraiser",
 	socialGroup = "darklighter",
-	pvpFaction = "",
 	faction = "",
 	level = 99,
 	chanceHit = 0.99,
@@ -24,7 +23,7 @@ kwin_moonraiser = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/darklight_guard.iff"},

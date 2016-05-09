@@ -36,8 +36,9 @@
 
 #include "server/zone/objects/manufactureschematic/ManufactureSchematic.h"
 #include "server/zone/objects/factorycrate/FactoryCrate.h"
+#include "server/zone/objects/tangible/weapon/WeaponObject.h"
 
-#include "server/zone/templates/installation/FactoryObjectTemplate.h"
+#include "templates/installation/FactoryObjectTemplate.h"
 
 void FactoryObjectImplementation::loadTemplateData(SharedObjectTemplate* templateData) {
 	InstallationObjectImplementation::loadTemplateData(templateData);
@@ -47,43 +48,42 @@ void FactoryObjectImplementation::loadTemplateData(SharedObjectTemplate* templat
 	craftingTabsSupported = factory->getCraftingTabsSupported();
 }
 
-void FactoryObjectImplementation::initializeTransientMembers() {
-	InstallationObjectImplementation::initializeTransientMembers();
-
-	/*if(operating)
-		startFactory();*/
+void FactoryObjectImplementation::notifyLoadFromDatabase() {
+	InstallationObjectImplementation::notifyLoadFromDatabase();
 
 	setLoggingName("FactoryObject");
 
+	if (operating) {
+		startFactory();
+	}
 
+	hopperObserver = new FactoryHopperObserver(_this.getReferenceUnsafeStaticCast());
 	ManagedReference<SceneObject*> inputHopper = getSlottedObject("ingredient_hopper");
 	ManagedReference<SceneObject*> outputHopper = getSlottedObject("output_hopper");
 
-	if(inputHopper != NULL && outputHopper != NULL) {
-		hopperObserver = new FactoryHopperObserver(_this.get());
+	if(inputHopper != NULL) {
 		inputHopper->registerObserver(ObserverEventType::OPENCONTAINER, hopperObserver);
 		inputHopper->registerObserver(ObserverEventType::CLOSECONTAINER, hopperObserver);
+	}
 
+	 if (outputHopper != NULL) {
 		outputHopper->registerObserver(ObserverEventType::OPENCONTAINER, hopperObserver);
 		outputHopper->registerObserver(ObserverEventType::CLOSECONTAINER, hopperObserver);
-	} else {
-		createChildObjects();
 	}
 }
 
 void FactoryObjectImplementation::createChildObjects() {
-
 	String ingredientHopperName = "object/tangible/hopper/manufacture_installation_ingredient_hopper_1.iff";
-	ManagedReference<SceneObject*> ingredientHopper = server->getZoneServer()->createObject(ingredientHopperName.hashCode(), 1);
+	ManagedReference<SceneObject*> ingredientHopper = server->getZoneServer()->createObject(ingredientHopperName.hashCode(), getPersistenceLevel());
 
 	transferObject(ingredientHopper, 4);
 
 	String outputHopperName = "object/tangible/hopper/manufacture_installation_output_hopper_1.iff";
-	ManagedReference<SceneObject*> outputHopper = server->getZoneServer()->createObject(outputHopperName.hashCode(), 1);
+	ManagedReference<SceneObject*> outputHopper = server->getZoneServer()->createObject(outputHopperName.hashCode(), getPersistenceLevel());
 
 	transferObject(outputHopper, 4);
 
-	hopperObserver = new FactoryHopperObserver(_this.get());
+	hopperObserver = new FactoryHopperObserver(_this.getReferenceUnsafeStaticCast());
 
 	ingredientHopper->registerObserver(ObserverEventType::OPENCONTAINER, hopperObserver);
 	ingredientHopper->registerObserver(ObserverEventType::CLOSECONTAINER, hopperObserver);
@@ -197,7 +197,7 @@ void FactoryObjectImplementation::sendInsertManuSui(CreatureObject* player){
 
 	schematics->setCallback(new InsertSchematicSuiCallback(server->getZoneServer()));
 
-	schematics->setUsingObject(_this.get());
+	schematics->setUsingObject(_this.getReferenceUnsafeStaticCast());
 	player->getPlayerObject()->addSuiBox(schematics);
 	player->sendMessage(schematics->generateMessage());
 }
@@ -224,7 +224,7 @@ void FactoryObjectImplementation::sendIngredientsNeededSui(CreatureObject* playe
 		blueprintEntry->insertFactoryIngredient(ingredientList);
 	}
 
-	ingredientList->setUsingObject(_this.get());
+	ingredientList->setUsingObject(_this.getReferenceUnsafeStaticCast());
 	player->getPlayerObject()->addSuiBox(ingredientList);
 	player->sendMessage(ingredientList->generateMessage());
 
@@ -294,7 +294,7 @@ void FactoryObjectImplementation::handleInsertFactorySchem(
 	if (schematic == NULL || !schematic->isASubChildOf(player))
 		return;
 
-	/// pre: player and _this.get() are locked
+	/// pre: player and _this.getReferenceUnsafeStaticCast() are locked
 	if (!schematic->isManufactureSchematic()) {
 		StringIdChatParameter message("manf_station", "schematic_not_added"); //Schematic %TT was not added to the station.
 
@@ -335,7 +335,7 @@ void FactoryObjectImplementation::handleInsertFactorySchem(
 
 void FactoryObjectImplementation::handleRemoveFactorySchem(CreatureObject* player) {
 
-	/// pre: player and _this.get() are locked
+	/// pre: player and _this.getReferenceUnsafeStaticCast() are locked
 
 	if(getContainerObjectsSize() == 0) {
 		return;
@@ -344,6 +344,8 @@ void FactoryObjectImplementation::handleRemoveFactorySchem(CreatureObject* playe
 	ManagedReference<SceneObject*> datapad = player->getSlottedObject("datapad");
 
 	ManagedReference<SceneObject*> schematic = getContainerObject(0);
+
+	Locker locker(schematic);
 	schematic->destroyObjectFromWorld(true);
 
 	if(!schematic->isManufactureSchematic())
@@ -408,13 +410,31 @@ bool FactoryObjectImplementation::startFactory() {
 
 	ManagedReference<ManufactureSchematic* > schematic = getContainerObject(0).castTo<ManufactureSchematic*>();
 
+	if (schematic == NULL)
+		return false;
+
+	ManagedReference<TangibleObject*> prototype = schematic->getPrototype();
+
+	if (prototype == NULL)
+		return false;
+
+	if (prototype->isSliced() || prototype->hasAntiDecayKit())
+		return false;
+
+	if (prototype->isWeaponObject()) {
+		WeaponObject* weapon = prototype.castTo<WeaponObject*>();
+
+		if (weapon->hasPowerup())
+			return false;
+	}
+
 	timer = ((int)schematic->getComplexity()) * 2;
 
 	if(!populateSchematicBlueprint(schematic))
 		return false;
 
 	// Add sampletask
-	Reference<CreateFactoryObjectTask* > createFactoryObjectTask = new CreateFactoryObjectTask(_this.get());
+	Reference<CreateFactoryObjectTask* > createFactoryObjectTask = new CreateFactoryObjectTask(_this.getReferenceUnsafeStaticCast());
 	addPendingTask("createFactoryObject", createFactoryObjectTask, timer * 1000);
 
 	operating = true;
@@ -441,7 +461,7 @@ bool FactoryObjectImplementation::populateSchematicBlueprint(ManufactureSchemati
 
 void FactoryObjectImplementation::stopFactory(const String& message, const String& tt, const String& to, const int di) {
 
-	Locker _locker(_this.get());
+	Locker _locker(_this.getReferenceUnsafeStaticCast());
 
 	operating = false;
 	Reference<Task* > pending = getPendingTask("createFactoryObject");
@@ -494,7 +514,7 @@ void FactoryObjectImplementation::stopFactory(String &type, String &displayedNam
 
 void FactoryObjectImplementation::createNewObject() {
 
-	/// Pre: _this.get() locked
+	/// Pre: _this.getReferenceUnsafeStaticCast() locked
 	if (getContainerObjectsSize() == 0) {
 		stopFactory("manf_error", "", "", -1);
 		return;
@@ -526,7 +546,7 @@ void FactoryObjectImplementation::createNewObject() {
 
 		float elapsedTime = (currentTime.getTime() - lastMaintenanceTime.getTime());
 
-		float energyAmount = (elapsedTime / 3600.0) * basePowerRate;
+		float energyAmount = (elapsedTime / 3600.0) * getBasePowerRate();
 		if (energyAmount > surplusPower) {
 			stopFactory("manf_no_power", getDisplayedName(), "", -1);
 			return;
@@ -554,7 +574,7 @@ void FactoryObjectImplementation::createNewObject() {
 	if (crate == NULL)
 		crate = createNewFactoryCrate(prototype);
 	else {
-		Locker locker(crate);
+		Locker clocker(crate, _this.getReferenceUnsafeStaticCast());
 		crate->setUseCount(crate->getUseCount() + 1, false);
 
 		FactoryCrateObjectDeltaMessage3* dfcty3 = new FactoryCrateObjectDeltaMessage3(crate);
@@ -568,7 +588,9 @@ void FactoryObjectImplementation::createNewObject() {
 		return;
 	}
 
-	schematic->manufactureItem(_this.get());
+	Locker clocker(schematic, _this.getReferenceUnsafeStaticCast());
+
+	schematic->manufactureItem(_this.getReferenceUnsafeStaticCast());
 	currentRunCount++;
 
 	if (schematic->getManufactureLimit() < 1) {
@@ -617,13 +639,6 @@ FactoryCrate* FactoryObjectImplementation::locateCrateInOutputHopper(TangibleObj
 
 FactoryCrate* FactoryObjectImplementation::createNewFactoryCrate(TangibleObject* prototype) {
 
-	ManagedReference<FactoryCrate* > crate = prototype->createFactoryCrate(false);
-
-	if (crate == NULL) {
-		stopFactory("manf_error_7", "", "", -1);
-		return NULL;
-	}
-
 	ManagedReference<SceneObject*> outputHopper = getSlottedObject("output_hopper");
 
 	if(outputHopper == NULL) {
@@ -633,6 +648,13 @@ FactoryCrate* FactoryObjectImplementation::createNewFactoryCrate(TangibleObject*
 
 	if(outputHopper->isContainerFull()) {
 		stopFactory("manf_output_hopper_full", getDisplayedName(), "", -1);
+		return NULL;
+	}
+
+	ManagedReference<FactoryCrate* > crate = prototype->createFactoryCrate(false);
+
+	if (crate == NULL) {
+		stopFactory("manf_error_7", "", "", -1);
 		return NULL;
 	}
 

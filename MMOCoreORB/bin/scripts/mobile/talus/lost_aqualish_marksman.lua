@@ -1,7 +1,8 @@
 lost_aqualish_marksman = Creature:new {
 	objectName = "@mob/creature_names:lost_aqualish_marksman",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "lost_aqualish",
-	pvpFaction = "lost_aqualish",
 	faction = "lost_aqualish",
 	level = 15,
 	chanceHit = 0.31,
@@ -23,26 +24,27 @@ lost_aqualish_marksman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/mobile/dressed_lost_aqualish_marksman_female_01.iff",
 		"object/mobile/dressed_lost_aqualish_marksman_male_01.iff"},
 	lootGroups = {
-	    {
+		{
 			groups = {
-				{group = "junk", chance = 3000000},
+				{group = "junk", chance = 2500000},
 				{group = "wearables_common", chance = 2000000},
 				{group = "rifles", chance = 2000000},
 				{group = "tailor_components", chance = 1500000},
-				{group = "loot_kit_parts", chance = 1500000}
-			},
-			lootChance = 2200000
-		}				
+				{group = "loot_kit_parts", chance = 1500000},
+				{group = "color_crystals", chance = 500000}
+			}
+		}
 	},
 	weapons = {"ranged_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/military",
 	attacks = merge(brawlermid,marksmanmid)
 }
 

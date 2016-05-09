@@ -1,52 +1,12 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef HEALDROIDDAMAGECOMMAND_H_
 #define HEALDROIDDAMAGECOMMAND_H_
 
 #include "server/zone/objects/scene/SceneObject.h"
-#include "server/zone/objects/creature/DroidObject.h"
+#include "server/zone/objects/creature/ai/DroidObject.h"
 #include "server/zone/objects/tangible/pharmaceutical/StimPack.h"
 
 class HealDroidDamageCommand : public QueueCommand {
@@ -62,7 +22,7 @@ public:
 		mindCost = 50;
 	}
 
-	void deactivateInjuryTreatment(CreatureObject* creature) {
+	void deactivateInjuryTreatment(CreatureObject* creature) const {
 		int delay = 20;
 
 		StringIdChatParameter message("healing_response", "healing_response_58"); //You are now ready to heal more damage.
@@ -70,33 +30,28 @@ public:
 		creature->addPendingTask("injuryTreatment", task, delay * 1000);
 	}
 
-	void doAnimations(CreatureObject* creature, CreatureObject* droid) {
+	void doAnimations(CreatureObject* creature, CreatureObject* droid) const {
 		droid->playEffect("clienteffect/healing_healdamage.cef", "");
 
 		creature->doAnimation("heal_other");
 	}
 
-	StimPack* findStimPack(CreatureObject* creature) {
+	StimPack* findStimPack(CreatureObject* creature) const {
 		SceneObject* inventory = creature->getSlottedObject("inventory");
 
 		if (inventory != NULL) {
 			for (int i = 0; i < inventory->getContainerObjectsSize(); ++i) {
 				SceneObject* item = inventory->getContainerObject(i);
 
-				if (!item->isTangibleObject())
+				if (!item->isPharmaceuticalObject())
 					continue;
 
-				TangibleObject* tano = cast<TangibleObject*>( item);
+				PharmaceuticalObject* pharma = cast<PharmaceuticalObject*>(item);
 
-				if (tano->isPharmaceuticalObject()) {
-					PharmaceuticalObject* pharma = cast<PharmaceuticalObject*>( tano);
+				if (pharma->isDroidRepairKit()) {
+					StimPack* stimPack = cast<StimPack*>(pharma);
 
-					if (pharma->isDroidRepairKit()) {
-						StimPack* stimPack = cast<StimPack*>( pharma);
-
-						return stimPack;
-					}
-
+					return stimPack;
 				}
 			}
 		}
@@ -104,41 +59,31 @@ public:
 		return NULL;
 	}
 
-	bool canPerformSkill(CreatureObject* creature, CreatureObject* droid, StimPack* stimPack) {
+	bool canPerformSkill(CreatureObject* creature, CreatureObject* droid, StimPack* stimPack, int mindCostNew) const {
 		if (!creature->canTreatInjuries()) {
 			creature->sendSystemMessage("@healing_response:healing_must_wait"); //You must wait before you can do that.
 			return false;
 		}
 
 		if (stimPack == NULL) {
-			creature->sendSystemMessage("No valid droid repair kit found.");
+			creature->sendSystemMessage("@error_message:droid_repair_no_damage_kit"); //No valid droid damage repair kit was found in your inventory.
 			return false;
 		}
 
-		if (creature->isProne() || creature->isMeditating()) {
-			creature->sendSystemMessage("@error_message:wrong_state"); //You cannot complete that action while in your current state.
-			return false;
-		}
-
-		if (creature->isRidingMount()) {
-			creature->sendSystemMessage("@error_message:survey_on_mount"); //You cannot perform that action while mounted on a creature or driving a vehicle.
-			return false;
-		}
-
-		if (creature->getHAM(CreatureAttribute::MIND) < mindCost) {
+		if (creature->getHAM(CreatureAttribute::MIND) < mindCostNew) {
 			creature->sendSystemMessage("@healing_response:not_enough_mind"); //You do not have enough mind to do that.
 			return false;
 		}
 
 		if (!droid->isHealableBy(creature)) {
-			creature->sendSystemMessage("@healing:pvp_no_help"); //It would be unwise to help such a patient.
+			creature->sendSystemMessage("@error_message:droid_repair_opposite_faction"); //It would be unwise to repair a droid such as this.
 			return false;
 		}
 
 		if (!droid->hasDamage(CreatureAttribute::HEALTH) && !droid->hasDamage(CreatureAttribute::ACTION) && !droid->hasDamage(CreatureAttribute::MIND)) {
-			StringBuffer message;
-			message << droid->getDisplayedName() << " has no damage to heal.";
-			creature->sendSystemMessage(message.toString());
+			StringIdChatParameter stringId("error_message", "droid_repair_no_damage"); // It appears %TO has no damage to repair.
+			stringId.setTO(droid->getObjectID());
+			creature->sendSystemMessage(stringId);
 			return false;
 		}
 
@@ -150,12 +95,12 @@ public:
 		return true;
 	}
 
-	void sendHealMessage(CreatureObject* creature, DroidObject* droid, int healthDamage, int actionDamage, int mindDamage) {
+	void sendHealMessage(CreatureObject* creature, DroidObject* droid, int healthDamage, int actionDamage, int mindDamage)  const {
 		if (!creature->isPlayerCreature())
 			return;
 
 		StringIdChatParameter stringId("healing", "droid_repair_damage_self"); // You have repaired %TO and healed a total of %DI point of damage.
-		stringId.setTO(droid);
+		stringId.setTO(droid->getObjectID());
 		stringId.setDI(healthDamage + actionDamage + mindDamage);
 		creature->sendSystemMessage(stringId);
 
@@ -163,24 +108,31 @@ public:
 
 		if (droidOwner != NULL && droidOwner != creature) {
 			StringIdChatParameter stringId("healing", "droid_repair_damage_other"); // %TT has repaired %TO and healed a total of %DI point of damage.
-			stringId.setTT(creature);
+			stringId.setTT(creature->getObjectID());
 			stringId.setDI(healthDamage + actionDamage + mindDamage);
 			droidOwner->sendSystemMessage(stringId);
 		}
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
-		if (!checkStateMask(creature))
-			return INVALIDSTATE;
+		if (!creature->hasSkill("crafting_droidengineer_novice")) {
+			creature->sendSystemMessage("@error_message:droid_repair_not_droid_engineer"); //You must be a droid engineer to use this tool kit.
+			return GENERALERROR;
+		}
 
-		if (!checkInvalidLocomotions(creature))
-			return INVALIDLOCOMOTION;
+		int result = doCommonMedicalCommandChecks(creature);
+
+		if (result != SUCCESS)
+			return result;
 
 		ManagedReference<SceneObject*> object = server->getZoneServer()->getObject(target);
 
-		if (object == NULL || !object->isDroidObject()) {
-			creature->sendSystemMessage("Invalid Target.");
+		if (object == NULL) {
+			creature->sendSystemMessage("@error_message:droid_repair_no_target"); //You must target a droid pet to use these tools.
+			return GENERALERROR;
+		} else if (!object->isDroidObject()) {
+			creature->sendSystemMessage("@error_message:droid_repair_target_not_droid"); //Your target is not able to be repaired with these tools.
 			return GENERALERROR;
 		}
 
@@ -188,12 +140,10 @@ public:
 
 		Locker clocker(droid, creature);
 
-		if (!droid->isPet() || droid->isDead() || droid->isAttackableBy(creature)) {
-			creature->sendSystemMessage("Invalid Target.");
-			return GENERALERROR;
-		}
+		if (!droid->isPet() || droid->isDead() || droid->isAttackableBy(creature))
+			return INVALIDTARGET;
 
-		if (!creature->isInRange(droid, range))
+		if(!checkDistance(creature, droid, range))
 			return TOOFAR;
 
 		uint64 objectID = 0;
@@ -217,7 +167,9 @@ public:
 			}
 		}
 
-		if (!canPerformSkill(creature, droid, stimPack))
+		int mindCostNew = creature->calculateCostAdjustment(CreatureAttribute::FOCUS, mindCost);
+
+		if (!canPerformSkill(creature, droid, stimPack, mindCostNew))
 			return GENERALERROR;
 
 		uint32 stimPower = 0;
@@ -229,12 +181,16 @@ public:
 
 		sendHealMessage(creature, droid, healthHealed, actionHealed, mindHealed);
 
-		creature->inflictDamage(creature, CreatureAttribute::MIND, mindCost, false);
+		creature->inflictDamage(creature, CreatureAttribute::MIND, mindCostNew, false);
+
+		Locker locker(stimPack);
 		stimPack->decreaseUseCount();
 
 		doAnimations(creature, droid);
 
 		deactivateInjuryTreatment(creature);
+
+		checkForTef(creature, droid);
 
 		return SUCCESS;
 	}

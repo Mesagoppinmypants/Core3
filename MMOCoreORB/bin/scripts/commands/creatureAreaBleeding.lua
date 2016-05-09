@@ -44,13 +44,15 @@
 CreatureAreaBleedingCommand = {
         name = "creatureareableeding",
         combatSpam = "attack",
+        animation = "creature_attack_special_2", 
+	animType = GENERATE_INTENSITY,
 	dotEffects = {
 	  DotEffect( 
 		BLEEDING, 
-		{ "resistance_bleeding", "bleed_resist", "combat_bleeding_defense" },
-		HEALTH,
+		{ "resistance_bleeding", "bleed_resist" },
+		ATTACK_POOL,
 		true,
-		125,
+		0,
 		100,
 		50, 
 		120

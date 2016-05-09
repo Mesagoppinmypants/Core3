@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef GENERATECRAFTEDITEMCOMMAND_H_
 #define GENERATECRAFTEDITEMCOMMAND_H_
@@ -60,60 +20,75 @@ public:
 
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
-
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 		if (!checkStateMask(creature))
 			return INVALIDSTATE;
 
 		if (!checkInvalidLocomotions(creature))
 			return INVALIDLOCOMOTION;
 
-		if(!creature->isPlayerCreature())
+		if (!creature->isPlayerCreature())
 			return GENERALERROR;
 
 		ManagedReference<CreatureObject*> player = cast<CreatureObject*>(creature);
 
 		ManagedReference<CraftingManager*> craftingManager = player->getZoneServer()->getCraftingManager();
-		if(craftingManager == NULL) {
+		if (craftingManager == NULL) {
+			return GENERALERROR;
+		}
+
+		ManagedReference<SceneObject*> inventory = creature->getSlottedObject("inventory");
+
+		if (inventory == NULL) {
+			creature->sendSystemMessage("Error locating target inventory");
 			return GENERALERROR;
 		}
 
 		try {
-
 			StringTokenizer tokenizer(arguments.toString());
 
-			if(!tokenizer.hasMoreTokens()) {
-				creature->sendSystemMessage("Usage: /GenerateCraftedItem SERVERSCRIPTPATH [Quantity] [Template Number]");
+			if (!tokenizer.hasMoreTokens()) {
+				creature->sendSystemMessage("Usage: /GenerateCraftedItem SERVERSCRIPTPATH [Quantity] [Quality] [Template Number]");
 				return GENERALERROR;
 			}
 
 			String file;
 			tokenizer.getStringToken(file);
 
+			if (file.indexOf("draft_schematic") == -1)
+				file = "object/draft_schematic/" + file;
+
+			if (file.indexOf(".iff") == -1)
+				file = file + ".iff";
+
 			ManagedReference<DraftSchematic* > draftSchematic =
 					creature->getZoneServer()->createObject(file.hashCode(), 0).castTo<DraftSchematic*>();
 
-			if(draftSchematic == NULL || !draftSchematic->isValidDraftSchematic()) {
+			if (draftSchematic == NULL || !draftSchematic->isValidDraftSchematic()) {
 				creature->sendSystemMessage("File entered not valid, please be sure to use the draft schematics server script path not client path");
 				return GENERALERROR;
 			}
 
 			ManagedReference<ManufactureSchematic* > manuSchematic = ( draftSchematic->createManufactureSchematic()).castTo<ManufactureSchematic*>();
 
-			if(manuSchematic == NULL) {
+			if (manuSchematic == NULL) {
 				creature->sendSystemMessage("Error creating ManufactureSchematic from DraftSchematic");
 				return GENERALERROR;
 			}
 
-			manuSchematic->createChildObjects();
-
 			int quantity = 1;
 
-			if(tokenizer.hasMoreTokens())
+			if (tokenizer.hasMoreTokens())
 				quantity = tokenizer.getIntToken();
 
-			if(quantity == 0)
+			if (quantity == 0)
 				quantity = 1;
+
+			int quality = 0;
+			if (tokenizer.hasMoreTokens())
+				quality = tokenizer.getIntToken();
+
+			quality = MAX(0, quality);
 
 			unsigned int targetTemplate = draftSchematic->getTanoCRC();
 
@@ -137,14 +112,48 @@ public:
 			ManagedReference<TangibleObject *> prototype =  (
 					creature->getZoneServer()->createObject(targetTemplate, 2)).castTo<TangibleObject*>();
 
-			if(prototype == NULL) {
+			if (prototype == NULL) {
 				creature->sendSystemMessage("Unable to create target item, is it implemented yet?");
 				return GENERALERROR;
 			}
+
 			Locker locker(prototype);
-			Locker mlock(manuSchematic);
-			craftingManager->setInitialCraftingValues(prototype,manuSchematic,CraftingManager::GREATSUCCESS);
-			prototype->updateCraftingValues(manuSchematic->getCraftingValues(), true);
+			Locker mlock(manuSchematic, prototype);
+
+			craftingManager->setInitialCraftingValues(prototype, manuSchematic, CraftingManager::GREATSUCCESS);
+
+			Reference<CraftingValues*> craftingValues = manuSchematic->getCraftingValues();
+			craftingValues->setManufactureSchematic(manuSchematic);
+			craftingValues->setPlayer(player);
+
+			int nRows = craftingValues->getVisibleExperimentalPropertyTitleSize();
+
+			prototype->updateCraftingValues(craftingValues, true);
+
+			if (quality > 0) {
+				for (int i = 0; i < nRows; i++) {
+					String title = craftingValues->getVisibleExperimentalPropertyTitle(i);
+					for (int j = 0; j < craftingValues->getExperimentalPropertySubtitleSize(); ++j) {
+						String subtitlesTitle = craftingValues->getExperimentalPropertySubtitlesTitle(j);
+						if (subtitlesTitle == title) {
+							String subtitle = craftingValues->getExperimentalPropertySubtitle(j);
+
+							float maxValue = craftingValues->getMaxValue(subtitle);
+							float minValue = craftingValues->getMinValue(subtitle);
+
+							//float newValue = fabs(maxValue-minValue)*((float)quality/100.f) + MAX(minValue, maxValue);
+							//craftingValues->setCurrentValue(subtitle, newValue);
+
+							craftingValues->setCurrentPercentage(subtitle, (float)quality/100.f, 5.f);
+						}
+					}
+				}
+
+				craftingValues->recalculateValues(true);
+				prototype->updateCraftingValues(craftingValues, true);
+			}
+
+			mlock.release();
 
 			prototype->createChildObjects();
 
@@ -156,29 +165,36 @@ public:
 			customName << prototype->getDisplayedName() <<  " (System Generated)";
 			prototype->setCustomObjectName(customName.toString(), false);
 
-
 			String serial = craftingManager->generateSerial();
 			prototype->setSerialNumber(serial);
 
-			ManagedReference<SceneObject*> inventory = creature->getSlottedObject("inventory");
-
-			if(inventory == NULL) {
-				creature->sendSystemMessage("Error locating target inventory");
-				return GENERALERROR;
-			}
-
 			prototype->updateToDatabase();
 
-			if(quantity > 1) {
-
+			if (quantity > 1) {
 				ManagedReference<FactoryCrate* > crate = prototype->createFactoryCrate(true);
+
+				if (crate == NULL) {
+					prototype->destroyObjectFromDatabase(true);
+					return GENERALERROR;
+				}
+
+				Locker cratelocker(crate);
+
 				crate->setUseCount(quantity);
 
-				inventory->transferObject(crate, -1, true);
+				if (!inventory->transferObject(crate, -1, true)) {
+					crate->destroyObjectFromDatabase(true);
+					return GENERALERROR;
+				}
+
 				crate->sendTo(creature, true);
 
 			} else {
-				inventory->transferObject(prototype, -1, true);
+				if (!inventory->transferObject(prototype, -1, true)) {
+					prototype->destroyObjectFromDatabase(true);
+					return GENERALERROR;
+				}
+
 				prototype->sendTo(creature, true);
 			}
 

@@ -1,7 +1,6 @@
 space_rebel_tier3_beissa = Creature:new {
 	objectName = "@npc_spawner_n:beissa",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ space_rebel_tier3_beissa = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_rebel_tier3_beissa.iff"},

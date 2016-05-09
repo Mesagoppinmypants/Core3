@@ -1,7 +1,6 @@
 trujhazii = Creature:new {
 	objectName = "",
 	socialGroup = "nightsister",
-	pvpFaction = "nightsister",
 	faction = "nightsister",
 	level = 50,
 	chanceHit = 10,
@@ -23,7 +22,7 @@ trujhazii = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_nightsister_stalker.iff"},

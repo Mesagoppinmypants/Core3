@@ -1,7 +1,6 @@
 giant_fynock = Creature:new {
 	objectName = "@mob/creature_names:giant_fynock",
 	socialGroup = "fynock",
-	pvpFaction = "",
 	faction = "",
 	level = 42,
 	chanceHit = 0.44,
@@ -23,7 +22,7 @@ giant_fynock = Creature:new {
 	ferocity = 9,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/fynock_hue.iff"},
@@ -32,8 +31,8 @@ giant_fynock = Creature:new {
 	weapons = {"creature_spit_small_red"},
 	conversationTemplate = "",
 	attacks = {
-		{"creatureareaknockdown","knockdownChance=30"},
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""},
+		{"creatureareaknockdown",""}
 	}
 }
 

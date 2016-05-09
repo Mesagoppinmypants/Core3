@@ -1,7 +1,6 @@
 ancient_graul = Creature:new {
 	objectName = "@mob/creature_names:ancient_graul",
 	socialGroup = "graul",
-	pvpFaction = "",
 	faction = "",
 	level = 50,
 	chanceHit = 0.47,
@@ -23,7 +22,7 @@ ancient_graul = Creature:new {
 	ferocity = 10,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/graul_hue.iff"},
@@ -32,8 +31,8 @@ ancient_graul = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"dizzyattack","dizzyChance=50"}
+		{"dizzyattack",""},
+		{"blindattack",""}
 	}
 }
 

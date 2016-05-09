@@ -11,10 +11,10 @@
 #include "server/zone/objects/scene/components/ObjectMenuComponent.h"
 #include "server/zone/packets/object/ObjectMenuResponse.h"
 #include "server/zone/objects/creature/buffs/Buff.h"
-#include "server/zone/templates/tangible/SkillBuffTemplate.h"
+#include "templates/tangible/SkillBuffTemplate.h"
 #include "server/zone/managers/objectcontroller/ObjectController.h"
 
-void SkillBuffObjectMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) {
+void SkillBuffObjectMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 
 	if(!sceneObject->isTangibleObject())
 		return;
@@ -27,7 +27,7 @@ void SkillBuffObjectMenuComponent::fillObjectMenuResponse(SceneObject* sceneObje
 
 }
 
-int SkillBuffObjectMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) {
+int SkillBuffObjectMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) const {
 
 	if (!sceneObject->isASubChildOf(player))
 		return 0;
@@ -62,6 +62,9 @@ int SkillBuffObjectMenuComponent::handleObjectMenuSelect(SceneObject* sceneObjec
 
 	// Build buff
 	ManagedReference<Buff*> buff = new Buff(player, buffCRC, duration, BuffType::SKILL);
+
+	Locker locker(buff);
+
 	for (int i = 0; i < modifiers->size(); ++i) {
 		String attribute = modifiers->elementAt(i).getKey();
 		float value = modifiers->elementAt(i).getValue();

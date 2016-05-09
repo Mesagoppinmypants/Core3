@@ -14,12 +14,13 @@
 #include "server/zone/managers/weather/WeatherManager.h"
 #include "server/zone/managers/resource/ResourceManager.h"
 #include "server/zone/managers/collision/CollisionManager.h"
+#include "server/zone/managers/gcw/GCWManager.h"
 
 #include "engine/util/iffstream/IffStream.h"
-#include "server/zone/templates/snapshot/WorldSnapshotIff.h"
-#include "server/zone/templates/datatables/DataTableIff.h"
-#include "server/zone/templates/datatables/DataTableRow.h"
-#include "server/zone/templates/datatables/DataTableCell.h"
+#include "templates/snapshot/WorldSnapshotIff.h"
+#include "templates/datatables/DataTableIff.h"
+#include "templates/datatables/DataTableRow.h"
+#include "templates/datatables/DataTableCell.h"
 #include "server/zone/managers/stringid/StringIdManager.h"
 
 #include "server/zone/managers/planet/MapLocationType.h"
@@ -38,12 +39,12 @@
 
 #include "server/zone/objects/area/areashapes/CircularAreaShape.h"
 
-#include "server/conf/ConfigManager.h"
+#include "conf/ConfigManager.h"
 
 #include "PlanetTravelPoint.h"
-#include "server/zone/templates/tangible/SharedStructureObjectTemplate.h"
+#include "templates/tangible/SharedStructureObjectTemplate.h"
 #include "server/zone/managers/structure/StructureManager.h"
-#include "server/zone/objects/terrain/layer/boundaries/BoundaryRectangle.h"
+#include "terrain/layer/boundaries/BoundaryRectangle.h"
 
 ClientPoiDataTable PlanetManagerImplementation::clientPoiDataTable;
 Mutex PlanetManagerImplementation::poiMutex;
@@ -62,29 +63,65 @@ void PlanetManagerImplementation::initialize() {
 	loadLuaConfig();
 	loadTravelFares();
 
-	loadBadgeAreas();
-	loadPerformanceLocations();
-
-	loadStaticTangibleObjects();
-
 	if (zone->getZoneName() == "dathomir") {
-		Reference<ActiveArea*> area = zone->getZoneServer()->createObject(String("object/fs_village_area.iff").hashCode(), 0).castTo<ActiveArea*>();
-		area->setRadius(512.f);
+		Reference<ActiveArea*> area = zone->getZoneServer()->createObject(STRING_HASHCODE("object/fs_village_area.iff"), 0).castTo<ActiveArea*>();
+
+		Locker locker(area);
+		area->setRadius(768.f);
 		area->initializePosition(5306, 0, -4145);
 		zone->transferObject(area, -1, true);
 
-		Reference<ActiveArea*> sarlaccArea = zone->getZoneServer()->createObject(String("object/sarlacc_area.iff").hashCode(), 0).castTo<ActiveArea*>();
-		sarlaccArea->setRadius(50.f);
+		ManagedReference<SceneObject*> scenery = zone->getZoneServer()->createObject(STRING_HASHCODE("object/static/structure/general/fs_village_nobuild_768m.iff"), 0);
+
+		Locker slocker(scenery, area);
+		scenery->initializePosition(5306, zone->getHeight(5306, -4145), -4145);
+		area->attachScenery(scenery);
+
+		slocker.release();
+		locker.release();
+
+		Reference<ActiveArea*> sarlaccArea = zone->getZoneServer()->createObject(STRING_HASHCODE("object/sarlacc_area.iff"), 0).castTo<ActiveArea*>();
+
+		Locker locker2(sarlaccArea);
+
+		sarlaccArea->setRadius(60.f);
 		sarlaccArea->initializePosition(-2085, 0, 3147);
 		zone->transferObject(sarlaccArea, -1, true);
+
+		locker2.release();
+
+		Reference<ActiveArea*> sarlaccPreArea = zone->getZoneServer()->createObject(STRING_HASHCODE("object/sarlacc_area.iff"), 0).castTo<ActiveArea*>();
+
+		Locker locker3(sarlaccPreArea);
+
+		sarlaccPreArea->setRadius(30.f);
+		sarlaccPreArea->initializePosition(-2085, 0, 3147);
+		zone->transferObject(sarlaccPreArea, -1, true);
 	}
 
 	if (zone->getZoneName() == "tatooine") {
-		Reference<ActiveArea*> area = zone->getZoneServer()->createObject(String("object/sarlacc_area.iff").hashCode(), 0).castTo<ActiveArea*>();
-		area->setRadius(50.f);
+		Reference<ActiveArea*> area = zone->getZoneServer()->createObject(STRING_HASHCODE("object/sarlacc_area.iff"), 0).castTo<ActiveArea*>();
+
+		Locker locker(area);
+		area->setRadius(30.f);
 		area->initializePosition(-6174, 0, -3361);
 		zone->transferObject(area, -1, true);
+
+		locker.release();
+
+		Reference<ActiveArea*> preArea = zone->getZoneServer()->createObject(STRING_HASHCODE("object/sarlacc_area.iff"), 0).castTo<ActiveArea*>();
+
+		Locker locker2(preArea);
+
+		preArea->setRadius(60.f);
+		preArea->initializePosition(-6174, 0, -3361);
+		zone->transferObject(preArea, -1, true);
 	}
+}
+
+void PlanetManagerImplementation::start() {
+	if (gcwManager != NULL)
+		gcwManager->start();
 }
 
 void PlanetManagerImplementation::loadLuaConfig() {
@@ -108,6 +145,12 @@ void PlanetManagerImplementation::loadLuaConfig() {
 			info("Weather Disabled", true);
 		}
 
+		bool gcwEnabled = luaObject.getIntField("gcwEnabled");
+		if(gcwEnabled) {
+			gcwManager = new GCWManager(zone);
+			gcwManager->initialize();
+		}
+
 		LuaObject planetTravelPointsTable = luaObject.getObjectField("planetTravelPoints");
 		planetTravelPointList->readLuaObject(&planetTravelPointsTable);
 		planetTravelPointsTable.pop();
@@ -117,6 +160,11 @@ void PlanetManagerImplementation::loadLuaConfig() {
 		LuaObject planetObjectsTable = luaObject.getObjectField("planetObjects");
 		loadPlanetObjects(&planetObjectsTable);
 		planetObjectsTable.pop();
+
+		LuaObject badges = luaObject.getObjectField("badgeAreas");
+		loadBadgeAreas(&badges);
+		badges.pop();
+
 	} else {
 		warning("Configuration settings not found.");
 	}
@@ -143,37 +191,6 @@ void PlanetManagerImplementation::loadLuaConfig() {
 	if ((starportLandingTime = lua->getGlobalInt("starportLandingTime")) <= 0)
 	  starportLandingTime = 120;
 
-	lua->runFile("scripts/managers/spawn_manager/" + zone->getZoneName() + ".lua");
-
-	LuaObject badges = lua->getGlobalObject(zone->getZoneName() + "_badges");
-
-	if (badges.isValidTable()) {
-		uint32 hashCode = String("object/badge_area.iff").hashCode();
-
-		for (int i = 1; i <= badges.getTableSize(); ++i) {
-			lua_rawgeti(lua->getLuaState(), -1, i);
-
-			LuaObject badge(lua->getLuaState());
-
-			String badgeName = badge.getStringAt(1);
-			float x = badge.getFloatAt(2);
-			float y = badge.getFloatAt(3);
-			float radius = badge.getFloatAt(4);
-			int badgeID = badge.getIntAt(5);
-
-			ManagedReference<BadgeActiveArea*> obj = server->getZoneServer()->createObject(hashCode, 0).castTo<BadgeActiveArea*>();
-			obj->setRadius(radius);
-			obj->setBadge(badgeID);
-			obj->initializePosition(x, 0, y);
-
-			zone->transferObject(obj, -1, false);
-
-			badge.pop();
-		}
-	}
-
-	badges.pop();
-
 	delete lua;
 	lua = NULL;
 }
@@ -193,6 +210,8 @@ void PlanetManagerImplementation::loadPlanetObjects(LuaObject* luaObject) {
 		ManagedReference<SceneObject*> obj = ObjectManager::instance()->createObject(templateFile.hashCode(), 0, "");
 
 		if (obj != NULL) {
+			Locker objLocker(obj);
+
 			float x = planetObject.getFloatField("x");
 			float y = planetObject.getFloatField("y");
 			float z = planetObject.getFloatField("z");
@@ -201,6 +220,12 @@ void PlanetManagerImplementation::loadPlanetObjects(LuaObject* luaObject) {
 			float oz = planetObject.getFloatField("oz");
 			float ow = planetObject.getFloatField("ow");
 			uint64 parentID = planetObject.getLongField("parent");
+
+			if (obj->isBuildingObject()) {
+				BuildingObject* building = obj->asBuildingObject();
+
+				building->createCellObjects();
+			}
 
 			obj->initializePosition(x, z, y);
 			obj->setDirection(ow, ox, oy, oz);
@@ -211,9 +236,43 @@ void PlanetManagerImplementation::loadPlanetObjects(LuaObject* luaObject) {
 				parent->transferObject(obj, -1, true);
 			else
 				zone->transferObject(obj, -1, true);
+
+			obj->createChildObjects();
 		}
 
 		planetObject.pop();
+	}
+}
+
+void PlanetManagerImplementation::loadBadgeAreas(LuaObject* badges) {
+	if (!badges->isValidTable())
+		return;
+
+	uint32 hashCode = STRING_HASHCODE("object/badge_area.iff");
+
+	for (int i = 1; i <= badges->getTableSize(); ++i) {
+		lua_State* L = badges->getLuaState();
+		lua_rawgeti(L, -1, i);
+
+		LuaObject badge(L);
+
+		String badgeName = badge.getStringAt(1);
+		float x = badge.getFloatAt(2);
+		float y = badge.getFloatAt(3);
+		float radius = badge.getFloatAt(4);
+		int badgeID = badge.getIntAt(5);
+
+		ManagedReference<BadgeActiveArea*> obj = server->getZoneServer()->createObject(hashCode, 0).castTo<BadgeActiveArea*>();
+
+		Locker objLocker(obj);
+
+		obj->setRadius(radius);
+		obj->setBadge(badgeID);
+		obj->initializePosition(x, 0, y);
+
+		zone->transferObject(obj, -1, false);
+
+		badge.pop();
 	}
 }
 
@@ -229,6 +288,8 @@ void PlanetManagerImplementation::loadTravelFares() {
 
 	DataTableIff dtiff;
 	dtiff.readObject(iffStream);
+
+	delete iffStream;
 
 	//Initialize the rows so we can do a symmetric insert
 	for(int i = 0; i < dtiff.getTotalRows(); i++) {
@@ -287,12 +348,17 @@ Reference<SceneObject*> PlanetManagerImplementation::loadSnapshotObject(WorldSna
 
 	object = zoneServer->createClientObject(serverTemplate.hashCode(), objectID);
 
+	Locker locker(object);
+
 	object->initializePosition(position.getX(), position.getZ(), position.getY());
 	object->setDirection(node->getDirection());
 
 	if (parentObject != NULL && parentObject->isBuildingObject() && object->isCellObject()) {
 		CellObject* cell = cast<CellObject*>(object.get());
 		BuildingObject* building = cast<BuildingObject*>(parentObject.get());
+
+		Locker clocker(building, object);
+
 		building->addCell(cell, node->getCellID());
 	}
 
@@ -301,9 +367,12 @@ Reference<SceneObject*> PlanetManagerImplementation::loadSnapshotObject(WorldSna
 	else if (node->getParentID() != 0)
 		error("parent id " + String::valueOf(node->getParentID()));
 
-	if (parentObject == NULL)
+	if (parentObject == NULL) {
 		//object->insertToZone(zone);
+		Locker clocker(object);
+
 		zone->transferObject(object, -1, true);
+	}
 
 	//Load child nodes
 	for (int i = 0; i < node->getNodeCount(); ++i) {
@@ -349,8 +418,13 @@ void PlanetManagerImplementation::loadSnapshotObjects() {
 			objects.add(object);
 	}
 
-	for (int i = 0; i < objects.size(); ++i)
-		objects.get(i)->createChildObjects();
+	for (int i = 0; i < objects.size(); ++i) {
+		SceneObject* sceno = objects.get(i);
+
+		Locker locker(sceno);
+
+		sceno->createChildObjects();
+	}
 
 	delete iffStream;
 
@@ -439,10 +513,6 @@ PlanetTravelPoint* PlanetManagerImplementation::getNearestPlanetTravelPoint(cons
 	return planetTravelPoint;
 }
 
-void PlanetManagerImplementation::loadStaticTangibleObjects() {
-	//TODO: Deprecate this to load from lua files.
-}
-
 void PlanetManagerImplementation::loadClientPoiData() {
 
 	Locker locker(&poiMutex);
@@ -496,26 +566,62 @@ void PlanetManagerImplementation::loadClientRegions() {
 
 		if (cityRegion == NULL) {
 			cityRegion = new CityRegion();
+
+			Locker locker(cityRegion);
+
 			cityRegion->deploy();
 			cityRegion->setRegionName(regionName);
 			cityRegion->setZone(zone);
 			regionMap.addRegion(cityRegion);
 		}
 
+		Locker locker(cityRegion);
+
 		ManagedReference<Region*> region = cityRegion->addRegion(x, y, radius, false);
 
+		locker.release();
+
 		if (region != NULL) {
+			Locker rlocker(region);
+
 			if (cityRegion->getRegionsCount() == 1) {//Register the first region only.
 				region->setPlanetMapCategory(cityCat);
 				zone->registerObjectWithPlanetaryMap(region);
 			}
 
 			region->setMunicipalZone(true);
+
+			ManagedReference<SceneObject*> scenery = NULL;
+
+			if (gcwManager != NULL) {
+				int strongholdFaction = gcwManager->isStrongholdCity(regionName);
+
+				if (strongholdFaction == Factions::FACTIONIMPERIAL || regionName.contains("imperial")) {
+					scenery = zone->getZoneServer()->createObject(STRING_HASHCODE("object/static/particle/particle_distant_ships_imperial.iff"), 0);
+				} else if (strongholdFaction == Factions::FACTIONREBEL || regionName.contains("rebel")) {
+					scenery = zone->getZoneServer()->createObject(STRING_HASHCODE("object/static/particle/particle_distant_ships_rebel.iff"), 0);
+				} else {
+					scenery = zone->getZoneServer()->createObject(STRING_HASHCODE("object/static/particle/particle_distant_ships.iff"), 0);
+				}
+			} else {
+				scenery = zone->getZoneServer()->createObject(STRING_HASHCODE("object/static/particle/particle_distant_ships.iff"), 0);
+			}
+
+			Locker slocker(scenery, region);
+			scenery->initializePosition(x, zone->getHeight(x, y) + 100, y);
+			region->attachScenery(scenery);
 		}
 
-		ManagedReference<ActiveArea*> noBuild = zone->getZoneServer()->createObject(String("object/active_area.iff").hashCode(), 0).castTo<ActiveArea*>();
+		ManagedReference<ActiveArea*> noBuild = zone->getZoneServer()->createObject(STRING_HASHCODE("object/active_area.iff"), 0).castTo<ActiveArea*>();
+
+		Locker areaLocker(noBuild);
+
 		noBuild->initializePosition(x, 0, y);
+
 		ManagedReference<CircularAreaShape*> areaShape = new CircularAreaShape();
+
+		Locker shapeLocker(areaShape);
+
 		areaShape->setRadius(radius * 2);
 		areaShape->setAreaCenter(x, y);
 		noBuild->setAreaShape(areaShape);
@@ -523,16 +629,21 @@ void PlanetManagerImplementation::loadClientRegions() {
 		noBuild->setNoBuildArea(true);
 		// Cities already have "Municipal" protection so the structure no-build should not apply to camps
 		noBuild->setCampingPermitted(true);
+
+		Locker zoneLocker(zone);
+
 		zone->transferObject(noBuild, -1, true);
 	}
 
 	info("Added " + String::valueOf(regionMap.getTotalRegions()) + " client regions.");
+
+	delete iffStream;
 }
 
 bool PlanetManagerImplementation::validateClientCityInRange(CreatureObject* creature, float x, float y) {
 	Vector3 testPosition(x, y, 0);
 
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
 	for (int i = 0; i < regionMap.getTotalRegions(); ++i) {
 		CityRegion* region = regionMap.getRegion(i);
@@ -563,7 +674,7 @@ bool PlanetManagerImplementation::validateClientCityInRange(CreatureObject* crea
 
 bool PlanetManagerImplementation::validateRegionName(const String& name) {
 	String lowerCase = name.toLowerCase();
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
 	if (hasRegion(name) || hasRegion(lowerCase))
 		return false;
@@ -585,45 +696,13 @@ bool PlanetManagerImplementation::validateRegionName(const String& name) {
 void PlanetManagerImplementation::initializeTransientMembers() {
 	ManagedObjectImplementation::initializeTransientMembers();
 
-	terrainManager = new TerrainManager(zone);
+	terrainManager = new TerrainManager();
 }
 
 
 void PlanetManagerImplementation::finalize() {
 	delete terrainManager;
 	terrainManager = NULL;
-}
-
-void PlanetManagerImplementation::loadBadgeAreas() {
-}
-
-void PlanetManagerImplementation::loadPerformanceLocations() {
-	info("loading performance locations...", true);
-
-	SortedVector<ManagedReference<SceneObject*> > planetaryLocs;
-	planetaryLocs.setNoDuplicateInsertPlan();
-
-	// get hotels
-	planetaryLocs = zone->getPlanetaryObjectList("hotel");
-	for (int j = 0; j < planetaryLocs.size(); j++) {
-		SceneObject* obj = planetaryLocs.get(j);
-		addPerformanceLocation(obj);
-	}
-
-	// get theaters
-	planetaryLocs = zone->getPlanetaryObjectList("guild_theater");
-	for (int j = 0; j < planetaryLocs.size(); j++) {
-		SceneObject* obj = planetaryLocs.get(j);
-		addPerformanceLocation(obj);
-	}
-
-	// get cantinas
-	planetaryLocs.removeAll();
-	planetaryLocs = zone->getPlanetaryObjectList("cantina");
-	for (int j = 0; j < planetaryLocs.size(); j++) {
-		SceneObject* obj = planetaryLocs.get(j);
-		addPerformanceLocation(obj);
-	}
 }
 
 bool PlanetManagerImplementation::isInRangeWithPoi(float x, float y, float range) {
@@ -634,7 +713,7 @@ bool PlanetManagerImplementation::isInRangeWithPoi(float x, float y, float range
 
 	Vector3 target(x, y, 0);
 
-	Vector<Reference<PoiData*> > pois = clientPoiDataTable.getPois(zoneName);
+	const Vector<Reference<PoiData*> >& pois = clientPoiDataTable.getPois(zoneName);
 
 	for (int i = 0; i < pois.size(); ++i) {
 		if (pois.get(i)->getPosition().squaredDistanceTo(target) <= range * range)
@@ -645,14 +724,14 @@ bool PlanetManagerImplementation::isInRangeWithPoi(float x, float y, float range
 }
 
 bool PlanetManagerImplementation::isInObjectsNoBuildZone(float x, float y, float extraMargin) {
-	SortedVector<ManagedReference<QuadTreeEntry* > > closeObjects;
+	SortedVector<QuadTreeEntry*> closeObjects;
 
 	Vector3 targetPos(x, y, zone->getHeight(x, y));
 
 	zone->getInRangeObjects(x, y, 512, &closeObjects, true);
 
 	for (int i = 0; i < closeObjects.size(); ++i) {
-		SceneObject* obj = cast<SceneObject*>(closeObjects.get(i).get());
+		SceneObject* obj = static_cast<SceneObject*>(closeObjects.get(i));
 
 		SharedObjectTemplate* objectTemplate = obj->getObjectTemplate();
 
@@ -684,7 +763,7 @@ bool PlanetManagerImplementation::isInObjectsNoBuildZone(float x, float y, float
 }
 
 bool PlanetManagerImplementation::isSpawningPermittedAt(float x, float y, float margin) {
-	SortedVector<ManagedReference<ActiveArea* > > activeAreas;
+	SortedVector<ActiveArea*> activeAreas;
 
 	Vector3 targetPos(x, y, zone->getHeight(x, y));
 
@@ -720,12 +799,14 @@ bool PlanetManagerImplementation::isSpawningPermittedAt(float x, float y, float 
 }
 
 bool PlanetManagerImplementation::isBuildingPermittedAt(float x, float y, SceneObject* object, float margin) {
-	SortedVector<ManagedReference<ActiveArea* > > activeAreas;
+	SortedVector<ActiveArea*> activeAreas;
 
-	Vector3 targetPos(x, y, zone->getHeight(x, y));
+	Vector3 targetPos(x, y, 0);
 
 	if (!zone->isWithinBoundaries(targetPos))
 		return false;
+
+	//targetPos.setZ(zone->getHeight(x, y)); not needed
 
 	zone->getInRangeActiveAreas(x, y, &activeAreas, true);
 
@@ -815,15 +896,22 @@ Reference<SceneObject*> PlanetManagerImplementation::findObjectTooCloseToDecorat
 
 
 Reference<SceneObject*> PlanetManagerImplementation::createTicket(const String& departurePoint, const String& arrivalPlanet, const String& arrivalPoint) {
-	ManagedReference<SceneObject*> obj = server->getZoneServer()->createObject(String("object/tangible/travel/travel_ticket/base/base_travel_ticket.iff").hashCode(), 1);
+	ManagedReference<SceneObject*> obj = server->getZoneServer()->createObject(STRING_HASHCODE("object/tangible/travel/travel_ticket/base/base_travel_ticket.iff"), 1);
 
-	if (obj == NULL || !obj->isTangibleObject())
+	if (obj == NULL)
 		return NULL;
+
+	if (!obj->isTangibleObject()) {
+		obj->destroyObjectFromDatabase(true);
+		return NULL;
+	}
 
 	TangibleObject* tano = cast<TangibleObject*>( obj.get());
 
-	if (!tano->isTicketObject())
-		return tano;
+	if (!tano->isTicketObject()) {
+		tano->destroyObjectFromDatabase(true);
+		return NULL;
+	}
 
 	TicketObject* ticket = cast<TicketObject*>( tano);
 	ticket->setDeparturePlanet(zone->getZoneName());
@@ -835,7 +923,7 @@ Reference<SceneObject*> PlanetManagerImplementation::createTicket(const String& 
 }
 
 bool PlanetManagerImplementation::checkShuttleStatus(CreatureObject* creature, CreatureObject* shuttle) {
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
 	Reference<ShuttleDepartureTask*> task = shuttleMap.get(shuttle->getObjectID());
 
@@ -909,9 +997,9 @@ float PlanetManagerImplementation::findClosestWorldFloor(float x, float y, float
 	}
 
 	float waterHeight;
-	getTerrainManager()->getWaterHeight(x, y, waterHeight);
+	bool result = getTerrainManager()->getWaterHeight(x, y, waterHeight);
 
-	if (waterHeight > (closestHeight + swimHeight)) {
+	if (result && waterHeight > (closestHeight + swimHeight)) {
 		closestHeight = waterHeight - swimHeight;
 	}
 
@@ -931,7 +1019,14 @@ void PlanetManagerImplementation::removePlayerCityTravelPoint(const String& city
 }
 
 void PlanetManagerImplementation::scheduleShuttle(CreatureObject* shuttle, int shuttleType) {
-	Locker locket(_this.get());
+	Locker clocket(_this.getReferenceUnsafeStaticCast(), shuttle);
+
+	const uint64 oid = shuttle->getObjectID();
+
+	if (shuttleMap.contains(oid)) {
+		// this shuttle is already known, no need for a 2nd task
+		return;
+	}
 
 	shuttle->setPosture(CreaturePosture::UPRIGHT);
 
@@ -952,7 +1047,5 @@ void PlanetManagerImplementation::scheduleShuttle(CreatureObject* shuttle, int s
 
 	task->schedule((task->getLandedTime() + task->getLandingTime()) * 1000);
 
-	shuttleMap.put(shuttle->getObjectID(), task);
+	shuttleMap.put(oid, task);
 }
-
-

@@ -8,7 +8,7 @@
 #ifndef SHIPUPDATETRANSFORMCALLBACK_H_
 #define SHIPUPDATETRANSFORMCALLBACK_H_
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 #include "engine/engine.h"
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/player/PlayerObject.h"
@@ -18,29 +18,34 @@
 #include "server/zone/managers/collision/CollisionManager.h"
 #include "server/zone/packets/object/PlayClientEffectObjectMessage.h"
 
+#include "PackedVelocity.h"
+#include "PackedRotationRate.h"
+
 class ShipUpdateTransformCallback : public MessageCallback {
-	uint16 unknownShort;
+	uint16 shipId;
 
 	//PackedTransform dir is multiplied by 127, positions by 4.0958748
 	uint8 dirX, dirY, dirZ, dirW;
 	int16 posX, posZ, posY;
 
 	//PackedVelocity
-	int16 velA, velB;
+	//int16 velocitySpeed, velocityDirection;
+	PackedVelocity velocity;
 
 	//3 PackedRotationRate
-	int8 rotA, rotB, rotC;
+	PackedRotationRate yawRate, pitchRate, rollRate;
 
 	uint32 counter;
 
 public:
 	ShipUpdateTransformCallback(ZoneClientSession* client, ZoneProcessServer* server) :
-		MessageCallback(client, server) {
+		MessageCallback(client, server), shipId(0), dirX(0), dirY(0), dirZ(0), dirW(0),
+		posX(0), posZ(0), posY(0), counter(0) {
 	}
 
 	void parse(Message* message) {
 		//info(message->toStringData(), true);
-		unknownShort = message->parseShort();
+		shipId = message->parseShort();
 
 		dirX = message->parseByte();
 		dirY = message->parseByte();
@@ -51,12 +56,11 @@ public:
 		posZ = message->parseSignedShort();
 		posY = message->parseSignedShort();
 
-		velA = message->parseSignedShort();
-		velB = message->parseSignedShort();
+		velocity.parse(message);
 
-		rotA = message->parseSignedByte();
-		rotB = message->parseSignedByte();
-		rotC = message->parseSignedByte();
+		yawRate.parse(message);
+		pitchRate.parse(message);
+		rollRate.parse(message);
 
 		counter = message->parseInt();
 	}
@@ -84,7 +88,7 @@ public:
 		msg << "velA:" << velA << " velB:" << velB;
 		info(msg.toString(), true);*/
 
-		CreatureObject* object = cast<CreatureObject*>( client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> object = client->getPlayer();
 
 		if (object == NULL)
 			return;
@@ -96,10 +100,10 @@ public:
 		if (ghost == NULL)
 			return;
 
-		if (isnan(positionX) || isnan(positionY) || isnan(positionZ))
+		if (std::isnan(positionX) || std::isnan(positionY) || std::isnan(positionZ))
 			return;
 
-		if (isinf(positionX) || isinf(positionY) || isinf(positionZ))
+		if (std::isinf(positionX) || std::isinf(positionY) || std::isinf(positionZ))
 			return;
 
 		if (ghost->isTeleporting())
@@ -150,7 +154,8 @@ public:
 
 		object->updateZone(false, false);
 
-		ShipUpdateTransformMessage* msga = new ShipUpdateTransformMessage(ship, dirX, dirY, dirZ, dirW, posX, posZ, posY, velA, velB, rotA, rotB, rotC);
+		ShipUpdateTransformMessage* msga = new ShipUpdateTransformMessage(ship, dirX, dirY, dirZ, dirW, posX, posZ, posY,
+				velocity, yawRate, pitchRate, rollRate);
 		object->broadcastMessage(msga, false);
 
 		ValidatedPosition* last = ghost->getLastValidatedPosition();

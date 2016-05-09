@@ -1,7 +1,6 @@
 desert_gurreck_charger = Creature:new {
 	objectName = "@mob/creature_names:desert_gurreck_charger",
 	socialGroup = "gurreck",
-	pvpFaction = "",
 	faction = "",
 	level = 22,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ desert_gurreck_charger = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gurreck_hue.iff"},
@@ -33,7 +32,8 @@ desert_gurreck_charger = Creature:new {
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"",""},
+		{"blindattack",""}
 	}
 }
 

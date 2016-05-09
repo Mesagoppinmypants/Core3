@@ -13,7 +13,10 @@
 
 Reference<Task*> BountyHunterDroid::performAction(int action, SceneObject* droidObject, CreatureObject* player, MissionObject* mission) {
 	if (droidObject == NULL || player == NULL || mission == NULL) {
-		player->sendSystemMessage("@mission/mission_generic:bounty_no_ability"); // You do not understand how to use this item.
+		if (player != NULL) {
+			player->sendSystemMessage("@mission/mission_generic:bounty_no_ability"); // You do not understand how to use this item.
+		}
+
 		return NULL;
 	}
 
@@ -61,7 +64,7 @@ Reference<FindTargetTask*> BountyHunterDroid::findTarget(SceneObject* droidObjec
 		return NULL;
 	}
 
-	ManagedReference<AiAgent*> droid = cast<AiAgent*>(player->getZone()->getCreatureManager()->spawnCreature(String("seeker").hashCode(), 0, player->getPositionX(), player->getPositionZ(), player->getPositionY(), 0));
+	ManagedReference<AiAgent*> droid = cast<AiAgent*>(player->getZone()->getCreatureManager()->spawnCreature(STRING_HASHCODE("seeker"), 0, player->getPositionX(), player->getPositionZ(), player->getPositionY(), 0));
 	droid->activateLoad("stationary");
 
 	Reference<FindTargetTask*> findTargetTask = new FindTargetTask(droid, player, objective, track, false);
@@ -71,7 +74,7 @@ Reference<FindTargetTask*> BountyHunterDroid::findTarget(SceneObject* droidObjec
 
 	TangibleObject* tano = cast<TangibleObject*>(droidObject);
 	if(tano != NULL){
-		tano->setUseCount(tano->getUseCount() - 1, true);
+		tano->decreaseUseCount();
 	} else {
 		droidObject->destroyObjectFromWorld(true);
 		droidObject->destroyObjectFromDatabase(true);
@@ -81,7 +84,7 @@ Reference<FindTargetTask*> BountyHunterDroid::findTarget(SceneObject* droidObjec
 }
 
 Reference<CallArakydTask*> BountyHunterDroid::callArakydDroid(SceneObject* droidObject, CreatureObject* player, MissionObject* mission) {
-	if (mission->getMissionLevel() < 3) {
+	if (mission->getMissionLevel() < 2) {
 		player->sendSystemMessage("@mission/mission_generic:bounty_no_ability"); // You do not understand how to use this item.
 		return NULL;
 	}
@@ -103,7 +106,7 @@ Reference<CallArakydTask*> BountyHunterDroid::callArakydDroid(SceneObject* droid
 		return NULL;
 	}
 
-	Vector<ManagedReference<ActiveArea*> >* areas = player->getActiveAreas();
+	SortedVector<ManagedReference<ActiveArea*> >* areas = player->getActiveAreas();
 	for (int i = 0; i < areas->size(); i++) {
 		if (areas->get(i)->isMunicipalZone()) {
 			player->sendSystemMessage("@mission/mission_generic:probe_droid_bad_location"); // You must move to a different area to call down a probe droid from orbit.
@@ -122,14 +125,18 @@ Reference<CallArakydTask*> BountyHunterDroid::callArakydDroid(SceneObject* droid
 
 	//Temporary set the arakyd droid to the player object. The call task will overwrite it with correct value.
 	//This is needed to prevent the player from launching more than one droid at a time.
+	Locker olocker(objective);
+
 	objective->setArakydDroid(player);
+
+	olocker.release();
 
 	Locker locker(droidObject);
 
 	TangibleObject* tano = cast<TangibleObject*>(droidObject);
 
 	if(tano != NULL){
-		tano->setUseCount(tano->getUseCount() - 1, true);
+		tano->decreaseUseCount();
 	} else {
 		droidObject->destroyObjectFromWorld(true);
 		droidObject->destroyObjectFromDatabase(true);
@@ -139,7 +146,7 @@ Reference<CallArakydTask*> BountyHunterDroid::callArakydDroid(SceneObject* droid
 }
 
 Reference<FindTargetTask*> BountyHunterDroid::transmitBiologicalSignature(SceneObject* droidObject, CreatureObject* player, MissionObject* mission) {
-	if (mission->getMissionLevel() < 3) {
+	if (mission->getMissionLevel() < 2) {
 		player->sendSystemMessage("@mission/mission_generic:bounty_no_ability"); // You do not understand how to use this item.
 		return NULL;
 	}

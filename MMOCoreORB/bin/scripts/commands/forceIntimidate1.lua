@@ -42,33 +42,34 @@
 --true = 1, false = 0
 
 ForceIntimidate1Command = {
-        name = "forceintimidate1",
-        
-    damage = 0,
+	name = "forceintimidate1",
+
+	damageMultiplier = 0,
 	speed = 4.0,
 	forceCost = 300,
-	accuracySkillMod = "forceintimidate_accuracy";
-	coneAngle = 40,
+	accuracySkillMod = "forceintimidate_accuracy",
+	coneAngle = 30,
 	coneAction = true,
+	forceAttack = true,
+	visMod = 25,
 
 	stateEffects = {
-	  StateEffect( 
-		INTIMIDATE_EFFECT, 
-		{}, 
-		{}, 
-		{ "force_defense" }, 
-		100, 
-		0, 
-		60 
+	  StateEffect(
+		INTIMIDATE_EFFECT,
+		{},
+		{},
+		{ "force_defense" },
+		100,
+		0,
+		60
 	  )
 	},
-	
-	
-	animationCRC = hashCode("force_intimidate"),
+
+	animation = "force_intimidate",
 
 	combatSpam = "forceintimidate1",
-	
-	poolsToDamage = NONE,
+
+	poolsToDamage = NO_ATTRIBUTE,
 
 	range = 32
 }

@@ -1,7 +1,6 @@
 theme_park_rebel_supervisor = Creature:new {
 	objectName = "@mob/creature_names:rebel_brigadier_general",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 25,
 	chanceHit = 0.36,
@@ -23,7 +22,7 @@ theme_park_rebel_supervisor = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

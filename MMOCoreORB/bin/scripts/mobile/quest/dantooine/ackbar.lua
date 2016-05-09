@@ -2,7 +2,6 @@ ackbar = Creature:new {
 	objectName = "@mob/creature_names:ackbar",
 	customName = "Captain Ackbar",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ ackbar = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_ackbar.iff"},

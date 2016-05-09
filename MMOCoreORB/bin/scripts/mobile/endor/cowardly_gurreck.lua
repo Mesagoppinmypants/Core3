@@ -1,7 +1,6 @@
 cowardly_gurreck = Creature:new {
 	objectName = "@mob/creature_names:cowardly_gurreck",
 	socialGroup = "gurreck",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ cowardly_gurreck = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gurreck_hue.iff"},

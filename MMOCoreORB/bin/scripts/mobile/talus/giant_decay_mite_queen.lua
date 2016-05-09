@@ -1,7 +1,6 @@
 giant_decay_mite_queen = Creature:new {
 	objectName = "@mob/creature_names:giant_decay_mite_queen",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 26,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ giant_decay_mite_queen = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/decay_mite.iff"},

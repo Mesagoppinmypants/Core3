@@ -1,7 +1,6 @@
 arachne_hatchling = Creature:new {
 	objectName = "@mob/creature_names:arachne_hatchling",
 	socialGroup = "arachne",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ arachne_hatchling = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/arachne_hatchling.iff"},
@@ -32,6 +31,7 @@ arachne_hatchling = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
+		{"",""},
 		{"mediumpoison",""}
 	}
 }

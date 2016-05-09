@@ -43,10 +43,14 @@
 
 Saber2hSweep2Command = {
         name = "saber2hsweep2",
-        
-    damageMultiplier = 2.5,
+
+	damageMultiplier = 2.5,
 	speedMultiplier = 2.5,
-	forceCostMultiplier = 3.0, -- Not correct
+	healthCostMultiplier = 0,
+	actionCostMultiplier = 0,
+	mindCostMultiplier = 0,
+	forceCostMultiplier = 1.75,
+	visMod = 25,
 
 	stateEffects = {
 	  StateEffect( 
@@ -54,17 +58,20 @@ Saber2hSweep2Command = {
 		{ "postureDownRecovery" }, 
 		{ "posture_change_down_defense" }, 
 		{}, 
-		20, 
 		100, 
+		0, 
 		0 
 	  )
 	},
 
-	animationCRC = hashCode("combo_3d_light"),
+	animation = "combo_4b", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "saber2hsweep2",
-	
+
 	poolsToDamage = RANDOM_ATTRIBUTE,
+
+	weaponType = TWOHANDJEDIWEAPON,
 
 	range = -1
 }

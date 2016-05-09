@@ -1,7 +1,6 @@
 young_spined_snake = Creature:new {
 	objectName = "@mob/creature_names:young_spined_snake",
 	socialGroup = "spine_snake",
-	pvpFaction = "",
 	faction = "",
 	level = 11,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ young_spined_snake = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/young_spined_snake.iff"},

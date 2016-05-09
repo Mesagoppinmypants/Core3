@@ -1,7 +1,6 @@
 drillen_foyle = Creature:new {
 	objectName = "",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 19,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ drillen_foyle = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

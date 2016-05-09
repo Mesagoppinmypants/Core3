@@ -2,7 +2,6 @@ sneg_the_hand = Creature:new {
 	objectName = "@npc_name:devaronian_base_male",
 	customName = "Sneg the Hand",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 4,
 	chanceHit = 0.24,
@@ -24,7 +23,7 @@ sneg_the_hand = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/junk_sneg.iff"},

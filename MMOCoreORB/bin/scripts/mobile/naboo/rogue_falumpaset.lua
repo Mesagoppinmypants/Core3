@@ -1,7 +1,6 @@
 rogue_falumpaset = Creature:new {
 	objectName = "@mob/creature_names:rogue_falumpaset",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.32,
@@ -24,7 +23,7 @@ rogue_falumpaset = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/falumpaset_hue.iff"},
@@ -33,7 +32,7 @@ rogue_falumpaset = Creature:new {
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

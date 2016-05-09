@@ -2,7 +2,6 @@ fixer = Creature:new {
 	objectName = "",
 	customName = "Fixer",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ fixer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_fixer.iff"},

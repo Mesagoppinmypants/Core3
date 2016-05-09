@@ -1,7 +1,6 @@
 hagrin_information_broker = Creature:new {
 	objectName = "@mob/creature_names:bothan_information_broker",
 	socialGroup = "spynet",
-	pvpFaction = "",
 	faction = "",
 	level = 3,
 	chanceHit = 0.23,
@@ -23,7 +22,7 @@ hagrin_information_broker = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

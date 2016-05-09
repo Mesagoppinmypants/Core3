@@ -1,7 +1,6 @@
 ta_667 = Creature:new {
 	objectName = "@npc_spawner_n:ta_667",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -23,8 +22,9 @@ ta_667 = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.5,
 
 	templates = {"object/mobile/dark_trooper.iff"},
 	lootGroups = {},

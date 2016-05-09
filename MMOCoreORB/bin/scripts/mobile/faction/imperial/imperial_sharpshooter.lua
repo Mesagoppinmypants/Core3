@@ -1,7 +1,6 @@
 imperial_sharpshooter = Creature:new {
 	objectName = "@mob/creature_names:imperial_sharpshooter",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 17,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ imperial_sharpshooter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_gunner_m.iff"},
@@ -39,12 +38,13 @@ imperial_sharpshooter = Creature:new {
 				{group = "clothing_attachments", chance = 150000},
 				{group = "armor_attachments", chance = 150000},
 				{group = "wearables_common", chance = 1000000}
-			},
-			lootChance = 2500000
+			}
 		}
 	},
 	weapons = {"imperial_weapons_medium"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/military",
+	personalityStf = "@hireling/hireling_military",	
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 

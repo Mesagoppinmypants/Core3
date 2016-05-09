@@ -1,7 +1,6 @@
 captain_sarguillo = Creature:new {
 	objectName = "@mob/creature_names:fs_villager_captain",
 	socialGroup = "fs_villager",
-	pvpFaction = "fs_villager",
 	faction = "fs_villager",
 	level = 69,
 	chanceHit = 0.6,
@@ -23,7 +22,7 @@ captain_sarguillo = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_fs_village_captain.iff"},

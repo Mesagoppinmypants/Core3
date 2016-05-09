@@ -1,7 +1,6 @@
 elder_pugoriss = Creature:new {
 	objectName = "@mob/creature_names:elder_pugoriss",
 	socialGroup = "pugoriss",
-	pvpFaction = "",
 	faction = "",
 	level = 17,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ elder_pugoriss = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/elder_pugoriss.iff"},
@@ -32,7 +31,7 @@ elder_pugoriss = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"blindattack",""}
 	}
 }
 

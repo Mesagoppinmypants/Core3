@@ -1,7 +1,6 @@
 kylaena_haley = Creature:new {
 	objectName = "@mob/creature_names:kylaena_haley",
 	socialGroup = "sith_shadow",
-	pvpFaction = "sith_shadow",
 	faction = "sith_shadow",
 	level = 103,
 	chanceHit = 0.9,
@@ -23,7 +22,7 @@ kylaena_haley = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_fs_village_enemy_kylaena.iff"},

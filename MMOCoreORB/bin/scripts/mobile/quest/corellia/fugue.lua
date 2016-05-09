@@ -1,7 +1,6 @@
 fugue = Creature:new {
 	objectName = "",
 	socialGroup = "thug",
-	pvpFaction = "thug",
 	faction = "thug",
 	level = 6,
 	chanceHit = 0.250000,
@@ -23,7 +22,7 @@ fugue = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = STALKER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_pirate_human_male_01.iff"},

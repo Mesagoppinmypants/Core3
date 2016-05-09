@@ -1,7 +1,6 @@
 langlatch_hatchling = Creature:new {
 	objectName = "@mob/creature_names:langlatch_hatchling",
 	socialGroup = "langlatch",
-	pvpFaction = "",
 	faction = "",
 	level = 4,
 	chanceHit = 0.24,
@@ -23,7 +22,7 @@ langlatch_hatchling = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/langlatch_hatchling.iff"},
@@ -32,7 +31,8 @@ langlatch_hatchling = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"",""},
+		{"posturedownattack",""}
 	}
 }
 

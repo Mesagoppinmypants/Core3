@@ -1,7 +1,6 @@
 giant_mutant_bark_mite = Creature:new {
 	objectName = "@mob/creature_names:mutant_bark_mite_giant",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 16,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ giant_mutant_bark_mite = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bark_mite.iff"},
@@ -34,7 +33,7 @@ giant_mutant_bark_mite = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"creatureareaattack",""},
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

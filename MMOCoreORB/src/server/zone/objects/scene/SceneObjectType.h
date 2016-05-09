@@ -55,6 +55,7 @@ public:
 	const static int GARAGEBUILDING = 0x210;
 	const static int CITYHALLBUILDING = 0x211;
 	const static int SALONBUILDING = 0x212;
+	const static int POIBUILDING = 0x213;
 	/// End not in client *************
 
 	const static int CREATURE = 0x400;  // ENTITY
@@ -82,6 +83,10 @@ public:
 	const static int VEHICLECONTROLDEVICE = 0x808;
 	const static int SHIPCONTROLDEVICE = 0x80A;
 	const static int DROIDCONTROLDEVICE = 0x80B;
+
+	/// Not in client **********
+	const static int THEATEROBJECT = 0x80C;
+	/// End not in client ************
 
 	const static int INSTALLATION = 0x1000;
 	const static int FACTORY = 0x1001;
@@ -151,6 +156,9 @@ public:
 	const static int REVIVEPACK = 0x2033;
 	const static int STATICLOOTCONTAINER = 0x2034;
 	const static int PLAYERLOOTCRATE = 0x2035;
+	const static int FSPUZZLEPACK = 0x2036;
+	const static int GROWABLEPLANT = 0x2037;
+	const static int FSCRAFTINGCOMPONENT = 0x2038;
 	/// End Not in client **************
 
 	const static int TERMINAL = 0x4000;
@@ -176,6 +184,12 @@ public:
 	const static int CITYTERMINAL = 0x4015;
 	const static int CITYVOTETERMINAL = 0x4016;
 	const static int GAMBLINGTERMINAL = 0x4017;
+	const static int JUKEBOX = 0x4018;
+	const static int FLAGGAME = 0x4019;
+	const static int EVENTPERK = 0x401A;
+	const static int LOTTERYDROID = 0x401B;
+	const static int SCAVENGERCHEST = 0x401C;
+	const static int SHUTTLEBEACON = 0x401D;
 	/// end not in client ***************
 
 	const static int TOOL = 0x8000;
@@ -264,7 +278,7 @@ public:
 	const static int ORGANICFOOD = 0x400009;
 	const static int ORGANICHIDE = 0x40000A;
 	const static int ORGANICSTRUCTURAL = 0x40000B;
-	const static int QUESTREOURCE = 0x40000C; // Resource Container?
+	const static int QUESTRESOURCE = 0x40000C; // Resource Container?
 
 	// Not in client ************
 	const static int RESOURCESPAWN = 0x410000;
@@ -280,6 +294,7 @@ public:
 	// Not in client **********
 	const static int RESOURCEDEED = 0x800006;
 	const static int EVENTPERKDEED = 0x800007;
+	const static int VETHARVESTERDEED = 0x800008;
 	// ************************
 
 	const static int CLOTHING = 0x1000000;
@@ -312,7 +327,6 @@ public:
 	const static int MISSIONSPAWNAREA = 0x2000002;
 	const static int MISSIONRECONAREA = 0x2000003;
 	const static int SPAWNAREA = 0x2000004;
-	const static int GARAGEAREA = 0x2000006;
 	const static int ACTIVEAREA = 0x2000007;
 	const static int CAMPAREA = 0x2000009;
 	const static int FSVILLAGEAREA = 0x200000A;

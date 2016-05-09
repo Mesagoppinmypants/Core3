@@ -63,9 +63,11 @@ SuppressionFire1Command = {
 	  )
 	},
 
-	animationCRC = hashCode("fire_area_light"),
+	animation = "fire_defender_posture_change_down",
 
 	combatSpam = "suppressionfire",
+	
+	weaponType = RANGEDWEAPON,
 
 	range = -1
 }

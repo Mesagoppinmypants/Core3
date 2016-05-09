@@ -1,8 +1,8 @@
 patron = Creature:new {
 	objectName = "@mob/creature_names:patron_human_female_01",
-	generateRandomName = true,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 6,
 	chanceHit = 0.250000,

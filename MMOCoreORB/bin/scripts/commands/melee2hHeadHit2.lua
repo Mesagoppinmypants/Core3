@@ -52,8 +52,11 @@ Melee2hHeadHit2Command = {
         accuracyBonus = 10,
 
 	poolsToDamage = MIND_ATTRIBUTE,
+	
+	weaponType = TWOHANDMELEEWEAPON,
 
-	animationCRC = hashCode("combo_2d_light"),
+	animation = "combo_2d", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "scalpstrike",
 

@@ -1,7 +1,6 @@
 salacious_crumb = Creature:new {
 	objectName = "@mob/creature_names:salacious_crumb",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 100,
 	chanceHit = 1.000000,
@@ -23,7 +22,7 @@ salacious_crumb = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/salacious_crumb.iff"},

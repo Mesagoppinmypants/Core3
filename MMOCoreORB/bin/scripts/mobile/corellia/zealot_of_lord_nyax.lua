@@ -1,7 +1,8 @@
 zealot_of_lord_nyax = Creature:new {
 	objectName = "@mob/creature_names:lord_nyax_zealot",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "followers_of_lord_nyax",
-	pvpFaction = "followers_of_lord_nyax",
 	faction = "followers_of_lord_nyax",
 	level = 25,
 	chanceHit = 0.35,
@@ -23,7 +24,7 @@ zealot_of_lord_nyax = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_force_sensitive_crypt_crawler.iff"},
@@ -33,13 +34,13 @@ zealot_of_lord_nyax = Creature:new {
 				{group = "junk", chance = 7000000},
 				{group = "pistols", chance = 1000000},
 				{group = "rifles", chance = 1000000},
-                		{group = "carbines", chance = 1000000}
-			},
-			lootChance = 3200000
+				{group = "carbines", chance = 1000000}
+			}
 		}
 	},
 	weapons = {"pirate_weapons_heavy"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/fancy",
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 

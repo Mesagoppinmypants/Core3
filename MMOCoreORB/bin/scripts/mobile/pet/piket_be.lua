@@ -1,7 +1,6 @@
 piket_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_piket",
 	socialGroup = "piket",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ piket_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/piket_hue.iff"},

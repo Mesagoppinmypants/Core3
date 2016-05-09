@@ -2,7 +2,6 @@ untrained_padawan = Creature:new {
 	objectName = "",
 	customName = "Untrained Padawan",	
 	socialGroup = "force",
-	pvpFaction = "",
 	faction = "",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ untrained_padawan = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dark_force_crystal_hunter.iff"}, 

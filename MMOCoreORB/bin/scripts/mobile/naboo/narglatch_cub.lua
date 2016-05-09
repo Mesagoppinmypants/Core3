@@ -1,7 +1,6 @@
 narglatch_cub = Creature:new {
 	objectName = "@mob/creature_names:narglatch_cub",
 	socialGroup = "narglatch",
-	pvpFaction = "",
 	faction = "",
 	level = 8,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ narglatch_cub = Creature:new {
 	ferocity = 1,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/narglatch_cub.iff"},

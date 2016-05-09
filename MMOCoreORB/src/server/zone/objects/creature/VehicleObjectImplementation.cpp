@@ -19,7 +19,7 @@
 #include "server/zone/objects/region/CityRegion.h"
 #include "server/zone/objects/creature/sui/RepairVehicleSuiCallback.h"
 #include "server/zone/objects/region/CityRegion.h"
-#include "server/zone/templates/customization/AssetCustomizationManagerTemplate.h"
+#include "templates/customization/AssetCustomizationManagerTemplate.h"
 
 
 void VehicleObjectImplementation::fillObjectMenuResponse(ObjectMenuResponse* menuResponse, CreatureObject* player) {
@@ -122,7 +122,7 @@ void VehicleObjectImplementation::notifyInsertToZone(Zone* zone) {
 }
 
 bool VehicleObjectImplementation::checkInRangeGarage() {
-	ManagedReference<SceneObject*> garage = StructureManager::instance()->getInRangeParkingGarage(_this.get());
+	Reference<SceneObject*> garage = StructureManager::instance()->getInRangeParkingGarage(_this.getReferenceUnsafeStaticCast());
 
 	if (garage == NULL)
 		return false;
@@ -200,7 +200,7 @@ void VehicleObjectImplementation::sendRepairConfirmTo(CreatureObject* player) {
     listbox->setCallback(new RepairVehicleSuiCallback(server->getZoneServer()));
 	listbox->setPromptTitle("@pet/pet_menu:confirm_repairs_t"); //Confirm Vehicle Repairs
 	listbox->setPromptText("@pet/pet_menu:vehicle_repair_d"); //You have chosen to repair your vehicle. Please review the listed details and confirm your selection.
-	listbox->setUsingObject(_this.get());
+	listbox->setUsingObject(_this.getReferenceUnsafeStaticCast());
 	listbox->setCancelButton(true, "@cancel");
 
 	int repairCost = calculateRepairCost(player);
@@ -227,12 +227,12 @@ int VehicleObjectImplementation::calculateRepairCost(CreatureObject* player) {
 	return getConditionDamage() * 4;
 }
 
-int VehicleObjectImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, bool notifyClient) {
-	return TangibleObjectImplementation::inflictDamage(attacker, damageType, damage, destroy, notifyClient);
+int VehicleObjectImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, bool notifyClient, bool isCombatAction) {
+	return TangibleObjectImplementation::inflictDamage(attacker, damageType, damage, destroy, notifyClient, isCombatAction);
 }
 
-int VehicleObjectImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, const String& xp, bool notifyClient) {
-	return TangibleObjectImplementation::inflictDamage(attacker, damageType, damage, destroy, xp, notifyClient);
+int VehicleObjectImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, const String& xp, bool notifyClient, bool isCombatAction) {
+	return TangibleObjectImplementation::inflictDamage(attacker, damageType, damage, destroy, xp, notifyClient, isCombatAction);
 }
 
 int VehicleObjectImplementation::healDamage(TangibleObject* healer, int damageType, int damage, bool notifyClient) {
@@ -247,7 +247,7 @@ int VehicleObjectImplementation::notifyObjectDestructionObservers(TangibleObject
 	if (linkedCreature != NULL) {
 		linkedCreature->sendSystemMessage("@pet/pet_menu:veh_disabled");
 
-		ManagedReference<VehicleObject*> vehicle = _this.get();
+		ManagedReference<VehicleObject*> vehicle = _this.getReferenceUnsafeStaticCast();
 		String vehicleName = vehicle->getDisplayedName();
 		if (!vehicleName.beginsWith("(disabled)"))
 		{
@@ -256,17 +256,17 @@ int VehicleObjectImplementation::notifyObjectDestructionObservers(TangibleObject
 		}
 
 		try {
-			if (attacker != _this.get()) {
+			if (attacker != _this.getReferenceUnsafeStaticCast()) {
 				Locker clocker(linkedCreature, attacker);
 
 				linkedCreature->updateCooldownTimer("mount_dismount", 0);
-				linkedCreature->executeObjectControllerAction(String("dismount").hashCode());
+				linkedCreature->executeObjectControllerAction(STRING_HASHCODE("dismount"));
 
 			} else {
 				Locker locker(linkedCreature);
 
 				linkedCreature->updateCooldownTimer("mount_dismount", 0);
-				linkedCreature->executeObjectControllerAction(String("dismount").hashCode());
+				linkedCreature->executeObjectControllerAction(STRING_HASHCODE("dismount"));
 			}
 
 
@@ -274,18 +274,18 @@ int VehicleObjectImplementation::notifyObjectDestructionObservers(TangibleObject
 		}
 	}
 
-	if (attacker != _this.get())
+	if (attacker != _this.getReferenceUnsafeStaticCast())
 		wlock(attacker);
 	else
 		wlock();
 
-	return CreatureObjectImplementation::notifyObjectDestructionObservers(attacker, condition);
+	return CreatureObjectImplementation::notifyObjectDestructionObservers(attacker, condition, false);
 }
 
 void VehicleObjectImplementation::sendMessage(BasePacket* msg) {
 	ManagedReference<CreatureObject* > linkedCreature = this->linkedCreature.get();
 
-	if (linkedCreature != NULL && linkedCreature->getParent().get() == _this.get())
+	if (linkedCreature != NULL && linkedCreature->getParent().get() == _this.getReferenceUnsafeStaticCast())
 		linkedCreature->sendMessage(msg);
 	else
 		delete msg;

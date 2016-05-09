@@ -1,7 +1,6 @@
 blood_stained_merek = Creature:new {
 	objectName = "@mob/creature_names:blood_stained_merek",
 	socialGroup = "merek",
-	pvpFaction = "",
 	faction = "",
 	level = 32,
 	chanceHit = 0.4,
@@ -23,7 +22,7 @@ blood_stained_merek = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/merek_hue.iff"},
@@ -33,7 +32,7 @@ blood_stained_merek = Creature:new {
 	weapons = {"creature_spit_small_red"},
 	conversationTemplate = "",
 	attacks = {
-		{"knockdownattack","knockdownChance=50"}
+		{"knockdownattack",""}
 	}
 }
 

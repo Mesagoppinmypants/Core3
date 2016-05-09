@@ -1,7 +1,6 @@
 bark_mite_burrower_drone = Creature:new {
 	objectName = "@mob/creature_names:bark_mite_burrower_drone",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 29,
 	chanceHit = 0.36,
@@ -23,7 +22,7 @@ bark_mite_burrower_drone = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bark_mite_hue.iff"},

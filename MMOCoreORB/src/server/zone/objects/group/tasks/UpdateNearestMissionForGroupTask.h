@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef UPDATENEARESTMISSIONFORGROUPTASK_H_
 #define UPDATENEARESTMISSIONFORGROUPTASK_H_
@@ -72,18 +32,22 @@ public:
 	}
 
 	void run() {
-		GroupObject* group = groupRef.get();
+		Reference<GroupObject*> group = groupRef.get();
 		if (group == NULL) {
 			return;
 		}
+
 		Locker locker(group);
 
 		// Filter the group by planet.
-		Vector<CreatureObject*> groupMembersOnPlanet;
-		for(int i = 0; i < group->getGroupSize(); i++) {
-			if (group->getGroupMember(i) != NULL && group->getGroupMember(i)->isPlayerCreature()) {
-				Reference<CreatureObject*> groupMember = (group->getGroupMember(i)).castTo<CreatureObject*>();
-				if (groupMember->getPlanetCRC() == planetCRC) {
+		Vector<Reference<CreatureObject*> > groupMembersOnPlanet;
+		for (int i = 0; i < group->getGroupSize(); i++) {
+			Reference<CreatureObject*> groupMember = group->getGroupMember(i);
+
+			if (groupMember != NULL && groupMember->isPlayerCreature()) {
+				Zone* zone = groupMember->getZone();
+
+				if (zone != NULL && zone->getZoneCRC() == planetCRC) {
 					groupMembersOnPlanet.add(groupMember);
 				}
 			}
@@ -97,7 +61,8 @@ public:
 		float totalX = 0;
 		float totalY = 0;
 		float totalZ = 0;
-		for(int i = 0; i< groupMembersOnPlanet.size(); i++) {
+
+		for (int i = 0; i < groupMembersOnPlanet.size(); i++) {
 			if (groupMembersOnPlanet.get(i) != NULL) {
 				CreatureObject* groupMember = groupMembersOnPlanet.get(i);
 				Vector3 groupMemberPostion = groupMember->getWorldPosition();
@@ -106,28 +71,36 @@ public:
 				totalZ += groupMemberPostion.getZ();
 			}
 		}
+
 		Vector3 averageGroupMemberLocation = Vector3(totalX / groupMembersOnPlanet.size(), totalY / groupMembersOnPlanet.size(), totalZ / groupMembersOnPlanet.size());
 
 		// Find all of the missions for the group members on the planet.
 		Vector<Reference<MissionObject*> > missionsOnPlanet;
-		for(int i = 0; i< groupMembersOnPlanet.size(); i++) {
+
+		for (int i = 0; i < groupMembersOnPlanet.size(); i++) {
 			CreatureObject* groupMember = groupMembersOnPlanet.get(i);
+
 			if (groupMember != NULL) {
 				SceneObject* datapad = groupMember->getSlottedObject("datapad");
 				if (datapad == NULL) {
 					continue;
 				}
+
 				int numberOfMissionsForMember = 0;
+
 				Locker clocker(groupMember, group);
-				for(int k = 0; k < datapad->getContainerObjectsSize(); k++) {
+
+				for (int k = 0; k < datapad->getContainerObjectsSize(); k++) {
 					if (datapad->getContainerObject(k) != NULL && datapad->getContainerObject(k)->isMissionObject()) {
 						numberOfMissionsForMember++;
-						MissionObject* mission = datapad->getContainerObject(k).castTo<MissionObject*>();
+						Reference<MissionObject*> mission = datapad->getContainerObject(k).castTo<MissionObject*>();
+
 						if (mission->getWaypointToMission() != NULL && mission->getWaypointToMission()->getPlanetCRC() == planetCRC) {
 							missionsOnPlanet.add(mission);
 						}
 					}
 				}
+
 				if (numberOfMissionsForMember >= 2) {
 					continue;
 				}
@@ -135,14 +108,15 @@ public:
 		}
 
 		// Finally find the closest mission.
-		MissionObject* nearestMission = NULL;
+		Reference<MissionObject*> nearestMission = NULL;
 		if (missionsOnPlanet.size() == 1) {
 			nearestMission = missionsOnPlanet.get(0);
-		}
-		else {
+		} else {
 			float shortestDistanceSoFar = std::numeric_limits<float>::max();
-			for(int i = 0; i< missionsOnPlanet.size(); i++) {
+
+			for (int i = 0; i < missionsOnPlanet.size(); i++) {
 				float disstanceToMission = calculateManhattanDistanceToMission(averageGroupMemberLocation, missionsOnPlanet.get(i));
+
 				if (disstanceToMission < shortestDistanceSoFar) {
 					shortestDistanceSoFar = disstanceToMission;
 					nearestMission = missionsOnPlanet.get(i);
@@ -152,11 +126,14 @@ public:
 
 		// If a mission was found, add the nearest mission waypoint for all members. Otherwise if a mission
 		// was not found then remove the nearest mission waypoint for all members.
-		for(int i = 0; i< groupMembersOnPlanet.size(); i++) {
+		for (int i = 0; i < groupMembersOnPlanet.size(); i++) {
 			CreatureObject* groupMember = groupMembersOnPlanet.get(i);
+
+			Locker clocker(groupMember, group);
+
 			if (groupMember->getPlayerObject() != NULL) {
 				PlayerObject* ghost = groupMember->getPlayerObject();
-				Locker clocker(ghost, group);
+
 				setPlayersNearestMissionForGroupWaypoint(ghost, nearestMission);
 			}
 		}
@@ -171,8 +148,8 @@ private:
 			return std::numeric_limits<float>::max();
 		}
 
-		return abs(position.getX() - mission->getWaypointToMission()->getWorldPositionX())
-				+ abs(position.getY() - mission->getWaypointToMission()->getWorldPositionY());
+		return fabs(position.getX() - mission->getWaypointToMission()->getWorldPositionX())
+				+ fabs(position.getY() - mission->getWaypointToMission()->getWorldPositionY());
 	}
 
 	void setPlayersNearestMissionForGroupWaypoint(PlayerObject* ghost, MissionObject* nearestMissionForGroup) {
@@ -182,22 +159,27 @@ private:
 
 		if (nearestMissionForGroup == NULL) {
 			ghost->removeWaypointBySpecialType(WaypointObject::SPECIALTYPE_NEARESTMISSIONFORGROUP, true);
-		}
-		else {
+		} else {
+			Zone* zone = nearestMissionForGroup->getZone();
+			uint32 crc = zone ? zone->getZoneCRC() : 0;
+
 			ManagedReference<WaypointObject*> waypoint = ghost->getWaypointBySpecialType(WaypointObject::SPECIALTYPE_NEARESTMISSIONFORGROUP);
 			if (waypoint == NULL) {
 				ZoneServer* zoneServer = ghost->getZoneServer();
 				waypoint = zoneServer->createObject(0xc456e788, 1).castTo<WaypointObject*>();
 			}
-			waypoint->setCustomObjectName(UnicodeString("Nearest mission for group"), false);
+
+			Locker locker(waypoint);
+
+			waypoint->setCustomObjectName("@group:groupwaypoint", false); // Nearest mission for group
 			waypoint->setSpecialTypeID(WaypointObject::SPECIALTYPE_NEARESTMISSIONFORGROUP);
-			waypoint->setPlanetCRC(nearestMissionForGroup->getZone()->getZoneCRC());
+			waypoint->setPlanetCRC(crc);
 			waypoint->setPosition(nearestMissionForGroup->getWaypointToMission()->getPositionX(),
 					nearestMissionForGroup->getWaypointToMission()->getPositionZ(),
 					nearestMissionForGroup->getWaypointToMission()->getPositionY());
 			waypoint->setColor(WaypointObject::COLOR_YELLOW);
 			waypoint->setActive(true);
-			ghost->setWaypoint(waypoint, true);
+			ghost->addWaypoint(waypoint, false);
 		}
 	}
 };

@@ -1,7 +1,6 @@
 desert_scavenger = Creature:new {
 	objectName = "@mob/creature_names:borgle_desert_runner",
 	socialGroup = "borgle",
-	pvpFaction = "",
 	faction = "",
 	level = 37,
 	chanceHit = 0.41,
@@ -23,7 +22,7 @@ desert_scavenger = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/borgle_hue.iff"},
@@ -32,8 +31,8 @@ desert_scavenger = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""},
+		{"blindattack",""}
 	}
 }
 

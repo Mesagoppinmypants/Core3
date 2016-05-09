@@ -1,7 +1,6 @@
 shear_mite_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_shear_mite",
 	socialGroup = "shear_mite",
-	pvpFaction = "",
 	faction = "",
 	level = 2,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ shear_mite_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/shear_mite_hue.iff"},

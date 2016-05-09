@@ -58,17 +58,20 @@ PanicShotCommand = {
 		{ "warcry_defense" }, 
 		{}, 
 		100, 
-		100, 
+		0, 
 		10 
 	  )
 	},
 
-	animationCRC = hashCode("fire_1_special_single_light"),
+	animation = "fire_1_special_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "panicshot",
 
 	coneAction = true,
 	coneAngle = 45,
+	
+	weaponType = PISTOLWEAPON,
 
 	range = -1
 }

@@ -43,13 +43,18 @@
 
 Saber1hComboHit2Command = {
         name = "saber1hcombohit2",
-        
-    damageMultiplier = 2.5,
-	speedMultiplier = 1.5,
-	forceCostMultiplier = 2.5,
 
-	animationCRC = hashCode("combo_5b_light"),
-	
+	damageMultiplier = 2.5,
+	speedMultiplier = 2.0,
+	healthCostMultiplier = 0,
+	actionCostMultiplier = 0,
+	mindCostMultiplier = 0,
+	forceCostMultiplier = 1.75,
+	visMod = 25,
+
+	animation = "combo_5b", 
+	animType = GENERATE_INTENSITY,
+
 	stateEffects = {
 	  StateEffect( 
 		POSTUREDOWN_EFFECT, 
@@ -57,14 +62,16 @@ Saber1hComboHit2Command = {
 		{ "posture_change_down_defense" }, 
 		{}, 
 		40, 
-		100, 
+		0, 
 		0 
 	  )
 	},
 
 	combatSpam = "saber1hcombohit2",
-	
+
 	poolsToDamage = HEALTH_ATTRIBUTE + ACTION_ATTRIBUTE + MIND_ATTRIBUTE,
+
+	weaponType = ONEHANDJEDIWEAPON,
 
 	range = -1
 }

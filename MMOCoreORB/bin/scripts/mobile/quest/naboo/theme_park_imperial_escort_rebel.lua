@@ -2,7 +2,6 @@ theme_park_imperial_escort_rebel = Creature:new {
 	objectName = "",
 	customName = "escort",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 4,
 	chanceHit = 0.24,
@@ -24,7 +23,7 @@ theme_park_imperial_escort_rebel = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_commoner_naboo_human_male_01.iff",

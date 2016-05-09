@@ -1,7 +1,8 @@
 trade_federation_pirate = Creature:new {
 	objectName = "@mob/creature_names:trade_federation_pirate",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "trade_federation",
-	pvpFaction = "trade_federation",
 	faction = "trade_federation",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +24,7 @@ trade_federation_pirate = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_trade_federation_zealot.iff"},
@@ -32,15 +33,15 @@ trade_federation_pirate = Creature:new {
 			groups = {
 				{group = "junk", chance = 2000000},
 				{group = "wearables_common", chance = 2000000},
-				{group = "pistols", chance = 2000000},					
+				{group = "pistols", chance = 2000000},
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000}
-			},
-			lootChance = 4800000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_light"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(marksmannovice,brawlernovice)
 }
 

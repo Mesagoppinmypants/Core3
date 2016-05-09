@@ -2,7 +2,6 @@ zekka_thyne = Creature:new {
 	objectName = "@npc_name:bothan_base_male",
 	customName = "Zekka Thyne",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ zekka_thyne = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_noble_bothan_male_01.iff"},

@@ -2,7 +2,6 @@ berema = Creature:new {
 	objectName = "@mob/creature_names:commoner",
 	customName = "Berema",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 4,
 	chanceHit = 0.24,
@@ -24,7 +23,7 @@ berema = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {   "object/mobile/dressed_commoner_tatooine_aqualish_female_05.iff" },

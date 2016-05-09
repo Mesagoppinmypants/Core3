@@ -52,11 +52,13 @@ UnarmedLunge2Command = {
 	actionCostMultiplier = 1.5,
 	mindCostMultiplier = 1.5,
 
-	animationCRC = hashCode("counter_mid_center_light"),
+	animation = "knockdown_unarmed_1",
 
 	combatSpam = "lungeshiak",
 
 	range = 20,
+	
+	weaponType = UNARMEDWEAPON,
 
 	stateEffects = {
 	  StateEffect( 
@@ -64,8 +66,8 @@ UnarmedLunge2Command = {
 		{ "knockdownRecovery", "lastKnockdown" }, 
 		{ "knockdown_defense" }, 
 		{}, 
-		50, 
 		100, 
+		0, 
 		0 
 	  )
 	}

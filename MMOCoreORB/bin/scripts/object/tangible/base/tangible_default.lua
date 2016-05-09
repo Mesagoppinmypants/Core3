@@ -48,11 +48,11 @@ object_tangible_base_tangible_default = object_tangible_base_shared_tangible_def
 	
 	maxCondition = 1000,
 	
-	useCount = 1,
+	useCount = 0,
 	
 	optionsBitmask = 256, --Default all objects to not display ham bars.
 	pvpStatusBitmask = 0,
-	objectMenuComponent = {"cpp", "TangibleObjectMenuComponent"},
+	objectMenuComponent = "TangibleObjectMenuComponent",
 
 	sliceable = 0
 }

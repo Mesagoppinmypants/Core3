@@ -2,7 +2,6 @@ diax = Creature:new {
 	objectName = "@mob/creature_names:diax",
 	customName = "Diax",
 	socialGroup = "nightsister",
-	pvpFaction = "nightsister",
 	faction = "nightsister",
 	level = 22,
 	chanceHit = 0.33,
@@ -24,7 +23,7 @@ diax = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_diax.iff"},

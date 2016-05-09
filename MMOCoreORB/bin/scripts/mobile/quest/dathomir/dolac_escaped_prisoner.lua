@@ -1,7 +1,6 @@
 dolac_escaped_prisoner = Creature:new {
 	objectName = "@mob/creature_names:prisoner",
 	socialGroup = "prisoner",
-	pvpFaction = "",
 	faction = "",
 	level = 27,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ dolac_escaped_prisoner = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

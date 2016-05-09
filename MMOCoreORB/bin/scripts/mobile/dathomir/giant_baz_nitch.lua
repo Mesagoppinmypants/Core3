@@ -1,7 +1,6 @@
 giant_baz_nitch = Creature:new {
 	objectName = "@mob/creature_names:giant_baz_nitch",
 	socialGroup = "baz_nitch",
-	pvpFaction = "",
 	faction = "",
 	level = 35,
 	chanceHit = 0.41,
@@ -23,7 +22,7 @@ giant_baz_nitch = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/giant_baz_nitch.iff"},

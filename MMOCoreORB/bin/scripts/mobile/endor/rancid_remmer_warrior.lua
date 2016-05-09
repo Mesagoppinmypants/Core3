@@ -1,7 +1,6 @@
 rancid_remmer_warrior = Creature:new {
 	objectName = "@mob/creature_names:rancid_remmer_warrior",
 	socialGroup = "remmer",
-	pvpFaction = "",
 	faction = "",
 	level = 33,
 	chanceHit = 0.39,
@@ -23,7 +22,7 @@ rancid_remmer_warrior = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/remmer_hue.iff"},
@@ -32,8 +31,8 @@ rancid_remmer_warrior = Creature:new {
 	weapons = {"creature_spit_small_red"},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"posturedownattack",""}
 	}
 }
 

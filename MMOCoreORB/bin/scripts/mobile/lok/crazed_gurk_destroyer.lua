@@ -1,7 +1,6 @@
 crazed_gurk_destroyer = Creature:new {
 	objectName = "@mob/creature_names:crazed_gurk_destroyer",
 	socialGroup = "gurk",
-	pvpFaction = "",
 	faction = "",
 	level = 43,
 	chanceHit = 0.44,
@@ -23,7 +22,7 @@ crazed_gurk_destroyer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gurk_hue.iff"},
@@ -33,8 +32,8 @@ crazed_gurk_destroyer = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
-		{"knockdownattack","knockdownChance=50"}
+		{"knockdownattack",""},
+		{"intimidationattack",""}
 	}
 }
 

@@ -2,7 +2,6 @@ oola = Creature:new {
 	objectName = "@mob/creature_names:oola",
 	customName = "",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ oola = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/oola.iff"},

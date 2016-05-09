@@ -1,7 +1,6 @@
 theme_park_imperial_engineer = Creature:new {
 	objectName = "@mob/creature_names:warren_imperial_officer",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 30,
 	chanceHit = 0.390000,
@@ -23,7 +22,7 @@ theme_park_imperial_engineer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

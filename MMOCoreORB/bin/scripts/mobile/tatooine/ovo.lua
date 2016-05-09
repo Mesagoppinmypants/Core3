@@ -2,7 +2,6 @@ ovo = Creature:new {
 	objectName = "@npc_name:bith_base_male",
 	customName = "Ovo",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ ovo = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_trooper_bith_m_01.iff"},

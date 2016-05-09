@@ -1,7 +1,6 @@
 jinkins = Creature:new {
 	objectName = "@mob/creature_names:jinkins",
 	socialGroup = "nym",
-	pvpFaction = "nym",
 	faction = "nym",
 	level = 22,
 	chanceHit = 0.330000,
@@ -23,7 +22,7 @@ jinkins = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/jinkins.iff"},

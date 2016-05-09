@@ -1,7 +1,6 @@
 lord_nyax = Creature:new {
 	objectName = "@mob/creature_names:lord_nyax",
 	socialGroup = "followers_of_lord_nyax",
-	pvpFaction = "followers_of_lord_nyax",
 	faction = "followers_of_lord_nyax",
 	level = 129,
 	chanceHit = 4.9,
@@ -23,25 +22,25 @@ lord_nyax = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_lord_nyax.iff"},
 	lootGroups = {
 		{
 		groups = {
-				{group = "junk", chance = 5000000},
-				{group = "nyax", chance = 2000000},
-				{group = "rifles", chance = 1000000},
+				{group = "junk", chance = 4000000},
+				{group = "nyax", chance = 3000000},
+				{group = "grenades_looted", chance = 1000000},
 				{group = "armor_attachments", chance = 1000000},
 				{group = "clothing_attachments", chance = 1000000}
-			},
-			lootChance = 6500000
+			}
 		}
 	},
 	weapons = {"nyaxs_weapons"},
 	conversationTemplate = "",
-	attacks = merge(brawlermaster,swordsmanmaster)
+	reactionStf = "@npc_reaction/fancy",
+	attacks = merge(marksmanmaster,riflemanmaster,carbineermaster,brawlermaster,swordsmanmaster)
 }
 
 CreatureTemplates:addCreatureTemplate(lord_nyax, "lord_nyax")

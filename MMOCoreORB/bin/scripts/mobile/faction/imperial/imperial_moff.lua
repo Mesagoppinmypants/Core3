@@ -1,8 +1,9 @@
 imperial_moff = Creature:new {
 	objectName = "",
-	customName = "Imperial Moff",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
+	customName = "an Imperial Moff",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 28,
 	chanceHit = 0.37,
@@ -24,7 +25,7 @@ imperial_moff = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_moff_m.iff"},
@@ -40,12 +41,13 @@ imperial_moff = Creature:new {
 				{group = "clothing_attachments", chance = 25000},
 				{group = "armor_attachments", chance = 25000},
 				{group = "wearables_common", chance = 1000000}
-			},
-			lootChance = 2800000
+			}
 		}
 	},
 	weapons = {"imperial_weapons_heavy"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/military",
+	personalityStf = "@hireling/hireling_military",
 	attacks = merge(riflemanmaster,carbineermaster,brawlermaster)
 }
 

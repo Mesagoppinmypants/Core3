@@ -1,7 +1,8 @@
 valarian_scout = Creature:new {
 	objectName = "@mob/creature_names:valarian_scout",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "valarian",
-	pvpFaction = "valarian",
 	faction = "valarian",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,25 +24,25 @@ valarian_scout = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_valarian_scout.iff"},
 	lootGroups = {
-	    {
+		{
 			groups = {
 				{group = "junk", chance = 2000000},
-				{group = "wearables_common", chance = 2000000},				
+				{group = "wearables_common", chance = 2000000},
 				{group = "tailor_components", chance = 1000000},
 				{group = "loot_kit_parts", chance = 2000000},
 				{group = "printer_parts", chance = 1500000},
 				{group = "valarian_common", chance = 1500000}
-			},
-			lootChance = 2200000
-		}			
+			}
+		}
 	},
 	weapons = {"pirate_weapons_light"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlernovice,marksmannovice)
 }
 

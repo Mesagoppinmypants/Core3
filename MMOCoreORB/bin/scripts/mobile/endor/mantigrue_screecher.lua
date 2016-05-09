@@ -1,7 +1,6 @@
 mantigrue_screecher = Creature:new {
 	objectName = "@mob/creature_names:mantigrue_screecher",
 	socialGroup = "mantigrue",
-	pvpFaction = "",
 	faction = "",
 	level = 55,
 	chanceHit = 0.55,
@@ -23,7 +22,7 @@ mantigrue_screecher = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mantigrue_night_stalker.iff"},
@@ -33,8 +32,8 @@ mantigrue_screecher = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"creatureareadisease",""},
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""},
+		{"creatureareadisease",""}
 	}
 }
 

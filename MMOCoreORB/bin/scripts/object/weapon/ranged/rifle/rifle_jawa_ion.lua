@@ -68,7 +68,7 @@ object_weapon_ranged_rifle_rifle_jawa_ion = object_weapon_ranged_rifle_shared_ri
 	-- HEAVYLIGHTNINGBEAMATTACK, HEAVYPARTICLEBEAMATTACK, HEAVYROCKETLAUNCHERATTACK, HEAVYLAUNCHERATTACK
 	attackType = RANGEDATTACK,
 
-	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, FORCE, LIGHTSABER
+	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, LIGHTSABER
 	damageType = STUN,
 
 	-- NONE, LIGHT, MEDIUM, HEAVY
@@ -114,10 +114,10 @@ object_weapon_ranged_rifle_rifle_jawa_ion = object_weapon_ranged_rifle_shared_ri
 	maxRange = 64,
 	maxRangeAccuracy = -80,
 
-	minDamage = 110,
-	maxDamage = 205,
+	minDamage = 500,
+	maxDamage = 600,
 
-	attackSpeed = 6.5,
+	attackSpeed = 4,
 
 	woundsRatio = 4,
 

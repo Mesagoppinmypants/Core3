@@ -50,22 +50,25 @@ BleedingShotCommand = {
 	actionCostMultiplier = 1,
 	mindCostMultiplier = 1,
 
-	animationCRC = hashCode("fire_3_single_light"),
+	animation = "fire_3_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "bleedingshot",
 
 	dotEffects = {
 	  DotEffect( 
 		BLEEDING, 
-		{ "resistance_bleeding", "bleed_resist", "combat_bleeding_defense" },
+		{ "resistance_bleeding", "bleed_resist" },
 		MIND,
 		true,
-		125,
+		0,
 		100,
 		30, 
 		30
 	  )
 	},
+	
+	weaponType = PISTOLWEAPON,
 
 	range = -1
 }

@@ -12,9 +12,9 @@
 #include "server/zone/objects/creature/buffs/DurationBuff.h"
 #include "server/zone/objects/creature/buffs/SpiceBuff.h"
 #include "server/zone/objects/creature/buffs/DelayedBuff.h"
-#include "server/zone/objects/creature/CreatureAttribute.h"
+#include "templates/params/creature/CreatureAttribute.h"
 #include "server/zone/packets/scene/AttributeListMessage.h"
-#include "server/zone/templates/tangible/ConsumableTemplate.h"
+#include "templates/tangible/ConsumableTemplate.h"
 #include "server/zone/objects/tangible/consumable/DelayedBuffObserver.h"
 #include "server/zone/managers/player/PlayerManager.h"
 
@@ -47,12 +47,8 @@ void ConsumableImplementation::loadTemplateData(SharedObjectTemplate* templateDa
 
 	modifiers = *consumable->getModifiers();
 	buffName = consumable->getBuffName();
-	//protected string modifierString;
 
-	//buffCRC = consumable->getBuffCRC();
 	buffCRC = buffName.hashCode();
-
-	//consumableType = consumable->getConsumableType(); set by the subobject
 
 	foragedFood = consumable->getForagedFood();
 
@@ -176,22 +172,31 @@ int ConsumableImplementation::handleObjectMenuSelect(CreatureObject* player, byt
 	switch (effectType) {
 	case EFFECT_ATTRIBUTE: {
 		buff = new Buff(player, buffName.hashCode(), duration, BuffType::FOOD);
+
+		Locker locker(buff);
+
 		setModifiers(buff, false);
 		break;
 	}
 
 	case EFFECT_SKILL: {
 		buff = new Buff(player, buffName.hashCode(), duration, BuffType::FOOD);
+
+		Locker locker(buff);
+
 		setModifiers(buff, true);
 		break;
 	}
 
 	case EFFECT_SPICE: {
-		buff = new SpiceBuff(player, buffName, String("spice." + buffName + ".up").hashCode(), duration);
+		buff = new SpiceBuff(player, buffName, String::hashCode("spice." + buffName + ".up"), duration);
+
+		Locker locker(buff);
+
 		setModifiers(buff, false);
-		//buff->parseAttributeModifierString(modifierString);
+
 		player->addBuff(buff);
-		//useCharge(player);
+
 		decreaseUseCount();
 		return 1;
 	}
@@ -214,16 +219,22 @@ int ConsumableImplementation::handleObjectMenuSelect(CreatureObject* player, byt
 
 	case EFFECT_DURATION: {
 		buff = new DurationBuff(player, buffName.hashCode(), duration);
+
+		Locker locker(buff);
+
 		setModifiers(buff, true);
-		//buff->parseSkillModifierString(generateModifierString());
 		break;
 	}
 
 	case EFFECT_DELAYED: {
 		buff = new DelayedBuff(player, buffName.hashCode(), duration);
+
+		Locker locker(buff);
+
 		setModifiers(buff, true);
 
-		DelayedBuff* delayedBuff = cast<DelayedBuff*>(buff.get());
+		DelayedBuff* delayedBuff = buff.castTo<DelayedBuff*>();
+
 		delayedBuff->init(&eventTypes);
 
 		break;
@@ -249,12 +260,25 @@ int ConsumableImplementation::handleObjectMenuSelect(CreatureObject* player, byt
 			//Tilla till reduces food stomach filling by a percentage
 			int currentfilling = ghost->getFoodFilling();
 			ghost->setFoodFilling(round(currentfilling * (100 - nutrition) / 100.0f), true);
+		} else if (effect == "slow_dot" && player->getDamageOverTimeList()->hasDot()) {
+			player->getDamageOverTimeList()->multiplyAllDOTDurations((100 - nutrition) / 100.f);
+			StringIdChatParameter params("@combat_effects:slow_dot_done"); // The remaining duration of DOTs affecting you have been reduced by %DI%.
+			params.setDI(nutrition);
+			player->sendSystemMessage(params);
 		}
-	}
+
+		break;
 	}
 
-	if (buff != NULL)
+	default:
+		break;
+        }
+
+	if (buff != NULL) {
+		Locker locker(buff);
+
 		player->addBuff(buff);
+	}
 
 	if (isFood())
 		ghost->setFoodFilling(ghost->getFoodFilling() + filling, true);
@@ -262,12 +286,11 @@ int ConsumableImplementation::handleObjectMenuSelect(CreatureObject* player, byt
 	if (isDrink())
 		ghost->setDrinkFilling(ghost->getDrinkFilling() + filling, true);
 
-	StringIdChatParameter stringId("base_player", "prose_consume_item");
+	StringIdChatParameter stringId("base_player", "prose_consume_item"); // You consume %TT.
 	stringId.setTT(getObjectID());
-	player->sendSystemMessage(stringId);//player->sendSystemMessage("base_player", "prose_consume_item", objectID);;
+	player->sendSystemMessage(stringId);
 
 	// Play the client effect sound depending on species/gender.
-
 	// Get the species.
 	int species = player->getSpecies();
 
@@ -295,9 +318,7 @@ int ConsumableImplementation::handleObjectMenuSelect(CreatureObject* player, byt
 		break;
 
 	}
-
 	//Consume a charge from the item, destroy it if it reaches 0 charges remaining.
-	//useCharge(player);
 	decreaseUseCount();
 
 	return 0;
@@ -359,7 +380,7 @@ void ConsumableImplementation::fillAttributeList(AttributeListMessage* alm, Crea
 		}
 
 		for (int i = 0; i < modifiers.size(); ++i) {
-			VectorMapEntry<String, float>* entry = &modifiers.elementAt(i);;
+			VectorMapEntry<String, float>* entry = &modifiers.elementAt(i);
 			alm->insertAttribute(entry->getKey() + "_heal", nutrition);
 		}
 

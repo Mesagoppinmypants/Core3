@@ -1,7 +1,6 @@
 piket_longhorn_female = Creature:new {
 	objectName = "@mob/creature_names:piket_longhorn_female",
 	socialGroup = "piket",
-	pvpFaction = "",
 	faction = "",
 	level = 30,
 	chanceHit = 0.39,
@@ -24,7 +23,7 @@ piket_longhorn_female = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/piket_hue.iff"},
@@ -33,8 +32,8 @@ piket_longhorn_female = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"posturedownattack","postureDownChance=50"}
+		{"dizzyattack",""},
+		{"posturedownattack",""}
 	}
 }
 

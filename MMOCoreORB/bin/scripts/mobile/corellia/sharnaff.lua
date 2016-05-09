@@ -1,7 +1,6 @@
 sharnaff = Creature:new {
 	objectName = "@mob/creature_names:sharnaff",
 	socialGroup = "sharnaff",
-	pvpFaction = "",
 	faction = "",
 	level = 31,
 	chanceHit = 0.38,
@@ -24,7 +23,7 @@ sharnaff = Creature:new {
 	ferocity = 2,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/sharnaff.iff"},
@@ -33,14 +32,14 @@ sharnaff = Creature:new {
 			groups = {
 				{group = "sharnaff_common", chance = 10000000}
 			},
-			lootChance = 2900000
+			lootChance = 1620000
 		}
 	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"stunattack","stunChance=50"}
+		{"dizzyattack",""},
+		{"stunattack",""}
 	}
 }
 

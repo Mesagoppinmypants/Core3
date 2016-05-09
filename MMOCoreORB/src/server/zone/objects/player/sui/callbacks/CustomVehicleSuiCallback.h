@@ -12,18 +12,22 @@
 #include "server/zone/objects/player/sui/listbox/SuiListBox.h"
 #include "server/zone/objects/player/sui/colorbox/SuiColorBox.h"
 #include "server/zone/objects/player/sui/SuiCallback.h"
-#include "server/zone/objects/player/sui/callbacks/ColorArmorSuiCallback.h"
+#include "server/zone/objects/player/sui/callbacks/ColorWithKitSuiCallback.h"
 
 
 
 class CustomVehicleSuiCallback : public SuiCallback {
-int numPalette;
+	int numPalette;
+	TangibleObject* customizationKit;
 
 public:
-	CustomVehicleSuiCallback(ZoneServer* serv,int palette) : SuiCallback(serv), numPalette(palette) {
+	CustomVehicleSuiCallback(ZoneServer* serv,int palette, TangibleObject* kitTano ) :
+		SuiCallback(serv), numPalette(palette), customizationKit(kitTano) {
 	}
 
-	void run(CreatureObject* creature, SuiBox* sui, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* creature, SuiBox* sui, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (!sui->isListBox() || cancelPressed)
 			return;
 
@@ -36,6 +40,9 @@ public:
 		if(obj == NULL)
 			return;
 
+		if( customizationKit == NULL )
+			return;
+
 		ManagedReference<TangibleObject*> target = cast<TangibleObject*>(obj.get());
 
 		if(!cancelPressed) {
@@ -46,8 +53,6 @@ public:
 				return;
 
 			if(server != NULL) {
-				//ManagedReference<TangibleObject*> target = dynamic_cast<TangibleObject*>(server->getObject(targetID, true));
-
 				if (target == NULL || !target->isVehicleObject()) {
 					creature->sendSystemMessage("You can only use this tool to customize vehicle");
 					return;
@@ -70,7 +75,7 @@ public:
 					if (varkey.contains("color")){
 						if (count == index){
 							ManagedReference<SuiColorBox*> cbox = new SuiColorBox(creature, SuiWindowType::COLOR_ARMOR);
-							cbox->setCallback(new ColorArmorSuiCallback(server));
+							cbox->setCallback(new ColorWithKitSuiCallback(server, customizationKit));
 							cbox->setColorPalette(variables.elementAt(i).getKey());
 							cbox->setUsingObject(target);
 

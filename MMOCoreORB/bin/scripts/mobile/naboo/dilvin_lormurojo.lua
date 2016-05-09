@@ -2,7 +2,6 @@ dilvin_lormurojo = Creature:new {
 	objectName = "",
 	customName = "Dilvin Lormurojo",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ dilvin_lormurojo = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_noble_human_male_03.iff"},

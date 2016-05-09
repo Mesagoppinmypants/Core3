@@ -1,7 +1,6 @@
 tusken_savage = Creature:new {
 	objectName = "@mob/creature_names:tusken_savage",
 	socialGroup = "tusken_raider",
-	pvpFaction = "tusken_raider",
 	faction = "tusken_raider",
 	level = 20,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ tusken_savage = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/tusken_raider.iff"},
@@ -32,20 +31,19 @@ tusken_savage = Creature:new {
 			groups = {
 				{group = "junk", chance = 1500000},
 				{group = "tusken_common", chance = 3000000},
-				{group = "wearables_common", chance = 2000000},				
+				{group = "wearables_common", chance = 2000000},
 				{group = "bone_armor", chance = 750000},
 				{group = "chitin_armor", chance = 750000},
 				{group = "armor_attachments", chance = 500000},
 				{group = "clothing_attachments", chance = 500000},
 				{group = "color_crystals", chance = 500000},
 				{group = "crystals_poor", chance = 500000}
-			},
-			lootChance = 2300000
-		}		
+			}
+		}
 	},
 	weapons = {"tusken_weapons"},
 	conversationTemplate = "",
-	attacks = merge(marksmanmaster,brawlermaster)
+	attacks = merge(marksmanmaster,brawlermaster,carbineermaster)
 }
 
 CreatureTemplates:addCreatureTemplate(tusken_savage, "tusken_savage")

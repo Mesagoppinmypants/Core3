@@ -1,7 +1,6 @@
 vrobal_sow = Creature:new {
 	objectName = "@mob/creature_names:vrobal_sow",
 	socialGroup = "vrobal",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ vrobal_sow = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/vrobal_bull.iff"},
@@ -33,7 +32,7 @@ vrobal_sow = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

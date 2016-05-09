@@ -55,7 +55,8 @@ FlameCone2Command = {
 
 	poolsToDamage = RANDOM_ATTRIBUTE,
 
-	animationCRC = hashCode("fire_flame_thrower_cone_2_light"),
+	animation = "fire_flame_thrower_cone_2", 
+	animType = GENERATE_INTENSITY,
 	combatSpam = "flamecone2",
 	dotEffects = {
 	  DotEffect( 
@@ -63,7 +64,7 @@ FlameCone2Command = {
 		{"resistance_fire", "fire_resist"},
 		HEALTH,
 		true,
-		100,
+		0,
 		100,
 		100, 
 		60,
@@ -71,6 +72,9 @@ FlameCone2Command = {
 		2
 	  )
 	},
+	
+	weaponType = SPECIALHEAVYWEAPON,
+	
 	range = 16
 }
 

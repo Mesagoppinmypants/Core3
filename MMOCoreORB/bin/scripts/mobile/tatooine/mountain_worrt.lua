@@ -1,7 +1,6 @@
 mountain_worrt = Creature:new {
 	objectName = "@mob/creature_names:mountain_worrt",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 22,
 	chanceHit = 0.34,
@@ -23,18 +22,18 @@ mountain_worrt = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mountain_worrt.iff"},
 	controlDeviceTemplate = "object/intangible/pet/worrt_hue.iff",
-	scale = 1.25,
+	scale = 5.5,
 	lootGroups = {},
 	weapons = {"creature_spit_small_red"},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"knockdownattack","knockdownChance=50"}
+		{"knockdownattack",""},
+		{"dizzyattack",""}
 	}
 }
 

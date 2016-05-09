@@ -1,7 +1,8 @@
 neo_cobral_boss = Creature:new {
 	objectName = "@mob/creature_names:cobral_boss",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "cobral",
-	pvpFaction = "cobral",
 	faction = "cobral",
 	level = 30,
 	chanceHit = 0.38,
@@ -23,27 +24,27 @@ neo_cobral_boss = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/mobile/dressed_cobral_boss_twk_female_01.iff",
 		"object/mobile/dressed_cobral_boss_twk_male_01.iff"},
-	
+
 	lootGroups = {
-	    {
+		{
 			groups = {
 				{group = "junk", chance = 2000000},
 				{group = "wearables_all", chance = 2000000},
 				{group = "carbines", chance = 2000000},
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000}
-			},
-			lootChance = 3200000
-		}					
+			}
+		}
 	},
 	weapons = {"pirate_weapons_medium"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 

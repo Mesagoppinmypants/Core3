@@ -2,7 +2,6 @@ kaeline_ungasan = Creature:new {
 	objectName = "@npc_name:human_base_male",
 	customName = "Kaeline Ungasan",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 11,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ kaeline_ungasan = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_kaeline_ungasan.iff"},

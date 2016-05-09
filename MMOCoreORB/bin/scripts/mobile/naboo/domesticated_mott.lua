@@ -1,7 +1,6 @@
 domesticated_mott = Creature:new {
 	objectName = "@mob/creature_names:domesticated_mott",
 	socialGroup = "naboo",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ domesticated_mott = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/mott_hue.iff"},

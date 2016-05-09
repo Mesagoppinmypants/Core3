@@ -1,7 +1,6 @@
 oozing_dung_mite_guardian = Creature:new {
 	objectName = "@mob/creature_names:oozing_dung_royal_guardian",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 17,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ oozing_dung_mite_guardian = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/dung_mite.iff"},
@@ -34,7 +33,7 @@ oozing_dung_mite_guardian = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"mediumdisease",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

@@ -12,10 +12,10 @@
 #include "server/zone/objects/draftschematic/DraftSchematic.h"
 #include "server/zone/packets/object/ObjectMenuResponse.h"
 
-#include "server/zone/templates/tangible/LootSchematicTemplate.h"
+#include "templates/tangible/LootSchematicTemplate.h"
 #include "server/zone/managers/crafting/schematicmap/SchematicMap.h"
 
-void LootSchematicMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) {
+void LootSchematicMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 
 	if (!sceneObject->isTangibleObject())
 		return;
@@ -41,7 +41,7 @@ void LootSchematicMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject
 
 }
 
-int LootSchematicMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) {
+int LootSchematicMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) const {
 	if (!sceneObject->isTangibleObject())
 		return 0;
 
@@ -66,10 +66,9 @@ int LootSchematicMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
 		String skillNeeded = schematicData->getRequiredSkill();
 
 		if((!skillNeeded.isEmpty() && !player->hasSkill(skillNeeded))) {
-			StringIdChatParameter* noSkill = NULL;
-			noSkill = new StringIdChatParameter("@loot_schematic:not_enough_skill"); // You must have %TO skill in order to understand this.
-			noSkill->setTO(skillNeeded);
-			player->sendSystemMessage(*noSkill);
+			StringIdChatParameter noSkill("@loot_schematic:not_enough_skill"); // You must have %TO skill in order to understand this.
+			noSkill.setTO(skillNeeded);
+			player->sendSystemMessage(noSkill);
 			return 0;
 		}
 

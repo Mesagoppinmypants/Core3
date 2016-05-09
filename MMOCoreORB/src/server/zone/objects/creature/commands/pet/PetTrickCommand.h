@@ -10,7 +10,7 @@
 
 #include "server/zone/objects/creature/commands/QueueCommand.h"
 #include "server/zone/objects/scene/SceneObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 
 class PetTrickCommand : public QueueCommand {
 public:
@@ -19,7 +19,7 @@ public:
 	}
 
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
 		ManagedReference<PetControlDevice*> controlDevice = creature->getControlDevice().castTo<PetControlDevice*>();
 
@@ -57,7 +57,7 @@ public:
 			return GENERALERROR;
 
 		// Check pet states
-		if( pet->isInCombat() || pet->isDead() || pet->isIncapacitated() ){
+		if(pet->isInCombat() || pet->isDead() || pet->isIncapacitated() || pet->getPosture() == CreaturePosture::KNOCKEDDOWN){
 			player->sendSystemMessage("@pet/pet_menu:sys_cant_trick"); // "You can't have your pet perform a trick right now."
 			return GENERALERROR;
 		}
@@ -67,6 +67,8 @@ public:
 			player->sendSystemMessage("@pet/pet_menu:sys_cant_trick"); // "You can't have your pet perform a trick right now."
 			return GENERALERROR;
 		}
+
+		Locker locker(player, pet);
 
 		// Check player HAM
 		int actionCost = player->calculateCostAdjustment(CreatureAttribute::QUICKNESS, 50 * trickNumber );
@@ -83,19 +85,26 @@ public:
 		int shockHeal = 100 * trickNumber;
 
 		// Heal wounds
-		pet->addWounds(CreatureAttribute::MIND, -mindHeal);
-		pet->addWounds(CreatureAttribute::FOCUS, -focusHeal);
-		pet->addWounds(CreatureAttribute::WILLPOWER, -willHeal);
+		pet->healWound(player, CreatureAttribute::MIND, mindHeal, true, false);
+		pet->healWound(player, CreatureAttribute::FOCUS, focusHeal, true, false);
+		pet->healWound(player, CreatureAttribute::WILLPOWER, willHeal, true, false);
 
 		// Heal battle fatigue
-		pet->addShockWounds(-shockHeal);
+		pet->addShockWounds(-shockHeal, true, false);
 
 		// Heal damage
 		mindHeal = MIN( mindHeal, pet->getMaxHAM(CreatureAttribute::MIND) - pet->getHAM(CreatureAttribute::MIND) );
 		pet->inflictDamage(pet, CreatureAttribute::MIND, -mindHeal, false);
 
+		if (pet->getPosture() != CreaturePosture::UPRIGHT && pet->getPosture() != CreaturePosture::SITTING)
+			pet->setPosture(CreaturePosture::UPRIGHT);
+
 		// Perform trick animation
 		String animation = "trick_" + String::valueOf(trickNumber);
+
+		if (pet->getPosture() == CreaturePosture::SITTING)
+			animation = "sit_" + animation;
+
 		pet->doAnimation(animation);
 
 		// Set cooldown

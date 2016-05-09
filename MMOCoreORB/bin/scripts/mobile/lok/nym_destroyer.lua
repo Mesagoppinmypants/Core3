@@ -1,7 +1,8 @@
 nym_destroyer = Creature:new {
 	objectName = "@mob/creature_names:nym_destroyer",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "nym",
-	pvpFaction = "nym",
 	faction = "nym",
 	level = 40,
 	chanceHit = 0.43,
@@ -23,15 +24,15 @@ nym_destroyer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_nym_destroyer_rod_m.iff",
-				"object/mobile/dressed_nym_destroyer_hum_m.iff",
-				"object/mobile/dressed_nym_destroyer_nikto_m.iff",
-				"object/mobile/dressed_nym_destroyer_wee_m.iff"},
+		"object/mobile/dressed_nym_destroyer_hum_m.iff",
+		"object/mobile/dressed_nym_destroyer_nikto_m.iff",
+		"object/mobile/dressed_nym_destroyer_wee_m.iff"},
 	lootGroups = {
-	    {
+		{
 			groups = {
 				{group = "junk", chance = 4500000},
 				{group = "wearables_uncommon", chance = 2000000},
@@ -39,12 +40,12 @@ nym_destroyer = Creature:new {
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
 				{group = "tailor_components", chance = 500000}
-			},
-			lootChance = 3500000
+			}
 		}
 	},
 	weapons = {"rebel_weapons_medium"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(riflemanmaster,carbineermaster,brawlermaster)
 }
 

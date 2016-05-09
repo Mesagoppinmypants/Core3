@@ -1,7 +1,6 @@
 porcellus = Creature:new {
 	objectName = "@mob/creature_names:porcellus",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ porcellus = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_porcellus.iff"},

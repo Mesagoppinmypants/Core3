@@ -68,7 +68,7 @@ object_weapon_ranged_rifle_rifle_berserker = object_weapon_ranged_rifle_shared_r
 	-- HEAVYLIGHTNINGBEAMATTACK, HEAVYPARTICLEBEAMATTACK, HEAVYROCKETLAUNCHERATTACK, HEAVYLAUNCHERATTACK
 	attackType = RANGEDATTACK,
 
-	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, FORCE, LIGHTSABER
+	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, LIGHTSABER
 	damageType = KINETIC,
 
 	-- NONE, LIGHT, MEDIUM, HEAVY
@@ -111,13 +111,13 @@ object_weapon_ranged_rifle_rifle_berserker = object_weapon_ranged_rifle_shared_r
 	idealRange = 35,
 	idealAccuracy = 0,
 	
-	minDamage = 160,
-	maxDamage = 452,
+	minDamage = 200,
+	maxDamage = 800,
 
 	maxRange = 65,
 	maxRangeAccuracy = 0,
 		
-	attackSpeed = 8,
+	attackSpeed = 6,
 
 	woundsRatio = 16,
 

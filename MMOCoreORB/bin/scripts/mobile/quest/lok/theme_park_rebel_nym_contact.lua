@@ -1,7 +1,6 @@
 theme_park_rebel_nym_contact = Creature:new {
 	objectName = "@mob/creature_names:nym_pirate_strong",
 	socialGroup = "nym",
-	pvpFaction = "nym",
 	faction = "nym",
 	level = 26,
 	chanceHit = 0.36,
@@ -23,7 +22,7 @@ theme_park_rebel_nym_contact = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_nym_pirate_strong_hum_f.iff", 

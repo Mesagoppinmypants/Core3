@@ -1,7 +1,8 @@
 panshee_elder = Creature:new {
 	objectName = "@mob/creature_names:panshee_elder",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "panshee_tribe",
-	pvpFaction = "panshee_tribe",
 	faction = "panshee_tribe",
 	level = 46,
 	chanceHit = 0.48,
@@ -23,7 +24,7 @@ panshee_elder = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -38,11 +39,11 @@ panshee_elder = Creature:new {
 		"object/mobile/dressed_ewok_m_01.iff",
 		"object/mobile/dressed_ewok_m_02.iff"},
 	lootGroups = {
-		 {
-	        groups = {
+		{
+			groups = {
 				{group = "ewok", chance = 10000000}
 			},
-			lootChance = 3000000
+			lootChance = 1920000
 		}
 	},
 	weapons = {"ewok_weapons"},

@@ -1,7 +1,6 @@
 young_reptilian_flier = Creature:new {
 	objectName = "@mob/creature_names:young_reptilian_flier",
 	socialGroup = "reptilian_flier",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,8 +22,8 @@ young_reptilian_flier = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 0,
-	diet = NONE,
+	optionsBitmask = AIENABLED,
+	diet = CARNIVORE,
 
 	templates = {"object/mobile/young_reptilian_flier.iff"},
 	scale = 0.8,
@@ -32,7 +31,7 @@ young_reptilian_flier = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 bloodseeker_mite_queen = Creature:new {
 	objectName = "@mob/creature_names:bloodseeker_mite_queen",
 	socialGroup = "bloodseeker",
-	pvpFaction = "",
 	faction = "",
 	level = 38,
 	chanceHit = 0.41,
@@ -23,7 +22,7 @@ bloodseeker_mite_queen = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bloodseeker_mite_queen.iff"},
@@ -32,7 +31,7 @@ bloodseeker_mite_queen = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
+		{"dizzyattack",""},
 		{"strongdisease",""}
 	}
 }

@@ -1,7 +1,8 @@
 imperial_medic = Creature:new {
 	objectName = "@mob/creature_names:imperial_medic",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 16,
 	chanceHit = 0.31,
@@ -23,13 +24,12 @@ imperial_medic = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/mobile/dressed_imperial_medic1_human_male_01.iff",
-		"object/mobile/dressed_imperial_medic2_21b_01.iff",
-		"object/mobile/dressed_imperial_medic3_human_male_01.iff"},
+		"object/mobile/dressed_imperial_medic2_21b_01.iff"},
 	lootGroups = {
 		{
 			groups = {
@@ -42,12 +42,12 @@ imperial_medic = Creature:new {
 				{group = "clothing_attachments", chance = 200000},
 				{group = "armor_attachments", chance = 200000},
 				{group = "wearables_common", chance = 1000000}
-			},
-			lootChance = 2400000
+			}
 		}
 	},
 	weapons = {"imperial_weapons_heavy"},
 	conversationTemplate = "imperialRecruiterConvoTemplate",
+	reactionStf = "@npc_reaction/military",
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 

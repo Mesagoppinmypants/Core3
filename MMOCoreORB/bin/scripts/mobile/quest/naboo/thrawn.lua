@@ -2,7 +2,6 @@ thrawn = Creature:new {
 	objectName = "",
 	customName = "Captain Thrawn",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 26,
 	chanceHit = 0.36,
@@ -24,7 +23,7 @@ thrawn = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/naboo_npc/thrawn.iff"},

@@ -1,17 +1,16 @@
 sith_shadow_pirate = Creature:new {
 	objectName = "@mob/creature_names:shadow_pirate",
 	socialGroup = "sith_shadow",
-	pvpFaction = "sith_shadow_nonaggro",
 	faction = "sith_shadow_nonaggro",
-	level = 90,
-	chanceHit = 0.85,
-	damageMin = 570,
-	damageMax = 850,
-	baseXp = 1864,
-	baseHAM = 13300,
-	baseHAMmax = 16300,
+	level = 32,
+	chanceHit = 0.39,
+	damageMin = 290,
+	damageMax = 300,
+	baseXp = 3279,
+	baseHAM = 8400,
+	baseHAMmax = 10200,
 	armor = 0,
-	resists = {65,65,50,75,75,70,70,65,-1},
+	resists = {30,30,30,30,30,30,30,30,-1},
 	meatType = "",
 	meatAmount = 0,
 	hideType = "",
@@ -21,9 +20,9 @@ sith_shadow_pirate = Creature:new {
 	milk = 0,
 	tamingChance = 0,
 	ferocity = 0,
-	pvpBitmask = ATTACKABLE,
+	pvpBitmask = ATTACKABLE + AGGRESSIVE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -54,8 +53,20 @@ sith_shadow_pirate = Creature:new {
 		"object/mobile/dressed_sith_shadow_zab_m_02.iff",
 		"object/mobile/dressed_sith_shadow_zab_m_03.iff"},
 	lootGroups = {
-	    {}				
+	    {
+			groups = {
+				{group = "junk", chance = 3500000},
+				{group = "tailor_components", chance = 1500000},
+				{group = "loot_kit_parts", chance = 1500000},
+				{group = "printer_parts", chance = 1000000},
+				{group = "wearables_common", chance = 1000000},
+				{group = "clothing_attachments", chance = 500000},
+				{group = "armor_attachments", chance = 500000},
+				{group = "village_resources", chance = 500000}
+			},
+		}
 	},
+
 	weapons = {"pirate_weapons_heavy"},
 	conversationTemplate = "",
 	attacks = merge(riflemanmaster,pistoleermaster,carbineermaster,marksmanmaster,brawlermaster)

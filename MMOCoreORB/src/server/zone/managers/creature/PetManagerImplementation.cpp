@@ -5,16 +5,18 @@
 #include "server/zone/managers/name/NameManager.h"
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/managers/player/PlayerManager.h"
-#include "server/zone/managers/templates/TemplateManager.h"
-#include "server/zone/objects/creature/AiAgent.h"
-#include "server/zone/objects/creature/DroidObject.h"
+#include "templates/manager/TemplateManager.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
+#include "server/zone/objects/creature/ai/DroidObject.h"
+#include "server/zone/objects/creature/ai/Creature.h"
 #include "server/zone/objects/creature/events/PetIncapacitationRecoverTask.h"
 #include "server/zone/objects/intangible/tasks/PetControlDeviceStoreObjectTask.h"
 #include "server/zone/objects/intangible/PetControlDevice.h"
 #include "server/zone/objects/intangible/tasks/EnqueuePetCommand.h"
-#include "server/zone/templates/datatables/DataTableIff.h"
-#include "server/zone/templates/datatables/DataTableRow.h"
-#include "server/zone/templates/params/primitives/StringParam.h"
+#include "templates/datatables/DataTableIff.h"
+#include "templates/datatables/DataTableRow.h"
+#include "templates/params/primitives/StringParam.h"
+#include "server/chat/ChatManager.h"
 
 void PetManagerImplementation::loadLuaConfig() {
 	info("Loading configuration file.", true);
@@ -49,6 +51,9 @@ void PetManagerImplementation::loadLuaConfig() {
 	luaObject.pop();
 
 	info("Loaded " + String::valueOf(mountSpeedData.size()) + " mount speeds.", true);
+
+	delete lua;
+	lua = NULL;
 }
 
 void PetManagerImplementation::loadValidMountScaleRanges() {
@@ -173,8 +178,10 @@ void PetManagerImplementation::handleChat(CreatureObject* speaker, AiAgent* pet,
 	// Handle command training
 	if( pcd->getTrainingCommand() > 0 ){
 		bool ownerChat = handleCommandTraining( speaker, pet, message );
-		if (ownerChat)
+		if (ownerChat) {
+			Locker locker(pcd);
 			pcd->setTrainingCommand(0); // no longer training
+		}
 
 		return;
 	}
@@ -184,8 +191,7 @@ void PetManagerImplementation::handleChat(CreatureObject* speaker, AiAgent* pet,
 		return;
 
 	// Check if speaker has permission to command pet
-	// TODO: Add check for players other than owner that are on pet's friend list
-	if( linkedCreature != speaker)
+	if( linkedCreature != speaker && !pcd->isFriend(speaker->getObjectID()))
 		return;
 
 	ManagedWeakReference<SceneObject*> speakerParent = speaker->getRootParent();
@@ -201,34 +207,40 @@ void PetManagerImplementation::handleChat(CreatureObject* speaker, AiAgent* pet,
 
 	// Handle trained command
 	if( isTrainedCommand( pcd, STAY, message ) ){
-		enqueuePetCommand(speaker, pet, String("petStay").toLowerCase().hashCode(), "");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petstay"), "");
 	}
 	else if( isTrainedCommand( pcd, FOLLOW, message ) ){
-		enqueuePetCommand(speaker, pet, String("petFollow").toLowerCase().hashCode(), "", true);
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petfollow"), String::valueOf(speaker->getObjectID()), true);
 	}
 	else if( isTrainedCommand( pcd, STORE, message ) ){
-		enqueueOwnerOnlyPetCommand(speaker, pet, String("petStore").toLowerCase().hashCode(), "");
+		enqueueOwnerOnlyPetCommand(speaker, pet, STRING_HASHCODE("petstore"), "");
 	}
 	else if( isTrainedCommand( pcd, ATTACK, message ) ){
-		enqueuePetCommand(speaker, pet, String("petAttack").toLowerCase().hashCode(), "");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petattack"), String::valueOf(speaker->getObjectID()));
 	}
 	else if( isTrainedCommand( pcd, GUARD, message ) ){
-		speaker->sendSystemMessage("GUARD pet command is not yet implemented.");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petguard"), "", true);
 	}
 	else if( isTrainedCommand( pcd, FRIEND, message ) ){
-		speaker->sendSystemMessage("FRIEND pet command is not yet implemented.");
+		enqueueOwnerOnlyPetCommand(speaker, pet, STRING_HASHCODE("petfriend"), "");
 	}
 	else if( isTrainedCommand( pcd, FOLLOWOTHER, message ) ){
-		enqueuePetCommand(speaker, pet, String("petFollow").toLowerCase().hashCode(), "");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petfollow"), String::valueOf(speaker->getObjectID()));
 	}
 	else if( isTrainedCommand( pcd, TRICK1, message ) ){
-		enqueuePetCommand(speaker, pet, String("petTrick").toLowerCase().hashCode(), "1", true);
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("pettrick"), "1", true);
 	}
 	else if( isTrainedCommand( pcd, TRICK2, message ) ){
-		enqueuePetCommand(speaker, pet, String("petTrick").toLowerCase().hashCode(), "2", true);
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("pettrick"), "2", true);
 	}
 	else if( isTrainedCommand( pcd, PATROL, message ) ){
-		speaker->sendSystemMessage("PATROL pet command is not yet implemented.");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petpatrol"), "");
+	}
+	else if( isTrainedCommand( pcd, GETPATROLPOINT, message ) ){
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petgetpatrolpoint"), "", true);
+	}
+	else if( isTrainedCommand( pcd, CLEARPATROLPOINTS, message ) ){
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petclearpatrolpoints"), "", true);
 	}
 	else if( isTrainedCommand( pcd, FORMATION1, message ) ){
 		speaker->sendSystemMessage("FORMATION2 pet command is not yet implemented.");
@@ -237,22 +249,22 @@ void PetManagerImplementation::handleChat(CreatureObject* speaker, AiAgent* pet,
 		speaker->sendSystemMessage("FORMATION2 pet command is not yet implemented.");
 	}
 	else if( isTrainedCommand( pcd, SPECIAL_ATTACK1, message ) ){
-		speaker->sendSystemMessage("SPECIAL_ATTACK1 pet command is not yet implemented.");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petspecialattack"), "1 " + String::valueOf(speaker->getObjectID()));
 	}
 	else if( isTrainedCommand( pcd, SPECIAL_ATTACK2, message ) ){
-		speaker->sendSystemMessage("SPECIAL_ATTACK2 pet command is not yet implemented.");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petspecialattack"), "2 " + String::valueOf(speaker->getObjectID()));
 	}
 	else if( isTrainedCommand( pcd, RANGED_ATTACK, message ) ){
-		speaker->sendSystemMessage("RANGED_ATTACK pet command is not yet implemented.");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petrangedattack"), "", true);
 	}
 	else if( isTrainedCommand( pcd, GROUP, message ) ){
-		enqueueOwnerOnlyPetCommand(speaker, pet, String("petGroup").toLowerCase().hashCode(), "");
+		enqueueOwnerOnlyPetCommand(speaker, pet, STRING_HASHCODE("petgroup"), "");
 	}
 	else if( isTrainedCommand( pcd, RECHARGEOTHER, message ) ){
-		enqueuePetCommand(speaker, pet, String("petRechargeOther").toLowerCase().hashCode(), "");
+		enqueuePetCommand(speaker, pet, STRING_HASHCODE("petrechargeother"), "");
 	}
 	else if( isTrainedCommand( pcd, TRANSFER, message ) ){
-		enqueueOwnerOnlyPetCommand(speaker, pet, String("petTransfer").toLowerCase().hashCode(), "");
+		enqueueOwnerOnlyPetCommand(speaker, pet, STRING_HASHCODE("pettransfer"), "");
 	}
 
 	// Hand off to droid modules for handling
@@ -319,9 +331,20 @@ bool PetManagerImplementation::handleCommandTraining(CreatureObject* speaker, Ai
 		return false;
 
 	if( pcd->hasTrainedCommandString(message) ){
-		pet->showFlyText("npc_reaction/flytext","confused", 204, 0, 0);  // "?!!?!?!"
+		if (pet->getOptionsBitmask() & OptionBitmask::CONVERSE) {
+			String stf = pet->getPersonalityStf();
+			StringBuffer message;
+			message << stf << ":confused";
+			StringIdChatParameter chat;
+			chat.setStringId(message.toString());
+			pet->getZoneServer()->getChatManager()->broadcastChatMessage(pet,chat,0,0,0);
+		} else {
+			pet->showFlyText("npc_reaction/flytext","confused", 204, 0, 0);  // "?"
+		}
 		return true;
 	}
+
+	Locker locker(pcd);
 
 	unsigned int trainingCommand = pcd->getTrainingCommand();
 	int petType = pcd->getPetType();
@@ -332,15 +355,20 @@ bool PetManagerImplementation::handleCommandTraining(CreatureObject* speaker, Ai
 
 		if (!alreadyTrained) {
 			bool success = false;
+			Creature* petCreature = cast<Creature*>(pet);
+
+			if (petCreature == NULL)
+				return false;
 
 			int skill = speaker->getSkillMod("tame_level");
-			int roll = System::random(skill + 30);
+			int level = petCreature->getAdultLevel();
+			int roll = System::random(skill + level);
 
 			if (skill > roll)
 				success = true;
 
 			if (!success) {
-				pet->showFlyText("npc_reaction/flytext","confused", 204, 0, 0);  // "?!!?!?!"
+				pet->showFlyText("npc_reaction/flytext","confused", 204, 0, 0);  // "?"
 				speaker->sendSystemMessage("@pet/pet_menu:pet_nolearn"); // Your pet doesn't seem to understand you.
 				return true;
 			}
@@ -348,7 +376,7 @@ bool PetManagerImplementation::handleCommandTraining(CreatureObject* speaker, Ai
 
 		// Success
 		pcd->addTrainedCommand( trainingCommand, message );
-		pet->showFlyText("npc_reaction/flytext","threaten", 204, 0, 0);  // "!"
+		pet->showFlyText("npc_reaction/flytext","threaten", 204, 0, 0);  // "?"
 		speaker->sendSystemMessage("@pet/pet_menu:pet_learn"); // You teach your pet a new command.
 
 		if (!alreadyTrained) {
@@ -368,14 +396,25 @@ bool PetManagerImplementation::handleCommandTraining(CreatureObject* speaker, Ai
 	}
 	else{
 		pcd->addTrainedCommand( trainingCommand, message );
-		pet->showFlyText("npc_reaction/flytext","threaten", 204, 0, 0);  // "!"
-		speaker->sendSystemMessage("@pet/pet_menu:pet_learn"); // You teach your pet a new command.
+		if (pet->getOptionsBitmask() & OptionBitmask::CONVERSE) {
+			String stf = pet->getPersonalityStf();
+			StringBuffer message;
+			message << stf << ":end_convo";
+			StringIdChatParameter chat;
+			chat.setStringId(message.toString());
+			pet->getZoneServer()->getChatManager()->broadcastChatMessage(pet,chat,0,0,0);
+		} else {
+			pet->showFlyText("npc_reaction/flytext","threaten", 204, 0, 0);  // "?"
+			speaker->sendSystemMessage("@pet/pet_menu:pet_learn"); // You teach your pet a new command.
+		}
 	}
 
 	// No renaming of faction pets
 	if (petType == FACTIONPET)
 		return true;
-
+	// no renaming of converse style droids with personalities installed.
+	if ( (pet->getOptionsBitmask() & OptionBitmask::CONVERSE) && petType == DROIDPET )
+		return true;
 	// Check for naming string
 	StringTokenizer tokenizer(message);
 	tokenizer.setDelimeter(" ");
@@ -435,6 +474,7 @@ void PetManagerImplementation::enqueuePetCommand(CreatureObject* player, AiAgent
 		targetID = player->getObjectID();
 	else
 		targetID = player->getTargetID();
+
 	//CreatureObject* pet, uint32 command, const String& args, uint64 target, int priority = -1
 	EnqueuePetCommand* enqueueCommand = new EnqueuePetCommand(pet, command, args, targetID, 1);
 	enqueueCommand->execute();
@@ -452,10 +492,9 @@ void PetManagerImplementation::enqueueOwnerOnlyPetCommand(CreatureObject* player
 	//CreatureObject* pet, uint32 command, const String& args, uint64 target, int priority = -1
 	EnqueuePetCommand* enqueueCommand = new EnqueuePetCommand(pet, command, args, player->getTargetID(), 1);
 	enqueueCommand->execute();
-
 }
 
-int PetManagerImplementation::notifyDestruction(TangibleObject* destructor, AiAgent* destructedObject, int condition) {
+int PetManagerImplementation::notifyDestruction(TangibleObject* destructor, AiAgent* destructedObject, int condition, bool isCombatAction) {
 	if (!destructedObject->isPet() || destructedObject->isDead() || destructedObject->isIncapacitated())
 		return 1;
 
@@ -463,20 +502,19 @@ int PetManagerImplementation::notifyDestruction(TangibleObject* destructor, AiAg
 		Reference<CreatureObject*> rider = destructedObject->getSlottedObject("rider").castTo<CreatureObject*>();
 
 		if (rider != NULL) {
+			Locker locker(rider);
 			rider->updateCooldownTimer("mount_dismount", 0);
-			rider->executeObjectControllerAction(String("dismount").hashCode());
+			rider->executeObjectControllerAction(STRING_HASHCODE("dismount"));
 		}
 	}
 
 	destructor->removeDefender(destructedObject);
 
-	destructedObject->clearDots();
-
 	ManagedReference<PetControlDevice*> petControlDevice = destructedObject->getControlDevice().get().castTo<PetControlDevice*>();
 
 	if (!destructor->isKiller() && petControlDevice != NULL && petControlDevice->getPetType() == CREATUREPET) {
 		destructedObject->setCurrentSpeed(0);
-		destructedObject->setPosture(CreaturePosture::INCAPACITATED, true);
+		destructedObject->setPosture(CreaturePosture::INCAPACITATED, false);
 		destructedObject->updateLocomotion();
 
 		uint32 incapTime = calculateIncapacitationTimer(destructedObject, condition);
@@ -499,7 +537,7 @@ int PetManagerImplementation::notifyDestruction(TangibleObject* destructor, AiAg
 		destructedObject->addPendingTask("incapacitationRecovery", task, incapTime * 1000);
 
 	} else {
-		killPet(destructor, destructedObject);
+		killPet(destructor, destructedObject, isCombatAction);
 	}
 
 	return 0;
@@ -520,39 +558,40 @@ uint32 PetManagerImplementation::calculateIncapacitationTimer(AiAgent* pet, int 
 	return recoveryTime;
 }
 
-void PetManagerImplementation::killPet(TangibleObject* attacker, AiAgent* pet) {
-
-	// TODO REMOVE AFTER TESTING
-	bool attackerIsAdmin = false;
-	// END REMOVE
-
+void PetManagerImplementation::killPet(TangibleObject* attacker, AiAgent* pet, bool isCombatAction) {
 	StringIdChatParameter stringId;
 
 	if (attacker->isPlayerCreature()) {
 		stringId.setStringId("base_player", "prose_target_dead");
 		stringId.setTT(pet->getObjectID());
 		(cast<CreatureObject*>(attacker))->sendSystemMessage(stringId);
-
-		// TODO REMOVE AFTER TESTING
-		//ManagedReference<PlayerObject*> ghost = (cast<CreatureObject*>(attacker))->getPlayerObject();
-		//if (ghost != NULL && ghost->isPrivileged())
-		//	attackerIsAdmin = true;
-		// END REMOVE
 	}
 
-	pet->setCurrentSpeed(0);
+	pet->clearDots();
+
 	pet->clearCombatState(true);
-	pet->setPosture(CreaturePosture::DEAD, true);
-	pet->updateLocomotion();
+	pet->setPosture(CreaturePosture::DEAD, !isCombatAction, !isCombatAction);
+	pet->setOblivious();
+	pet->storeFollowObject();
 
 	pet->updateTimeOfDeath();
-	pet->clearBuffs(false);
 
+	Reference<AiAgent*> petAgent = pet;
+
+	EXECUTE_TASK_1(petAgent, {
+			Locker locker(petAgent_p);
+
+			petAgent_p->clearBuffs(false);
+	});
 
 
 	ManagedReference<PetControlDevice*> petControlDevice = pet->getControlDevice().get().castTo<PetControlDevice*>();
 
 	if (petControlDevice != NULL) {
+		Locker locker(petControlDevice);
+
+		petControlDevice->setLastCommandTarget(NULL);
+		petControlDevice->setLastCommand(PetManager::FOLLOW);
 
 		if (petControlDevice->getPetType() == FACTIONPET) {
 			ManagedReference<CreatureObject*> owner = zoneServer->getObject(pet->getCreatureLinkID()).castTo<CreatureObject*>();
@@ -565,7 +604,7 @@ void PetManagerImplementation::killPet(TangibleObject* attacker, AiAgent* pet) {
 			petControlDevice->destroyObjectFromWorld(true);
 			petControlDevice->destroyObjectFromDatabase(true);
 
-		} else if ( (!attacker->isPlayerCreature() && !attacker->isPet()) || attackerIsAdmin) { // TODO REMOVE attackerIsAdmin AFTER TESTING
+		} else if (!attacker->isPlayerCreature() && !attacker->isPet()) {
 
 			if (pet->getCooldownTimerMap() != NULL && pet->getCooldownTimerMap()->isPast("vitalityLossCooldown")) {
 

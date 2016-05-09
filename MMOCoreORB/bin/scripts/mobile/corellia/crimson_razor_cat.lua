@@ -1,7 +1,6 @@
 crimson_razor_cat = Creature:new {
 	objectName = "@mob/creature_names:crimson_sand_panther",
 	socialGroup = "panther",
-	pvpFaction = "",
 	faction = "",
 	level = 29,
 	chanceHit = 0.39,
@@ -23,7 +22,7 @@ crimson_razor_cat = Creature:new {
 	ferocity = 9,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/crimson_sand_panther.iff"},
@@ -33,8 +32,8 @@ crimson_razor_cat = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"stunattack","stunChance=50"}
+		{"dizzyattack",""},
+		{"stunattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 surefoot_brackaset = Creature:new {
 	objectName = "@mob/creature_names:surefoot_brackaset",
 	socialGroup = "brackaset",
-	pvpFaction = "",
 	faction = "",
 	level = 46,
 	chanceHit = 0.44,
@@ -23,7 +22,7 @@ surefoot_brackaset = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/brackaset_hue.iff"},
@@ -33,14 +32,14 @@ surefoot_brackaset = Creature:new {
 	        groups = {
 				{group = "brackaset_common", chance = 10000000}
 			},
-			lootChance = 2300000
+			lootChance = 1920000
 		}
 	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"posturedownattack",""}
 	}
 }
 

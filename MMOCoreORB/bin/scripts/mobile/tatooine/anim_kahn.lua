@@ -1,7 +1,6 @@
 anim_kahn = Creature:new {
 	objectName = "@npc_spawner_n:anim_kahn",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ anim_kahn = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_valarian_swooper_leader.iff"},

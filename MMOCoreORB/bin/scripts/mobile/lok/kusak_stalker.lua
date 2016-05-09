@@ -1,7 +1,6 @@
 kusak_stalker = Creature:new {
 	objectName = "@mob/creature_names:kusak_stalker",
 	socialGroup = "kusak",
-	pvpFaction = "",
 	faction = "",
 	level = 24,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ kusak_stalker = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kusak_hue.iff"},
@@ -33,6 +32,7 @@ kusak_stalker = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
+		{"dizzyattack",""}
 	}
 }
 

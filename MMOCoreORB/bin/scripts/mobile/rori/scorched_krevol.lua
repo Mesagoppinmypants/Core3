@@ -1,7 +1,6 @@
 scorched_krevol = Creature:new {
 	objectName = "@mob/creature_names:scorched_krevol",
 	socialGroup = "krevol",
-	pvpFaction = "",
 	faction = "",
 	level = 8,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ scorched_krevol = Creature:new {
 	ferocity = 5,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/horned_krevol.iff"},
@@ -33,7 +32,7 @@ scorched_krevol = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

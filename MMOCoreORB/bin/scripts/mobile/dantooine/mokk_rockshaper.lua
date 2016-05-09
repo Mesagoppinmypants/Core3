@@ -1,7 +1,8 @@
 mokk_rockshaper = Creature:new {
 	objectName = "@mob/creature_names:mokk_rockshaper",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "mokk_tribe",
-	pvpFaction = "mokk_tribe",
 	faction = "mokk_tribe",
 	level = 71,
 	chanceHit = 0.65,
@@ -23,7 +24,7 @@ mokk_rockshaper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -32,13 +33,13 @@ mokk_rockshaper = Creature:new {
 	lootGroups = {
 		{
 			groups = {
-				{group = "junk", chance = 4000000},
+				{group = "junk", chance = 3500000},
 				{group = "loot_kit_parts", chance = 3000000},
 				{group = "armor_attachments", chance = 500000},
 				{group = "clothing_attachments", chance = 500000},
-				{group = "wearables_all", chance = 2000000}
-			},
-			lootChance = 3000000
+				{group = "wearables_all", chance = 2000000},
+				{group = "color_crystals", chance = 500000}
+			}
 		}
 	},
 	weapons = {"primitive_weapons"},

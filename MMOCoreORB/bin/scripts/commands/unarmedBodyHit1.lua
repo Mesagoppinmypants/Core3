@@ -53,9 +53,12 @@ UnarmedBodyHit1Command = {
 
 	poolsToDamage = HEALTH_ATTRIBUTE,
 
-	animationCRC = hashCode("attack_special_shoulder_bash_medium"),
+	animation = "attack_special_shoulder_bash", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "rancorrising",
+	
+	weaponType = UNARMEDWEAPON,
 
 	range = -1
 }

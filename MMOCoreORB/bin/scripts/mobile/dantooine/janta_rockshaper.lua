@@ -1,7 +1,8 @@
 janta_rockshaper = Creature:new {
 	objectName = "@mob/creature_names:janta_rockshaper",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "janta_tribe",
-	pvpFaction = "janta_tribe",
 	faction = "janta_tribe",
 	level = 75,
 	chanceHit = 0.7,
@@ -23,7 +24,7 @@ janta_rockshaper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -36,8 +37,7 @@ janta_rockshaper = Creature:new {
 				{group = "janta_common", chance = 1500000},
 				{group = "loot_kit_parts", chance = 3000000},
 				{group = "wearables_all", chance = 500000}
-			},
-			lootChance = 2000000
+			}
 		}
 	},
 	weapons = {"primitive_weapons"},

@@ -43,8 +43,9 @@
 
 object_weapon_melee_2h_sword_base_crafted_lightsaber_base = object_weapon_melee_2h_sword_base_shared_crafted_lightsaber_base:new {
 	
-	objectMenuComponent = {"cpp", "LightsaberObjectMenuComponent"},
+	objectMenuComponent = "LightsaberObjectMenuComponent",
 	--gameObjectType = 131089,
+	weaponType = TWOHANDJEDIWEAPON,
 }
 
 ObjectTemplates:addTemplate(object_weapon_melee_2h_sword_base_crafted_lightsaber_base, "object/weapon/melee/2h_sword/base/crafted_lightsaber_base.iff")

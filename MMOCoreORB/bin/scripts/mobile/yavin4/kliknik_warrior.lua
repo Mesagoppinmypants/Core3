@@ -1,7 +1,6 @@
 kliknik_warrior = Creature:new {
 	objectName = "@mob/creature_names:kliknik_warrior",
 	socialGroup = "kliknik",
-	pvpFaction = "",
 	faction = "",
 	level = 24,
 	chanceHit = 0.34,
@@ -23,7 +22,7 @@ kliknik_warrior = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kliknik_hue.iff"},
@@ -33,13 +32,13 @@ kliknik_warrior = Creature:new {
 	        groups = {
 				{group = "kliknik_common", chance = 10000000}
 			},
-			lootChance = 2000000
+			lootChance = 1480000
 		}
 	},
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

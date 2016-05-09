@@ -8,24 +8,27 @@
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/objects/intangible/PetControlDevice.h"
 #include "server/chat/ChatManager.h"
+#include "server/zone/objects/creature/events/SpawnCreatureTask.h"
 #include "engine/engine.h"
 
 class TameCreatureTask : public Task {
 
 private:
-	enum Phase { INITIAL, SECOND, THIRD, FOURTH, FINAL} currentPhase;
+	enum Phase { INITIAL, SECOND, FINAL} currentPhase;
 	int originalMask;
 	ManagedReference<Creature*> creature;
 	ManagedReference<CreatureObject*> player;
 	bool force;
+	bool adult;
 
 public:
-	TameCreatureTask(Creature* cre, CreatureObject* playo, int pvpMask, bool forced) : Task() {
+	TameCreatureTask(Creature* cre, CreatureObject* playo, int pvpMask, bool forced, bool adults) : Task() {
 		currentPhase = INITIAL;
 		creature = cre;
 		player = playo;
 		originalMask = pvpMask;
 		force = forced;
+		adult = adults;
 	}
 
 	void run() {
@@ -36,7 +39,7 @@ public:
 		player->removePendingTask("tame_pet");
 
 		if (force) {
-			success();
+			success(adult);
 			return;
 		}
 
@@ -54,43 +57,38 @@ public:
 		}
 
 		ChatManager* chatManager = player->getZoneServer()->getChatManager();
+		ManagedReference<PlayerObject*> ghost = player->getPlayerObject();
+
+		if (ghost == NULL)
+			return;
 
 		switch (currentPhase) {
 		case INITIAL:
-			chatManager->broadcastMessage(player, "@hireling/hireling:taming_2"); // Steady.
+			chatManager->broadcastChatMessage(player, "@hireling/hireling:taming_" + String::valueOf(System::random(4) + 1), 0, 0, 0, ghost->getLanguageID());
 			player->doAnimation("");
 			currentPhase = SECOND;
-			player->addPendingTask("tame_pet", this, 8000);
+			player->addPendingTask("tame_pet", this, 10000);
 			break;
 		case SECOND:
-			chatManager->broadcastMessage(player, "@hireling/hireling:taming_3"); // Don't be scared.
-			currentPhase = THIRD;
-			player->addPendingTask("tame_pet", this, 8000);
-			break;
-		case THIRD:
-			chatManager->broadcastMessage(player, "@hireling/hireling:taming_4"); // Don't bite me.
-			currentPhase = FOURTH;
-			player->addPendingTask("tame_pet", this, 8000);
-			break;
-		case FOURTH:
-			chatManager->broadcastMessage(player, "@hireling/hireling:taming_5"); // Good... er... boy?
+			chatManager->broadcastChatMessage(player, "@hireling/hireling:taming_" + String::valueOf(System::random(4) + 1), 0, 0, 0, ghost->getLanguageID());
 			currentPhase = FINAL;
-			player->addPendingTask("tame_pet", this, 8000);
+			player->addPendingTask("tame_pet", this, 10000);
 			break;
 		case FINAL:
 			float tamingChance = creature->getChanceToTame(player);
 
 			if (tamingChance > System::random(100))
-				success();
+				success(false);
 			else {
 				player->sendSystemMessage("@hireling/hireling:taming_fail"); // You fail to tame the creature.
 				creature->showFlyText("npc_reaction/flytext","fail", 204, 0, 0);  // You fail to tame the creature.
 				resetStatus();
 
 				int ferocity = creature->getFerocity();
-				if (System::random(20 - ferocity) == 0)
-					_clocker.release();
+
+				if (System::random(20 - ferocity) == 0) {
 					CombatManager::instance()->startCombat(creature,player,true);
+				}
 			}
 
 			break;
@@ -99,19 +97,12 @@ public:
 		return;
 	}
 
-	void success() {
+	void success(bool adult) {
 		ZoneServer* zoneServer = player->getZoneServer();
 
 		String objectString = creature->getControlDeviceTemplate();
 		if (objectString == "")
 			objectString = "object/intangible/pet/pet_control.iff";
-
-		ManagedReference<PetControlDevice*> controlDevice = zoneServer->createObject(objectString.hashCode(), 1).castTo<PetControlDevice*>();
-
-		if (controlDevice == NULL) {
-			resetStatus();
-			return;
-		}
 
 		SceneObject* datapad = player->getSlottedObject("datapad");
 		PlayerManager* playerManager = zoneServer->getPlayerManager();
@@ -122,12 +113,21 @@ public:
 			return;
 		}
 
+		ManagedReference<PetControlDevice*> controlDevice = zoneServer->createObject(objectString.hashCode(), 1).castTo<PetControlDevice*>();
+
+		if (controlDevice == NULL) {
+			resetStatus();
+			return;
+		}
+
+		Locker deviceLocker(controlDevice);
+
 		controlDevice->setControlledObject(creature);
 
 		StringId s;
 		s.setStringId(creature->getObjectName()->getFullPath());
 
-		controlDevice->setObjectName(s);
+		controlDevice->setObjectName(s, false);
 		controlDevice->setPetType(PetManager::CREATUREPET);
 		controlDevice->setMaxVitality(100);
 		controlDevice->setVitality(100);
@@ -135,8 +135,17 @@ public:
 		controlDevice->updateStatus(1);
 		controlDevice->setCustomObjectName(creature->getCustomObjectName(), true);
 
-		datapad->transferObject(controlDevice, -1);
+		if (!datapad->transferObject(controlDevice, -1)) {
+			resetStatus();
+			controlDevice->destroyObjectFromDatabase(true);
+			return;
+		}
+
 		objectManager->persistSceneObjectsRecursively(creature, 1);
+
+		if (adult) {
+			controlDevice->growPet(player, true, true);
+		}
 
 		creature->setControlDevice(controlDevice);
 		creature->setObjectMenuComponent("PetMenuComponent");
@@ -149,10 +158,38 @@ public:
 			creature->setPvpStatusBitmask(player->getPvpStatusBitmask(), false);
 
 		creature->setBaby(false);
-		creature->setFollowObject(player);
 
 		if (creature->isAiAgent()) {
 			AiAgent* agent = cast<AiAgent*>(creature.get());
+			ManagedReference<CellObject*> parent = player->getParent().get().castTo<CellObject*>();
+
+			float respawn = agent->getRespawnTimer() * 1000;
+
+			if (respawn > 0 && agent->getHomeObject().get() == NULL) {
+
+				if (agent->getRandomRespawn()) {
+					respawn = System::random(respawn) + (respawn / 2.f);
+				}
+
+				uint32 tempCRC = 0;
+				CreatureTemplate* crTemplate = agent->getCreatureTemplate();
+
+				if (crTemplate != NULL)
+					tempCRC = crTemplate->getTemplateName().hashCode();
+
+				PatrolPoint* homeLoc = agent->getHomeLocation();
+
+				Reference<Task*> task = new SpawnCreatureTask(tempCRC, agent->getRespawnTimer(), creature->getZone()->getZoneName(), homeLoc->getPositionX(), homeLoc->getPositionZ(), homeLoc->getPositionY(), agent->getParentID(), agent->getRandomRespawn());
+				task->schedule(respawn);
+			}
+
+			agent->setFollowObject(player);
+			agent->storeFollowObject();
+
+			agent->setHomeLocation(player->getPositionX(), player->getPositionZ(), player->getPositionY(), parent);
+			agent->setNextStepPosition(player->getPositionX(), player->getPositionZ(), player->getPositionY(), parent);
+			agent->clearPatrolPoints();
+
 			agent->setCreatureBitmask(CreatureFlag::PET);
 			agent->activateLoad("");
 		}

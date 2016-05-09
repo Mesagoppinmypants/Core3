@@ -1,7 +1,6 @@
 mammoth_bearded_jax = Creature:new {
 	objectName = "@mob/creature_names:mammoth_bearded_jax",
 	socialGroup = "jax",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,18 +22,18 @@ mammoth_bearded_jax = Creature:new {
 	ferocity = 3,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mammoth_bearded_jax.iff"},
 	controlDeviceTemplate = "object/intangible/pet/bearded_jax_hue.iff",
-	scale = 1.4,
+	scale = 2.8,
 	lootGroups = {},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"stunattack","stunChance=50"}
+		{"dizzyattack",""},
+		{"stunattack",""}
 	}
 }
 

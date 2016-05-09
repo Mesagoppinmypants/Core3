@@ -18,7 +18,9 @@ public:
 		: SuiCallback(server) {
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		uint64 playerID = player->getObjectID();
 
 		ManagedReference<GuildManager*> guildManager = server->getGuildManager();
@@ -61,11 +63,9 @@ public:
 			return;
 		}
 
-		GuildTerminal* guildTerminal = cast<GuildTerminal*>( terminal);
-
 		if (guildManager->validateGuildAbbrev(player, guildAbbrev)) {
 			String guildName = guildManager->getPendingGuildName(playerID);
-			guildManager->createGuild(player, guildTerminal, guildName, guildAbbrev); //Handles the removing of the pending guild.
+			guildManager->createGuild(player, guildName, guildAbbrev); //Handles the removing of the pending guild.
 			return;
 		}
 

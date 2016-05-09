@@ -2,7 +2,6 @@ needia_solum = Creature:new {
 	objectName = "",
 	customName = "Needia Solum",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 20,
 	chanceHit = 0.33,
@@ -24,7 +23,7 @@ needia_solum = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_smuggler_human_female_01.iff"},

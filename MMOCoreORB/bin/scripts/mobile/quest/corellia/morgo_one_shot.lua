@@ -2,7 +2,6 @@ morgo_one_shot = Creature:new {
 	objectName = "",
 	customName = "Morgo One-Shot",
 	socialGroup = "corsec",
-	pvpFaction = "corsec",
 	faction = "corsec",
 	level = 17,
 	chanceHit = 0.32,
@@ -24,7 +23,7 @@ morgo_one_shot = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 	templates = {
 		"object/mobile/dressed_corsec_pilot_human_male_01.iff"

@@ -51,7 +51,7 @@ PolearmArea2Command = {
 	mindCostMultiplier = 1.5,
 	accuracyBonus = 10,
 
-	areaRange = 7,
+	areaRange = 16,
 	areaAction = true,
 
 	stateEffects = {
@@ -61,7 +61,7 @@ PolearmArea2Command = {
 		{ "dizzy_defense", "resistance_states" }, 
 		{ "jedi_state_defense" }, 
 		75, 
-		100, 
+		0, 
 		30 
 	  ),
 	  StateEffect( 
@@ -70,16 +70,18 @@ PolearmArea2Command = {
 		{ "stun_defense", "resistance_states" }, 
 		{ "jedi_state_defense" }, 
 		75, 
-		100, 
+		0, 
 		30
 	  )
 	},
 
-	animationCRC = hashCode("lower_posture_2hmelee_6"),
+	animation = "lower_posture_2hmelee_6",
 
 	combatSpam = "tornado",
 
 	poolsToDamage = RANDOM_ATTRIBUTE,
+	
+	weaponType = POLEARMWEAPON,
 
 	range = -1
 }

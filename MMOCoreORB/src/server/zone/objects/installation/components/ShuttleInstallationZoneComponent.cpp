@@ -17,55 +17,56 @@
 #include "server/zone/objects/installation/InstallationObject.h"
 #include "server/zone/objects/region/CityRegion.h"
 
-void ShuttleInstallationZoneComponent::notifyInsertToZone(SceneObject* sceneObject, Zone* zone) {
+void ShuttleInstallationZoneComponent::notifyInsertToZone(SceneObject* sceneObject, Zone* zone) const {
 	StructureZoneComponent::notifyInsertToZone(sceneObject, zone);
-
 }
 
-void ShuttleInstallationZoneComponent::notifyRemoveFromZone(SceneObject* sceneObject) {
+void ShuttleInstallationZoneComponent::notifyRemoveFromZone(SceneObject* sceneObject) const {
 	StructureZoneComponent::notifyRemoveFromZone(sceneObject);
-
 }
-void ShuttleInstallationZoneComponent::destroyObjectFromWorld(SceneObject* sceneObject, bool sendSelfDestroy){
-	if (sceneObject->isStructureObject()){
 
-			StructureObject* structureObject = cast<StructureObject*>(sceneObject);
-			ManagedReference<Zone*> zone = sceneObject->getZone();
+void ShuttleInstallationZoneComponent::destroyObjectFromWorld(SceneObject* sceneObject, bool sendSelfDestroy) const {
+	if (sceneObject->isStructureObject()) {
 
-			if (zone != NULL && structureObject->isInstallationObject()){
+		StructureObject* structureObject = cast<StructureObject*>(sceneObject);
+		ManagedReference<Zone*> zone = sceneObject->getZone();
 
-				ManagedReference<InstallationObject*> installationObject = cast<InstallationObject*>(structureObject);
+		if (zone != NULL && structureObject->isInstallationObject()) {
 
-				if (installationObject->isShuttleInstallation()){
+			ManagedReference<InstallationObject*> installationObject = cast<InstallationObject*>(structureObject);
 
-					ManagedReference<CityRegion*> cityRegion = structureObject->getCityRegion();
-					ManagedReference<PlanetManager*> planetManager = zone->getPlanetManager();
+			if (installationObject->isShuttleInstallation()) {
 
-					if (cityRegion != NULL){
+				ManagedReference<CityRegion*> cityRegion = structureObject->getCityRegion();
+				ManagedReference<PlanetManager*> planetManager = zone->getPlanetManager();
 
-						planetManager->removePlayerCityTravelPoint(cityRegion->getRegionName());
-						cityRegion->removeShuttleInstallation();
-					}
+				if (cityRegion != NULL) {
 
-					SortedVector < ManagedReference<SceneObject*> > *childObjects
-												= structureObject->getChildObjects();
+					planetManager->removePlayerCityTravelPoint(cityRegion->getRegionName());
 
-					ManagedReference<CreatureObject*> shuttle = NULL;
+					Locker clocker(cityRegion, sceneObject);
 
-					for (int i = 0; i < childObjects->size(); ++i) {
-
-						if (!childObjects->get(i)->isTerminal()) {
-							shuttle = cast<CreatureObject*>(childObjects->get(i).get());
-							break;
-						}
-					}
-
-					if (shuttle != NULL)
-						planetManager->removeShuttle(shuttle);
-
+					cityRegion->removeShuttleInstallation();
 				}
+
+				SortedVector < ManagedReference<SceneObject*> > *childObjects = structureObject->getChildObjects();
+
+				ManagedReference<CreatureObject*> shuttle = NULL;
+
+				for (int i = 0; i < childObjects->size(); ++i) {
+
+					if (!childObjects->get(i)->isTerminal()) {
+						shuttle = cast<CreatureObject*>(childObjects->get(i).get());
+						break;
+					}
+				}
+
+				if (shuttle != NULL)
+					planetManager->removeShuttle(shuttle);
+
 			}
 		}
+	}
+
 	ZoneComponent::destroyObjectFromWorld(sceneObject, sendSelfDestroy);
 }
-

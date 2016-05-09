@@ -2,7 +2,6 @@ lt_porro_dolphe = Creature:new {
 	objectName = "",
 	customName = "Lt. Porro Dolphe",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ lt_porro_dolphe = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_naboo_lt_porro_dolphe.iff"},

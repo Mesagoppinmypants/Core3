@@ -51,10 +51,11 @@ Melee1hDizzyHit2Command = {
 	mindCostMultiplier = 1.25,
         accuracyBonus = 25,
 
-	areaRange = 7,
+	areaRange = 16,
 	areaAction = true,
 
-	animationCRC = hashCode("combo_4a_light"),
+	animation = "combo_4a", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "skullslash",
 
@@ -65,10 +66,12 @@ Melee1hDizzyHit2Command = {
 		{ "dizzy_defense", "resistance_states" }, 
 		{ "jedi_state_defense" }, 
 		100, 
-		100, 
+		0, 
 		50 
 	  )
 	},
+	
+	weaponType = ONEHANDMELEEWEAPON,
 
 	range = -1
 }

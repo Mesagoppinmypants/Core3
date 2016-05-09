@@ -1,7 +1,6 @@
 da_la_socuna = Creature:new {
 	objectName = "@npc_spawner_n:da_la_socuna",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ da_la_socuna = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_rebel_tier1_tatooine_socuna.iff"},

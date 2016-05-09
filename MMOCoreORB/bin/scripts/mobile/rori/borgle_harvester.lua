@@ -1,7 +1,6 @@
 borgle_harvester = Creature:new {
 	objectName = "@mob/creature_names:borgle_harvester",
 	socialGroup = "borgle",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ borgle_harvester = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/borgle_hue.iff"},
@@ -33,7 +32,8 @@ borgle_harvester = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"",""},
+		{"posturedownattack",""}
 	}
 }
 

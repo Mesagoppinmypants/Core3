@@ -1,7 +1,6 @@
 female_tybis = Creature:new {
 	objectName = "@mob/creature_names:tybis_female",
 	socialGroup = "tybis",
-	pvpFaction = "",
 	faction = "",
 	level = 22,
 	chanceHit = 0.35,
@@ -24,7 +23,7 @@ female_tybis = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/tybis_hue.iff"},

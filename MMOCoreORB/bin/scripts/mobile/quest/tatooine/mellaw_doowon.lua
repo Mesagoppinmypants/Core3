@@ -2,7 +2,6 @@ mellaw_doowon = Creature:new {
 	objectName = "",
 	customName = "Mellaw Doowon",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ mellaw_doowon = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/ithorian_male.iff"},

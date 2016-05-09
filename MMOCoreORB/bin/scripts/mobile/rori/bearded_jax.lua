@@ -1,7 +1,6 @@
 bearded_jax = Creature:new {
 	objectName = "@mob/creature_names:bearded_jax",
 	socialGroup = "jax",
-	pvpFaction = "",
 	faction = "",
 	level = 11,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ bearded_jax = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bearded_jax.iff"},
@@ -32,7 +31,8 @@ bearded_jax = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"",""},
+		{"intimidationattack",""}
 	}
 }
 

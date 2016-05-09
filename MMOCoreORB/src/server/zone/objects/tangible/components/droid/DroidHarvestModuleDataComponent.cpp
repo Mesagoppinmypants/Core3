@@ -1,44 +1,6 @@
 /*
- * Copyright (C) 2014 <SWGEmu>
- * This File is part of Core3.
- * This program is free software; you can redistribute
- * it and/or modify it under the terms of the GNU Lesser
- * General Public License as published by the Free Software
- * Foundation; either version 2 of the License,
- * or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for
- * more details.
- *
- * You should have received a copy of the GNU Lesser General
- * Public License along with this program; if not, write to
- * the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * Linking Engine3 statically or dynamically with other modules
- * is making a combined work based on Engine3.
- * Thus, the terms and conditions of the GNU Lesser General Public License
- * cover the whole combination.
- *
- * In addition, as a special exception, the copyright holders of Engine3
- * give you permission to combine Engine3 program with free software
- * programs or libraries that are released under the GNU LGPL and with
- * code included in the standard release of Core3 under the GNU LGPL
- * license (or modified versions of such code, with unchanged license).
- * You may copy and distribute such a system following the terms of the
- * GNU LGPL for Engine3 and the licenses of the other code concerned,
- * provided that you include the source code of that other code when
- * and as the GNU LGPL requires distribution of source code.
- *
- * Note that people who make modified versions of Engine3 are not obligated
- * to grant this special exception for their modified versions;
- * it is their choice whether to do so. The GNU Lesser General Public License
- * gives permission to release a modified version without this exception;
- * this exception also makes it possible to release a modified version
- * which carries forward this exception.
- */
+ * 				Copyright <SWGEmu>
+		See file COPYING for copying conditions. */
 
 #include "DroidHarvestModuleDataComponent.h"
 #include "server/zone/ZoneServer.h"
@@ -55,6 +17,7 @@ DroidHarvestModuleDataComponent::DroidHarvestModuleDataComponent() {
 	interest = 0; // random
 	active = false;
 	setLoggingName("DroidHarvestModule");
+	harvestTargets.removeAll(0,10);
 }
 DroidHarvestModuleDataComponent::~DroidHarvestModuleDataComponent() {
 
@@ -77,6 +40,7 @@ void DroidHarvestModuleDataComponent::initializeTransientMembers() {
 	else{
 		info( "harvest_power attribute not found" );
 	}
+	harvestTargets.removeAll(0,10);
 }
 
 void DroidHarvestModuleDataComponent::updateCraftingValues(CraftingValues* values, bool firstUpdate) {
@@ -154,15 +118,17 @@ int DroidHarvestModuleDataComponent::handleObjectMenuSelect(CreatureObject* play
 		player->getPlayerObject()->addSuiBox(box);
 		player->sendMessage(box->generateMessage());
 		return 0;
-	}
-	// Handle toggle on/off
-	if (selectedID == HARVEST_PROGRAM_COMMAND) {
+
+	} else if (selectedID == HARVEST_PROGRAM_COMMAND) { // Handle toggle on/off
 		if( controller == NULL )
 			return 0;
+
+		Locker locker(controller);
+
 		controller->setTrainingCommand( PetManager::HARVEST );
 		return 0;
-	}
-	if( selectedID == HARVEST_TOGGLE ){
+
+	} else if ( selectedID == HARVEST_TOGGLE ) {
 
 		ManagedReference<DroidObject*> droid = getDroidObject();
 		if( droid == NULL ){
@@ -199,7 +165,6 @@ int DroidHarvestModuleDataComponent::handleObjectMenuSelect(CreatureObject* play
 			Locker plock(player);
 			player->registerObserver(ObserverEventType::KILLEDCREATURE, observer);
 			active = true;
-			// set observer here for creature death to go harvest it if in range
 		}
 
 	}
@@ -212,7 +177,7 @@ int DroidHarvestModuleDataComponent::getBatteryDrain() {
 		return 4;
 	}
 
-	return 1;
+	return 0;
 }
 
 void DroidHarvestModuleDataComponent::deactivate() {
@@ -233,7 +198,12 @@ void DroidHarvestModuleDataComponent::deactivate() {
 	if (player != NULL) {
 		Locker clock(player, droid);
 		player->dropObserver(ObserverEventType::KILLEDCREATURE, observer);
+		droid->dropObserver(ObserverEventType::DESTINATIONREACHED, observer);
 	}
+	if(droid->getPendingTask("droid_harvest")) {
+		droid->removePendingTask("droid_harvest");
+	}
+	harvestTargets.removeAll(0,10);
 }
 
 String DroidHarvestModuleDataComponent::toString(){
@@ -242,6 +212,20 @@ String DroidHarvestModuleDataComponent::toString(){
 
 void DroidHarvestModuleDataComponent::onCall(){
 	deactivate();
+	ManagedReference<DroidObject*> droid = getDroidObject();
+	if( droid == NULL ){
+		info( "Droid is null");
+		return;
+	}
+	if (observer == NULL) {
+		observer = new DroidHarvestObserver(this);
+		observer->deploy();
+	}
+	Locker dlock( droid );
+	// add observer for the droid
+	//droid->registerObserver(ObserverEventType::DESTINATIONREACHED, observer);
+	Reference<Task*> task = new DroidHarvestTask( this );
+	droid->addPendingTask("droid_harvest", task, 1000); // 1 sec
 }
 
 void DroidHarvestModuleDataComponent::onStore(){
@@ -302,27 +286,46 @@ void DroidHarvestModuleDataComponent::handlePetCommand(String cmd, CreatureObjec
 
 	if( petManager->isTrainedCommand( pcd, PetManager::HARVEST, cmd ) ){
 		Locker dlock(droid);
-		// tell droid to goto target
-		petManager->enqueuePetCommand(speaker, droid, String("petHarvest").toLowerCase().hashCode(), "");
+		uint64 targetID = speaker->getTargetID();
+		Reference<CreatureObject*> target = droid->getZoneServer()->getObject(targetID, true).castTo<CreatureObject*>();
+
+		if (target != NULL) {
+			// this check should occur in the pet speaking handling.
+			if(!target->isInRange(droid,64)) {
+				speaker->sendSystemMessage("@pet/droid_modules:corpse_too_far");
+				return;
+			}
+
+			harvestTargets.add(targetID);
+		}
+		for(int i=0;i<harvestTargets.size();i++){
+			if (harvestTargets.get(i) == targetID)
+				return;
+		}
+		harvestTargets.add(targetID);
 	}
 }
 void DroidHarvestModuleDataComponent::creatureHarvestCheck(CreatureObject* target) {
-	// check to see if we have loot rights
+	if(!active)
+		return;
 	ManagedReference<DroidObject*> droid = getDroidObject();
 	if( droid == NULL){
 		return;
 	}
-	Locker dlock(droid);
-
-	if (droid->getPendingTask("droid_harvest_command_reschedule") != NULL) {
+	if(target == NULL) {
 		return;
 	}
-
-	// harvest task check values
-	// tell droid togo target
-	droid->setTargetObject(target);
-	droid->activateMovementEvent();
-	EnqueuePetCommand* enqueueCommand = new EnqueuePetCommand(droid, String("petHarvest").toLowerCase().hashCode(), "", target->getObjectID(), 1);
-	// give a second delay for the command so that all updates can occur for inv and such
-	droid->addPendingTask("droid_harvest_command_reschedule",enqueueCommand,1000);
+	if(!target->isCreature()) {
+		return;
+	}
+	uint64 targetID = target->getObjectID();
+	// add to target list, call command
+	for(int i=0;i<harvestTargets.size();i++){
+		if (harvestTargets.get(i) == targetID)
+			return;
+	}
+	harvestTargets.add(targetID);
+}
+void DroidHarvestModuleDataComponent::harvestDestinationReached() {
+	// No-Op
 }

@@ -1,7 +1,6 @@
 old_man = Creature:new {
 	objectName = "@mob/creature_names:fs_intro_oldman",
 	socialGroup = "fs_villager",
-	pvpFaction = "fs_villager",
 	faction = "fs_villager",
 	level = 12,
 	chanceHit = 0.29,
@@ -23,13 +22,13 @@ old_man = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_fs_village_oldman.iff"},
 	lootGroups = {},
 	weapons = {},
-	conversationTemplate = "old_man_convotemplate",
+	conversationTemplate = "oldManIntroConvoTemplate",
 	attacks = brawlermid
 }
 

@@ -1,7 +1,6 @@
 grand_tybis = Creature:new {
 	objectName = "@mob/creature_names:tybis_grand",
 	socialGroup = "tybis",
-	pvpFaction = "",
 	faction = "",
 	level = 26,
 	chanceHit = 0.36,
@@ -24,7 +23,7 @@ grand_tybis = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/tybis_hue.iff"},

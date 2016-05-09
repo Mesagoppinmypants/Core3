@@ -19,10 +19,8 @@ class JtlShipListRequestCallback : public MessageCallback {
 
 public:
 	JtlShipListRequestCallback(ObjectControllerMessageCallback* objectControllerCallback) :
-		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()) {
-
-		objectControllerMain = objectControllerCallback;
-
+		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()),
+		objectControllerMain(objectControllerCallback), terminalObjectID(0) {
 	}
 
 	void parse(Message* message) {
@@ -31,7 +29,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = static_cast<CreatureObject*>(client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;

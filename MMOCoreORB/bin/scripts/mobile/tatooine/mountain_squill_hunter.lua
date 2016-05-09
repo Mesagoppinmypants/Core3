@@ -1,7 +1,6 @@
 mountain_squill_hunter = Creature:new {
 	objectName = "@mob/creature_names:mountain_squill_hunter",
 	socialGroup = "squill",
-	pvpFaction = "",
 	faction = "",
 	level = 25,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ mountain_squill_hunter = Creature:new {
 	ferocity = 6,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mountain_squill.iff"},
@@ -32,7 +31,7 @@ mountain_squill_hunter = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

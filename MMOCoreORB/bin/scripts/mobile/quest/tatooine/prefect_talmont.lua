@@ -1,7 +1,6 @@
 prefect_talmont = Creature:new {
 	objectName = "@mob/creature_names:prefect_talmont",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ prefect_talmont = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/prefect_talmont.iff"},

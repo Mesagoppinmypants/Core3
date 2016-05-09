@@ -1,10 +1,10 @@
 #include "server/zone/objects/tangible/terminal/characterbuilder/CharacterBuilderTerminal.h"
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/player/sui/characterbuilderbox/SuiCharacterBuilderBox.h"
 #include "server/zone/managers/skill/SkillManager.h"
-#include "server/zone/templates/tangible/CharacterBuilderTerminalTemplate.h"
-#include "CharacterBuilderMenuNode.h"
+#include "templates/tangible/CharacterBuilderTerminalTemplate.h"
+#include "templates/tangible/CharacterBuilderMenuNode.h"
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/managers/player/PlayerManager.h"
 
@@ -47,7 +47,7 @@ void CharacterBuilderTerminalImplementation::sendInitialChoices(CreatureObject* 
 	}
 
 	ManagedReference<SuiCharacterBuilderBox*> sui = new SuiCharacterBuilderBox(player, rootNode);
-	sui->setUsingObject(_this.get());
+	sui->setUsingObject(_this.getReferenceUnsafeStaticCast());
 
 	player->sendMessage(sui->generateMessage());
 	player->getPlayerObject()->addSuiBox(sui);
@@ -99,4 +99,22 @@ void CharacterBuilderTerminalImplementation::giveLanguages(CreatureObject* playe
 	skillManager->awardSkill("social_language_ithorian_comprehend", player, true, true, true);
 	skillManager->awardSkill("social_language_sullustan_speak", player, true, true, true);
 	skillManager->awardSkill("social_language_sullustan_comprehend", player, true, true, true);
+}
+
+void CharacterBuilderTerminalImplementation::grantGlowyBadges(CreatureObject* player) {
+	CharacterBuilderTerminalTemplate* terminalTemplate = dynamic_cast<CharacterBuilderTerminalTemplate*>(templateObject.get());
+
+	if (terminalTemplate == NULL)
+		return;
+
+	PlayerObject* ghost = player->getPlayerObject();
+
+	if (ghost == NULL)
+		return;
+
+	Vector<int> ids = terminalTemplate->getGlowyBadgeIds();
+
+	for (int i = 0; i < ids.size(); i++) {
+		ghost->awardBadge(ids.get(i));
+	}
 }

@@ -1,7 +1,6 @@
 humbaba = Creature:new {
 	objectName = "@mob/creature_names:humbaba",
 	socialGroup = "humbaba",
-	pvpFaction = "",
 	faction = "",
 	level = 17,
 	chanceHit = 0.32,
@@ -24,10 +23,10 @@ humbaba = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
-	templates = {"object/mobile/savage_humbaba.iff"},
+	templates = {"object/mobile/falumpaset_hue.iff"},
 	controlDeviceTemplate = "object/intangible/pet/falumpaset_hue.iff",
 	lootGroups = {},
 	weapons = {},

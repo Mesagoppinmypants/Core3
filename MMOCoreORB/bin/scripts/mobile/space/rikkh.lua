@@ -1,7 +1,6 @@
 rikkh = Creature:new {
 	objectName = "@npc_spawner_n:rikkh",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 19,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ rikkh = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_privateer_tier2_corellia.iff"},

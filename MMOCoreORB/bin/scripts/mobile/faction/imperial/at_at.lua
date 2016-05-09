@@ -1,7 +1,6 @@
 at_at = Creature:new {
 	objectName = "@mob/creature_names:at_at",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 228,
 	chanceHit = 19.75,
@@ -23,7 +22,7 @@ at_at = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE + OVERT,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = NONE,
 
 	templates = {"object/mobile/atat.iff"},

@@ -1,7 +1,6 @@
 theme_park_rebel_officer_tennelt = Creature:new {
 	objectName = "",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ theme_park_rebel_officer_tennelt = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_eisley_officer_twilek_male_01.iff"},

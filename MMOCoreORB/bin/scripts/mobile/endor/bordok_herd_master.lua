@@ -1,7 +1,6 @@
 bordok_herd_master = Creature:new {
 	objectName = "@mob/creature_names:bordok_herd_master",
 	socialGroup = "bordok",
-	pvpFaction = "",
 	faction = "",
 	level = 40,
 	chanceHit = 0.43,
@@ -23,7 +22,7 @@ bordok_herd_master = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bordok_hue.iff"},
@@ -32,7 +31,7 @@ bordok_herd_master = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 hakassha_sireen = Creature:new {
 	objectName = "@npc_spawner_n:hakassha_sireen",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ hakassha_sireen = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_trainer_space_02.iff"},

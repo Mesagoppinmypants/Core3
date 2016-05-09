@@ -1,7 +1,6 @@
 naboo_police_agent = Creature:new {
 	objectName = "@mob/creature_names:naboo_police",
 	socialGroup = "naboo_security_force",
-	pvpFaction = "naboo_security_force",
 	faction = "naboo_security_force",
 	level = 8,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ naboo_police_agent = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_naboo_police.iff"},

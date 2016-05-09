@@ -1,7 +1,6 @@
 akal_colzet = Creature:new {
 	objectName = "@npc_spawner_n:akal_colzet",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 19,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ akal_colzet = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_trainer_space_01.iff"},

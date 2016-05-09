@@ -1,7 +1,6 @@
 ravenous_rasp = Creature:new {
 	objectName = "@mob/creature_names:ravenous_rasp",
 	socialGroup = "rasp",
-	pvpFaction = "",
 	faction = "",
 	level = 31,
 	chanceHit = 0.41,
@@ -23,7 +22,7 @@ ravenous_rasp = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/flite_rasp_hue.iff"},
@@ -32,8 +31,8 @@ ravenous_rasp = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"strongpoison",""}
+		{"strongpoison",""},
+		{"dizzyattack",""}
 	}
 }
 

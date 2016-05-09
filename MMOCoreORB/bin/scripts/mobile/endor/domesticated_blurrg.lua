@@ -1,7 +1,6 @@
 domesticated_blurrg = Creature:new {
 	objectName = "@mob/creature_names:domesticated_blurrg",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 20,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ domesticated_blurrg = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/blurrg_hue.iff"},

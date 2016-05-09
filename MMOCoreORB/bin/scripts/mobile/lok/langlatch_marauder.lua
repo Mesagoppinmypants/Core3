@@ -1,7 +1,6 @@
 langlatch_marauder = Creature:new {
 	objectName = "@mob/creature_names:langlatch_marauder",
 	socialGroup = "langlatch",
-	pvpFaction = "",
 	faction = "",
 	level = 17,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ langlatch_marauder = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/langlatch_hue.iff"},
@@ -33,7 +32,7 @@ langlatch_marauder = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"blindattack",""}
 	}
 }
 

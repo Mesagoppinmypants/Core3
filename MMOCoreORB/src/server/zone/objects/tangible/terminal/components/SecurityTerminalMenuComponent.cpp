@@ -19,66 +19,75 @@
 #include "server/zone/objects/player/sessions/SlicingSession.h"
 #include "server/zone/objects/tangible/tool/smuggler/PrecisionLaserKnife.h"
 
-void SecurityTerminalMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) {
+void SecurityTerminalMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const {
+	if (!sceneObject->isTangibleObject())
+		return;
 
 	ManagedReference<BuildingObject*> building = cast<BuildingObject*>(sceneObject->getParentRecursively(SceneObjectType::FACTIONBUILDING).get().get());
 
-	if ( building == NULL || player->isDead() || player->isIncapacitated())
+	if (building == NULL || player->isDead() || player->isIncapacitated())
 			return;
-
-	if(player->getFaction() == 0) {
-		player->sendSystemMessage("@faction_recruiter:must_be_declared_use"); // Your faction affiliation must be delcared in order to use that item.
-		return;
-	}
 
 	Zone* zone = building->getZone();
 
-	if(zone == NULL)
+	if (zone == NULL)
 		return;
 
 	GCWManager* gcwMan = zone->getGCWManager();
 
-	if(!gcwMan->canUseTerminals(player, building, sceneObject))
+	if (gcwMan == NULL)
 		return;
 
-	if( gcwMan->isUplinkJammed(building) && !gcwMan->isSecurityTermSliced(building) && player->getFaction() != building->getFaction() ) {
-		if (gcwMan->isTerminalDamaged(cast<TangibleObject*>(sceneObject)))
-			menuResponse->addRadialMenuItem(229, 3, "@ui:repair");
-	}
+	if (!gcwMan->isBaseVulnerable(building))
+		return;
 
+	if (gcwMan->isTerminalDamaged(cast<TangibleObject*>(sceneObject)))
+		menuResponse->addRadialMenuItem(20, 3, "@ui:repair");
+	else
+		menuResponse->addRadialMenuItem(20, 3, "@hq:mnu_slice"); // Slice Security
 }
 
-int SecurityTerminalMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) {
-	if (sceneObject == NULL || !sceneObject->isTangibleObject() || player == NULL || player->isDead() || player->isIncapacitated())
+int SecurityTerminalMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) const {
+	if (!sceneObject->isTangibleObject() || player->isDead() || player->isIncapacitated() || selectedID != 20)
 		return 1;
 
 	ManagedReference<BuildingObject*> building = cast<BuildingObject*>(sceneObject->getParentRecursively(SceneObjectType::FACTIONBUILDING).get().get());
+	ManagedReference<TangibleObject*> securityTerminal = cast<TangibleObject*>(sceneObject);
 
-	if(building == NULL)
+	if (building == NULL)
 		return 1;
 
 	Zone* zone = building->getZone();
 
-	if(zone == NULL)
+	if (zone == NULL)
 		return 1;
 
 	ManagedReference<GCWManager*> gcwMan = zone->getGCWManager();
 
-	if(gcwMan == NULL)
+	if (gcwMan == NULL)
 		return 1;
 
-	if(!gcwMan->canUseTerminals(player, building, sceneObject))
+	if (!gcwMan->isBaseVulnerable(building))
 		return 1;
 
-	ManagedReference<TangibleObject*> tano = cast<TangibleObject*>(sceneObject);
 
-	if(player->getFaction() != building->getFaction()) {
-		if ( selectedID == 229){
-			if(player->hasSkill("combat_smuggler_slicing_01"))
-				gcwMan->repairTerminal(player, tano);
-			else
-				player->sendSystemMessage("Only an experienced Smuggler with Slicing experience could expect to repair the Security Terminal");
+	if (!gcwMan->canStartSlice(player, securityTerminal))
+		return 1;
+
+	if (gcwMan->isTerminalDamaged(securityTerminal)) {
+		EXECUTE_TASK_3(player, gcwMan, securityTerminal, {
+				gcwMan_p->repairTerminal(player_p, securityTerminal_p);
+		});
+
+	} else {
+		if (player->containsActiveSession(SessionFacadeType::SLICING)) {
+			player->sendSystemMessage("@slicing/slicing:already_slicing");
+			return 1;
 		}
+
+		ManagedReference<SlicingSession*> session = new SlicingSession(player);
+		session->setBaseSlice(true);
+		session->initalizeSlicingMenu(player, securityTerminal);
 	}
 
 	return 0;

@@ -1,7 +1,6 @@
 poisonous_krevol_queen = Creature:new {
 	objectName = "@mob/creature_names:poisonous_krevol_queen",
 	socialGroup = "krevol",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ poisonous_krevol_queen = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/poisonous_krevol_queen.iff"},
@@ -32,7 +31,7 @@ poisonous_krevol_queen = Creature:new {
 	weapons = {"creature_spit_small_toxicgreen"},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
+		{"blindattack",""},
 		{"mediumpoison",""}
 	}
 }

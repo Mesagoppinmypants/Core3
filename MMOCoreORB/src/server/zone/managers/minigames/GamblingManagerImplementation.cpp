@@ -10,7 +10,7 @@
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/player/sui/listbox/SuiListBox.h"
 #include "server/zone/objects/tangible/terminal/gambling/GamblingTerminal.h"
-#include "server/zone/managers/terrain/TerrainManager.h"
+#include "terrain/manager/TerrainManager.h"
 #include "server/zone/Zone.h"
 #include "server/zone/managers/planet/PlanetManager.h"
 #include "server/zone/ZoneServer.h"
@@ -32,7 +32,7 @@ void GamblingManagerImplementation::registerPlayer(GamblingTerminal* terminal, C
 	if (terminal == NULL || player == NULL)
 		return;
 
-	Locker _locker(_this.get());
+	Locker _locker(_this.getReferenceUnsafeStaticCast());
 	switch (terminal->getMachineType()) {
 		case GamblingTerminal::SLOTMACHINE: {
 			slotGames.put(player, terminal);
@@ -722,7 +722,7 @@ void GamblingManagerImplementation::calculateOutcome(GamblingTerminal* terminal)
 							StringIdChatParameter textOther("gambling/default_interface","winner_to_other");
 							textOther.setDI(winnings->get(i));
 							textOther.setTO(player->getFirstName());
-							textOther.setTO(player);
+							textOther.setTO(player->getObjectID());
 							terminal->notifyOthers(player, &textOther);
 
 							StringIdChatParameter textPlayer("gambling/default_interface","winner_to_winner");

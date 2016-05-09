@@ -19,7 +19,9 @@ public:
 		: SuiCallback(server) {
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (!suiBox->isMessageBox() || cancelPressed)
 			return;
 
@@ -35,16 +37,14 @@ public:
 		if (!terminal->isGuildTerminal())
 			return;
 
-		Locker _lock(terminal);
-
-		GuildTerminal* guildTerminal = cast<GuildTerminal*>( terminal);
-
-		ManagedReference<GuildObject*> guild = guildTerminal->getGuildObject();
+		ManagedReference<GuildObject*> guild = player->getGuildObject().get();
 
 		if (guild == NULL)
 			return;
 
-		guildManager->disbandGuild(player, guildTerminal,  guild);
+		Locker guildLocker(guild, player);
+
+		guildManager->disbandGuild(player, guild);
 	}
 };
 

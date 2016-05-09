@@ -1,7 +1,6 @@
 rotten_gut_remmer_king = Creature:new {
 	objectName = "@mob/creature_names:rotten_gut_remmer_king",
 	socialGroup = "remmer",
-	pvpFaction = "",
 	faction = "",
 	level = 37,
 	chanceHit = 0.41,
@@ -23,7 +22,7 @@ rotten_gut_remmer_king = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/rotten_gut_remmer_king.iff"},
@@ -32,8 +31,8 @@ rotten_gut_remmer_king = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""},
+		{"dizzyattack",""}
 	}
 }
 

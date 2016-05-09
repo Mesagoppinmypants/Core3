@@ -47,13 +47,14 @@ object_draft_schematic_item_item_powerup_weapon_melee_generic = object_draft_sch
 
    customObjectName = "Generic Melee Weapon Kit",
 
-   craftingToolTab = 524288, -- (See DraftSchemticImplementation.h)
+   craftingToolTab = 524288, -- (See DraftSchematicObjectTemplate.h)
    complexity = 5, 
    size = 1, 
 
    xpType = "crafting_general", 
    xp = 20, 
 
+   isMagic = true,
    assemblySkill = "general_assembly", 
    experimentingSkill = "general_experimentation", 
    customizationSkill = "clothing_customization", 

@@ -1,7 +1,6 @@
 mott_calf = Creature:new {
 	objectName = "@mob/creature_names:mott_calf",
 	socialGroup = "mott",
-	pvpFaction = "",
 	faction = "",
 	level = 4,
 	chanceHit = 0.24,
@@ -23,7 +22,7 @@ mott_calf = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mott_calf.iff"},

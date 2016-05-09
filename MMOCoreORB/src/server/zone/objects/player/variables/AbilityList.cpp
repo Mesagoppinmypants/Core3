@@ -32,11 +32,13 @@ bool AbilityList::contains(const String& element) {
 }
 
 void AbilityList::insertToMessage(BaseMessage* msg) {
+	ReadLocker locker(getLock());
+
 	msg->insertInt(size());
 	msg->insertInt(updateCounter);
 
 	for (int i = 0; i < size(); ++i) {
-		Reference<Ability*> ability = get(i);
+		Ability* ability = get(i);
 
 		msg->insertAscii(ability->getAbilityName());
 	}
@@ -83,7 +85,11 @@ void AbilityList::loadFromNames(Vector<String>& abilities) {
 
 		Ability* ability = skillManager->getAbility(name);
 
-		vector.add(ability);
+		if (ability == NULL) {
+			Logger::console.error(name + " is null when trying to load from database");
+		} else {
+			vector.add(ability);
+		}
 	}
 }
 

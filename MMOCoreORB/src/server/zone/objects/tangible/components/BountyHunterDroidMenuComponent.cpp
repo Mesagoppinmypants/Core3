@@ -13,7 +13,7 @@
 #include "server/zone/objects/mission/BountyMissionObjective.h"
 #include "server/zone/ZoneServer.h"
 
-void BountyHunterDroidMenuComponent::fillObjectMenuResponse(SceneObject* droidObject, ObjectMenuResponse* menuResponse, CreatureObject* player) {
+void BountyHunterDroidMenuComponent::fillObjectMenuResponse(SceneObject* droidObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 	if (droidObject == NULL || !droidObject->isTangibleObject() || player == NULL) {
 		return;
 	}
@@ -31,14 +31,16 @@ void BountyHunterDroidMenuComponent::fillObjectMenuResponse(SceneObject* droidOb
 		if (droidIsInPlayerInventory(droidObject, player)) {
 			menuResponse->addRadialMenuItem(138, 3, "@mission/mission_generic:probe_droid_activate"); //Probe Droid Command
 			menuResponse->addRadialMenuItemToRadialID(138, 137, 3, "@mission/mission_generic:probe_droid_find_target"); //Find Bounty Target
-			menuResponse->addRadialMenuItemToRadialID(138, 136, 3, "@mission/mission_generic:probe_droid_track_target"); //Find and Track Target
+
+			if (playerCanUseTrack(player))
+				menuResponse->addRadialMenuItemToRadialID(138, 136, 3, "@mission/mission_generic:probe_droid_track_target"); //Find and Track Target
 		}
 	} else if (droidObject->getObjectTemplate()->getTemplateFileName() == "terminal_mission_bounty" && player->getPlayerObject() != NULL && player->getPlayerObject()->isPrivileged()) {
 		menuResponse->addRadialMenuItem(138, 3, "TEST: register as bounty target"); //Call
 	}
 }
 
-int BountyHunterDroidMenuComponent::handleObjectMenuSelect(SceneObject* droidObject, CreatureObject* player, byte selectedID) {
+int BountyHunterDroidMenuComponent::handleObjectMenuSelect(SceneObject* droidObject, CreatureObject* player, byte selectedID) const {
 	if (!droidObject->isTangibleObject()) {
 		return 0;
 	}
@@ -70,35 +72,35 @@ int BountyHunterDroidMenuComponent::handleObjectMenuSelect(SceneObject* droidObj
 	return TangibleObjectMenuComponent::handleObjectMenuSelect(droidObject, player, selectedID);
 }
 
-bool BountyHunterDroidMenuComponent::playerCanUseProbot(CreatureObject* player) {
+bool BountyHunterDroidMenuComponent::playerCanUseTrack(CreatureObject* player) const {
 	return player->hasSkill("combat_bountyhunter_investigation_03");
 }
 
-bool BountyHunterDroidMenuComponent::playerCanUseSeeker(CreatureObject* player) {
+bool BountyHunterDroidMenuComponent::playerCanUseDroids(CreatureObject* player) const {
 	return player->hasSkill("combat_bountyhunter_investigation_01");
 }
 
-bool BountyHunterDroidMenuComponent::isProbeDroid(SceneObject* droidObject) {
+bool BountyHunterDroidMenuComponent::isProbeDroid(SceneObject* droidObject) const {
 	return droidObject->getObjectTemplate()->getTemplateFileName() == "mission_bounty_droid_probot" ||
 			droidObject->getObjectTemplate()->getTemplateFileName() == "probot" ||
 			droidObject->getObjectTemplate()->getTemplateFileName() == "imperial_probot";
 }
 
-bool BountyHunterDroidMenuComponent::isSeekerDroid(SceneObject* droidObject) {
+bool BountyHunterDroidMenuComponent::isSeekerDroid(SceneObject* droidObject) const {
 	return droidObject->getObjectTemplate()->getTemplateFileName() == "mission_bounty_droid_seeker";
 }
 
-bool BountyHunterDroidMenuComponent::droidIsInPlayerInventory(SceneObject* droidObject, CreatureObject* player) {
+bool BountyHunterDroidMenuComponent::droidIsInPlayerInventory(SceneObject* droidObject, CreatureObject* player) const {
 	ManagedReference<SceneObject*> inventory = player->getSlottedObject("inventory");
 
 	return droidObject->getParent() == inventory;
 }
 
-bool BountyHunterDroidMenuComponent::droidIsInZone(SceneObject* droidObject) {
+bool BountyHunterDroidMenuComponent::droidIsInZone(SceneObject* droidObject) const {
 	return droidObject->getParentID() == 0;
 }
 
-bool BountyHunterDroidMenuComponent::playerOwnsTheDroid(SceneObject* droidObject, CreatureObject* player) {
+bool BountyHunterDroidMenuComponent::playerOwnsTheDroid(SceneObject* droidObject, CreatureObject* player) const {
 	ManagedReference<MissionObject*> mission = player->getZoneServer()->getMissionManager()->getBountyHunterMission(player);
 
 	if (mission != NULL) {
@@ -114,7 +116,7 @@ bool BountyHunterDroidMenuComponent::playerOwnsTheDroid(SceneObject* droidObject
 	return false;
 }
 
-void BountyHunterDroidMenuComponent::performDroidAction(int action, SceneObject* droidObject, CreatureObject* player) {
+void BountyHunterDroidMenuComponent::performDroidAction(int action, SceneObject* droidObject, CreatureObject* player) const {
 	ManagedReference<MissionObject*> mission = getBountyHunterMission(player);
 	ManagedReference<BountyMissionObjective*> objective = NULL;
 
@@ -122,8 +124,8 @@ void BountyHunterDroidMenuComponent::performDroidAction(int action, SceneObject*
 		objective = cast<BountyMissionObjective*>(mission->getMissionObjective());
 	}
 
-	if (action == BountyHunterDroid::CALLDROID || action == BountyHunterDroid::TRANSMITBIOLOGICALSIGNATURE) {
-		if (playerCanUseProbot(player)) {
+	if (action == BountyHunterDroid::CALLDROID || action == BountyHunterDroid::TRANSMITBIOLOGICALSIGNATURE || action == BountyHunterDroid::FINDTARGET) {
+		if (playerCanUseDroids(player)) {
 			if (objective != NULL) {
 				objective->performDroidAction(action, droidObject, player);
 			} else {
@@ -133,7 +135,7 @@ void BountyHunterDroidMenuComponent::performDroidAction(int action, SceneObject*
 			player->sendSystemMessage("@mission/mission_generic:bounty_no_ability");
 		}
 	} else {
-		if (playerCanUseSeeker(player)) {
+		if (playerCanUseTrack(player)) {
 			if (objective != NULL) {
 				objective->performDroidAction(action, droidObject, player);
 			} else {
@@ -145,7 +147,7 @@ void BountyHunterDroidMenuComponent::performDroidAction(int action, SceneObject*
 	}
 }
 
-MissionObject* BountyHunterDroidMenuComponent::getBountyHunterMission(CreatureObject* player) {
+MissionObject* BountyHunterDroidMenuComponent::getBountyHunterMission(CreatureObject* player) const {
 	ZoneServer* zoneServer = player->getZoneServer();
 
 	if (zoneServer != NULL) {

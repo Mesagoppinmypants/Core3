@@ -1,7 +1,6 @@
 dusk_vir_vur = Creature:new {
 	objectName = "@mob/creature_names:dusk_vir_vur",
 	socialGroup = "vir_vur",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ dusk_vir_vur = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/vir_vur_hue.iff"},
@@ -33,7 +32,7 @@ dusk_vir_vur = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

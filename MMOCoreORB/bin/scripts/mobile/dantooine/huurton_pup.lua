@@ -1,7 +1,6 @@
 huurton_pup = Creature:new {
 	objectName = "@mob/creature_names:huurton_pup",
 	socialGroup = "huurton",
-	pvpFaction = "",
 	faction = "",
 	level = 2,
 	chanceHit = 0.21,
@@ -23,7 +22,7 @@ huurton_pup = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/huurton_pup.iff"},

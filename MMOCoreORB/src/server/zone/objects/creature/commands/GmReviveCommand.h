@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
- */
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions. */
 
 #ifndef GMREVIVECOMMAND_H_
 #define GMREVIVECOMMAND_H_
@@ -54,7 +14,7 @@ public:
 
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
 		if (!checkStateMask(creature))
 			return INVALIDSTATE;
@@ -89,7 +49,9 @@ public:
 
 				String firstArg;
 				String firstName = "";
+				String modName = "";
 				bool buff = false;
+				bool skillmod = false;
 				args.getStringToken(firstArg);
 
 				if (firstArg.toLowerCase() == "buff") { // First argument is buff, get second argument
@@ -97,6 +59,12 @@ public:
 					if (args.hasMoreTokens())
 						args.getStringToken(firstName);
 
+				} else if (firstArg.toLowerCase() == "skillmod") {
+					skillmod = true;
+					if (args.hasMoreTokens())
+						args.getStringToken(modName);
+					else
+						return GENERALERROR;
 				} else { // First argument is not buff, must be a name or area
 					firstName = firstArg;
 				}
@@ -132,7 +100,7 @@ public:
 							args.getStringToken(faction);
 						}
 
-						SortedVector<ManagedReference<QuadTreeEntry*> > closeObjects;
+						SortedVector<QuadTreeEntry*> closeObjects;
 						Zone* zone = creature->getZone();
 
 						if (creature->getCloseObjects() == NULL) {
@@ -144,7 +112,7 @@ public:
 						}
 
 						for (int i = 0; i < closeObjects.size(); ++i) {
-							SceneObject* sceneObject = cast<SceneObject*>(closeObjects.get(i).get());
+							SceneObject* sceneObject = static_cast<SceneObject*>(closeObjects.get(i));
 
 							if ((sceneObject->isPlayerCreature() || sceneObject->isPet()) && creature->isInRange(sceneObject, range)) {
 								ManagedReference<CreatureObject*> patientObject = cast<CreatureObject*>(sceneObject);
@@ -207,6 +175,13 @@ public:
 						return INVALIDTARGET;
 					}
 
+				} else if (skillmod) {
+					if (object != NULL && object->isPlayerCreature()) {
+						patient = cast<CreatureObject*>(object.get());
+						Locker clocker(patient, creature);
+						patient->removeSkillMod(SkillModManager::BUFF, modName, patient->getSkillMod(modName), true);
+					} else
+						return INVALIDTARGET;
 				} else { // Shouldn't ever end up here
 					creature->sendSystemMessage("Syntax: /gmrevive [buff] [ [<name>] | [area [<range>] [imperial | rebel | neutral]] ]");
 					return INVALIDTARGET;
@@ -220,8 +195,19 @@ public:
 		return SUCCESS;
 	}
 
-	void revivePatient(CreatureObject* creature, CreatureObject* patient) {
+	void revivePatient(CreatureObject* creature, CreatureObject* patient) const {
 		Locker clocker(patient, creature);
+
+		ManagedReference<PlayerObject*> targetGhost = patient->getPlayerObject();
+
+		if (targetGhost != NULL) {
+
+			if(targetGhost->getJediState() > 1)
+				targetGhost->setForcePower(targetGhost->getForcePowerMax());
+
+			if(patient->isDead())
+				targetGhost->removeSuiBoxType(SuiWindowType::CLONE_REQUEST);
+		}
 
 		patient->healDamage(creature, CreatureAttribute::HEALTH, 5000);
 		patient->healDamage(creature, CreatureAttribute::ACTION, 5000);
@@ -235,15 +221,13 @@ public:
 
 		patient->clearDots();
 
+		patient->removeFeignedDeath();
+
 		patient->setPosture(CreaturePosture::UPRIGHT);
 
-		patient->broadcastPvpStatusBitmask();
-				
-		ManagedReference<PlayerObject*> targetGhost = patient->getPlayerObject();
+		patient->notifyObservers(ObserverEventType::CREATUREREVIVED, creature, 0);
 
-		if (targetGhost != NULL && targetGhost->getJediState() > 1){
-			targetGhost->setForcePower(targetGhost->getForcePowerMax());			
-		}		
+		patient->broadcastPvpStatusBitmask();
 
 		if (patient->isPlayerCreature()) {
 			patient->sendSystemMessage("You have been restored.");

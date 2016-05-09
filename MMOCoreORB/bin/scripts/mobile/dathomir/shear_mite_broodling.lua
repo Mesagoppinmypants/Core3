@@ -1,7 +1,6 @@
 shear_mite_broodling = Creature:new {
 	objectName = "@mob/creature_names:shear_mite_broodling",
 	socialGroup = "shear_mite",
-	pvpFaction = "",
 	faction = "",
 	level = 8,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ shear_mite_broodling = Creature:new {
 	ferocity = 2,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/shear_mite_broodling.iff"},
@@ -33,7 +32,7 @@ shear_mite_broodling = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

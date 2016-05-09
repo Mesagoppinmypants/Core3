@@ -18,9 +18,8 @@ class TargetUpdateCallback : public MessageCallback {
 	ObjectControllerMessageCallback* objectControllerMain;
 public:
 	TargetUpdateCallback(ObjectControllerMessageCallback* objectControllerCallback) :
-		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()) {
-
-		objectControllerMain = objectControllerCallback;
+		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()),
+		size(0), target(0), objectControllerMain(objectControllerCallback) {
 	}
 
 	void parse(Message* message) {
@@ -29,7 +28,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> object = cast<CreatureObject*>(client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> object = client->getPlayer();
 
 		if (object == NULL)
 			return;

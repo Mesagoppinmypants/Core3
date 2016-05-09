@@ -14,7 +14,8 @@ public:
 
 	}
 
-	void run(CreatureObject* creature, SuiBox* sui, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* creature, SuiBox* sui, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
 		if (!sui->isListBox() || cancelPressed || server == NULL)
 			return;
 
@@ -62,11 +63,14 @@ public:
 			}
 
 			ManagedReference<ObjectController*> objectController = server->getObjectController();
-			objectController->activateCommand(creature, String("teleport").hashCode(), 0, 0, arguments.toString());
+			objectController->activateCommand(creature, STRING_HASHCODE("teleport"), 0, 0, arguments.toString());
 
 		} else {
 			Reference<PlayerObject*> ghost = creature->getSlottedObject("ghost").castTo<PlayerObject*>();
 			ManagedReference<WaypointObject*> obj = server->createObject(0xc456e788, 1).castTo<WaypointObject*>();
+
+			Locker locker(obj);
+
 			obj->setPlanetCRC(object->getPlanetCRC());
 			obj->setPosition(object->getWorldPositionX(), 0, object->getWorldPositionY());
 

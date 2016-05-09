@@ -56,9 +56,24 @@ StrafeShot2Command = {
 
 	poolsToDamage = RANDOM_ATTRIBUTE,
 
-	animationCRC = hashCode("fire_area_medium"),
+	stateEffects = {
+	  StateEffect(
+		REMOVE_COVER_EFFECT,
+		{},
+		{},
+		{},
+		75,
+		0,
+		10
+	  )
+	},
+
+	animation = "fire_area", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "advancedstrafe",
+	
+	weaponType = RIFLEWEAPON,
 
 	range = -1
 }

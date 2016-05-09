@@ -52,11 +52,13 @@ PolearmLegHit1Command = {
 	actionCostMultiplier = 0.5,
 	mindCostMultiplier = 0.5,
 
-	animationCRC = hashCode("attack_low_left_medium_0"),
+	animation = "attack_low_left_medium_0",
 
 	combatSpam = "legbruiser",
 
 	poolsToDamage = ACTION_ATTRIBUTE,
+	
+	weaponType = POLEARMWEAPON,
 
 	range = -1
 }

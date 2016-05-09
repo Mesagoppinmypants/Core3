@@ -9,12 +9,14 @@
 #define PERFORMANCE_H_
 
 #include "engine/engine.h"
-#include "server/zone/templates/datatables/DataTableRow.h"
+#include "templates/datatables/DataTableRow.h"
 
 class PerformanceType {
 public:
-	static const int DANCE  = -1788534963;
-	static const int MUSIC  = 866729052;
+	enum {
+		DANCE  = -1788534963,
+		MUSIC  = 866729052
+	};
 
 };
 

@@ -1,7 +1,6 @@
 giant_spined_puc = Creature:new {
 	objectName = "@mob/creature_names:giant_spined_puc",
 	socialGroup = "spined_puc",
-	pvpFaction = "",
 	faction = "",
 	level = 19,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ giant_spined_puc = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/giant_spined_puc.iff"},
@@ -33,7 +32,7 @@ giant_spined_puc = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

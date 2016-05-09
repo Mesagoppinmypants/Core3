@@ -1,7 +1,8 @@
 crackdown_stormtrooper_captain = Creature:new {
 	objectName = "@mob/creature_names:crackdown_stormtrooper_captain",
+	randomNameType = NAME_STORMTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 1,
 	chanceHit = 0.38,
@@ -23,8 +24,9 @@ crackdown_stormtrooper_captain = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
+	scale = 1.05,
 
 	templates = {"object/mobile/dressed_stormtrooper_captain_white_white.iff",
 				"object/mobile/dressed_stormtrooper_groupleader_m.iff"

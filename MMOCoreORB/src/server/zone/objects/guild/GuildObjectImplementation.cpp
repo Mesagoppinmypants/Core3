@@ -14,11 +14,17 @@
 #include "server/zone/objects/guild/RenameGuildTask.h"
 #include "server/zone/objects/guild/GuildUpdateEvent.h"
 
+void GuildObjectImplementation::initializeTransientMembers() {
+	SceneObjectImplementation::initializeTransientMembers();
+
+	transferPending = false;
+}
+
 void GuildObjectImplementation::rescheduleUpdateEvent(uint32 seconds) {
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
 	if (guildUpdateEvent == NULL) {
-		guildUpdateEvent = new GuildUpdateEvent(_this.get(), ServerCore::getZoneServer());
+		guildUpdateEvent = new GuildUpdateEvent(_this.getReferenceUnsafeStaticCast(), ServerCore::getZoneServer());
 	} else if (guildUpdateEvent->isScheduled()) {
 		guildUpdateEvent->cancel();
 	}
@@ -26,33 +32,6 @@ void GuildObjectImplementation::rescheduleUpdateEvent(uint32 seconds) {
 	guildUpdateEvent->schedule(seconds * 1000);
 
 	Core::getTaskManager()->getNextExecutionTime(guildUpdateEvent, nextUpdateTime);
-}
-
-void GuildObjectImplementation::rescheduleRename() {
-	Locker locker(_this.get());
-
-	if (renamePending) {
-		CreatureObject* renamer = server->getZoneServer()->getObject(renamerID).castTo<CreatureObject*>();
-
-		if (renamer == NULL) {
-			setRenamePending(false);
-		} else {
-			RenameGuildTask* renameGuildTask = new RenameGuildTask(renamer, server->getZoneServer(), _this.get());
-
-			if (renameTime.isPast()) {
-				renameGuildTask->execute();
-			} else {
-				renameGuildTask->schedule(renameTime);
-			}
-		}
-	}
-}
-
-void GuildObjectImplementation::updateRenameTime(uint64 miliseconds) {
-	Locker locker(_this.get());
-
-	renameTime.updateToCurrentTime();
-	renameTime.addMiliTime(miliseconds);
 }
 
 void GuildObjectImplementation::sendBaselinesTo(SceneObject* player) {
@@ -65,26 +44,63 @@ void GuildObjectImplementation::broadcastMessage(CreatureObject* player, BaseMes
 }
 
 void GuildObjectImplementation::addMember(uint64 playerID) {
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
 	GuildMemberInfo gmi(playerID);
 	guildMembers.put(playerID, gmi);
 }
 
 void GuildObjectImplementation::removeMember(uint64 playerID) {
-	Locker locker(_this.get());
-
 	guildMembers.drop(playerID);
+
+	if (candidates.contains(playerID)) {
+		removeCandidate(playerID);
+	}
+
+	if (votes.contains(playerID)) {
+		setVote(playerID, 0);
+		votes.drop(playerID);
+	}
+
+	if (playerID == guildLeaderID) {
+		guildLeaderID = 0;
+	}
 }
 
 bool GuildObjectImplementation::hasMember(uint64 playerID) {
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
 	return guildMembers.contains(playerID);
 }
 
+uint64 GuildObjectImplementation::getMember(int index) {
+	return guildMembers.get(index).getPlayerID();
+}
+
+GuildMemberInfo* GuildObjectImplementation::getMember(uint64 playerID) {
+	return &guildMembers.get(playerID);
+}
+
+void GuildObjectImplementation::setGuildMemberTitle(uint64 playerID, const String& title) {
+	GuildMemberInfo* gmi = getMember(playerID);
+	if (gmi == NULL)
+		return;
+
+	gmi->setGuildTitle(title);
+}
+
+String GuildObjectImplementation::getGuildMemberTitle(uint64 playerID) {
+	Locker locker(_this.getReferenceUnsafeStaticCast());
+
+	GuildMemberInfo* gmi = getMember(playerID);
+	if (gmi == NULL)
+		return "";
+
+	return gmi->getGuildTitle();
+}
+
 bool GuildObjectImplementation::isInWaringGuild(CreatureObject* creature) {
-	ManagedReference<GuildObject*> attackerGuild = creature->getGuildObject();
+	ManagedReference<GuildObject*> attackerGuild = creature->getGuildObject().get();
 
 	if (attackerGuild != NULL) {
 
@@ -111,96 +127,130 @@ bool GuildObjectImplementation::isAtWarWith(unsigned long long guildoid) {
 	return res;
 }
 
-uint64 GuildObjectImplementation::getMember(int index) {
-	return guildMembers.get(index).getPlayerID();
-}
-
-GuildMemberInfo* GuildObjectImplementation::getMember(uint64 playerID) {
-	Locker locker(_this.get());
-
-	return &guildMembers.get(playerID);
-}
-
 bool GuildObjectImplementation::hasMailPermission(uint64 playerID) {
-	if (!guildMembers.contains(playerID))
+	Locker locker(_this.getReferenceUnsafeStaticCast());
+
+	if (!hasMember(playerID))
 		return false;
 
-	GuildMemberInfo gmi = guildMembers.get(playerID);
+	GuildMemberInfo* gmi = getMember(playerID);
 
-	return gmi.hasPermission(GuildObject::PERMISSION_MAIL);
+	return gmi->hasPermission(GuildObject::PERMISSION_MAIL);
 }
 
 bool GuildObjectImplementation::hasSponsorPermission(uint64 playerID) {
-	if (!guildMembers.contains(playerID))
+	Locker locker(_this.getReferenceUnsafeStaticCast());
+
+	if (!hasMember(playerID))
 		return false;
 
-	GuildMemberInfo* gmi = &guildMembers.get(playerID);
+	GuildMemberInfo* gmi = getMember(playerID);
 
 	return gmi->hasPermission(GuildObject::PERMISSION_SPONSOR);
 }
 
 bool GuildObjectImplementation::hasAcceptPermission(uint64 playerID) {
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
-	if (!guildMembers.contains(playerID))
+	if (!hasMember(playerID))
 		return false;
 
-	GuildMemberInfo* gmi = &guildMembers.get(playerID);
+	GuildMemberInfo* gmi = getMember(playerID);
 
 	return gmi->hasPermission(GuildObject::PERMISSION_ACCEPT);
 }
 
 bool GuildObjectImplementation::hasKickPermission(uint64 playerID) {
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
-	if (!guildMembers.contains(playerID))
+	if (!hasMember(playerID))
 		return false;
 
-	GuildMemberInfo* gmi = &guildMembers.get(playerID);
+	GuildMemberInfo* gmi = getMember(playerID);
 
 	return gmi->hasPermission(GuildObject::PERMISSION_KICK);
 }
 
 bool GuildObjectImplementation::hasDisbandPermission(uint64 playerID) {
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
-	if (!guildMembers.contains(playerID))
+	if (!hasMember(playerID))
 		return false;
 
-	GuildMemberInfo* gmi = &guildMembers.get(playerID);
+	GuildMemberInfo* gmi = getMember(playerID);
 
 	return gmi->hasPermission(GuildObject::PERMISSION_DISBAND);
 }
 
 bool GuildObjectImplementation::hasNamePermission(uint64 playerID) {
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
-	if (!guildMembers.contains(playerID))
+	if (!hasMember(playerID))
 		return false;
 
-	GuildMemberInfo* gmi = &guildMembers.get(playerID);
+	GuildMemberInfo* gmi = getMember(playerID);
 
 	return gmi->hasPermission(GuildObject::PERMISSION_NAME);
 }
 
 bool GuildObjectImplementation::hasTitlePermission(uint64 playerID) {
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
-	if (!guildMembers.contains(playerID))
+	if (!hasMember(playerID))
 		return false;
 
-	GuildMemberInfo* gmi = &guildMembers.get(playerID);
+	GuildMemberInfo* gmi = getMember(playerID);
 
 	return gmi->hasPermission(GuildObject::PERMISSION_TITLE);
 }
 
 bool GuildObjectImplementation::hasWarPermission(uint64 playerID) {
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 
-	if (!guildMembers.contains(playerID))
+	if (!hasMember(playerID))
 		return false;
 
-	GuildMemberInfo* gmi = &guildMembers.get(playerID);
+	GuildMemberInfo* gmi = getMember(playerID);
 
 	return gmi->hasPermission(GuildObject::PERMISSION_WAR);
+}
+
+void GuildObjectImplementation::toggleMemberPermission(uint64 playerID, uint8 permission) {
+	GuildMemberInfo* gmi = getMember(playerID);
+	if (gmi == NULL)
+		return;
+
+	gmi->togglePermission(permission);
+}
+
+void GuildObjectImplementation::removeCandidate(uint64 candidateoid) {
+	candidates.drop(candidateoid);
+
+	// Remove votes for the candidate
+	for (int i = votes.size() - 1; i >= 0; --i) {
+		if (votes.get(i) == candidateoid) {
+			votes.drop(votes.elementAt(i).getKey());
+		}
+	}
+}
+
+uint64 GuildObjectImplementation::getMemberWithHighestPermission() {
+	uint64 highestMember = 0;
+	uint8 highestPerm = 0;
+
+	for (int i = 0; i < guildMembers.size(); i++) {
+		GuildMemberInfo* gmi = &guildMembers.get(i);
+
+		if (gmi == NULL)
+			continue;
+
+		uint8 perm = gmi->getPermissions();
+
+		if (perm > highestPerm) {
+			highestPerm = perm;
+			highestMember = gmi->getPlayerID();
+		}
+	}
+
+	return highestMember;
 }

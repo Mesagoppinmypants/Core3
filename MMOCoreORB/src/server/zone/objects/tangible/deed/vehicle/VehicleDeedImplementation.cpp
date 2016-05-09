@@ -9,7 +9,7 @@
 #include"server/zone/ZoneServer.h"
 #include "server/zone/packets/object/ObjectMenuResponse.h"
 #include "server/zone/objects/manufactureschematic/ManufactureSchematic.h"
-#include "server/zone/templates/tangible/VehicleDeedTemplate.h"
+#include "templates/tangible/VehicleDeedTemplate.h"
 #include "server/zone/objects/intangible/VehicleControlDevice.h"
 #include "server/zone/objects/creature/VehicleObject.h"
 #include "server/zone/managers/player/PlayerManager.h"
@@ -93,28 +93,43 @@ int VehicleDeedImplementation::handleObjectMenuSelect(CreatureObject* player, by
 		}
 
 		Reference<VehicleControlDevice*> vehicleControlDevice = (server->getZoneServer()->createObject(controlDeviceObjectTemplate.hashCode(), 1)).castTo<VehicleControlDevice*>();
+
+		if (vehicleControlDevice == NULL) {
+			player->sendSystemMessage("wrong vehicle control device object template " + controlDeviceObjectTemplate);
+			return 1;
+		}
+
+		Locker locker(vehicleControlDevice);
+
 		Reference<VehicleObject*> vehicle = (server->getZoneServer()->createObject(generatedObjectTemplate.hashCode(), 1)).castTo<VehicleObject*>();
 
 		if (vehicle == NULL) {
+			vehicleControlDevice->destroyObjectFromDatabase(true);
 			player->sendSystemMessage("wrong vehicle object template " + generatedObjectTemplate);
 			return 1;
 		}
+
+		Locker vlocker(vehicle, player);
 
 		vehicle->createChildObjects();
 		vehicle->setMaxCondition(hitPoints);
 		vehicle->setConditionDamage(0);
 		vehicleControlDevice->setControlledObject(vehicle);
-		datapad->transferObject(vehicleControlDevice, -1);
 
-		datapad->broadcastObject(vehicleControlDevice, true);
-		vehicleControlDevice->generateObject(player);
+		if (datapad->transferObject(vehicleControlDevice, -1)) {
+			datapad->broadcastObject(vehicleControlDevice, true);
+			vehicleControlDevice->generateObject(player);
 
-		generated = true;
+			generated = true;
 
-		destroyObjectFromWorld(true);
-		destroyObjectFromDatabase(true);
+			destroyObjectFromWorld(true);
+			destroyObjectFromDatabase(true);
 
-		return 0;
+			return 0;
+		} else {
+			vehicleControlDevice->destroyObjectFromDatabase(true);
+			return 1;
+		}
 	}
 
 	return DeedImplementation::handleObjectMenuSelect(player, selectedID);

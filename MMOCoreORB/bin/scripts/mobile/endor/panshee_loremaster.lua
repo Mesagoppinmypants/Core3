@@ -1,7 +1,8 @@
 panshee_loremaster = Creature:new {
 	objectName = "@mob/creature_names:panshee_loremaster",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "panshee_tribe",
-	pvpFaction = "panshee_tribe",
 	faction = "panshee_tribe",
 	level = 25,
 	chanceHit = 0.35,
@@ -23,7 +24,7 @@ panshee_loremaster = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -34,11 +35,11 @@ panshee_loremaster = Creature:new {
 		"object/mobile/dressed_ewok_m_10.iff",
 		"object/mobile/dressed_ewok_m_12.iff"},
 	lootGroups = {
-		 {
-	        groups = {
+		{
+			groups = {
 				{group = "ewok", chance = 10000000}
 			},
-			lootChance = 3000000
+			lootChance = 1500000
 		}
 	},
 	weapons = {"ewok_weapons"},

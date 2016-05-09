@@ -1,7 +1,6 @@
 gungan_falumpaset = Creature:new {
 	objectName = "@mob/creature_names:gungan_falumpaset",
 	socialGroup = "gungan",
-	pvpFaction = "",
 	faction = "gungan",
 	level = 26,
 	chanceHit = 0.36,
@@ -24,7 +23,7 @@ gungan_falumpaset = Creature:new {
 	ferocity = 8,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/falumpaset_hue.iff"},
@@ -33,7 +32,8 @@ gungan_falumpaset = Creature:new {
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"",""},
+		{"blindattack",""}
 	}
 }
 

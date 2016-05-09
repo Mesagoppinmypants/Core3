@@ -1,8 +1,7 @@
 slooni_smuggler = Creature:new {
 	objectName = "@mob/creature_names:smuggler",
 	socialGroup = "thug",
-	pvpFaction = "thug",
-	faction = "",
+	faction = "thug",
 	level = 14,
 	chanceHit = 0.300000,
 	damageMin = 150,
@@ -23,7 +22,7 @@ slooni_smuggler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_slicer_human_male_01.iff"},

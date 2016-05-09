@@ -1,7 +1,6 @@
 morag = Creature:new {
 	objectName = "@mob/creature_names:morag",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1.000000,
@@ -23,7 +22,7 @@ morag = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/morag.iff"},

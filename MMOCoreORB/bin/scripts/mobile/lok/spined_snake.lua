@@ -1,7 +1,6 @@
 spined_snake = Creature:new {
 	objectName = "@mob/creature_names:spined_snake",
 	socialGroup = "spine_snake",
-	pvpFaction = "",
 	faction = "",
 	level = 17,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ spined_snake = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/spined_snake.iff"},
@@ -34,7 +33,7 @@ spined_snake = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"mediumpoison",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

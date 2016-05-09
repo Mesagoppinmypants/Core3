@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #include "ZonePacketHandler.h"
 
@@ -88,8 +48,9 @@ which carries forward this exception.
 #include "packets/object/CraftingCustomizationCallback.h"
 #include "packets/object/ImageDesignRejectMessageCallback.h"
 #include "packets/object/ImageDesignChangeMessageCallback.h"
-#include "packets/object/JtlShipListRequestCallback.h"
 #include "packets/object/InsertedAsPilotCallback.h"
+#include "packets/object/JtlShipListRequestCallback.h"
+#include "packets/object/LotteryWindowCallback.h"
 
 #include "packets/ui/RequestCategoriesResponseMessage.h"
 #include "packets/ui/NewTicketActivityResponseMessage.h"
@@ -113,6 +74,16 @@ which carries forward this exception.
 #include "packets/chat/ChatRequestPersistentMessageCallback.h"
 #include "packets/chat/ChatDeletePersistentMessageCallback.h"
 #include "packets/chat/ChatEnterRoomByIdCallback.h"
+#include "packets/chat/ChatCreateRoomCallback.h"
+#include "packets/chat/ChatDestroyRoomCallback.h"
+#include "packets/chat/ChatQueryRoomCallback.h"
+#include "packets/chat/ChatLeaveRoomCallback.h"
+#include "packets/chat/ChatInviteToRoomCallback.h"
+#include "packets/chat/ChatUninviteFromRoomCallback.h"
+#include "packets/chat/ChatAddModeratorToRoomCallback.h"
+#include "packets/chat/ChatRemoveModeratorFromRoomCallback.h"
+#include "packets/chat/ChatBanFromRoomCallback.h"
+#include "packets/chat/ChatUnbanFromRoomCallback.h"
 
 #include "packets/trade/AbortTradeMessageCallback.h"
 #include "packets/trade/AcceptTransactionMessageCallback.h"
@@ -188,7 +159,18 @@ void ZonePacketHandler::registerMessages() {
 	messageCallbackFactory.registerObject<CreateTicketMessageCallback>(0x40E64DAC);
 	messageCallbackFactory.registerObject<CancelLiveAuctionMessageCallback>(0x3687A4D2);
 	messageCallbackFactory.registerObject<FactionRequestMessageCallback>(0xC1B03B81);
-	messageCallbackFactory.registerObject<ShipUpdateTransformCallback>(0x76026fb9);
+	messageCallbackFactory.registerObject<ShipUpdateTransformCallback>(0x76026FB9);
+	messageCallbackFactory.registerObject<ChatCreateRoomCallback>(0x35366BED);
+	messageCallbackFactory.registerObject<ChatQueryRoomCallback>(0x9CF2B192);
+	messageCallbackFactory.registerObject<ChatDestroyRoomCallback>(0x094B2A77);
+	messageCallbackFactory.registerObject<ChatLeaveRoomCallback>(0x493E3FFA);
+	messageCallbackFactory.registerObject<ChatInviteToRoomCallback>(0x7273ECD3);
+	messageCallbackFactory.registerObject<ChatUninviteFromRoomCallback>(0xFC8D01F1);
+	messageCallbackFactory.registerObject<ChatAddModeratorToRoomCallback>(0x90BDE76F);
+	messageCallbackFactory.registerObject<ChatRemoveModeratorFromRoomCallback>(0x8A3F8E04);
+	messageCallbackFactory.registerObject<ChatBanFromRoomCallback>(0xD9FA0194);
+	messageCallbackFactory.registerObject<ChatUnbanFromRoomCallback>(0x4C8F94A9);
+
 }
 
 void ZonePacketHandler::registerObjectControllerMessages() {
@@ -215,8 +197,9 @@ void ZonePacketHandler::registerObjectControllerMessages() {
 	objectMessageControllerFactory->registerObject<CraftingCustomizationCallback>(0x15A);
 	objectMessageControllerFactory->registerObject<ImageDesignChangeMessageCallback>(0x238);
 	objectMessageControllerFactory->registerObject<ImageDesignRejectMessageCallback>(0x239);
-	objectMessageControllerFactory->registerObject<JtlShipListRequestCallback>(0x41C);
 	objectMessageControllerFactory->registerObject<InsertedAsPilotCallback>(0x3fa);
+	objectMessageControllerFactory->registerObject<JtlShipListRequestCallback>(0x41C);
+	objectMessageControllerFactory->registerObject<LotteryWindowCallback>(0x43f);
 
 }
 

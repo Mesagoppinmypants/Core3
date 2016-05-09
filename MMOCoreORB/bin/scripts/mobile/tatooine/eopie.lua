@@ -1,7 +1,6 @@
 eopie = Creature:new {
 	objectName = "@mob/creature_names:eopie",
 	socialGroup = "eopie",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.26,
@@ -24,7 +23,7 @@ eopie = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/eopie.iff"},

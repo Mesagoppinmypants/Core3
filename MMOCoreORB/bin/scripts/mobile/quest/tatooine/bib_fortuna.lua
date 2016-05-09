@@ -1,7 +1,6 @@
 bib_fortuna = Creature:new {
 	objectName = "@mob/creature_names:bib_fortuna",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ bib_fortuna = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bib_fortuna.iff"},

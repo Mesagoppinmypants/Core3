@@ -1,7 +1,6 @@
 blood_frenzied_boar_wolf = Creature:new {
 	objectName = "@mob/creature_names:blood_frenzied_boar_wolf",
 	socialGroup = "boar",
-	pvpFaction = "",
 	faction = "",
 	level = 45,
 	chanceHit = 0.44,
@@ -23,7 +22,7 @@ blood_frenzied_boar_wolf = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/boar_wolf_hue.iff"},
@@ -32,8 +31,8 @@ blood_frenzied_boar_wolf = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"creatureareableeding",""}
+		{"creatureareableeding",""},
+		{"blindattack",""}
 	}
 }
 

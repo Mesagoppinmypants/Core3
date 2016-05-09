@@ -19,7 +19,8 @@ public:
 	StructureSelectSignSuiCallback(ZoneServer* serv) : SuiCallback(serv) {
 	}
 
-	void run(CreatureObject* creature, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* creature, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
 
 		if (!suiBox->isListBox() || cancelPressed)
 			return;
@@ -33,6 +34,10 @@ public:
 
 		SuiListBox* suiListBox = cast<SuiListBox*>( suiBox);
 		int index = Integer::valueOf(args->get(0).toString());
+
+		if (index < 0)
+			return;
+
 		String suiItem = suiListBox->getMenuItemName(index);
 
 		StructureObject* structure = cast<StructureObject*>(object.get());

@@ -11,11 +11,10 @@
 #include"server/zone/ZoneServer.h"
 #include "server/zone/objects/scene/SceneObject.h"
 #include "server/zone/managers/combat/CombatManager.h"
-#include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/managers/combat/CreatureAttackData.h"
 #include "server/zone/managers/collision/CollisionManager.h"
-#include "server/zone/objects/creature/CreatureAttribute.h"
-#include "server/zone/objects/creature/CreatureState.h"
+#include "templates/params/creature/CreatureAttribute.h"
+#include "templates/params/creature/CreatureState.h"
 #include "server/zone/objects/creature/commands/effect/StateEffect.h"
 #include "server/zone/objects/creature/commands/effect/DotEffect.h"
 #include "server/zone/objects/creature/commands/effect/CommandEffect.h"
@@ -26,11 +25,12 @@
 class ForcePowersQueueCommand : public CombatQueueCommand {
 public:
 
-	ForcePowersQueueCommand(const String& name, ZoneProcessServer* server) : CombatQueueCommand(name, server) {}
+	ForcePowersQueueCommand(const String& name, ZoneProcessServer* server) : CombatQueueCommand(name, server) {
+		visMod = 25;
+	}
 
-	int doCombatAction(CreatureObject* creature, const uint64& target, const UnicodeString& arguments = "") {
+	int doCombatAction(CreatureObject* creature, const uint64& target, const UnicodeString& arguments = "") const {
 			ManagedReference<SceneObject*> targetObject = server->getZoneServer()->getObject(target);
-			PlayerManager* playerManager = server->getPlayerManager();
 
 			if (targetObject == NULL || !targetObject->isTangibleObject() || targetObject == creature)
 				return INVALIDTARGET;
@@ -40,7 +40,7 @@ public:
 			if (creature->isProne())
 				return NOPRONE;
 
-			if (!targetObject->isInRange(creature, checkRange))
+			if(!checkDistance(creature, targetObject, checkRange))
 				return TOOFAR;
 
 			if (!CollisionManager::checkLineOfSight(creature, targetObject)) {
@@ -50,7 +50,7 @@ public:
 
 			ManagedReference<PlayerObject*> playerObject = creature->getPlayerObject();
 
-			if (playerObject != NULL && playerObject->getForcePower() <= forceCost) {
+			if (playerObject != NULL && playerObject->getForcePower() < forceCost) {
 				creature->sendSystemMessage("@jedi_spam:no_force_power"); //"You do not have enough Force Power to peform that action.
 
 				return GENERALERROR;
@@ -59,7 +59,7 @@ public:
 			CombatManager* combatManager = CombatManager::instance();
 
 			try {
-				int res = combatManager->doCombatAction(creature, creature->getWeapon(), cast<TangibleObject*>(targetObject.get()), CreatureAttackData(arguments, this));
+				int res = combatManager->doCombatAction(creature, creature->getWeapon(), cast<TangibleObject*>(targetObject.get()), CreatureAttackData(arguments, this, target));
 
 				switch (res) {
 				case -1:
@@ -76,13 +76,18 @@ public:
 				error(e.getMessage());
 				e.printStackTrace();
 			}
+
 			// Increase Visibility for Force Power.
-			VisibilityManager::instance()->increaseVisibility(creature);
+			VisibilityManager::instance()->increaseVisibility(creature, visMod);
 			return SUCCESS;
 		}
 
-	float getCommandDuration(CreatureObject *object, const UnicodeString& arguments) {
+	float getCommandDuration(CreatureObject *object, const UnicodeString& arguments) const {
 		return defaultTime * speed;
+	}
+
+	virtual bool isJediCombatQueueCommand() {
+		return true;
 	}
 
 };

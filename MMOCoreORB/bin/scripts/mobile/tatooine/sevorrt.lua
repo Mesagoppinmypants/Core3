@@ -1,7 +1,6 @@
 sevorrt = Creature:new {
 	objectName = "@mob/creature_names:sevorrt",
 	socialGroup = "sevorrt",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,7 +22,7 @@ sevorrt = Creature:new {
 	ferocity = 5,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/sevorrt.iff"},
@@ -33,7 +32,7 @@ sevorrt = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 gins_stranded_rebel_officer = Creature:new {
 	objectName = "@mob/creature_names:rebel_first_lieutenant",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 20,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ gins_stranded_rebel_officer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

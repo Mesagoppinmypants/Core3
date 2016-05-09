@@ -1,7 +1,8 @@
 crackdown_imperial_exterminator = Creature:new {
 	objectName = "@mob/creature_names:crackdown_imperial_exterminator",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 1,
 	chanceHit = 0.37,
@@ -23,7 +24,7 @@ crackdown_imperial_exterminator = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_officer_m_5.iff"},

@@ -1,7 +1,8 @@
 singing_mountain_clan_initiate = Creature:new {
 	objectName = "@mob/creature_names:singing_mtn_clan_initiate",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "mtn_clan",
-	pvpFaction = "mtn_clan",
 	faction = "mtn_clan",
 	level = 50,
 	chanceHit = 0.5,
@@ -23,7 +24,7 @@ singing_mountain_clan_initiate = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_sing_mt_clan_initiate.iff"},
@@ -39,11 +40,10 @@ singing_mountain_clan_initiate = Creature:new {
 				{group = "rifles", chance = 1000000},
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
-				{group = "wearables_common", chance = 500000},
-				{group = "wearables_uncommon", chance = 500000}
-			},
-			lootChance = 2000000
-		}			
+				{group = "wearables_uncommon", chance = 500000},
+				{group = "tailor_components", chance = 500000}
+			}
+		}
 	},
 	weapons = {"mixed_force_weapons"},
 	conversationTemplate = "",

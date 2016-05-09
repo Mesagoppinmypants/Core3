@@ -1,7 +1,6 @@
 majestic_whisper_bird = Creature:new {
 	objectName = "@mob/creature_names:whisper_bird_majestic",
 	socialGroup = "bird",
-	pvpFaction = "",
 	faction = "",
 	level = 19,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ majestic_whisper_bird = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/whisper_bird_hue.iff"},
@@ -33,7 +32,7 @@ majestic_whisper_bird = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

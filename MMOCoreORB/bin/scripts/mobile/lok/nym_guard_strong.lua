@@ -1,17 +1,18 @@
 nym_guard_strong = Creature:new {
 	objectName = "@mob/creature_names:nym_guard_strong",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "nym",
-	pvpFaction = "nym",
 	faction = "nym",
-	level = 9,
-	chanceHit = 0.27,
-	damageMin = 80,
-	damageMax = 90,
-	baseXp = 356,
-	baseHAM = 675,
-	baseHAMmax = 825,
+	level = 36,
+	chanceHit = 0.41,
+	damageMin = 315,
+	damageMax = 340,
+	baseXp = 3642,
+	baseHAM = 9000,
+	baseHAMmax = 11000,
 	armor = 1,
-	resists = {15,15,15,15,40,-1,-1,-1,-1},
+	resists = {135,135,15,15,140,-1,-1,-1,-1},
 	meatType = "",
 	meatAmount = 0,
 	hideType = "",
@@ -23,13 +24,13 @@ nym_guard_strong = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
-	templates = {"object/mobile/dressed_nym_guard_strong_hum_f.iff", 
-			"object/mobile/dressed_nym_guard_strong_rod_m.iff",
-			"object/mobile/dressed_nym_guard_strong_nikto_m.iff",
-			"object/mobile/dressed_nym_guard_strong_hum_m.iff"},
+	templates = {"object/mobile/dressed_nym_guard_strong_hum_f.iff",
+		"object/mobile/dressed_nym_guard_strong_rod_m.iff",
+		"object/mobile/dressed_nym_guard_strong_nikto_m.iff",
+		"object/mobile/dressed_nym_guard_strong_hum_m.iff"},
 	lootGroups = {
 		{
 			groups = {
@@ -38,12 +39,12 @@ nym_guard_strong = Creature:new {
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
 				{group = "tailor_components", chance = 500000}
-			},
-			lootChance = 3500000
+			}
 		}
 	},
-	weapons = {"pirate_weapons_medium"},
+	weapons = {"pirate_weapons_heavy"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(marksmannovice,brawlernovice)
 }
 

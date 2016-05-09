@@ -1,7 +1,8 @@
 crackdown_stormtrooper_squad_leader = Creature:new {
 	objectName = "@mob/creature_names:crackdown_stormtrooper_squad_leader",
+	randomNameType = NAME_STORMTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 1,
 	chanceHit = 0.37,
@@ -23,8 +24,9 @@ crackdown_stormtrooper_squad_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.05,
 
 	templates = {"object/mobile/dressed_stormtrooper_squad_leader_white_gold.iff",
 				"object/mobile/dressed_stormtrooper_groupleader_m.iff"

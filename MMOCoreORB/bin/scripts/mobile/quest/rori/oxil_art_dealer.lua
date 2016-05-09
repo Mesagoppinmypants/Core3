@@ -2,7 +2,6 @@ oxil_art_dealer = Creature:new {
   objectName = "",
   customName = "Art Dealer",
   socialGroup = "",
-  pvpFaction = "",
   faction = "",
   level = 7,
   chanceHit = 0.26,
@@ -24,7 +23,7 @@ oxil_art_dealer = Creature:new {
   ferocity = 0,
   pvpBitmask = NONE,
   creatureBitmask = NONE,
-  optionsBitmask = 136,
+  optionsBitmask = AIENABLED + CONVERSABLE,
   diet = HERBIVORE,
 
   templates = {

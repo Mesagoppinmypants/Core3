@@ -2,7 +2,6 @@ serene_floater = Creature:new {
 	objectName = "",
 	customName = "Serene Floater",
 	socialGroup = "bomarr",
-	pvpFaction = "",
 	faction = "",
 	level = 32,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ serene_floater = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bomarr_spider_monk_droid.iff"},

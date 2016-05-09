@@ -1,7 +1,6 @@
 rotting_decay_mite_guard = Creature:new {
 	objectName = "@mob/creature_names:rotting_pustule_guard",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ rotting_decay_mite_guard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/decay_mite.iff"},
@@ -33,7 +32,7 @@ rotting_decay_mite_guard = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
+		{"intimidationattack",""},
 		{"mediumdisease",""}
 	}
 }

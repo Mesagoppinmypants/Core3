@@ -1,11 +1,12 @@
 lok_nym_patrol4_neutral_none = Lair:new {
-	mobiles = {{"nym_pirate_elite",1},{"nym_droideka",1}},
+	mobiles = {{"nym_droideka",1}},
 	spawnLimit = 9,
 	buildingsVeryEasy = {},
 	buildingsEasy = {},
 	buildingsMedium = {},
 	buildingsHard = {},
 	buildingsVeryHard = {},
+	mobType = "npc",
 	buildingType = "none"
 }
 

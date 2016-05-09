@@ -1,7 +1,8 @@
 dark_trooper = Creature:new {
 	objectName = "@mob/creature_names:dark_trooper",
+	randomNameType = NAME_DARKTROOPER,
+	randomNameTag = false,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 35,
 	chanceHit = 0.4,
@@ -23,8 +24,9 @@ dark_trooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE + OVERT,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.5,
 
 	templates = {"object/mobile/dark_trooper.iff"},
 	lootGroups = {
@@ -39,13 +41,14 @@ dark_trooper = Creature:new {
 				{group = "pistols", chance = 600000},
 				{group = "clothing_attachments", chance = 150000},
 				{group = "armor_attachments", chance = 150000},
-				{group = "wearables_common", chance = 1000000}
-			},
-			lootChance = 3500000
+				{group = "grenades_looted", chance = 1000000}
+			}
 		}
 	},
 	weapons = {"dark_trooper_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/stormtrooper",
+	personalityStf = "@hireling/hireling_stormtrooper",
 	attacks = merge(riflemanmaster,marksmanmaster,fencermaster,brawlermaster)
 }
 

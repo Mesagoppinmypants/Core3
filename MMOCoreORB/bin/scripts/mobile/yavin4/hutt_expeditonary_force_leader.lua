@@ -1,7 +1,8 @@
 hutt_expeditonary_force_leader = Creature:new {
 	objectName = "@mob/creature_names:hutt_expedition_force_leader",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "hutt",
-	pvpFaction = "hutt",
 	faction = "hutt",
 	level = 21,
 	chanceHit = 0.34,
@@ -23,7 +24,7 @@ hutt_expeditonary_force_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_hutt_expedition_force_leader.iff"},
@@ -41,12 +42,12 @@ hutt_expeditonary_force_leader = Creature:new {
 				{group = "clothing_attachments", chance = 200000},
 				{group = "armor_attachments", chance = 200000},
 				{group = "hutt_exp_common", chance = 2000000}
-			},
-			lootChance = 2600000
+			}
 		}
-},
+	},
 	weapons = {"pirate_weapons_heavy"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 

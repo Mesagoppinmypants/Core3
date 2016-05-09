@@ -2,7 +2,6 @@ indintra_imbru_yerevan = Creature:new {
 	objectName = "",
 	customName = "Indintra Imbru Yerevan",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ indintra_imbru_yerevan = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_indintra_imbru_yerevan.iff"},

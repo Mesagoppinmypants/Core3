@@ -13,9 +13,10 @@ public:
 
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
 
-		if(cancelPressed){
+		if (cancelPressed) {
 			return;
 		}
 
@@ -101,6 +102,11 @@ public:
 			return;
 		}
 
+		Locker pOneLocker(partOne);
+		Locker pTwoLocker(partTwo);
+		Locker pThreeLocker(partThree);
+		Locker pFourLocker(partFour);
+
 		String fullTemplate = "object/tangible/encoded_disk/message_assembled_base.iff";
 		ManagedReference<TangibleObject*> assembledMessage = server->createObject(fullTemplate.hashCode(), 1).castTo<TangibleObject*>();
 
@@ -108,29 +114,26 @@ public:
 			return;
 		}
 
+		Locker assembledMessageLocker(assembledMessage);
+
 		CoaMessageDataComponent* data = assembledMessage->getDataObjectComponent()->castTo<CoaMessageDataComponent*>();
 
 		if (data == NULL) {
+			assembledMessage->destroyObjectFromDatabase(true);
 			return;
 		}
 
 		if (usingObjectFaction == "Imperial") {
 			data->setFaction("Imperial");
 			StringId stringId("encoded_disk/message_fragment", "name_eventimp1");
-			assembledMessage->setObjectName(stringId);
+			assembledMessage->setObjectName(stringId, false);
 		} else if (usingObjectFaction == "Rebel") {
 			data->setFaction("Rebel");
 			StringId stringId("encoded_disk/message_fragment", "name_eventreb1");
-			assembledMessage->setObjectName(stringId);
+			assembledMessage->setObjectName(stringId, false);
 		}
 
 		data->setNumber(System::random(20) + 1);
-
-		inventory->transferObject(assembledMessage, -1, true);
-
-		assembledMessage->sendTo(player, true);
-
-		player->sendSystemMessage("@encoded_disk/message_fragment:sys_message_assembled"); // You successfully assemble the fragments into a single file.
 
 		partOne->destroyObjectFromWorld(true);
 		partOne->destroyObjectFromDatabase();
@@ -140,6 +143,12 @@ public:
 		partThree->destroyObjectFromDatabase();
 		partFour->destroyObjectFromWorld(true);
 		partFour->destroyObjectFromDatabase();
+
+		inventory->transferObject(assembledMessage, -1, true);
+
+		assembledMessage->sendTo(player, true);
+
+		player->sendSystemMessage("@encoded_disk/message_fragment:sys_message_assembled"); // You successfully assemble the fragments into a single file.
 	}
 };
 

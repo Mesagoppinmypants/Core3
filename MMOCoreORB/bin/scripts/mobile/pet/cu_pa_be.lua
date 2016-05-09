@@ -1,7 +1,6 @@
 cu_pa_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_cu_pa",
 	socialGroup = "cu_pa",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ cu_pa_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/cu_pa_hue.iff"},

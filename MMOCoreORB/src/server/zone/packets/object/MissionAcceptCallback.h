@@ -10,7 +10,6 @@
 
 
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/CreatureObject.h"
 #include "ObjectControllerMessageCallback.h"
 #include "server/zone/managers/mission/MissionManager.h"
 #include "server/zone/objects/mission/MissionObject.h"
@@ -24,9 +23,9 @@ class MissionAcceptCallback : public MessageCallback {
 	ObjectControllerMessageCallback* objectControllerMain;
 public:
 	MissionAcceptCallback(ObjectControllerMessageCallback* objectControllerCallback) :
-		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()) {
+		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()),
+		missionObjectID(0), terminalObjectID(0), terminalIndex(0), objectControllerMain(objectControllerCallback) {
 
-		objectControllerMain = objectControllerCallback;
 	}
 
 	void parse(Message* message) {
@@ -39,7 +38,10 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = cast<CreatureObject*>( client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
+
+		if (player == NULL)
+			return;
 
 		ManagedReference<SceneObject*> terminal = server->getZoneServer()->getObject(terminalObjectID);
 
@@ -68,6 +70,8 @@ public:
 
 		if (missionTerminal == NULL)
 			return;
+
+		Locker clocker(missionObject, player);
 
 		MissionManager* manager = server->getZoneServer()->getMissionManager();
 		manager->handleMissionAccept(missionTerminal, missionObject, player);

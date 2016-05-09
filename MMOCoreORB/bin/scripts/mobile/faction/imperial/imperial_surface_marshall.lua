@@ -1,7 +1,8 @@
 imperial_surface_marshall = Creature:new {
 	objectName = "@mob/creature_names:mission_imperial_surface_marshal",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 30,
 	chanceHit = 0.39,
@@ -23,7 +24,7 @@ imperial_surface_marshall = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -47,13 +48,14 @@ imperial_surface_marshall = Creature:new {
 				{group = "armor_attachments", chance = 25000},
 				{group = "imperial_officer_common", chance = 450000},
 				{group = "wearables_common", chance = 1000000}
-			},
-			lootChance = 2800000
+			}
 		}
 	},
 	weapons = {"imperial_weapons_heavy"},
 	conversationTemplate = "",
-	attacks = merge(riflemanmaster,carbineermaster,brawlermaster)
+	reactionStf = "@npc_reaction/military",
+	personalityStf = "@hireling/hireling_military",
+	attacks = merge(riflemanmid,carbineermid,brawlermaster,marksmanmaster,pikemanmaster)
 }
 
 CreatureTemplates:addCreatureTemplate(imperial_surface_marshall, "imperial_surface_marshall")

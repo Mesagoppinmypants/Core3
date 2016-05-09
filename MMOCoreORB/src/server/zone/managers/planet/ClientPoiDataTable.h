@@ -9,8 +9,8 @@
 #define CLIENTPOIDATATABLE_H_
 
 #include "engine/engine.h"
-#include "server/zone/templates/datatables/DataTableIff.h"
-#include "server/zone/templates/datatables/DataTableRow.h"
+#include "templates/datatables/DataTableIff.h"
+#include "templates/datatables/DataTableRow.h"
 
 class PoiData : public Object {
 protected:
@@ -20,7 +20,7 @@ protected:
 	float x, y, z;
 
 public:
-	PoiData() {
+	PoiData() : x(0), y(0), z(0) {
 
 	}
 
@@ -77,7 +77,7 @@ public:
 		return pois.contains(name);
 	}
 
-	Vector<Reference<PoiData*> > getPois(const String& planetName) {
+	const Vector<Reference<PoiData*> >& getPois(const String& planetName) {
 		return pois.get(planetName);
 	}
 

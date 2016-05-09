@@ -1,7 +1,6 @@
 zoda_burb = Creature:new {
 	objectName = "@mob/creature_names:commoner",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 4,
 	chanceHit = 0.24,
@@ -23,7 +22,7 @@ zoda_burb = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 	templates = { "object/mobile/dressed_commoner_naboo_human_male_05.iff"},
 	lootGroups = {},

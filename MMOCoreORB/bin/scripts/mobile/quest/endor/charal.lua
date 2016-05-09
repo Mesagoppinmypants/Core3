@@ -1,7 +1,6 @@
 charal = Creature:new {
 	objectName = "@mob/creature_names:charal",
 	socialGroup = "endor_marauder",
-	pvpFaction = "endor_marauder",
 	faction = "endor_marauder",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ charal = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/charal.iff"},

@@ -1,7 +1,6 @@
 sindra_ingon_lakbo = Creature:new {
   objectName = "@mob/creature_names:philosopher",
   socialGroup = "townsperson",
-  pvpFaction = "townsperson",
   faction = "townsperson",
   level = 4,
   chanceHit = 0.240000,
@@ -23,7 +22,7 @@ sindra_ingon_lakbo = Creature:new {
   ferocity = 0,
   pvpBitmask = NONE,
   creatureBitmask = NONE,
-  optionsBitmask = 136,
+  optionsBitmask = AIENABLED + CONVERSABLE,
   diet = HERBIVORE,
 
   templates = {"object/mobile/dressed_philosopher.iff"},

@@ -1,7 +1,6 @@
 blurrg_raptor = Creature:new {
 	objectName = "@mob/creature_names:blurrg_raptor",
 	socialGroup = "blurrg",
-	pvpFaction = "",
 	faction = "",
 	level = 141,
 	chanceHit = 6.25,
@@ -23,7 +22,7 @@ blurrg_raptor = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/blurrg_hue.iff"},
@@ -32,8 +31,8 @@ blurrg_raptor = Creature:new {
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"blindattack",""}
 	}
 }
 

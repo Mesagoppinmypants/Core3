@@ -1,7 +1,6 @@
 dera_darklighter = Creature:new {
 	objectName = "@mob/creature_names:dera_darklighter",
 	socialGroup = "darklighter",
-	pvpFaction = "",
 	faction = "",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ dera_darklighter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dera_darklighter.iff"},

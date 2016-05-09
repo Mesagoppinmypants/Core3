@@ -15,7 +15,7 @@
 #include "server/zone/managers/objectcontroller/ObjectController.h"
 #include "server/zone/objects/player/sessions/SlicingSession.h"
 
-void WeaponObjectMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) {
+void WeaponObjectMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 
 	if (!sceneObject->isTangibleObject())
 		return;
@@ -39,7 +39,7 @@ void WeaponObjectMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
 
 }
 
-int WeaponObjectMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) {
+int WeaponObjectMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) const {
 	if (!sceneObject->isTangibleObject())
 		return 0;
 
@@ -83,16 +83,13 @@ int WeaponObjectMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, 
 			if(pup == NULL)
 				return 1;
 
-			ManagedReference<SceneObject*> inventory = player->getSlottedObject("inventory");
-			if(inventory == NULL)
-				return 1;
+			Locker locker(pup);
 
-			inventory->transferObject(pup, -1, false);
-			pup->sendTo(player, true);
+			pup->destroyObjectFromWorld( true );
+			pup->destroyObjectFromDatabase( true );
 
 			StringIdChatParameter message("powerup", "prose_remove_powerup"); //You detach your powerup from %TT.
-			message.setTT(weapon->getDisplayedName());
-
+			message.setTT(weapon->getDisplayedName()); 
 			player->sendSystemMessage(message);
 
 			return 1;

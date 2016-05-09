@@ -1,7 +1,8 @@
 drall_patriot_foot_soldier = Creature:new {
 	objectName = "@mob/creature_names:drall_patriot_footsoldier",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "drall",
-	pvpFaction = "drall",
 	faction = "drall",
 	level = 13,
 	chanceHit = 0.3,
@@ -23,24 +24,24 @@ drall_patriot_foot_soldier = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/mobile/drall_male.iff",
 		"object/mobile/drall_female.iff"},
 	lootGroups = {
-	      	{
+		{
 			groups = {
 				{group = "junk", chance = 7000000},
 				{group = "loot_kit_parts", chance = 2000000},
 				{group = "tailor_components", chance = 1000000}
-			},
-			lootChance = 3000000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_medium"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/military",
 	attacks = merge(brawlermid,marksmanmid)
 }
 

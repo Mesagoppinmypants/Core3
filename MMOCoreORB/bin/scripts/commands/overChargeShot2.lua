@@ -51,9 +51,12 @@ OverChargeShot2Command = {
 	mindCostMultiplier = 1,
 	accuracyBonus = 15,
 
-	animationCRC = hashCode("fire_1_special_single_medium"),
+	animation = "fire_1_special_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "overchargeshot",
+	
+	weaponType = RANGEDWEAPON,
 
 	range = -1
 

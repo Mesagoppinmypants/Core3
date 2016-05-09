@@ -1,7 +1,8 @@
 spiderclan_elder = Creature:new {
 	objectName = "@mob/creature_names:spider_nightsister_elder",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "spider_nightsister",
-	pvpFaction = "spider_nightsister",
 	faction = "spider_nightsister",
 	level = 277,
 	chanceHit = 27.25,
@@ -23,7 +24,7 @@ spiderclan_elder = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_spider_nightsister_elder.iff"},
@@ -40,8 +41,7 @@ spiderclan_elder = Creature:new {
 				{group = "rifles", chance = 1000000},
 				{group = "carbines", chance = 1000000},
 				{group = "wearables_scarce", chance = 500000}
-			},
-			lootChance = 6500000
+			}
 		}
 	},
 	weapons = {"mixed_force_weapons"},

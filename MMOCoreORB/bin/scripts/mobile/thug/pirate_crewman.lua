@@ -1,8 +1,9 @@
 pirate_crewman = Creature:new {
 	objectName = "",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a Pirate Crewman",
 	socialGroup = "pirate",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -24,7 +25,7 @@ pirate_crewman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -48,18 +49,18 @@ pirate_crewman = Creature:new {
 		"object/mobile/dressed_criminal_thug_zabrak_female_01.iff"
 	},
 	lootGroups = {
-      	{
+		{
 			groups = {
 				{group = "junk", chance = 4000000},
 				{group = "wearables_common", chance = 3000000},
 				{group = "loot_kit_parts", chance = 2000000},
 				{group = "tailor_components", chance = 1000000},
-			},
-			lootChance = 3000000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_light"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(marksmannovice,brawlernovice)
 }
 

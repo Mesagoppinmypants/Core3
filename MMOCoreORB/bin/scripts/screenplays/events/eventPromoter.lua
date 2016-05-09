@@ -36,7 +36,7 @@ end
 
 function eventPromoterScreenplay:spawnMobiles()
 	local mobiles = self.promoterLocs
-	for i = 1, table.getn(mobiles), 1 do
+	for i = 1, #mobiles, 1 do
 		if isZoneEnabled(mobiles[i].planet) then
 			spawnMobile(mobiles[i].planet, "event_promoter", 1, mobiles[i].x, mobiles[i].z, mobiles[i].y, mobiles[i].angle, mobiles[i].cell)
 		end
@@ -44,12 +44,16 @@ function eventPromoterScreenplay:spawnMobiles()
 end
 
 function eventPromoterScreenplay:sendSaleSui(pNpc, pPlayer, screenID)
+	if (pPlayer == nil or pNpc == nil) then
+		return
+	end
+
 	writeStringData(CreatureObject(pPlayer):getObjectID() .. ":event_promoter_purchase", screenID)
 	local suiManager = LuaSuiManager()
 	local perkData = self:getPerkTable(screenID)
 
 	local options = { }
-	for i = 1, table.getn(perkData), 1 do
+	for i = 1, #perkData, 1 do
 		table.insert(options, getStringId(perkData[i].displayName) .. " (Cost: " .. perkData[i].cost .. ")")
 	end
 
@@ -80,41 +84,66 @@ function eventPromoterScreenplay:getPerkTable(category)
 	end
 end
 
-function eventPromoterScreenplay:handleSuiPurchase(pPlayer, pSui, cancelPressed, arg0)
+function eventPromoterScreenplay:handleSuiPurchase(pPlayer, pSui, eventIndex, arg0)
+	local cancelPressed = (eventIndex == 1)
+
+	if (pPlayer == nil) then
+		return
+	end
+
 	if (cancelPressed) then
 		deleteStringData(CreatureObject(pPlayer):getObjectID() .. ":event_promoter_purchase")
 		return
 	end
-	local purchaseCategory = readStringData(CreatureObject(pPlayer):getObjectID() .. ":event_promoter_purchase")
+
+	local playerID = SceneObject(pPlayer):getObjectID()
+	local purchaseCategory = readStringData(playerID .. ":event_promoter_purchase")
 	local purchaseIndex = arg0 + 1
 	local perkData = self:getPerkTable(purchaseCategory)
 
 	local deedData = perkData[purchaseIndex]
-	deleteStringData(CreatureObject(pPlayer):getObjectID() .. ":event_promoter_purchase")
+	deleteStringData(playerID .. ":event_promoter_purchase")
 	self:giveItem(pPlayer, deedData)
 end
 
 function eventPromoterScreenplay:giveItem(pPlayer, deedData)
 	ObjectManager.withCreatureAndPlayerObject(pPlayer, function(player, playerObject)
 		local pInventory = SceneObject(pPlayer):getSlottedObject("inventory")
-		local slotsRemaining = SceneObject(pInventory):getContainerVolumeLimit() - SceneObject(pInventory):getContainerObjectsSize()
+
+		if (pInventory == nil) then
+			return
+		end
 
 		if (player:getCashCredits() < deedData.cost) then
 			player:sendSystemMessage("@dispenser:insufficient_funds")
 			return
-		elseif (slotsRemaining <= 0) then
+		elseif (SceneObject(pInventory):isContainerFullRecursive()) then
 			player:sendSystemMessage("@event_perk:promoter_full_inv")
 			return
-		elseif (playerObject:getEventPerkCount() >= 5) then
-			player:sendSystemMessage("@event_perk:pro_too_many_perks")
-			return
+		elseif (not playerObject:isPrivileged()) then
+			if (playerObject:hasEventPerk("shuttle_beacon")) then
+				player:sendSystemMessage("@event_perk:only_one_shuttle_beacon")
+				return
+			elseif (playerObject:getEventPerkCount() >= 5) then
+				player:sendSystemMessage("@event_perk:pro_too_many_perks")
+				return
+			end
 		end
 
 		player:subtractCashCredits(deedData.cost)
 
-		local templatePath = "object/tangible/deed/event_perk/" .. deedData.template .. ".iff"
+		local templatePath
+		if string.find(deedData.template, ".iff") then
+			templatePath = deedData.template
+		else
+			templatePath = "object/tangible/deed/event_perk/" .. deedData.template .. ".iff"
+		end
+
 		local pItem = giveItem(pInventory, templatePath, -1)
-		playerObject:addEventPerk(pItem)
+
+		if (pItem ~= nil) then
+			playerObject:addEventPerk(pItem)
+		end
 	end)
 end
 

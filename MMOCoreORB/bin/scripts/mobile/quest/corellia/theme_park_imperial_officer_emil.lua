@@ -1,7 +1,6 @@
 theme_park_imperial_officer_emil = Creature:new {
 	objectName = "@mob/creature_names:warren_imperial_officer",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 30,
 	chanceHit = 0.390000,
@@ -44,7 +43,7 @@ theme_park_imperial_officer_emil = Creature:new {
 	weapons = {"imperial_weapons_medium"},
 	attacks = merge(brawlermaster,marksmanmaster,riflemanmaster,carbineermaster),
 	conversationTemplate = "",
-	optionsBitmask = 128
+	optionsBitmask = AIENABLED
 }
 
 CreatureTemplates:addCreatureTemplate(theme_park_imperial_officer_emil, "theme_park_imperial_officer_emil")

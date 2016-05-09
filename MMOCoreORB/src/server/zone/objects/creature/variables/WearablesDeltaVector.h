@@ -13,12 +13,14 @@
 #include "server/zone/objects/scene/variables/DeltaVector.h"
 #include "server/zone/objects/tangible/TangibleObject.h"
 #include "server/zone/objects/tangible/wearables/ArmorObject.h"
+#include "templates/tangible/ArmorObjectTemplate.h"
 
 class WearablesDeltaVector : public DeltaVector<ManagedReference<TangibleObject*> > {
 protected:
 	VectorMap<uint8, Vector<ManagedReference<ArmorObject*> > > protectionArmorMap;
 
 public:
+
 	WearablesDeltaVector() : DeltaVector<ManagedReference<TangibleObject*> >() {
 		protectionArmorMap.setAllowOverwriteInsertPlan();
 
@@ -42,17 +44,17 @@ public:
 			ManagedReference<ArmorObject*> armor = cast<ArmorObject*>(element.get());
 			uint8 hitLocations = armor->getHitLocation();
 
-			if (hitLocations & 0x01)
-				addArmor(0x01, armor);
+			if (hitLocations & ArmorObjectTemplate::CHEST)
+				addArmor(ArmorObjectTemplate::CHEST, armor);
 
-			if (hitLocations & 0x02)
-				addArmor(0x02, armor);
+			if (hitLocations & ArmorObjectTemplate::ARMS)
+				addArmor(ArmorObjectTemplate::ARMS, armor);
 
-			if (hitLocations & 0x04)
-				addArmor(0x04, armor);
+			if (hitLocations & ArmorObjectTemplate::LEGS)
+				addArmor(ArmorObjectTemplate::LEGS, armor);
 
-			if (hitLocations & 0x08)
-				addArmor(0x08, armor);
+			if (hitLocations & ArmorObjectTemplate::HEAD)
+				addArmor(ArmorObjectTemplate::HEAD, armor);
 		}
 
 		return DeltaVector<ManagedReference<TangibleObject*> >::add(element, message, updates);
@@ -65,25 +67,71 @@ public:
 			ManagedReference<ArmorObject*> armor = cast<ArmorObject*>(element.get());
 			uint8 hitLocations = armor->getHitLocation();
 
-			if (hitLocations & 0x01)
-				removeArmor(0x01, armor);
+			if (hitLocations & ArmorObjectTemplate::CHEST)
+				removeArmor(ArmorObjectTemplate::CHEST, armor);
 
-			if (hitLocations & 0x02)
-				removeArmor(0x02, armor);
+			if (hitLocations & ArmorObjectTemplate::ARMS)
+				removeArmor(ArmorObjectTemplate::ARMS, armor);
 
-			if (hitLocations & 0x04)
-				removeArmor(0x04, armor);
+			if (hitLocations & ArmorObjectTemplate::LEGS)
+				removeArmor(ArmorObjectTemplate::LEGS, armor);
 
-			if (hitLocations & 0x08)
-				removeArmor(0x08, armor);
+			if (hitLocations & ArmorObjectTemplate::HEAD)
+				removeArmor(ArmorObjectTemplate::HEAD, armor);
 		}
 
 		return DeltaVector<ManagedReference<TangibleObject*> >::remove(index, message, updates);
 	}
 
+
 	Vector<ManagedReference<ArmorObject*> > getArmorAtHitLocation(uint8 hl) {
-		return protectionArmorMap.get(hl);
+
+		// TODO: Migrate and remove this when the object versioning and migration system is in place
+
+		// HIT_LOCATION has a circular dependency nightmare with CombatManager and CreatureObject
+		switch(hl) {
+		case 1: // HIT_BODY
+			return protectionArmorMap.get((uint8)ArmorObjectTemplate::CHEST); // CHEST
+		case 2: // HIT_LARM
+		case 3: // HIT_RARM
+		{
+			Vector<ManagedReference<ArmorObject*> > armArmor = protectionArmorMap.get((uint8)ArmorObjectTemplate::ARMS); // ARMS
+			Vector<ManagedReference<ArmorObject*> > armorAtLocation;
+
+			if(armArmor.isEmpty())
+				return armArmor;
+
+			if(hl == 2) {
+				for(int i=armArmor.size()-1; i>=0; i--) {
+					ArmorObject *obj = armArmor.get(i);
+					if(obj->hasArrangementDescriptor("bicep_l") || obj->hasArrangementDescriptor("bracer_upper_l") || obj->hasArrangementDescriptor("gloves"))
+						armorAtLocation.add(obj);
+				}
+			} else {
+				for(int i=armArmor.size()-1; i>=0; i--) {
+					ArmorObject *obj = armArmor.get(i);
+
+					if(obj->hasArrangementDescriptor("bicep_r") || obj->hasArrangementDescriptor("bracer_upper_r") || obj->hasArrangementDescriptor("gloves"))
+						armorAtLocation.add(obj);
+				}
+			}
+
+			if(armorAtLocation.isEmpty())
+				return armArmor;
+			else
+				return armorAtLocation;
+		}
+		case 4: // HIT_LLEG
+		case 5: // HIT_RLEG
+			return protectionArmorMap.get((uint8)ArmorObjectTemplate::LEGS); // LEGS
+		case 6: // HIT_HEAD
+			return protectionArmorMap.get((uint8)ArmorObjectTemplate::HEAD); // HEAD
+		}
+
+		return protectionArmorMap.get((uint8)ArmorObjectTemplate::NOLOCATION);
 	}
+
+
 
 	void addArmor(uint8 hitLocation, ManagedReference<ArmorObject*> armor) {
 		Vector<ManagedReference<ArmorObject*> > armors = protectionArmorMap.get(hitLocation);

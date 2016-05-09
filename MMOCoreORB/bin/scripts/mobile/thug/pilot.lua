@@ -1,7 +1,8 @@
 pilot = Creature:new {
 	objectName = "@mob/creature_names:pilot",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "mercenary",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.270000,
@@ -26,7 +27,7 @@ pilot = Creature:new {
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_mercenary_messanger_hum_f.iff",
-			"object/mobile/dressed_mercenary_weak_hum_m.iff"},
+		"object/mobile/dressed_mercenary_weak_hum_m.iff"},
 	lootGroups = {},
 	weapons = {"rebel_weapons_light"},
 	attacks = merge(marksmannovice,brawlernovice)

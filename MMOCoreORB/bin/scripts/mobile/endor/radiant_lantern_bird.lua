@@ -1,7 +1,6 @@
 radiant_lantern_bird = Creature:new {
 	objectName = "@mob/creature_names:radiant_lantern_bird",
 	socialGroup = "lantern",
-	pvpFaction = "",
 	faction = "",
 	level = 40,
 	chanceHit = 0.43,
@@ -23,7 +22,7 @@ radiant_lantern_bird = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/lantern_bird_hue.iff"},
@@ -32,7 +31,7 @@ radiant_lantern_bird = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"blindattack",""}
 	}
 }
 

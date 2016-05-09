@@ -52,7 +52,8 @@ UnarmedStun1Command = {
 	actionCostMultiplier = 1.5,
 	mindCostMultiplier = 1.5,
 
-	animationCRC = hashCode("combo_4c_light"),
+	animation = "combo_4c", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "screamingsquill",
 
@@ -63,10 +64,12 @@ UnarmedStun1Command = {
 		{ "stun_defense", "resistance_states" }, 
 		{ "jedi_state_defense" }, 
 		100, 
-		100, 
+		0, 
 		60 
 	  )
 	},
+	
+	weaponType = UNARMEDWEAPON,
 
 	range = -1
 }

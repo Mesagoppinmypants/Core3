@@ -15,16 +15,18 @@
 #include "server/zone/objects/scene/SceneObject.h"
 
 class ScreenPlayTask : public Task {
-	Reference<SceneObject*> obj;
+	ManagedWeakReference<SceneObject*> obj;
 	String taskKey;
 	String screenPlay;
+	String args;
 	Reference<PersistentEvent*> persistentEvent;
 public:
 
-	ScreenPlayTask(SceneObject* scno, const String& key, const String& playName) {
+	ScreenPlayTask(SceneObject* scno, const String& key, const String& playName, const String& arguments) {
 		obj = scno;
 		taskKey = key;
 		screenPlay = playName;
+		args = arguments;
 		persistentEvent = NULL;
 	}
 
@@ -37,8 +39,10 @@ public:
 			return;
 		}
 
+		ManagedReference<SceneObject*> obj = this->obj.get();
+
 		if (obj != NULL) {
-			Locker locker(obj.get());
+			Locker locker(obj);
 
 			DirectorManager::instance()->activateEvent(this);
 		} else {
@@ -46,8 +50,8 @@ public:
 		}
 	}
 
-	inline Reference<SceneObject*> getSceneObject() {
-		return obj;
+	ManagedReference<SceneObject*> getSceneObject() {
+		return obj.get();
 	}
 
 	String getTaskKey() {
@@ -56,6 +60,10 @@ public:
 
 	String getScreenPlay() {
 		return screenPlay;
+	}
+
+	String getArgs() {
+		return args;
 	}
 
 	void setPersistentEvent(PersistentEvent* persistentEvent) {

@@ -1,8 +1,7 @@
 wizzel = Creature:new {
 	objectName = "",
-	socialGroup = "thug",
-	pvpFaction = "thug",
-	faction = "thug",
+	socialGroup = "mercenary",
+	faction = "",
 	level = 13,
 	chanceHit = 0.3,
 	damageMin = 140,
@@ -21,9 +20,9 @@ wizzel = Creature:new {
 	milk = 0,
 	tamingChance = 0,
 	ferocity = 0,
-	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
+	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_rodian_clan_warchief.iff"},

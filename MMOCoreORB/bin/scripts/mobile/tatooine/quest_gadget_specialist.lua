@@ -1,7 +1,6 @@
 quest_gadget_specialist = Creature:new {
 	objectName = "@mob/creature_names:quest_gadget_specialist",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ quest_gadget_specialist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_doctor_trainer_moncal_female_01.iff"},

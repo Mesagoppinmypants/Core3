@@ -1,7 +1,6 @@
 corsec_pilot = Creature:new {
 	objectName = "@npc_spawner_n:corsec_pilot",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ corsec_pilot = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_privateer_retired_corsec_beggar.iff"},

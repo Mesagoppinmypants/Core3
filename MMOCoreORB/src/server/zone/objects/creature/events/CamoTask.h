@@ -19,22 +19,22 @@ class CamoTask : public Task {
 	ManagedWeakReference<CreatureObject*> targ;
 	bool success;
 	bool maskScent;
+	bool awardXp;
 
 public:
-	CamoTask(CreatureObject* cr, CreatureObject* tar, bool ms, bool succ) : Task(){
+	CamoTask(CreatureObject* cr, CreatureObject* tar, bool ms, bool succ, bool award) : Task(){
 		creo = cr;
 		targ = tar;
 		success = succ;
 		maskScent = ms;
+		awardXp = award;
 	}
 
 	void run() {
-		int crc = String("skill_buff_mask_scent").hashCode();
-		String buffMsg = "@skl_use:sys_conceal_stop";
+		int crc = STRING_HASHCODE("skill_buff_mask_scent");
 
 		if (maskScent) {
-			crc = String("skill_buff_mask_scent_self").hashCode();
-			buffMsg = "@skl_use:sys_scentmask_break";
+			crc = STRING_HASHCODE("skill_buff_mask_scent_self");
 		}
 
 		ManagedReference<CreatureObject*> target = targ.get();
@@ -45,18 +45,18 @@ public:
 		if (creature == NULL)
 			return;
 
-		Locker locker(creature);
+		Locker locker(target);
+		Locker clocker(creature, target);
 
 		if (!success && creature->hasBuff(crc)) {
-			creature->sendSystemMessage(buffMsg);
+			creature->sendSystemMessage("@skl_use:sys_scentmask_break"); // A creature has detected you, despite your attempts at camouflage!
 			creature->removeBuff(crc);
 		}
 
 		if(!success) {
 			// on failure 50% chance to aggro animal if aggressive and within 40 meters
-			if (System::random(100) > 50 && target->isAggressiveTo(creature) && target->isInRange(creature,40.0f)) {
+			if (System::random(100) > 50 && target->isAggressiveTo(creature) && target->isInRange(creature,40.0f))
 				CombatManager::instance()->startCombat(target,creature,true);
-			}
 			return;
 		}
 
@@ -68,14 +68,16 @@ public:
 
 		if (maskScent) {
 			StringIdChatParameter success("skl_use", "sys_scentmask_success");
-			success.setTT(target);
+			success.setTT(target->getObjectID());
 
 			creature->sendSystemMessage(success);
 		}
-		ManagedReference<PlayerManager*> playerManager = creature->getZoneServer()->getPlayerManager();
-		playerManager->awardExperience(creature, "scout", (target->getLevel() * 2), true);
+
+		if (awardXp) {
+			ManagedReference<PlayerManager*> playerManager = creature->getZoneServer()->getPlayerManager();
+			playerManager->awardExperience(creature, "scout", (target->getLevel() * 2), true);
+		}
 	}
 };
-
 
 #endif /* CAMOTASK_H_ */

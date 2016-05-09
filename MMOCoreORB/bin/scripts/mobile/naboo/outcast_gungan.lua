@@ -1,7 +1,8 @@
 outcast_gungan = Creature:new {
 	objectName = "@mob/creature_names:mordran_gungan_outcast",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "borvo",
-	pvpFaction = "borvo",
 	faction = "borvo",
 	level = 30,
 	chanceHit = 0.39,
@@ -23,7 +24,7 @@ outcast_gungan = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gungan_outcast.iff"},
@@ -32,11 +33,10 @@ outcast_gungan = Creature:new {
 			groups = {
 				{group = "junk", chance = 2000000},
 				{group = "wearables_common", chance = 2000000},
-				{group = "heavy_weapons", chance = 2000000},					
+				{group = "heavy_weapons", chance = 2000000},
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000}
-			},
-			lootChance = 3200000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_heavy"},

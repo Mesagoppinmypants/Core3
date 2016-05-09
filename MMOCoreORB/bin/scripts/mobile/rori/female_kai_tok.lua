@@ -1,7 +1,6 @@
 female_kai_tok = Creature:new {
 	objectName = "@mob/creature_names:female_kai_tok",
 	socialGroup = "kai_tok",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ female_kai_tok = Creature:new {
 	ferocity = 2,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kai_tok_hue.iff"},
@@ -32,7 +31,7 @@ female_kai_tok = Creature:new {
 	weapons = {"creature_spit_small_green"},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

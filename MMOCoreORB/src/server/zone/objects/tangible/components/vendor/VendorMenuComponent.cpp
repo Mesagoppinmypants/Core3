@@ -18,7 +18,7 @@
 #include "server/zone/managers/vendor/VendorManager.h"
 
 void VendorMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
-		ObjectMenuResponse* menuResponse, CreatureObject* player) {
+		ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 
 	if(!sceneObject->isVendor())
 		return;
@@ -73,25 +73,22 @@ void VendorMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
 
 		menuResponse->addRadialMenuItemToRadialID(70, 71, 3, "@player_structure:vendor_status");
 
-		if (playerObject->isPrivileged())
-			menuResponse->addRadialMenuItemToRadialID(70, 72, 3, "@player_structure:change_name");
-
 		menuResponse->addRadialMenuItemToRadialID(70, 73, 3, "@player_structure:pay_vendor_t");
 		menuResponse->addRadialMenuItemToRadialID(70, 74, 3, "@player_structure:withdraw_vendor_t");
 
 		if (vendorData->isVendorSearchEnabled())
 			menuResponse->addRadialMenuItemToRadialID(70, 75, 3, "@player_structure:disable_vendor_search");
-		else
+		else if (!vendorData->isOnStrike())
 			menuResponse->addRadialMenuItemToRadialID(70, 75, 3, "@player_structure:enable_vendor_search");
 
-		if(player->hasSkill("crafting_merchant_advertising_03")) {
-			if (!vendorData->isRegistered())
-				menuResponse->addRadialMenuItemToRadialID(70, 76, 3, "@player_structure:register_vendor");
-			else
+		if (player->hasSkill("crafting_merchant_advertising_03")) {
+			if (vendorData->isRegistered())
 				menuResponse->addRadialMenuItemToRadialID(70, 76, 3, "@player_structure:unregister_vendor");
+			else if (!vendorData->isOnStrike())
+				menuResponse->addRadialMenuItemToRadialID(70, 76, 3, "@player_structure:register_vendor");
 		}
 
-		if(player->hasSkill("crafting_merchant_advertising_01") && sceneObject->isCreatureObject()) {
+		if (player->hasSkill("crafting_merchant_advertising_01") && sceneObject->isCreatureObject()) {
 			if (!vendorData->isAdBarkingEnabled())
 				menuResponse->addRadialMenuItemToRadialID(70, 77, 3, "@player_structure:vendor_areabarks_on");
 			else
@@ -103,7 +100,7 @@ void VendorMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
 }
 
 int VendorMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
-		CreatureObject* player, byte selectedID) {
+		CreatureObject* player, byte selectedID) const {
 
 	if (!sceneObject->isVendor())
 		return 0;
@@ -125,9 +122,14 @@ int VendorMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
 	bool owner = vendorData->getOwnerId() == player->getObjectID();
 
 	if(!owner) {
-		if (player->getPlayerObject()->isPrivileged() && selectedID == 71) {
-			VendorManager::instance()->handleDisplayStatus(player, vendor);
-			return 0;
+		if (player->getPlayerObject()->isPrivileged()) {
+			if (selectedID == 71) {
+				VendorManager::instance()->handleDisplayStatus(player, vendor);
+				return 0;
+			} else if (selectedID == 72) {
+				VendorManager::instance()->promptRenameVendorTo(player, vendor);
+				return 0;
+			}
 		}
 
 		return TangibleObjectMenuComponent::handleObjectMenuSelect(sceneObject, player, selectedID);
@@ -136,10 +138,6 @@ int VendorMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
 	switch (selectedID) {
 	case 71: {
 		VendorManager::instance()->handleDisplayStatus(player, vendor);
-		return 0;
-	}
-	case 72: {
-		VendorManager::instance()->promptRenameVendorTo(player, vendor);
 		return 0;
 	}
 
@@ -157,7 +155,7 @@ int VendorMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
 		if (vendorData->isVendorSearchEnabled()) {
 			vendorData->setVendorSearchEnabled(false);
 			player->sendSystemMessage("@player_structure:vendor_search_disabled");
-		} else {
+		} else if (!vendorData->isOnStrike()) {
 			vendorData->setVendorSearchEnabled(true);
 			player->sendSystemMessage("@player_structure:vendor_search_enabled");
 		}
@@ -167,10 +165,10 @@ int VendorMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
 
 	case 76: {
 		if(player->hasSkill("crafting_merchant_advertising_03")) {
-			if (!vendorData->isRegistered())
-				VendorManager::instance()->sendRegisterVendorTo(player, vendor);
-			else
+			if (vendorData->isRegistered())
 				VendorManager::instance()->handleUnregisterVendor(player, vendor);
+			else if (!vendorData->isOnStrike())
+				VendorManager::instance()->sendRegisterVendorTo(player, vendor);
 		}
 		return 0;
 	}
@@ -214,11 +212,13 @@ int VendorMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
 		player->sendSystemMessage("@player_structure:vendor_initialized");
 		vendorData->setInitialized(true);
 		vendorData->setEmpty();
-		vendorData->runVendorUpdate();
+		vendorData->scheduleVendorCheckTask(VendorDataComponent::VENDORCHECKINTERVAL);
 		return 0;
 	}
 
 	default:
 		return 0;
 	};
+
+	return 0;
 }

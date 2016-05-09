@@ -1,7 +1,6 @@
 diseased_bocatt = Creature:new {
 	objectName = "@mob/creature_names:bocatt_diseased",
 	socialGroup = "bocatt",
-	pvpFaction = "",
 	faction = "",
 	level = 8,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ diseased_bocatt = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bocatt.iff"},
@@ -32,7 +31,7 @@ diseased_bocatt = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
+		{"intimidationattack",""},
 		{"milddisease",""}
 	}
 }

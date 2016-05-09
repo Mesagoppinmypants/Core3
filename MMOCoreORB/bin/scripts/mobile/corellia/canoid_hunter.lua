@@ -1,7 +1,6 @@
 canoid_hunter = Creature:new {
 	objectName = "@mob/creature_names:canoid_hunter",
 	socialGroup = "canoid",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ canoid_hunter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/canoid.iff"},
@@ -33,7 +32,7 @@ canoid_hunter = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

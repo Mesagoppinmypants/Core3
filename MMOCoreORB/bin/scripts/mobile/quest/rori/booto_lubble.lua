@@ -2,7 +2,6 @@ booto_lubble = Creature:new {
 	objectName = "",
 	customName = "Booto Lubble",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ booto_lubble = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gungan_s04_male.iff"},

@@ -1,7 +1,6 @@
 cu_pa = Creature:new {
 	objectName = "@mob/creature_names:cu_pa",
 	socialGroup = "cu_pa",
-	pvpFaction = "",
 	faction = "",
 	level = 11,
 	chanceHit = 0.29,
@@ -24,7 +23,7 @@ cu_pa = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/cu_pa_hue.iff"},
@@ -33,7 +32,7 @@ cu_pa = Creature:new {
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

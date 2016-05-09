@@ -1,7 +1,6 @@
 bark_mite_burrower_swarmling = Creature:new {
 	objectName = "@mob/creature_names:bark_mite_burrower_swarmling",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 20,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ bark_mite_burrower_swarmling = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bark_mite_hue.iff"},

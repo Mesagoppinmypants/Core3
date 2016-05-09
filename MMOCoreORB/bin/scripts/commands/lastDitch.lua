@@ -57,8 +57,8 @@ LastDitchCommand = {
 		{}, 
 		{ "stun_defense", "resistance_states" }, 
 		{ "jedi_state_defense" }, 
-		75, 
 		100, 
+		0, 
 		30 
 	  )
 	},
@@ -67,9 +67,12 @@ LastDitchCommand = {
 		{"pistol_accuracy",10},
 	},
 
-	animationCRC = hashCode("fire_1_special_single_light"),
+	animation = "fire_1_special_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "lastditch",
+	
+	weaponType = PISTOLWEAPON,
 
 	range = -1
 }

@@ -1,7 +1,6 @@
 tanc_mite = Creature:new {
 	objectName = "@mob/creature_names:tanc_mite",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ tanc_mite = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/tanc_mite.iff"},
@@ -32,7 +31,7 @@ tanc_mite = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

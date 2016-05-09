@@ -2,7 +2,6 @@ aroho_preni = Creature:new {
 	objectName = "",
 	customName = "Aroho Preni (a Dantari Raider)",	
 	socialGroup = "dantari_raiders",
-	pvpFaction = "dantari_raiders",
 	faction = "dantari_raiders",
 	level = 25,
 	chanceHit = 0.36,
@@ -24,7 +23,7 @@ aroho_preni = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dantari_female.iff"},

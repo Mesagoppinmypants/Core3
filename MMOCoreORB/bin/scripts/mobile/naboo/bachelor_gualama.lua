@@ -1,7 +1,6 @@
 bachelor_gualama = Creature:new {
 	objectName = "@mob/creature_names:bachelor_gualama",
 	socialGroup = "gualama",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ bachelor_gualama = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gualama.iff"},
@@ -33,7 +32,7 @@ bachelor_gualama = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

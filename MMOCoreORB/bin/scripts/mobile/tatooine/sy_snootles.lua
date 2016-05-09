@@ -1,7 +1,6 @@
 sy_snootles = Creature:new {
 	objectName = "@mob/creature_names:sy_snootles",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 100,
 	chanceHit = 1.000000,
@@ -23,7 +22,7 @@ sy_snootles = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/sy_snootles.iff"},

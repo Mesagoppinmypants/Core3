@@ -1,7 +1,6 @@
 tabage_protector = Creature:new {
 	objectName = "@mob/creature_names:tabage_protector",
 	socialGroup = "tabage",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ tabage_protector = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/tabage.iff"},
@@ -33,8 +32,8 @@ tabage_protector = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"mildpoison",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"mildpoison",""}
 	}
 }
 

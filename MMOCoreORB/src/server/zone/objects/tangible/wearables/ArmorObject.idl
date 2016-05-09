@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
- 
-This File is part of Core3.
- 
-This program is free software; you can redistribute 
-it and/or modify it under the terms of the GNU Lesser 
-General Public License as published by the Free Software
-Foundation; either version 2 of the License, 
-or (at your option) any later version.
- 
-This program is distributed in the hope that it will be useful, 
-but WITHOUT ANY WARRANTY; without even the implied warranty of 
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-See the GNU Lesser General Public License for
-more details.
- 
-You should have received a copy of the GNU Lesser General 
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- 
-Linking Engine3 statically or dynamically with other modules 
-is making a combined work based on Engine3. 
-Thus, the terms and conditions of the GNU Lesser General Public License 
-cover the whole combination.
- 
-In addition, as a special exception, the copyright holders of Engine3 
-give you permission to combine Engine3 program with free software 
-programs or libraries that are released under the GNU LGPL and with 
-code included in the standard release of Core3 under the GNU LGPL 
-license (or modified versions of such code, with unchanged license). 
-You may copy and distribute such a system following the terms of the 
-GNU LGPL for Engine3 and the licenses of the other code concerned, 
-provided that you include the source code of that other code when 
-and as the GNU LGPL requires distribution of source code.
- 
-Note that people who make modified versions of Engine3 are not obligated 
-to grant this special exception for their modified versions; 
-it is their choice whether to do so. The GNU Lesser General Public License 
-gives permission to release a modified version without this exception; 
-this exception also makes it possible to release a modified version 
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 package server.zone.objects.tangible.wearables;
 
@@ -185,97 +145,82 @@ class ArmorObject extends WearableObject {
 	private native float getTypeValue(int type, float value);
 	
 	@dirty
-	public float getKinetic() {
-		float value = getTypeValue(WeaponObject.KINETIC, kinetic);
-		return value - getConditionReduction(value);
-	}
-	
+	@local
+	public native float getKinetic();
+
 	public void setKinetic(float value) {
 		kinetic = value;
 	}
 
 	@dirty
-	public float getEnergy() {
-		float value = getTypeValue(WeaponObject.ENERGY, energy);
-		return value - getConditionReduction(value);
-	}
-	
+	@local
+	public native float getEnergy();
+
 	public void setEnergy(float value) {
 		energy = value;
 	}
 
 	@dirty
-	public float getElectricity() {
-		float value = getTypeValue(WeaponObject.ELECTRICITY, electricity);
-		return value - getConditionReduction(value);
-	}
-	
+	@local
+	public native float getElectricity();
+
 	public void setElectricity(float value) {
 		electricity = value;
 	}
 
 	@dirty
-	public float getStun() {
-		float value = getTypeValue(WeaponObject.STUN, stun);
-		return value - getConditionReduction(value);
-	}
-	
+	@local
+	public native float getStun();
+
 	public void setStun(float value) {
 		stun = value;
 	}
 
+	@local
 	@dirty
-	public float getBlast() {
-		float value = getTypeValue(WeaponObject.BLAST, blast);
-		return value - getConditionReduction(value);
-	}
-	
+	public native float getBlast();
+
 	public void setBlast(float value) {
 		blast = value;
 	}
 
 	@dirty
-	public float getHeat() {
-		float value = getTypeValue(WeaponObject.HEAT, heat);
-		return value - getConditionReduction(value);
-	}
-	
+	@local
+	public native float getHeat();
+
 	public void setHeat(float value) {
 		heat = value;
 	}
 
 	@dirty
-	public float getCold() {
-		float value = getTypeValue(WeaponObject.COLD, cold);
-		return value - getConditionReduction(value);
-	}
-	
+	@local
+	public native float getCold();
+
 	public void setCold(float value) {
 		cold = value;
 	}
 
 	@dirty
-	public float getAcid() {
-		float value = getTypeValue(WeaponObject.ACID, acid);
-		return value - getConditionReduction(value);
-	}
-	
+	@local
+	public native float getAcid();
+
 	public void setAcid(float value) {
 		acid = value;
 	}
 
 	@dirty
-	public float getLightSaber() {
-		float value = getTypeValue(WeaponObject.LIGHTSABER, lightSaber);
-		return value - getConditionReduction(value);
-	}
-	
+	@local
+	public native float getLightSaber();
+
 	public void setLightSaber(float value) {
 		lightSaber = value;
 	}
 	
 	@dirty
 	public int getHealthEncumbrance() {
+		if(healthEncumbrance < 0)
+			return healthEncumbrance * (2 - encumbranceSlice);
+			
 		return healthEncumbrance * encumbranceSlice;
 	}
 	
@@ -285,6 +230,9 @@ class ArmorObject extends WearableObject {
 	
 	@dirty
 	public int getActionEncumbrance() {
+		if(actionEncumbrance < 0)
+			return actionEncumbrance * (2 - encumbranceSlice);
+			
 		return actionEncumbrance * encumbranceSlice;
 	}
 	
@@ -293,7 +241,10 @@ class ArmorObject extends WearableObject {
 	}
 	
 	@dirty
-	public int getMindEncumbrance() {
+	public int getMindEncumbrance() {	
+		if(mindEncumbrance < 0)
+			return mindEncumbrance * (2 - encumbranceSlice);
+			
 		return mindEncumbrance * encumbranceSlice;
 	}
 	

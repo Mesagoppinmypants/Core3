@@ -1,7 +1,8 @@
 dark_adept = Creature:new {
 	objectName = "@mob/creature_names:dark_adept",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "dark_jedi",
-	pvpFaction = "",
 	faction = "",
 	level = 140,
 	chanceHit = 4.75,
@@ -23,7 +24,7 @@ dark_adept = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dark_jedi_human_male_01.iff"},
@@ -40,9 +41,8 @@ dark_adept = Creature:new {
 				{group = "armor_attachments", chance = 900000},
 				{group = "clothing_attachments", chance = 900000},
 				{group = "carbines", chance = 1300000},
-				{group = "wearables_rare", chance = 800000}				
-			},
-			lootChance = 5500000
+				{group = "wearables_rare", chance = 800000}
+			}
 		}
 	},
 	weapons = {"dark_jedi_weapons_gen2"},

@@ -2,7 +2,6 @@ luhin_jinnor = Creature:new {
 	objectName = "@mob/creature_names:imperial_warrant_officer_ii",
 	customName = "Warrant Officer Luhin Jinnor",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 18,
 	chanceHit = 0.32,
@@ -24,7 +23,7 @@ luhin_jinnor = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE + AGGRESSIVE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

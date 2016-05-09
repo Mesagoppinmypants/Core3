@@ -1,7 +1,6 @@
 archeologist = Creature:new {
 	objectName = "@mob/creature_names:quest_archeologist",
 	socialGroup = "townsperson",
-	pvpFaction = "",
 	faction = "",
 	level = 19,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ archeologist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_eisley_officer_twilek_female_01.iff"},

@@ -1,7 +1,6 @@
 minor_guf_drolg = Creature:new {
 	objectName = "@mob/creature_names:minor_guf_drolg",
 	socialGroup = "guf_drolg",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ minor_guf_drolg = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/minor_guf_drolg.iff"},
@@ -33,7 +32,7 @@ minor_guf_drolg = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

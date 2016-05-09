@@ -1,7 +1,6 @@
 cyst_covered_rot_mite_guard = Creature:new {
 	objectName = "@mob/creature_names:cyst_covered_rot_guard",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ cyst_covered_rot_mite_guard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/rot_mite.iff"},
@@ -34,7 +33,7 @@ cyst_covered_rot_mite_guard = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"mediumdisease",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

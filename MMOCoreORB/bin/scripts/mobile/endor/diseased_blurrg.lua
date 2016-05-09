@@ -1,7 +1,6 @@
 diseased_blurrg = Creature:new {
 	objectName = "@mob/creature_names:diseased_blurrg",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 37,
 	chanceHit = 0.41,
@@ -23,7 +22,7 @@ diseased_blurrg = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/blurrg_hue.iff"},
@@ -32,8 +31,8 @@ diseased_blurrg = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"creatureareableeding",""},
-		{"mediumdisease",""}
+		{"mediumdisease",""},
+		{"creatureareableeding",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 spined_puc = Creature:new {
 	objectName = "@mob/creature_names:spined_puc",
 	socialGroup = "spined_puc",
-	pvpFaction = "",
 	faction = "",
 	level = 14,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ spined_puc = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/spined_puc_hue.iff"},

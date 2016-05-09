@@ -2,7 +2,6 @@ vordin_pirate_captain = Creature:new {
 	objectName = "",
 	customName = "a Pirate Captain",
 	socialGroup = "pirate",
-	pvpFaction = "",
 	faction = "",
 	level = 20,
 	chanceHit = 0.33,
@@ -24,7 +23,7 @@ vordin_pirate_captain = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE + AGGRESSIVE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

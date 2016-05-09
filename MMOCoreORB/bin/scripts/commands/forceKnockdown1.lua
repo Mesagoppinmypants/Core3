@@ -42,36 +42,35 @@
 --true = 1, false = 0
 
 ForceKnockdown1Command = {
-        name = "forceknockdown1",
+	name = "forceknockdown1",
 
-    damage = 0,
+	damageMultiplier = 0,
 	speed = 4.0,
 	forceCost = 75,
-	accuracySkillMod = "forceknockdown_accuracy";
+	visMod = 25,
+	accuracySkillMod = "forceknockdown_accuracy",
 
 	stateEffects = {
-	  StateEffect( 
-		KNOCKDOWN_EFFECT, 
-		{ "knockdownRecovery", "lastKnockdown" }, 
-		{ "force_defense" }, 
-		{}, 
-		65, 
-		100, 
-		0 
+	  StateEffect(
+		KNOCKDOWN_EFFECT,
+		{ "knockdownRecovery", "lastKnockdown" },
+		{ "force_defense" },
+		{},
+		65,
+		0,
+		0
 	  )
 	},
-	
-	
-	animationCRC = hashCode("force_knockdown_1_particle_level_1"),
+
+	animation = "force_knockdown_1_particle_level_1",
 
 	combatSpam = "forceknockdown1",
-	
-	poolsToDamage = NONE,
-	
-	attackType = FORCEATTACK,
+
+	poolsToDamage = NO_ATTRIBUTE,
+
+	forceAttack = true,
 
 	range = 32
-}		
+}
 
 AddCommand(ForceKnockdown1Command)
-

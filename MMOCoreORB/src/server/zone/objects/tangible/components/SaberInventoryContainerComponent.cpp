@@ -1,44 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-This File is part of Core3. 
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.
 */
 
 #include "server/zone/objects/scene/components/ContainerComponent.h"
@@ -50,15 +12,16 @@ which carries forward this exception.
 #include "server/zone/objects/tangible/weapon/WeaponObject.h"
 #include "server/zone/objects/tangible/component/lightsaber/LightsaberCrystalComponent.h"
 
-int SaberInventoryContainerComponent::canAddObject(SceneObject* sceneObject, SceneObject* object, int containmentType, String& errorDescription) {
+int SaberInventoryContainerComponent::canAddObject(SceneObject* sceneObject, SceneObject* object, int containmentType, String& errorDescription) const {
 
 	ManagedReference<SceneObject*> p = sceneObject->getParent();
 
 	if (p != NULL){
 		int containment = p->getContainmentType();
-		if (containment == 4){
-		errorDescription = "@jedi_spam:saber_not_while_equpped";
-		return TransferErrorCode::INVALIDTYPE;
+
+		if (containment == 4) {
+			errorDescription = "@jedi_spam:saber_not_while_equpped";
+			return TransferErrorCode::INVALIDTYPE;
 		}
 	}
 
@@ -69,14 +32,14 @@ int SaberInventoryContainerComponent::canAddObject(SceneObject* sceneObject, Sce
 
 	LightsaberCrystalComponent* crystal = cast<LightsaberCrystalComponent*> (object);
 
-	if (crystal->getOwner() == ""){
+	if (crystal->getOwnerID() == 0) {
 		errorDescription = "@jedi_spam:saber_crystal_not_tuned";
 		return TransferErrorCode::INVALIDTYPE;
 	}
 
-	ManagedReference<CreatureObject*> creature = cast<CreatureObject*>(object->getParent().get().get());
+	ManagedReference<CreatureObject*> creature = cast<CreatureObject*>(crystal->getParentRecursively(SceneObjectType::PLAYERCREATURE).get().get());
 
-	if (creature != NULL && crystal->getOwner() != creature->getDisplayedName()){
+	if (creature == NULL || crystal->getOwnerID() != creature->getObjectID()){
 		errorDescription = "@jedi_spam:saber_crystal_not_owner";
 		return TransferErrorCode::INVALIDTYPE;
 	}
@@ -109,8 +72,10 @@ int SaberInventoryContainerComponent::canAddObject(SceneObject* sceneObject, Sce
  * Is called when this object has been inserted with an object
  * @param object object that has been inserted
  */
-int SaberInventoryContainerComponent::notifyObjectInserted(SceneObject* sceneObject, SceneObject* object) {
+int SaberInventoryContainerComponent::notifyObjectInserted(SceneObject* sceneObject, SceneObject* object) const {
 	ManagedReference<WeaponObject*> weao = cast<WeaponObject*>( sceneObject->getParent().get().get());
+
+	Locker locker(weao);
 
 	if (weao->isJediWeapon()) {
 		ManagedReference<LightsaberCrystalComponent*> crystal = cast<LightsaberCrystalComponent*>( object);
@@ -124,6 +89,7 @@ int SaberInventoryContainerComponent::notifyObjectInserted(SceneObject* sceneObj
 			weao->setWoundsRatio(weao->getWoundsRatio() + crystal->getWoundChance());
 			weao->setForceCost(weao->getForceCost() + crystal->getForceCost());
 		}
+
 		if (crystal->getColor() != 31) {
 			int color = crystal->getColor();
 			weao->setBladeColor(color);
@@ -138,7 +104,7 @@ int SaberInventoryContainerComponent::notifyObjectInserted(SceneObject* sceneObj
  * Is called when an object was removed
  * @param object object that has been inserted
  */
-int SaberInventoryContainerComponent::notifyObjectRemoved(SceneObject* sceneObject, SceneObject* object, SceneObject* destination) {
+int SaberInventoryContainerComponent::notifyObjectRemoved(SceneObject* sceneObject, SceneObject* object, SceneObject* destination) const {
 	ManagedReference<WeaponObject*> weao = cast<WeaponObject*>( sceneObject->getParent().get().get());
 
 		if (weao->isJediWeapon()) {
@@ -147,6 +113,8 @@ int SaberInventoryContainerComponent::notifyObjectRemoved(SceneObject* sceneObje
 			if (crystal->isDestroyed()) {
 				return sceneObject->notifyObjectRemoved(object);
 			}
+
+			Locker locker(weao);
 
 			if (crystal->getColor() == 31){
 				weao->setAttackSpeed(weao->getAttackSpeed() - crystal->getAttackSpeed());
@@ -158,6 +126,7 @@ int SaberInventoryContainerComponent::notifyObjectRemoved(SceneObject* sceneObje
 				weao->setWoundsRatio(weao->getWoundsRatio() - crystal->getWoundChance());
 				weao->setForceCost(weao->getForceCost() - crystal->getForceCost());
 			}
+
 			if (crystal->getColor() != 31) {
 				weao->setBladeColor(31);
 				weao->setCustomizationVariable("/private/index_color_blade", 31, true);
@@ -165,4 +134,25 @@ int SaberInventoryContainerComponent::notifyObjectRemoved(SceneObject* sceneObje
 		}
 
 	return sceneObject->notifyObjectRemoved(object);
+}
+
+bool SaberInventoryContainerComponent::checkContainerPermission(SceneObject* sceneObject, CreatureObject* creature, uint16 permission) const {
+	ManagedReference<WeaponObject*> saber = cast<WeaponObject*>( sceneObject->getParent().get().get());
+
+	if (saber == NULL)
+		return false;
+
+
+	if (saber->isJediWeapon() && saber->isEquipped()) {
+		CreatureObject* player = saber->getParentRecursively(SceneObjectType::PLAYERCREATURE).get().castTo<CreatureObject*>();
+
+		if (player == NULL)
+			return false;
+
+		player->sendSystemMessage("@jedi_spam:saber_not_while_equpped"); // You cannot modify the crystals in this lightsaber while it is equipped.
+
+		return false;
+	}
+
+	return ContainerComponent::checkContainerPermission(sceneObject, creature, permission);
 }

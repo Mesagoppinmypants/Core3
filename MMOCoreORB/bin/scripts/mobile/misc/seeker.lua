@@ -1,7 +1,6 @@
 seeker = Creature:new {
 	objectName = "@droid_name:probe_droid",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 1,
 	chanceHit = 0.01,
@@ -23,7 +22,7 @@ seeker = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/creature/npc/droid/crafted/probe_droid.iff"},

@@ -1,7 +1,6 @@
 mott_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_mott",
 	socialGroup = "mott",
-	pvpFaction = "",
 	faction = "",
 	level = 2,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ mott_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mott_hue.iff"},

@@ -1,7 +1,6 @@
 jilljoo_slave = Creature:new {
 	objectName = "",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,7 +22,7 @@ jilljoo_slave = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/twilek_female.iff"},

@@ -1,7 +1,6 @@
 giant_decay_mite_protector = Creature:new {
 	objectName = "@mob/creature_names:giant_decay_mite_protector",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 14,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ giant_decay_mite_protector = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/decay_mite.iff"},
@@ -32,7 +31,7 @@ giant_decay_mite_protector = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

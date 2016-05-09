@@ -1,7 +1,6 @@
 fearful_fynock_youth = Creature:new {
 	objectName = "@mob/creature_names:fearful_fynock_youth",
 	socialGroup = "fynock",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ fearful_fynock_youth = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/fearful_fynock_youth.iff"},

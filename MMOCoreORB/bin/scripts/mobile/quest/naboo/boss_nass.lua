@@ -1,7 +1,6 @@
 boss_nass = Creature:new {
 	objectName = "@mob/creature_names:boss_nass",
 	socialGroup = "gungan",
-	pvpFaction = "gungan",
 	faction = "gungan",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ boss_nass = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/boss_nass.iff"},

@@ -2,7 +2,6 @@ orip_erchi = Creature:new {
 	objectName = "",
 	customName = "Orip Erchi",
 	socialGroup = "pirate",
-	pvpFaction = "",
 	faction = "",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ orip_erchi = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = KILLER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 

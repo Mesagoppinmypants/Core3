@@ -2,7 +2,6 @@ theme_park_marauder_ewok_holy = Creature:new {
 	objectName = "@npc_name:ewok_base_male",
 	customName = "Ewok Holy One",
 	socialGroup = "gondula_tribe",
-	pvpFaction = "gondula_tribe",
 	faction = "gondula_tribe",
 	level = 34,
 	chanceHit = 0.35,
@@ -24,7 +23,7 @@ theme_park_marauder_ewok_holy = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_ewok_m_07.iff"},

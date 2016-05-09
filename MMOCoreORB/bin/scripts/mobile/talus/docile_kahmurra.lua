@@ -1,7 +1,6 @@
 docile_kahmurra = Creature:new {
 	objectName = "@mob/creature_names:docile_kahmurra",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ docile_kahmurra = Creature:new {
 	ferocity = 1,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/kahmurra.iff"},

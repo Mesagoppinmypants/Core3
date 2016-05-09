@@ -53,9 +53,11 @@ Melee2hSpinAttack1Command = {
 	mindCostMultiplier = 1.0,
 
 	areaAction = true,
-	areaRange = -1,
+	areaRange = 16,
+	
+	weaponType = TWOHANDMELEEWEAPON,
 
-	animationCRC = hashCode("attack_high_right_light_2"),
+	animation = "attack_high_right_light_2",
 
 	combatSpam = "spinstrike",
 

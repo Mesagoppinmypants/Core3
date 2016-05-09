@@ -1,7 +1,6 @@
 kamurith_snapper = Creature:new {
 	objectName = "@mob/creature_names:kamurith_snapper",
 	socialGroup = "kamurith",
-	pvpFaction = "",
 	faction = "",
 	level = 44,
 	chanceHit = 0.46,
@@ -23,7 +22,7 @@ kamurith_snapper = Creature:new {
 	ferocity = 2,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/voritor_lizard_hue.iff"},
@@ -32,8 +31,8 @@ kamurith_snapper = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"stunattack","stunChance=50"}
+		{"dizzyattack",""},
+		{"stunattack",""}
 	}
 }
 

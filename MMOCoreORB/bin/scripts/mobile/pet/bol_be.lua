@@ -1,7 +1,6 @@
 bol_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_bol",
 	socialGroup = "bol",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ bol_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bol_hue.iff"},

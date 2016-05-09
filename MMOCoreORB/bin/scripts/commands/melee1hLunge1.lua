@@ -51,24 +51,25 @@ Melee1hLunge1Command = {
 	mindCostMultiplier = 1.0,
         accuracyBonus = 25,
 
-	animationCRC = hashCode("lower_posture_1hmelee_1"),
+	animation = "lower_posture_1hmelee_1",
 
 	combatSpam = "lungestab",
 
-	range = 15,
+	range = 20,
+
+	weaponType = ONEHANDMELEEWEAPON,
 
 	stateEffects = {
-	  StateEffect( 
-		POSTUREDOWN_EFFECT, 
-		{ "postureDownRecovery" }, 
-		{ "posture_change_down_defense" }, 
-		{}, 
-		100, 
-		100, 
-		0 
+	  StateEffect(
+		POSTUREDOWN_EFFECT,
+		{ "postureDownRecovery" },
+		{ "posture_change_down_defense" },
+		{},
+		100,
+		0,
+		0
 	  )
 	}
 }
 
 AddCommand(Melee1hLunge1Command)
-

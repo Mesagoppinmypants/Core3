@@ -1,7 +1,6 @@
 probot = Creature:new {
 	objectName = "@droid_name:imperial_probot_base",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,14 +22,14 @@ probot = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/probot.iff"},
 	lootGroups = {},
 	conversationTemplate = "",
-	defaultWeapon = "object/weapon/ranged/droid/droid_droideka_ranged.iff",
-	defaultAttack = "creaturerangedattack"
+	weapons = {"droid_probot_ranged"},
+	defaultAttack = "attack"
 }
 
 CreatureTemplates:addCreatureTemplate(probot, "probot")

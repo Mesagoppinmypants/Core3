@@ -1,9 +1,9 @@
 chassis_dealer = Creature:new {
-	objectName = "",
-	customName = "Chassis Dealer",
+	objectName = "@chassis_npc:npc_name",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
-	faction = "",
+	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
 	damageMin = 645,
@@ -24,15 +24,20 @@ chassis_dealer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE + JTLINTERESTING,
 	diet = HERBIVORE,
 
-	templates = {"object/mobile/space_chassis_broker_01.iff"},
+	templates = {
+		"object/mobile/space_chassis_broker_01.iff",
+		"object/mobile/space_chassis_broker_02.iff",
+		"object/mobile/space_chassis_broker_03.iff",
+		"object/mobile/space_chassis_broker_04.iff",
+		"object/mobile/space_chassis_broker_05.iff"
+	},
 	lootGroups = {},
 	weapons = {},
 	conversationTemplate = "chassis_dealer_convotemplate",
-	attacks = {
-	}
+	attacks = {}
 }
 
 CreatureTemplates:addCreatureTemplate(chassis_dealer, "chassis_dealer")

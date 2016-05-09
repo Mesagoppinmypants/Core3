@@ -1,7 +1,8 @@
 death_watch_overlord_mines = Creature:new {
 	objectName = "@mob/creature_names:mand_bunker_dthwatch_gold",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "death_watch",
-	pvpFaction = "",
 	faction = "",
 	level = 221,
 	chanceHit = 19,
@@ -23,8 +24,9 @@ death_watch_overlord_mines = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.15,
 
 	templates = {"object/mobile/dressed_death_watch_gold.iff"},
 	lootGroups = {
@@ -32,7 +34,7 @@ death_watch_overlord_mines = Creature:new {
 			groups = {
 				{group = "death_watch_bunker_overlord_shared", chance =  10000000}
 			},
-			lootChance = 5000000
+			lootChance = 10000000
 		}
 	},
 	weapons = {"dark_trooper_weapons"},

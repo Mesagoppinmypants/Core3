@@ -1,7 +1,6 @@
 gubbur = Creature:new {
 	objectName = "@mob/creature_names:gubbur",
 	socialGroup = "gubbur",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ gubbur = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gubbur_hue.iff"},

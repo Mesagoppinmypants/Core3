@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
- 
-This File is part of Core3.
- 
-This program is free software; you can redistribute 
-it and/or modify it under the terms of the GNU Lesser 
-General Public License as published by the Free Software
-Foundation; either version 2 of the License, 
-or (at your option) any later version.
- 
-This program is distributed in the hope that it will be useful, 
-but WITHOUT ANY WARRANTY; without even the implied warranty of 
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-See the GNU Lesser General Public License for
-more details.
- 
-You should have received a copy of the GNU Lesser General 
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- 
-Linking Engine3 statically or dynamically with other modules 
-is making a combined work based on Engine3. 
-Thus, the terms and conditions of the GNU Lesser General Public License 
-cover the whole combination.
- 
-In addition, as a special exception, the copyright holders of Engine3 
-give you permission to combine Engine3 program with free software 
-programs or libraries that are released under the GNU LGPL and with 
-code included in the standard release of Core3 under the GNU LGPL 
-license (or modified versions of such code, with unchanged license). 
-You may copy and distribute such a system following the terms of the 
-GNU LGPL for Engine3 and the licenses of the other code concerned, 
-provided that you include the source code of that other code when 
-and as the GNU LGPL requires distribution of source code.
- 
-Note that people who make modified versions of Engine3 are not obligated 
-to grant this special exception for their modified versions; 
-it is their choice whether to do so. The GNU Lesser General Public License 
-gives permission to release a modified version without this exception; 
-this exception also makes it possible to release a modified version 
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef CHATONCREATEROOM_H_
 #define CHATONCREATEROOM_H_
@@ -52,60 +12,93 @@ which carries forward this exception.
 class ChatOnCreateRoom : public BaseMessage {
 public:
 
-	ChatOnCreateRoom(ChatRoom* room, uint32 counter) : BaseMessage() {
-		insertShort(4);
-		insertInt(0x35D7CC9F); // opcode
-		
-		insertInt(0); //
-		
-		insertInt(room->getRoomID());
-		insertInt(1); // ?
-		insertByte(0); // ?
-		
-		insertAscii(room->getFullPath());
-		
-		insertAscii("SWG");
-		insertAscii(room->getGalaxyName());
-		insertAscii(room->getCreator());
-		
-		insertAscii("SWG");
-		insertAscii(room->getGalaxyName());
-		insertAscii(room->getCreator());
-		
-		insertUnicode(room->getTitle());
+	ChatOnCreateRoom(ChatRoom* room, int requestID, int error) : BaseMessage() {
+		insertShort(4); // Op Count
+		insertInt(0x35D7CC9F); // Opcode
 
-		addToUnknownListA(room);
-		addToUnknownListB();
-		
-		
-		insertInt(counter);	
-		
+		insertInt(error); // Error Code
+
+		insertInt(room->getRoomID()); // ChatRoom ID
+
+		if (room->isPublic())
+			insertInt(0); // Private Flag. 0 = public? 1 = private? Client sends 1 for public room when creating in SUI.
+		else
+			insertInt(1);
+
+		if(!room->isModerated())
+			insertByte(0); // Moderated Flag. 0 = open, 1 = muted/moderated
+		else
+			insertByte(1);
+
+		insertAscii(room->getFullPath()); // Room Full Address
+
+		insertAscii("SWG"); // Game
+		insertAscii(room->getGalaxyName()); // Galaxy
+		insertAscii(room->getOwnerName()); // Owner
+
+		insertAscii("SWG"); // Game
+		insertAscii(room->getGalaxyName()); // Galaxy
+		insertAscii(room->getCreator()); // Creator
+
+		insertUnicode(room->getTitle()); //Room Title
+
+		addToModeratorList(room);
+		addToUserList(room);
+
+		insertInt(requestID);	// Request ID
+
+		setCompression(true);
+
 	}
-	
-	void addToUnknownListA(ChatRoom* room) {
-		insertInt(0);
-		
-		/*int size = room->playerList.size(); 
+
+	void addToModeratorList(ChatRoom* room) {
+		int size = room->getModeratorSize();
 		insertInt(size);
-		
+
 		for (int i = 0; i < size; i++) {
 			insertAscii("SWG");
 			insertAscii(room->getGalaxyName());
-			insertAscii(room->playerList.get(i)->getFirstName());
-		}*/
-		
-		/*insertInt(1); //List Count of Players in Room?
-		insertAscii("SWG");
-		insertAscii(serverName.toCharArray());
-		insertAscii(name.toCharArray());*/
+			insertAscii(room->getModeratorName(i));
+		}
 	}
 	
-	void addToUnknownListB() {
-		insertInt(0); //List Count
-		/*insertAscii("SWG");
-		insertAscii(serverName.toCharArray());
-		insertAscii(name);*/	
+	void addToUserList(ChatRoom* room) {
+		int size = room->getPlayerSize();
+		insertInt(size);
+
+		for (int i = 0; i < size; i++) {
+			insertAscii("SWG");
+			insertAscii(room->getGalaxyName());
+			insertAscii(room->getPlayer(i)->getFirstName().toCharArray());
+		}
 	}
+
+	ChatOnCreateRoom(CreatureObject* player, int requestID, int error) : BaseMessage() {
+		insertShort(4); // Op Count
+		insertInt(0x35D7CC9F); // Opcode
+		insertInt(24); // Error Code (override to stop error spam due to autojoin client bug)
+
+		insertInt(0); // ChatRoom ID
+		insertInt(0); // Private Flag.
+		insertByte(0); // Moderated Flag.
+		insertAscii(""); // Room Full Address
+		insertAscii("SWG"); // Game
+		insertAscii(player->getZoneServer()->getGalaxyName()); // Galaxy
+		insertAscii(player->getFirstName()); // Creator
+
+		insertAscii("SWG"); // Game
+		insertAscii(player->getZoneServer()->getGalaxyName()); // Galaxy
+		insertAscii(player->getFirstName()); // Owner
+
+		insertUnicode(""); //Room Title
+
+		insertInt(0); //Moderator List Size
+		insertInt(0); //User List Size
+
+		insertInt(requestID);	// Request ID
+
+	}
+
 };
 
 #endif /*CHATONCREATEROOM_H_*/

@@ -1,7 +1,6 @@
 vesp_hunter = Creature:new {
 	objectName = "@mob/creature_names:vesp_hunter",
 	socialGroup = "vesp",
-	pvpFaction = "",
 	faction = "",
 	level = 25,
 	chanceHit = 0.36,
@@ -23,18 +22,18 @@ vesp_hunter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/vesp.iff"},
 	controlDeviceTemplate = "object/intangible/pet/vesp_hue.iff",
 	scale = 1.05,
 	lootGroups = {},
-	weapons = {},
+	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"posturedownattack","postureDownChance=50"}
+		{"blindattack",""},
+		{"posturedownattack",""}
 	}
 }
 

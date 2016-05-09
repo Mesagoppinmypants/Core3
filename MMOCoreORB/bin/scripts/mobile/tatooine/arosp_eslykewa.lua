@@ -2,7 +2,6 @@ arosp_eslykewa = Creature:new {
 	objectName = "@npc_name:moncal_base_female",
 	customName = "Arosp Eslykewa",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ arosp_eslykewa = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_specforce_pathfinder_moncal_female_01.iff"},

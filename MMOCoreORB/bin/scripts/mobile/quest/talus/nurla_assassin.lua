@@ -1,7 +1,6 @@
 nurla_assassin = Creature:new {
 	objectName = "@mob/creature_names:assassin",
 	socialGroup = "mercenary",
-	pvpFaction = "",
 	faction = "",
 	level = 23,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ nurla_assassin = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_assassin_human_male_01.iff"},

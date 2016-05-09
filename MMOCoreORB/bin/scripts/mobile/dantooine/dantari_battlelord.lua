@@ -1,7 +1,8 @@
 dantari_battlelord = Creature:new {
 	objectName = "@mob/creature_names:dantari_raider_battlelord",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "dantari_raiders",
-	pvpFaction = "dantari_raiders",
 	faction = "dantari_raiders",
 	level = 36,
 	chanceHit = 0.41,
@@ -23,7 +24,7 @@ dantari_battlelord = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -37,8 +38,7 @@ dantari_battlelord = Creature:new {
 				{group = "armor_attachments", chance = 500000},
 				{group = "clothing_attachments", chance = 500000},
 				{group = "wearables_common", chance = 2000000}
-			},
-			lootChance = 3000000
+			}
 		}
 	},
 	weapons = {"primitive_weapons"},

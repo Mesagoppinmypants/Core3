@@ -1,8 +1,8 @@
 imperial_scientist = Creature:new {
 	objectName = "@mob/creature_names:scientist",
-	generateRandomName = true,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 1,
 	chanceHit = 0.25,
@@ -35,6 +35,8 @@ imperial_scientist = Creature:new {
 			"object/mobile/dressed_mercenary_medic_rodian_female_01.iff"},
 	lootGroups = {},
 	weapons = {},
+	reactionStf = "@npc_reaction/military",
+	personalityStf = "@hireling/hireling_military",	
 	attacks = brawlernovice
 }
 

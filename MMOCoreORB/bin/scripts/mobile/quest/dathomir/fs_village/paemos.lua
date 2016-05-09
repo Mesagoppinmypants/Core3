@@ -1,7 +1,6 @@
 paemos = Creature:new {
 	objectName = "@mob/creature_names:fs_villager_convert",
 	socialGroup = "fs_villager",
-	pvpFaction = "fs_villager",
 	faction = "fs_villager",
 	level = 4,
 	chanceHit = 0.24,
@@ -23,7 +22,7 @@ paemos = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_fs_converter.iff"},

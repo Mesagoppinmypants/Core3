@@ -10,7 +10,7 @@
 
 #include "server/zone/objects/player/sui/SuiCallback.h"
 #include "server/zone/managers/player/PlayerManager.h"
-#include "server/zone/objects/tangible/OptionBitmask.h"
+#include "templates/params/OptionBitmask.h"
 
 class InsuranceAllConfirmSuiCallback : public SuiCallback {
 public:
@@ -18,7 +18,9 @@ public:
 		: SuiCallback(server) {
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (!suiBox->isMessageBox() || cancelPressed || player == NULL)
 			return;
 
@@ -75,6 +77,9 @@ public:
 			if (obj != NULL && obj->isTangibleObject()) {
 				j++;
 				TangibleObject* item = cast<TangibleObject*>( obj);
+
+				Locker locker(item, player);
+
 				uint32 bitmask = item->getOptionsBitmask();
 				bitmask |= OptionBitmask::INSURED;
 				item->setOptionsBitmask(bitmask);

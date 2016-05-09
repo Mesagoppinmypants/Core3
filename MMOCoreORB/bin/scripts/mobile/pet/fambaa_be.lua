@@ -1,7 +1,6 @@
 fambaa_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_fambaa",
 	socialGroup = "fambaa",
-	pvpFaction = "",
 	faction = "",
 	level = 30,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ fambaa_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/fambaa_hue.iff"},

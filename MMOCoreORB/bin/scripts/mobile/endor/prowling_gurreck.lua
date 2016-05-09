@@ -1,7 +1,6 @@
 prowling_gurreck = Creature:new {
 	objectName = "@mob/creature_names:gurreck_prowler",
 	socialGroup = "gurreck",
-	pvpFaction = "",
 	faction = "",
 	level = 45,
 	chanceHit = 0.44,
@@ -23,7 +22,7 @@ prowling_gurreck = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gurreck_hue.iff"},
@@ -33,8 +32,8 @@ prowling_gurreck = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"posturedownattack","postureDownChance=50"}
+		{"blindattack",""},
+		{"posturedownattack",""}
 	}
 }
 

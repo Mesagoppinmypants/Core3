@@ -1,46 +1,6 @@
 /*
- Copyright (C) 2010 <SWGEmu>
-
- This File is part of Core3.
-
- This program is free software; you can redistribute
- it and/or modify it under the terms of the GNU Lesser
- General Public License as published by the Free Software
- Foundation; either version 3 of the License,
- or (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- See the GNU Lesser General Public License for
- more details.
-
- You should have received a copy of the GNU Lesser General
- Public License along with this program; if not, write to
- the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
- Linking Engine3 statically or dynamically with other modules
- is making a combined work based on Engine3.
- Thus, the terms and conditions of the GNU Lesser General Public License
- cover the whole combination.
-
- In addition, as a special exception, the copyright holders of Engine3
- give you permission to combine Engine3 program with free software
- programs or libraries that are released under the GNU LGPL and with
- code included in the standard release of Core3 under the GNU LGPL
- license (or modified versions of such code, with unchanged license).
- You may copy and distribute such a system following the terms of the
- GNU LGPL for Engine3 and the licenses of the other code concerned,
- provided that you include the source code of that other code when
- and as the GNU LGPL requires distribution of source code.
-
- Note that people who make modified versions of Engine3 are not obligated
- to grant this special exception for their modified versions;
- it is their choice whether to do so. The GNU Lesser General Public License
- gives permission to release a modified version without this exception;
- this exception also makes it possible to release a modified version
- which carries forward this exception.
- */
+ 				Copyright <SWGEmu>
+		See file COPYING for copying conditions. */
 
 #include "ResourceSpawner.h"
 #include "server/zone/Zone.h"
@@ -48,12 +8,12 @@
 #include "server/zone/objects/tangible/tool/SurveyTool.h"
 #include "server/zone/objects/tangible/tool/recycle/RecycleTool.h"
 #include "server/zone/objects/resource/ResourceContainer.h"
-#include "server/zone/objects/creature/CreatureAttribute.h"
+#include "templates/params/creature/CreatureAttribute.h"
 #include "server/zone/packets/resource/ResourceListForSurveyMessage.h"
 #include "server/zone/packets/resource/SurveyMessage.h"
 #include "server/zone/packets/chat/ChatSystemMessage.h"
 #include "server/zone/objects/waypoint/WaypointObject.h"
-#include "server/zone/objects/scene/ObserverEventType.h"
+#include "templates/params/ObserverEventType.h"
 #include "server/zone/packets/scene/PlayClientEffectLocMessage.h"
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/objects/player/sui/listbox/SuiListBox.h"
@@ -66,6 +26,14 @@ ResourceSpawner::ResourceSpawner(ManagedReference<ZoneServer*> serv,
 	server = serv;
 	processor = impl;
 	databaseManager = ObjectDatabaseManager::instance();
+
+	resourceTree = NULL;
+	lowerGateOverride = 0;
+	resourceMap = NULL;
+	maxSpawnAmount = 0;
+	scriptLoading = false;
+	shiftDuration = 0;
+	spawnThrottling = 0;
 
 	Logger::setLoggingName("ResourceSpawner");
 
@@ -134,7 +102,7 @@ void ResourceSpawner::addJtlResource(const String& resourceName) {
 	jtlResources.add(resourceName);
 }
 
-void ResourceSpawner::setSpawningParameters(bool loadFromScript, const int dur, const float throt,
+void ResourceSpawner::setSpawningParameters(bool loadFromScript, const int dur, const int throt,
 		const int override, const int spawnquantity) {
 
 	scriptLoading = loadFromScript;
@@ -144,10 +112,10 @@ void ResourceSpawner::setSpawningParameters(bool loadFromScript, const int dur, 
 
 	spawnThrottling = throt;
 
-	if (spawnThrottling > .9f)
-		spawnThrottling = .9f;
-	if (spawnThrottling < .1f)
-		spawnThrottling = .1f;
+	if (spawnThrottling > 90)
+		spawnThrottling = 90;
+	if (spawnThrottling < 10)
+		spawnThrottling = 10;
 
 	if (lowerGateOverride < 1)
 		lowerGateOverride = 1;
@@ -181,6 +149,30 @@ void ResourceSpawner::loadResourceSpawns() {
 			continue;
 		}
 
+		// Create spawn maps for zones that were disabled when the resource spawned
+		if (resourceSpawn->inShift()) {
+			ResourceTreeEntry* resourceEntry = resourceTree->getEntry(resourceSpawn->getType());
+
+			if (resourceEntry != NULL) {
+				int minPool = resourceEntry->getMinpool();
+				int spawnMapSize = resourceSpawn->getSpawnMapSize();
+
+				if (spawnMapSize < minPool) {
+					Vector<String> activeZones;
+					activeResourceZones.clone(activeZones);
+
+					for (int i = 0; i < spawnMapSize; i++) {
+						activeZones.removeElement(resourceSpawn->getSpawnMapZone(i));
+					}
+
+					Locker locker(resourceSpawn);
+
+					resourceSpawn->createSpawnMaps(resourceEntry->isJTL(), minPool - spawnMapSize,
+							resourceEntry->getMaxpool() - spawnMapSize, resourceEntry->getZoneRestriction(), activeZones);
+				}
+			}
+		}
+
 		resourceMap->add(resourceSpawn->getName(), resourceSpawn);
 
 		if (!resourceSpawn->inShift()) {
@@ -189,6 +181,7 @@ void ResourceSpawner::loadResourceSpawns() {
 		}
 
 		if (resourceSpawn->getSpawnPool() != 0) {
+			Locker locker(resourceSpawn);
 
 			switch (resourceSpawn->getSpawnPool()) {
 			case ResourcePool::MINIMUMPOOL:
@@ -253,6 +246,8 @@ void ResourceSpawner::spawnScriptResources() {
 			error("createResourceSpawn is trying to create a resourcespawn with the wrong type");
 			continue;
 		}
+
+		Locker locker(newSpawn);
 
 		newSpawn->setType(resource.getStringField("type"));
 		newSpawn->setName(resource.getStringField("name"));
@@ -388,6 +383,8 @@ ResourceSpawn* ResourceSpawner::createRecycledResourceSpawn(ResourceTreeEntry* e
 		return NULL;
 	}
 
+	Locker locker(newSpawn);
+
 	newSpawn->setType(entry->getType());
 	newSpawn->setName(entry->getFinalClass());
 
@@ -421,11 +418,62 @@ ResourceSpawn* ResourceSpawner::createRecycledResourceSpawn(ResourceTreeEntry* e
 	return newSpawn;
 }
 
-ResourceSpawn* ResourceSpawner::manualCreateResourceSpawn(const String& type) {
+ResourceSpawn* ResourceSpawner::manualCreateResourceSpawn(CreatureObject* player, const UnicodeString& args) {
+	StringTokenizer tokenizer(args.toString());
+	tokenizer.setDelimeter(" ");
+
+	if (!tokenizer.hasMoreTokens()) {
+		return NULL;
+	}
+
+	String type;
+	tokenizer.getStringToken(type);
+	VectorMap<String, int> attributes;
+
+	try {
+		while(tokenizer.hasMoreTokens()) {
+			String token;
+			tokenizer.getStringToken(token);
+
+			StringTokenizer izer(token);
+			izer.setDelimeter(",");
+
+			String att;
+			izer.getStringToken(att);
+
+			if (!izer.hasMoreTokens()) {
+				throw Exception();
+			}
+
+			int value = izer.getIntToken();
+
+			if (value < 1) {
+				value = 1;
+			} else if (value > 1000) {
+				value = 1000;
+			}
+
+			attributes.put(att, value);
+		}
+	} catch (Exception& e) {
+		player->sendSystemMessage("Invalid arguments for /gmCreateSpecificResource: type <attribute,value> ..");
+		return NULL;
+	}
+
 	ResourceSpawn* resourceSpawn = createResourceSpawn(type);
 
-	if (resourceSpawn != NULL)
+	if (resourceSpawn != NULL) {
+		Locker locker(resourceSpawn);
+
+		for (int i = 0; i < attributes.size(); i++) {
+			String key = attributes.elementAt(i).getKey();
+			if (resourceSpawn->getValueOf(key) > 0) {
+				resourceSpawn->addAttribute(key, attributes.get(i));
+			}
+		}
+
 		manualPool->addResource(resourceSpawn, "any");
+	}
 
 	return resourceSpawn;
 }
@@ -444,7 +492,7 @@ ResourceSpawn* ResourceSpawner::createResourceSpawn(const String& type,
 		return NULL;
 	}
 
-	String name = makeResourceName(resourceEntry->isOrganic());
+	String name = makeResourceName(resourceEntry->getRandomNameClass());
 
 	ResourceSpawn* newSpawn =
 			dynamic_cast<ResourceSpawn*> (objectManager->createObject(
@@ -454,6 +502,8 @@ ResourceSpawn* ResourceSpawner::createResourceSpawn(const String& type,
 		error("createResourceSpawn is trying to create a resourcespawn with the wrong type");
 		return NULL;
 	}
+
+	Locker locker(newSpawn);
 
 	String resType = resourceEntry->getType();
 	newSpawn->setType(resType);
@@ -523,6 +573,7 @@ ResourceSpawn* ResourceSpawner::createResourceSpawn(
 }
 
 void ResourceSpawner::despawn(ResourceSpawn* spawn) {
+	Locker locker(spawn);
 
 	for(int i = 0; i < spawn->getSpawnMapSize(); ++i) {
 		String zone = spawn->getSpawnMapZone(i);
@@ -532,11 +583,11 @@ void ResourceSpawner::despawn(ResourceSpawn* spawn) {
 	spawn->setSpawnPool(ResourcePool::NOPOOL, "");
 }
 
-String ResourceSpawner::makeResourceName(bool isOrganic) {
+String ResourceSpawner::makeResourceName(const String& randomNameClass) {
 	String randname;
 
 	while (true) {
-		randname = nameManager->makeResourceName(isOrganic);
+		randname = nameManager->generateResourceName(randomNameClass);
 
 		if (!resourceMap->contains(randname.toLowerCase()) && resourceTree->getEntry(randname) == NULL)
 			break;
@@ -552,21 +603,23 @@ int ResourceSpawner::randomizeValue(int min, int max) {
 	if (min > lowerGateOverride)
 		min = lowerGateOverride;
 
-	int breakpoint = (int) (spawnThrottling * (max - min)) + min;
 	int randomStat = System::random(max - min) + min;
-	bool aboveBreakpoint = System::random(10) == 7;
 
-	if (!(aboveBreakpoint && randomStat > breakpoint) || (!aboveBreakpoint
-			&& randomStat < breakpoint)) {
+	if (spawnThrottling < 90) {
+		int breakpoint = ((spawnThrottling * (max - min)) / 100) + min;
+		bool aboveBreakpoint = System::random(9) == 7;
 
-		if (aboveBreakpoint) {
-			while (randomStat < breakpoint)
-				randomStat = System::random(max - min) + min;
-		} else {
-			while (randomStat > breakpoint)
-				randomStat = System::random(max - min) + min;
+		if ((aboveBreakpoint && randomStat < breakpoint) || (!aboveBreakpoint && randomStat > breakpoint)) {
+			if (aboveBreakpoint) {
+				while (randomStat < breakpoint)
+					randomStat = System::random(max - min) + min;
+			} else {
+				while (randomStat > breakpoint)
+					randomStat = System::random(max - min) + min;
+			}
 		}
 	}
+
 	return randomStat;
 }
 
@@ -608,7 +661,7 @@ ResourceSpawn* ResourceSpawner::getRecycledVersion(ResourceSpawn* resource) {
 	int recycleType = startingEntry->getRecycleToolType();
 
 	ResourceTreeEntry* recycledEntry = NULL;
-	ManagedReference<ResourceSpawn*> recycledVersion;
+	ManagedReference<ResourceSpawn*> recycledVersion = NULL;
 
 	switch(recycleType) {
 	case RecycleTool::NOTYPE:
@@ -683,6 +736,9 @@ ResourceSpawn* ResourceSpawner::getRecycledVersion(ResourceSpawn* resource) {
 		break;
 	}
 
+	if (recycledEntry == NULL)
+		return NULL;
+
 	if (resourceMap->containsType(recycledEntry->getFinalClass())) {
 		recycledVersion = resourceMap->get(recycledEntry->getFinalClass().toLowerCase());
 	} else {
@@ -721,7 +777,7 @@ void ResourceSpawner::sendResourceListForSurvey(CreatureObject* player,
 		if (!resourceSpawn->inShift())
 			continue;
 
-		if (resourceSpawn->getSurveyToolType() == toolType) {
+		if (resourceSpawn->getSurveyToolType() == toolType || (toolType == SurveyTool::INORGANIC && resourceSpawn->isType("inorganic"))) {
 			matchingResources.add(resourceSpawn);
 			message->addResource(resourceSpawn->getName(),
 					resourceSpawn->getType(), resourceSpawn->_getObjectID());
@@ -746,7 +802,7 @@ void ResourceSpawner::sendSurvey(CreatureObject* player, const String& resname) 
 	}*/
 
 	//Adjust cost based upon player's focus
-	int mindCost = player->calculateCostAdjustment(CreatureAttribute::FOCUS, 100);
+	int mindCost = 100 - (int)(player->getHAM(CreatureAttribute::FOCUS)/15.f);
 
 	player->inflictDamage(player, CreatureAttribute::MIND, mindCost, false, true);
 
@@ -757,8 +813,7 @@ void ResourceSpawner::sendSurvey(CreatureObject* player, const String& resname) 
 
 	ManagedReference<SurveyTool*> surveyTool = session->getActiveSurveyTool();
 
-	if (surveyTool == NULL || !resourceMap->contains(resname.toLowerCase()) || player == NULL
-			|| player->getZone() == NULL)
+	if (surveyTool == NULL || !resourceMap->contains(resname.toLowerCase()) || player->getZone() == NULL)
 		return;
 
 	String zoneName = player->getZone()->getZoneName();
@@ -781,13 +836,12 @@ void ResourceSpawner::sendSurvey(CreatureObject* player, const String& resname) 
 	float posY = player->getPositionY() + (((points - 1) / 2.0f) * spacer);
 
 	float maxDensity = -1;
-	float maxX, maxY;
+	float maxX = 0, maxY = 0;
 
 	for (int i = 0; i < points; i++) {
 		for (int j = 0; j < points; j++) {
 
-			float density = resourceMap->getDensityAt(resname, zoneName, posX,
-					posY);
+			float density = resourceMap->getDensityAt(resname, zoneName, posX, posY);
 
 			if (density > maxDensity) {
 				maxDensity = density;
@@ -814,6 +868,8 @@ void ResourceSpawner::sendSurvey(CreatureObject* player, const String& resname) 
 		// Create new waypoint
 		if (waypoint == NULL)
 			waypoint = ( server->createObject(0xc456e788, 1)).castTo<WaypointObject*>();
+
+		Locker locker(waypoint);
 
 		// Update new waypoint
 		waypoint->setCustomObjectName(UnicodeString("Resource Survey"), false);
@@ -846,20 +902,13 @@ void ResourceSpawner::sendSample(CreatureObject* player, const String& resname,
 
 	ManagedReference<SurveyTool*> surveyTool = session->getActiveSurveyTool();
 
-	if (surveyTool == NULL || !resourceMap->contains(resname.toLowerCase()) || player == NULL
-			|| player->getZone() == NULL)
+	if (surveyTool == NULL || !resourceMap->contains(resname.toLowerCase()) || player->getZone() == NULL)
 		return;
 
 	ManagedReference<PlayerObject*> ghost = player->getPlayerObject();
 
-	/*if (player->getHAM(CreatureAttribute::ACTION) < 200) {
-		player->setPosture(CreaturePosture::UPRIGHT, true);
-		player->sendSystemMessage("@error_message:survey_mind"); //You are exhausted. You nee to clear your head before you can survey again.
-		return;
-	}*/
-
 	//Adjust cost based upon player's quickness
-	int actionCost = player->calculateCostAdjustment(CreatureAttribute::QUICKNESS, 200);
+	int actionCost = 124 - (int)(player->getHAM(CreatureAttribute::QUICKNESS)/12.5f);
 
 	player->inflictDamage(player, CreatureAttribute::ACTION, actionCost, false, true);
 
@@ -892,7 +941,7 @@ void ResourceSpawner::sendSampleResults(CreatureObject* player, const float dens
 	ManagedReference<SurveyTool*> surveyTool = session->getActiveSurveyTool();
 	PlayerObject* ghost = player->getPlayerObject();
 
-	if (surveyTool == NULL || player == NULL || player->getZone() == NULL)
+	if (surveyTool == NULL || player->getZone() == NULL)
 		return;
 
 	Zone* zne = player->getZone();
@@ -988,6 +1037,9 @@ void ResourceSpawner::sendSampleResults(CreatureObject* player, const float dens
 
 	// We need the spawn object to track extraction
 	ManagedReference<ResourceSpawn*> resourceSpawn = resourceMap->get(resname.toLowerCase());
+
+	Locker clocker(resourceSpawn, player);
+
 	resourceSpawn->extractResource(zoneName, unitsExtracted);
 
 	int xp = (int) (((float) unitsExtracted / (float) maxUnitsExtracted)
@@ -998,6 +1050,7 @@ void ResourceSpawner::sendSampleResults(CreatureObject* player, const float dens
 		playerManager->awardExperience(player, "resource_harvesting_inorganic", xp, true);
 
 	addResourceToPlayerInventory(player, resourceSpawn, unitsExtracted);
+	player->notifyObservers(ObserverEventType::SAMPLE, resourceSpawn, density * 100);
 
 	if (resourceSpawn->isType("radioactive")) {
 		int wound = int((sampleRate / 30) - System::random(7));
@@ -1036,7 +1089,7 @@ bool ResourceSpawner::addResourceToPlayerInventory(CreatureObject* player, Resou
 			}
 		}
 	}
-	if (unitsExtracted  >0 && inventory->hasFullContainerObjects()) {
+	if (unitsExtracted > 0 && inventory->isContainerFullRecursive()) {
 		StringIdChatParameter err("survey", "no_inv_space");
 		player->sendSystemMessage(err);
 		if (!player->isIncapacitated() && !player->isDead()){
@@ -1045,14 +1098,20 @@ bool ResourceSpawner::addResourceToPlayerInventory(CreatureObject* player, Resou
 		return false;
 	}
 	// Create New resource container if one isn't found in inventory
-	ResourceContainer* harvestedResource = resourceSpawn->createResource(unitsExtracted);
+	Reference<ResourceContainer*> harvestedResource = resourceSpawn->createResource(unitsExtracted);
 
-	inventory->transferObject(harvestedResource, -1, false);
-	inventory->broadcastObject(harvestedResource, true);
-	return true;
+	if (inventory->transferObject(harvestedResource, -1, false)) {
+		inventory->broadcastObject(harvestedResource, true);
+		return true;
+	} else {
+          	Locker resLocker(harvestedResource);
+          
+		harvestedResource->destroyObjectFromDatabase(true);
+		return false;
+	}
 }
 
-ResourceContainer* ResourceSpawner::harvestResource(CreatureObject* player,
+Reference<ResourceContainer*> ResourceSpawner::harvestResource(CreatureObject* player,
 		const String& type, const int quantity) {
 
 	String zoneName = player->getZone()->getZoneName();
@@ -1069,6 +1128,8 @@ ResourceContainer* ResourceSpawner::harvestResource(CreatureObject* player,
 		resourceSpawn = zoneMap->get(i);
 
 		if (resourceSpawn != NULL && resourceSpawn->getType() == type) {
+			Locker locker(resourceSpawn);
+
 			resourceSpawn->extractResource(player->getZone()->getZoneName(), quantity);
 			return resourceSpawn->createResource(quantity);
 		}
@@ -1079,6 +1140,7 @@ ResourceContainer* ResourceSpawner::harvestResource(CreatureObject* player,
 }
 
 bool ResourceSpawner::harvestResource(CreatureObject* player, ResourceSpawn* resourceSpawn, int quantity) {
+	Locker locker(resourceSpawn);
 
 	resourceSpawn->extractResource(player->getZone()->getZoneName(), quantity);
 

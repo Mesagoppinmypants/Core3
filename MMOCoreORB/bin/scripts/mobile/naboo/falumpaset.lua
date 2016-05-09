@@ -1,7 +1,6 @@
 falumpaset = Creature:new {
 	objectName = "@mob/creature_names:falumpaset",
 	socialGroup = "falumpaset",
-	pvpFaction = "",
 	faction = "",
 	level = 19,
 	chanceHit = 0.32,
@@ -24,7 +23,7 @@ falumpaset = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/falumpaset_hue.iff"},
@@ -33,7 +32,7 @@ falumpaset = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

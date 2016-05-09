@@ -2,7 +2,6 @@ tiem_rutnar = Creature:new {
 	objectName = "",
 	customName = "Tiem Rutnar",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 4,
 	chanceHit = 0.24,
@@ -24,7 +23,7 @@ tiem_rutnar = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_aakuan_defender_human_male_01.iff"},

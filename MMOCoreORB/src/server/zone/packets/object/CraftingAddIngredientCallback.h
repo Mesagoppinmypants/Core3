@@ -10,7 +10,6 @@
 
 
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/CreatureObject.h"
 #include "ObjectControllerMessageCallback.h"
 #include "server/zone/objects/player/sessions/crafting/CraftingSession.h"
 #include "server/zone/managers/player/PlayerManager.h"
@@ -24,9 +23,8 @@ class CraftingAddIngredientCallback : public MessageCallback {
 	ObjectControllerMessageCallback* objectControllerMain;
 public:
 	CraftingAddIngredientCallback(ObjectControllerMessageCallback* objectControllerCallback) :
-		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()) {
-
-		objectControllerMain = objectControllerCallback;
+		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()),
+		objectID(0), slot(0), counter(0), objectControllerMain(objectControllerCallback) {
 	}
 
 	void parse(Message* message) {
@@ -43,19 +41,19 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = client->getPlayer().castTo<CreatureObject*>();
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;
 
 		Reference<CraftingSession*> session = player->getActiveSession(SessionFacadeType::CRAFTING).castTo<CraftingSession*>();
 
-		if(session == NULL) {
+		if (session == NULL) {
 			//warning("Trying to add an ingredient when no session exists");
 			return;
 		}
 
-		if(session->getState() > 2){
+		if (session->getState() > 2){
 			//warning("Trying to add an ingredient when the item is already assembled");
 			return;
 		}
@@ -68,7 +66,7 @@ public:
 
 		ManagedReference<SceneObject* > object = player->getZoneServer()->getObject(objectID);
 
-		if(object == NULL || !object->isTangibleObject()) {
+		if (object == NULL || !object->isTangibleObject()) {
 			player->sendSystemMessage("@ui_craft:err_invalid_ingredient");
 			return;
 		}

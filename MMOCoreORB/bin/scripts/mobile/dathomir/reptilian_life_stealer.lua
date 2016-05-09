@@ -1,7 +1,6 @@
 reptilian_life_stealer = Creature:new {
 	objectName = "@mob/creature_names:reptilian_life_stealer",
 	socialGroup = "reptilian_flier",
-	pvpFaction = "",
 	faction = "",
 	level = 125,
 	chanceHit = 3.25,
@@ -23,7 +22,7 @@ reptilian_life_stealer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/reptilian_flier_hue.iff"},
@@ -32,8 +31,8 @@ reptilian_life_stealer = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"strongpoison",""}
+		{"strongpoison",""},
+		{"blindattack",""}
 	}
 }
 

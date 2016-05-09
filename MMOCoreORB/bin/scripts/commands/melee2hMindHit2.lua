@@ -55,17 +55,20 @@ Melee2hMindHit2Command = {
 	dotEffects = {
 	  DotEffect( 
 		BLEEDING, 
-		{ "resistance_bleeding", "bleed_resist", "combat_bleeding_defense" },
+		{ "resistance_bleeding", "bleed_resist" },
 		MIND,
 		true,
-		125,
+		0,
 		100,
 		60, 
 		60
 	  )
 	},
+	
+	weaponType = TWOHANDMELEEWEAPON,
 
-	animationCRC = hashCode("combo_3c_light"),
+	animation = "combo_3c", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "mindslam",
 

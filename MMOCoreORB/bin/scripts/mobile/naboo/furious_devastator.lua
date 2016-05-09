@@ -1,7 +1,6 @@
 furious_devastator = Creature:new {
 	objectName = "@mob/creature_names:fambaa_furious_devastator",
 	socialGroup = "fambaa",
-	pvpFaction = "",
 	faction = "",
 	level = 38,
 	chanceHit = 0.4,
@@ -23,7 +22,7 @@ furious_devastator = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/fambaa_hue.iff"},
@@ -34,14 +33,14 @@ furious_devastator = Creature:new {
 	        groups = {
 				{group = "fambaa_common", chance = 10000000}
 			},
-			lootChance = 2700000
+			lootChance = 1760000
 		}
 	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
-		{"posturedownattack","postureDownChance=50"}
+		{"intimidationattack",""},
+		{"posturedownattack",""}
 	}
 }
 

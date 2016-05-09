@@ -1,7 +1,6 @@
 reclusive_cavern_spider_queen = Creature:new {
 	objectName = "@mob/creature_names:cave_gaping_spider_recluse_queen",
 	socialGroup = "spider",
-	pvpFaction = "",
 	faction = "",
 	level = 70,
 	chanceHit = 0.65,
@@ -23,7 +22,7 @@ reclusive_cavern_spider_queen = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gaping_spider_recluse.iff"},

@@ -1,7 +1,6 @@
 darknovatrooper = Creature:new {
 	objectName = "",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 1,
 	chanceHit = 19.75,
@@ -23,7 +22,7 @@ darknovatrooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = NONE,
 
 	templates = {"object/mobile/dressed_stormtrooper_black_black.iff"},

@@ -1,7 +1,6 @@
 bolma_youth = Creature:new {
 	objectName = "@mob/creature_names:bolma_youth",
 	socialGroup = "bolma",
-	pvpFaction = "",
 	faction = "",
 	level = 17,
 	chanceHit = 0.32,
@@ -24,7 +23,7 @@ bolma_youth = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bolma_youth.iff"},

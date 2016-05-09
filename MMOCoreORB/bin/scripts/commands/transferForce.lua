@@ -42,7 +42,15 @@
 --true = 1, false = 0
 
 TransferForceCommand = {
-        name = "transferforce",
+	name = "transferforce",
+	
+	animation = "force_transfer_1",
+
+	combatSpam = "forcetransfer_hit",
+	
+	minDamage = 200, --Force transferred
+	
+	range = 32
 }
 
 AddCommand(TransferForceCommand)

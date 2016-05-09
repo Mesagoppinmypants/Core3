@@ -1,7 +1,6 @@
 death_watch_battle_droid = Creature:new {
 	objectName = "@mob/creature_names:mand_bunker_battle_droid",
 	socialGroup = "death_watch",
-	pvpFaction = "",
 	faction = "",
 	level = 134,
 	chanceHit = 5.5,
@@ -23,8 +22,9 @@ death_watch_battle_droid = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.15,
 
 	templates = {
 		"object/mobile/death_watch_battle_droid.iff",

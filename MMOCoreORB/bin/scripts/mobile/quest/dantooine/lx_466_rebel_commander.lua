@@ -2,7 +2,6 @@ lx_466_rebel_commander = Creature:new {
 	objectName = "",
 	customName = "(a Stranded Rebel Commander)",	
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 25,
 	chanceHit = 0.36,
@@ -24,7 +23,7 @@ lx_466_rebel_commander = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_commando_zabrak_female_01.iff"},
@@ -39,9 +38,8 @@ lx_466_rebel_commander = Creature:new {
 				{group = "carbines", chance = 1000000},
 				{group = "clothing_attachments", chance = 100000},
 				{group = "armor_attachments", chance = 100000}
-			},
-			lootChance = 3000000
-		}	
+			}
+		}
 	},
 	weapons = {"rebel_weapons_heavy"},
 	conversationTemplate = "",

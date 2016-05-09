@@ -2,7 +2,6 @@ theme_park_imperial_escort_noble = Creature:new {
 	objectName = "",
 	customName = "escort",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 4,
 	chanceHit = 0.24,
@@ -24,7 +23,7 @@ theme_park_imperial_escort_noble = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_noble_naboo_twilek_male_01.iff"},

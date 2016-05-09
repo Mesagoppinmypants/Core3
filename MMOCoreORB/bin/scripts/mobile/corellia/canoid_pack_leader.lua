@@ -1,7 +1,6 @@
 canoid_pack_leader = Creature:new {
 	objectName = "@mob/creature_names:canoid_pack_leader",
 	socialGroup = "canoid",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ canoid_pack_leader = Creature:new {
 	ferocity = 4,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/canoid_pack_leader.iff"},
@@ -32,7 +31,7 @@ canoid_pack_leader = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

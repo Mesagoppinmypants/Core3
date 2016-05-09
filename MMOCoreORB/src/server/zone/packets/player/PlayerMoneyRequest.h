@@ -8,7 +8,7 @@
 #ifndef PLAYERMONEYREQUEST_H_
 #define PLAYERMONEYREQUEST_H_
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 #include "server/zone/packets/player/PlayerObjectDeltaMessage9.h"
 #include "PlayerMoneyResponseMessage.h"
 
@@ -23,7 +23,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = cast<CreatureObject*>(client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;

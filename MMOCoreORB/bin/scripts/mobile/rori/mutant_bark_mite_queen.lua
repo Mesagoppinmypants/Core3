@@ -1,7 +1,6 @@
 mutant_bark_mite_queen = Creature:new {
 	objectName = "@mob/creature_names:mutant_bark_mite_queen",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 38,
 	chanceHit = 0.39,
@@ -23,7 +22,7 @@ mutant_bark_mite_queen = Creature:new {
 	ferocity = 6,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bark_mite_burrower_queen.iff"},
@@ -32,8 +31,8 @@ mutant_bark_mite_queen = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"creatureareableeding",""},
-		{"strongpoison",""}
+		{"strongpoison",""},
+		{"creatureareableeding",""}
 	}
 }
 

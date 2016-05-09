@@ -1,7 +1,6 @@
 bolle_bol_stomper = Creature:new {
 	objectName = "@mob/creature_names:bolle_bol_stomper",
 	socialGroup = "bol",
-	pvpFaction = "",
 	faction = "",
 	level = 23,
 	chanceHit = 0.34,
@@ -23,7 +22,7 @@ bolle_bol_stomper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bolle_bol_hue.iff"},
@@ -32,8 +31,8 @@ bolle_bol_stomper = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"posturedownattack","postureDownChance=50"}
+		{"dizzyattack",""},
+		{"posturedownattack",""}
 	}
 }
 

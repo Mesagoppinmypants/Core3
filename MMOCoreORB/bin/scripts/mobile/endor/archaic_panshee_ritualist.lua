@@ -1,7 +1,6 @@
 archaic_panshee_ritualist = Creature:new {
 	objectName = "@mob/creature_names:archaic_panshee_ritualist",
 	socialGroup = "panshee_tribe",
-	pvpFaction = "panshee_tribe",
 	faction = "panshee_tribe",
 	level = 60,
 	chanceHit = 0.6,
@@ -23,7 +22,7 @@ archaic_panshee_ritualist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -37,7 +36,7 @@ archaic_panshee_ritualist = Creature:new {
 				{group = "ewok", chance = 9000000},
 				{group = "wearables_uncommon", chance = 1000000},
 			},
-			lootChance = 3000000
+			lootChance = 2200000
 		}
 	},
 	weapons = {"ewok_weapons"},

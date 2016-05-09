@@ -7,6 +7,7 @@ includeFile("dantooine/serverobjects.lua")
 includeFile("dathomir/serverobjects.lua")
 includeFile("endor/serverobjects.lua")
 includeFile("event/serverobjects.lua")
+includeFile("herald/serverobjects.lua")
 includeFile("lok/serverobjects.lua")
 includeFile("misc/serverobjects.lua")
 includeFile("naboo/serverobjects.lua")
@@ -41,3 +42,6 @@ includeFile("lair/serverobjects.lua")
 
 -- Outfits
 includeFile("outfits/serverobjects.lua")
+
+-- World Bosses
+includeFile("custom_npcs/serverobjects.lua")

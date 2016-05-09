@@ -17,7 +17,7 @@ class GuildRequestCallback : public MessageCallback {
 
 public:
 	GuildRequestCallback(ZoneClientSession* client, ZoneProcessServer* server) :
-		MessageCallback(client, server) {
+		MessageCallback(client, server), objectID(0) {
 
 	}
 
@@ -32,8 +32,6 @@ public:
 			return;
 
 		CreatureObject* creature = cast<CreatureObject*>( obj.get());
-
-		//ManagedReference<GuildObject*> guild = creature->getGuildObject();
 
 		GuildResponseMessage* msg = new GuildResponseMessage(creature);
 		client->sendMessage(msg);

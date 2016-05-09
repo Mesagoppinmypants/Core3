@@ -1,7 +1,6 @@
 malignant_squill = Creature:new {
 	objectName = "@mob/creature_names:malignant_squill",
 	socialGroup = "squill",
-	pvpFaction = "",
 	faction = "",
 	level = 50,
 	chanceHit = 0.5,
@@ -23,7 +22,7 @@ malignant_squill = Creature:new {
 	ferocity = 12,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/squill_hue.iff"},
@@ -34,7 +33,7 @@ malignant_squill = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"strongdisease",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

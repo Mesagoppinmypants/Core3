@@ -11,14 +11,14 @@
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/tangible/weapon/WeaponObject.h"
 
-void ThrowGrenadeMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) {
+void ThrowGrenadeMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 		if (sceneObject == NULL || !sceneObject->isTangibleObject() || player == NULL)
 		return;
 
 	WeaponObjectMenuComponent::fillObjectMenuResponse(sceneObject, menuResponse, player);
 }
 
-int ThrowGrenadeMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) {
+int ThrowGrenadeMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) const {
 	if (!sceneObject->isTangibleObject() || !player->isPlayerCreature())
 		return 0;
 
@@ -31,15 +31,7 @@ int ThrowGrenadeMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, 
 		return 1;
 
 	if(selectedID == 20) {
-		ManagedReference<ZoneServer*> server = player->getZoneServer();
-		if(server == NULL)
-			return 0;
-
-		String args = String::valueOf(sceneObject->getObjectID());
-		String action = "/throwgrenade ";
-		String command = action + args;
-
-		player->sendExecuteConsoleCommand(command);
+		player->sendCommand(STRING_HASHCODE("throwgrenade"), String::valueOf(sceneObject->getObjectID()), player->getTargetID());
 
 		return 1;
 	}

@@ -50,9 +50,12 @@ FireLightningSingle2Command = {
 	actionCostMultiplier = 1,
 	mindCostMultiplier = 1,
 
-	animationCRC = hashCode("fire_1_special_single_medium_face"),
+	animation = "fire_acid_rifle_single_2", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "firelightningsingle2",
+	
+	weaponType = SPECIALHEAVYWEAPON,
 
 	range = 16
 }

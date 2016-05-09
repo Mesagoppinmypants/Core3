@@ -1,7 +1,6 @@
 dagorel = Creature:new {
 	objectName = "",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 9,
 	chanceHit = 0.270000,
@@ -23,7 +22,7 @@ dagorel = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/quarren_male.iff"},

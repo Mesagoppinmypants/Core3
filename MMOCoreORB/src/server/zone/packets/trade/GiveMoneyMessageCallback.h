@@ -8,7 +8,7 @@
 #ifndef GIVEMONEYMESSAGECALLBACK_H_
 #define GIVEMONEYMESSAGECALLBACK_H_
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 #include "server/zone/managers/player/PlayerManager.h"
 
 class GiveMoneyMessageCallback : public MessageCallback {
@@ -16,7 +16,7 @@ class GiveMoneyMessageCallback : public MessageCallback {
 
 public:
 	GiveMoneyMessageCallback(ZoneClientSession* client, ZoneProcessServer* server) :
-		MessageCallback(client, server) {
+		MessageCallback(client, server), money(0) {
 
 	}
 
@@ -25,7 +25,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = static_cast<CreatureObject*>(client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;

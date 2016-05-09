@@ -1,7 +1,6 @@
 igbi_hutt_hotshot = Creature:new {
 	objectName = "",
 	socialGroup = "hutt",
-	pvpFaction = "hutt",
 	faction = "hutt",
 	level = 17,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ igbi_hutt_hotshot = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER + PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_jabba_thug.iff"},

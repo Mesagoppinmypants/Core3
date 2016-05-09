@@ -1,7 +1,6 @@
 raxa_rebel_scout = Creature:new {
 	objectName = "@mob/creature_names:rebel_scout",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 15,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ raxa_rebel_scout = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

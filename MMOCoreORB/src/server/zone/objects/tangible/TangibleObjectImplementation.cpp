@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
- */
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions. */
 
 #include "server/zone/objects/tangible/TangibleObject.h"
 #include "variables/SkillModMap.h"
@@ -54,12 +14,12 @@ which carries forward this exception.
 #include "server/zone/packets/tangible/TangibleObjectDeltaMessage3.h"
 #include "server/zone/packets/tangible/TangibleObjectDeltaMessage6.h"
 #include "server/zone/packets/scene/AttributeListMessage.h"
-#include "server/zone/templates/SharedTangibleObjectTemplate.h"
-#include "server/zone/objects/creature/CreatureFlag.h"
+#include "templates/SharedTangibleObjectTemplate.h"
+#include "templates/params/creature/CreatureFlag.h"
 #include "server/zone/packets/tangible/UpdatePVPStatusMessage.h"
 #include "server/zone/objects/area/ActiveArea.h"
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/managers/crafting/CraftingManager.h"
 #include "server/zone/objects/tangible/component/Component.h"
 #include "server/zone/objects/factorycrate/FactoryCrate.h"
@@ -70,10 +30,15 @@ which carries forward this exception.
 #include "tasks/ClearDefenderListsTask.h"
 #include "server/zone/objects/manufactureschematic/craftingvalues/CraftingValues.h"
 #include "server/zone/objects/manufactureschematic/ingredientslots/ComponentSlot.h"
-#include "server/zone/templates/tangible/tool/RepairToolTemplate.h"
+#include "templates/tangible/tool/RepairToolTemplate.h"
 #include "server/zone/objects/tangible/tool/repair/RepairTool.h"
 #include "server/zone/managers/player/PlayerManager.h"
+#include "server/zone/managers/creature/PetManager.h"
+#include "server/zone/managers/faction/FactionManager.h"
 #include "server/zone/objects/tangible/wearables/WearableObject.h"
+#include "server/zone/objects/intangible/PetControlDevice.h"
+#include "server/zone/objects/tangible/tool/antidecay/AntiDecayKit.h"
+#include "templates/faction/Factions.h"
 #include "engine/engine.h"
 
 
@@ -84,7 +49,7 @@ void TangibleObjectImplementation::initializeTransientMembers() {
 
 	setLoggingName("TangibleObject");
 
-	if (faction !=  0x16148850 && faction != 0xDB4ACC54) {
+	if (faction !=  Factions::FACTIONREBEL && faction != Factions::FACTIONIMPERIAL) {
 		faction = 0;
 	}
 }
@@ -100,6 +65,8 @@ void TangibleObjectImplementation::loadTemplateData(SharedObjectTemplate* templa
 	targetable = tanoData->getTargetable();
 
 	maxCondition = tanoData->getMaxCondition();
+
+	invisible = tanoData->isInvisible();
 
 	useCount = tanoData->getUseCount();
 
@@ -117,16 +84,26 @@ void TangibleObjectImplementation::notifyLoadFromDatabase() {
 	SceneObjectImplementation::notifyLoadFromDatabase();
 
 	for (int i = 0; i < activeAreas.size(); ++i) {
-		activeAreas.get(i)->notifyExit(_this.get());
+		activeAreas.get(i)->notifyExit(asTangibleObject());
 	}
 
 	activeAreas.removeAll();
+
+	if (hasAntiDecayKit()) {
+		AntiDecayKit* adk = antiDecayKitObject.castTo<AntiDecayKit*>();
+
+		if (adk != NULL && !adk->isUsed()) {
+			Locker locker(adk);
+
+			adk->setUsed(true);
+		}
+	}
 }
 
 void TangibleObjectImplementation::sendBaselinesTo(SceneObject* player) {
 	info("sending tano baselines");
 
-	Reference<TangibleObject*> thisPointer = _this.get();
+	TangibleObject* thisPointer = asTangibleObject();
 
 	BaseMessage* tano3 = new TangibleObjectMessage3(thisPointer);
 	player->sendMessage(tano3);
@@ -135,7 +112,7 @@ void TangibleObjectImplementation::sendBaselinesTo(SceneObject* player) {
 	player->sendMessage(tano6);
 
 	if (player->isPlayerCreature())
-		sendPvpStatusTo(cast<CreatureObject*>(player));
+		sendPvpStatusTo(player->asCreatureObject());
 }
 
 void TangibleObjectImplementation::sendPvpStatusTo(CreatureObject* player) {
@@ -153,46 +130,52 @@ void TangibleObjectImplementation::sendPvpStatusTo(CreatureObject* player) {
 	} else if (!isAggressiveTo(player))
 		newPvpStatusBitmask -= CreatureFlag::AGGRESSIVE;
 
-	BaseMessage* pvp = new UpdatePVPStatusMessage(_this.get(), newPvpStatusBitmask);
+	if (newPvpStatusBitmask & CreatureFlag::TEF) {
+		if (player != asTangibleObject())
+			newPvpStatusBitmask -= CreatureFlag::TEF;
+	}
+
+	BaseMessage* pvp = new UpdatePVPStatusMessage(asTangibleObject(), newPvpStatusBitmask);
 	player->sendMessage(pvp);
 }
 
-void TangibleObjectImplementation::broadcastPvpStatusBitmask(){
+void TangibleObjectImplementation::broadcastPvpStatusBitmask() {
 	if (getZone() == NULL)
 			return;
 
 	if (closeobjects != NULL) {
 		Zone* zone = getZone();
 
-		//Locker locker(zone);
+		CreatureObject* thisCreo = asCreatureObject();
 
-		CreatureObject* thisCreo = cast<CreatureObject*>(_this.get().get());
-
-		SortedVector<ManagedReference<QuadTreeEntry*> > closeObjects(closeobjects->size(), 10);
+		SortedVector<QuadTreeEntry*> closeObjects(closeobjects->size(), 10);
 
 		closeobjects->safeCopyTo(closeObjects);
 
 		for (int i = 0; i < closeObjects.size(); ++i) {
-			SceneObject* obj = cast<SceneObject*>(closeObjects.get(i).get());
+			SceneObject* obj = cast<SceneObject*>(closeObjects.get(i));
 
 			if (obj != NULL && obj->isCreatureObject()) {
-				CreatureObject* creo = cast<CreatureObject*>(obj);
+				CreatureObject* creo = obj->asCreatureObject();
 
-				sendPvpStatusTo(creo);
+				if (creo->isPlayerCreature())
+					sendPvpStatusTo(creo);
 
-				if (thisCreo != NULL)
+				if (thisCreo != NULL && thisCreo->isPlayerCreature())
 					creo->sendPvpStatusTo(thisCreo);
 			}
-
 		}
 	}
 }
 
-void TangibleObjectImplementation::setPvpStatusBitmask(int bitmask, bool notifyClient) {
+void TangibleObjectImplementation::setPvpStatusBitmask(uint32 bitmask, bool notifyClient) {
 	pvpStatusBitmask = bitmask;
 
 	broadcastPvpStatusBitmask();
+}
 
+void TangibleObjectImplementation::setIsCraftedEnhancedItem(bool value) {
+	isCraftedEnhancedItem = value;
 }
 
 void TangibleObjectImplementation::setPvpStatusBit(uint32 pvpStatus, bool notifyClient) {
@@ -207,13 +190,13 @@ void TangibleObjectImplementation::clearPvpStatusBit(uint32 pvpStatus, bool noti
 	}
 }
 
-void TangibleObjectImplementation::synchronizedUIListen(SceneObject* player, int value) {
+void TangibleObjectImplementation::synchronizedUIListen(CreatureObject* player, int value) {
 	// Send TANO7 Baseline
-	TangibleObjectMessage7* tano7 = new TangibleObjectMessage7(_this.get());
+	TangibleObjectMessage7* tano7 = new TangibleObjectMessage7(asTangibleObject());
 	player->sendMessage(tano7);
 }
 
-void TangibleObjectImplementation::synchronizedUIStopListen(SceneObject* player, int value) {
+void TangibleObjectImplementation::synchronizedUIStopListen(CreatureObject* player, int value) {
 
 }
 
@@ -224,9 +207,62 @@ void TangibleObjectImplementation::setSerialNumber(const String& serial) {
 	objectSerial = serial;
 }
 
-void TangibleObjectImplementation::setDefender(SceneObject* defender) {
-	if (defender == _this.get())
+void TangibleObjectImplementation::addVisibleComponent(int value, bool notifyClient) {
+	if (visibleComponents.contains(value))
 		return;
+
+	if (notifyClient) {
+		TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
+		dtano3->startUpdate(0x05);
+
+		visibleComponents.add(value, dtano3);
+
+		dtano3->close();
+
+		broadcastMessage(dtano3, true);
+	} else {
+		visibleComponents.add(value);
+	}
+}
+
+void TangibleObjectImplementation::removeAllVisibleComponents(bool notifyClient) {
+	if (notifyClient) {
+		TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
+		dtano3->startUpdate(0x05);
+
+		visibleComponents.removeAll(dtano3);
+
+		dtano3->close();
+
+		broadcastMessage(dtano3, true);
+	} else {
+		visibleComponents.removeAll();
+	}
+}
+
+void TangibleObjectImplementation::removeVisibleComponent(int value, bool notifyClient) {
+	if (!visibleComponents.contains(value))
+		return;
+
+	if (notifyClient) {
+		TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
+		dtano3->startUpdate(0x05);
+
+		visibleComponents.drop(value, dtano3);
+
+		dtano3->close();
+
+		broadcastMessage(dtano3, true);
+	} else {
+		visibleComponents.drop(value);
+	}
+}
+
+void TangibleObjectImplementation::setDefender(SceneObject* defender) {
+	if (defender == asTangibleObject())
+		return;
+
+	assert(defender);
 
 	if (defenderList.size() == 0) {
 		addDefender(defender);
@@ -238,34 +274,32 @@ void TangibleObjectImplementation::setDefender(SceneObject* defender) {
 	int i = 0;
 	for (; i < defenderList.size(); i++) {
 		if (defenderList.get(i) == defender) {
-			if (i == 0)
-				return;
-
-			temp = defenderList.get(0);
-
-			TangibleObjectDeltaMessage6* dtano6 = new TangibleObjectDeltaMessage6(_this.get());
-			dtano6->startUpdate(0x01);
-
-			defenderList.set(0, defender, dtano6, 2);
-			defenderList.set(i, temp, dtano6, 0);
-
-			dtano6->close();
-
-			broadcastMessage(dtano6, true);
-
+			if (i == 0) return;
 			break;
 		}
 	}
 
 	if (i == defenderList.size())
 		addDefender(defender);
-	else
-		setCombatState();
+
+	temp = defenderList.get(0);
+	
+	TangibleObjectDeltaMessage6* dtano6 = new TangibleObjectDeltaMessage6(asTangibleObject());
+	dtano6->startUpdate(0x01);
+
+	defenderList.set(0, defender, dtano6, 2);
+	defenderList.set(i, temp, dtano6, 0);
+
+	dtano6->close();
+
+	broadcastMessage(dtano6, true);
 }
 
 void TangibleObjectImplementation::addDefender(SceneObject* defender) {
-	if (defender == _this.get())
+	if (defender == asTangibleObject())
 		return;
+
+	assert(defender);
 
 	for (int i = 0; i < defenderList.size(); ++i) {
 		if (defender == defenderList.get(i))
@@ -274,7 +308,7 @@ void TangibleObjectImplementation::addDefender(SceneObject* defender) {
 
 	//info("adding defender");
 
-	TangibleObjectDeltaMessage6* dtano6 = new TangibleObjectDeltaMessage6(_this.get());
+	TangibleObjectDeltaMessage6* dtano6 = new TangibleObjectDeltaMessage6(asTangibleObject());
 	dtano6->startUpdate(0x01);
 
 	defenderList.add(defender, dtano6);
@@ -298,7 +332,7 @@ void TangibleObjectImplementation::removeDefenders() {
 	for (int i = 0; i < defenderList.size(); i++)
 		notifyObservers(ObserverEventType::DEFENDERDROPPED, defenderList.get(i));
 
-	TangibleObjectDeltaMessage6* dtano6 = new TangibleObjectDeltaMessage6(_this.get());
+	TangibleObjectDeltaMessage6* dtano6 = new TangibleObjectDeltaMessage6(asTangibleObject());
 	dtano6->startUpdate(0x01);
 
 	defenderList.removeAll(dtano6);
@@ -316,7 +350,9 @@ void TangibleObjectImplementation::removeDefender(SceneObject* defender) {
 		if (defenderList.get(i) == defender) {
 			info("removing defender");
 
-			TangibleObjectDeltaMessage6* dtano6 = new TangibleObjectDeltaMessage6(_this.get());
+			notifyObservers(ObserverEventType::DEFENDERDROPPED, defender);
+
+			TangibleObjectDeltaMessage6* dtano6 = new TangibleObjectDeltaMessage6(asTangibleObject());
 
 			dtano6->startUpdate(0x01);
 
@@ -328,8 +364,6 @@ void TangibleObjectImplementation::removeDefender(SceneObject* defender) {
 			dtano6->close();
 
 			broadcastMessage(dtano6, true);
-
-			notifyObservers(ObserverEventType::DEFENDERDROPPED, defender);
 
 			//info("defender found and removed");
 			break;
@@ -382,7 +416,7 @@ void TangibleObjectImplementation::setCustomizationVariable(byte type, int16 val
 	if (!notifyClient)
 		return;
 
-	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(_this.get());
+	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
 	dtano3->updateCustomizationString();
 	dtano3->close();
 
@@ -395,7 +429,7 @@ void TangibleObjectImplementation::setCustomizationVariable(const String& type, 
 	if(!notifyClient)
 		return;
 
-	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(_this.get());
+	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
 	dtano3->updateCustomizationString();
 	dtano3->close();
 
@@ -404,6 +438,7 @@ void TangibleObjectImplementation::setCustomizationVariable(const String& type, 
 }
 
 void TangibleObjectImplementation::setCountdownTimer(unsigned int newUseCount, bool notifyClient) {
+
 	if (useCount == newUseCount)
 		return;
 
@@ -412,7 +447,7 @@ void TangibleObjectImplementation::setCountdownTimer(unsigned int newUseCount, b
 	if (!notifyClient)
 		return;
 
-	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(_this.get());
+	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
 	dtano3->updateCountdownTimer();
 	dtano3->close();
 
@@ -425,6 +460,12 @@ void TangibleObjectImplementation::setUseCount(uint32 newUseCount, bool notifyCl
 
 	setCountdownTimer(newUseCount, notifyClient);
 
+
+}
+
+void TangibleObjectImplementation::decreaseUseCount(unsigned int decrementAmount, bool notifyClient) {
+	setUseCount(useCount - decrementAmount, notifyClient);
+
 	if (useCount < 1 && !isCreatureObject()) {
 		destroyObjectFromWorld(true);
 
@@ -432,10 +473,6 @@ void TangibleObjectImplementation::setUseCount(uint32 newUseCount, bool notifyCl
 
 		return;
 	}
-}
-
-void TangibleObjectImplementation::decreaseUseCount() {
-	setUseCount(useCount - 1, true);
 }
 
 void TangibleObjectImplementation::setMaxCondition(int maxCond, bool notifyClient) {
@@ -447,7 +484,7 @@ void TangibleObjectImplementation::setMaxCondition(int maxCond, bool notifyClien
 	if (!notifyClient)
 		return;
 
-	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(_this.get());
+	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
 	dtano3->updateMaxCondition();
 	dtano3->close();
 
@@ -463,14 +500,14 @@ void TangibleObjectImplementation::setConditionDamage(float condDamage, bool not
 	if (!notifyClient)
 		return;
 
-	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(_this.get());
+	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
 	dtano3->updateConditionDamage();
 	dtano3->close();
 
 	broadcastMessage(dtano3, true);
 }
 
-int TangibleObjectImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, bool notifyClient) {
+int TangibleObjectImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, bool notifyClient, bool isCombatAction) {
 	if(hasAntiDecayKit())
 		return 0;
 
@@ -484,19 +521,19 @@ int TangibleObjectImplementation::inflictDamage(TangibleObject* attacker, int da
 	setConditionDamage(newConditionDamage, notifyClient);
 
 	if (attacker->isCreatureObject()) {
-		CreatureObject* creature = cast<CreatureObject*>( attacker);
+		CreatureObject* creature = attacker->asCreatureObject();
 
-		if (damage > 0 && attacker != _this.get())
+		if (damage > 0 && attacker != asTangibleObject())
 			getThreatMap()->addDamage(creature, (uint32)damage);
 	}
 
 	if (newConditionDamage >= maxCondition)
-		notifyObjectDestructionObservers(attacker, newConditionDamage);
+		notifyObjectDestructionObservers(attacker, newConditionDamage, isCombatAction);
 
 	return 0;
 }
 
-int TangibleObjectImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, const String& xp, bool notifyClient) {
+int TangibleObjectImplementation::inflictDamage(TangibleObject* attacker, int damageType, float damage, bool destroy, const String& xp, bool notifyClient, bool isCombatAction) {
 	if(hasAntiDecayKit())
 		return 0;
 
@@ -508,34 +545,34 @@ int TangibleObjectImplementation::inflictDamage(TangibleObject* attacker, int da
 	setConditionDamage(newConditionDamage, notifyClient);
 
 	if (attacker->isCreatureObject()) {
-		CreatureObject* creature = cast<CreatureObject*>( attacker);
+		CreatureObject* creature = attacker->asCreatureObject();
 
-		if (damage > 0 && attacker != _this.get())
+		if (damage > 0 && attacker != asTangibleObject())
 			getThreatMap()->addDamage(creature, (uint32)damage, xp);
 	}
 
 	if (newConditionDamage >= maxCondition)
-		notifyObjectDestructionObservers(attacker, newConditionDamage);
+		notifyObjectDestructionObservers(attacker, newConditionDamage, isCombatAction);
 
 	return 0;
 }
 
-int TangibleObjectImplementation::notifyObjectDestructionObservers(TangibleObject* attacker, int condition) {
+int TangibleObjectImplementation::notifyObjectDestructionObservers(TangibleObject* attacker, int condition, bool isCombatAction) {
 	notifyObservers(ObserverEventType::OBJECTDESTRUCTION, attacker, condition);
 
 	if (threatMap != NULL)
 		threatMap->removeAll();
 
-	dropFromDefenderLists(attacker);
+	dropFromDefenderLists();
 
 	return 1;
 }
 
-void TangibleObjectImplementation::dropFromDefenderLists(TangibleObject* destructor) {
+void TangibleObjectImplementation::dropFromDefenderLists() {
 	if (defenderList.size() == 0)
 		return;
 
-	Reference<ClearDefenderListsTask*> task = new ClearDefenderListsTask(defenderList, _this.get());
+	Reference<ClearDefenderListsTask*> task = new ClearDefenderListsTask(defenderList, asTangibleObject());
 	Core::getTaskManager()->executeTask(task);
 
 	clearCombatState(false);
@@ -557,14 +594,27 @@ int TangibleObjectImplementation::healDamage(TangibleObject* healer, int damageT
 	return returnValue;
 }
 
+void TangibleObjectImplementation::setObjectName(StringId& stringID, bool notifyClient) {
+	objectName = stringID;
+
+	if (!notifyClient)
+		return;
+
+	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
+	dtano3->updateObjectName(stringID);
+	dtano3->close();
+
+	broadcastMessage(dtano3, true);
+}
+
 void TangibleObjectImplementation::setCustomObjectName(const UnicodeString& name, bool notifyClient) {
 	customName = name;
 
 	if (!notifyClient)
 		return;
 
-	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(_this.get());
-	dtano3->updateName(name);
+	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
+	dtano3->updateCustomName(name);
 	dtano3->close();
 
 	broadcastMessage(dtano3, true);
@@ -579,7 +629,7 @@ void TangibleObjectImplementation::setOptionsBitmask(uint32 bitmask, bool notify
 	if (!notifyClient)
 		return;
 
-	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(_this.get());
+	TangibleObjectDeltaMessage3* dtano3 = new TangibleObjectDeltaMessage3(asTangibleObject());
 	dtano3->updateOptionsBitmask();
 	dtano3->close();
 
@@ -638,6 +688,11 @@ Reference<FactoryCrate*> TangibleObjectImplementation::createFactoryCrate(bool i
 	else
 		file = "object/factory/factory_crate_generic_items.iff";
 
+	SharedTangibleObjectTemplate* tanoData = dynamic_cast<SharedTangibleObjectTemplate*>(templateObject.get());
+
+	if (tanoData == NULL)
+		return NULL;
+
 	ObjectManager* objectManager = ObjectManager::instance();
 
 	Reference<FactoryCrate*> crate = (getZoneServer()->createObject(file.hashCode(), 2)).castTo<FactoryCrate*>();
@@ -645,24 +700,36 @@ Reference<FactoryCrate*> TangibleObjectImplementation::createFactoryCrate(bool i
 	if (crate == NULL)
 		return NULL;
 
-	SharedTangibleObjectTemplate* tanoData = dynamic_cast<SharedTangibleObjectTemplate*>(templateObject.get());
-
-	if (tanoData == NULL)
-		return NULL;
+	Locker locker(crate);
 
 	crate->setMaxCapacity(tanoData->getFactoryCrateSize());
 
 	if (insertSelf) {
-		crate->transferObject(_this.get(), -1, false);
-	} else {
-
-		ManagedReference<TangibleObject*> protoclone = cast<TangibleObject*>( objectManager->cloneObject(_this.get()));
-
-		if (protoclone == NULL)
+		if (!crate->transferObject(asTangibleObject(), -1, false)) {
+			crate->destroyObjectFromDatabase(true);
 			return NULL;
+		}
+	} else {
+		ManagedReference<TangibleObject*> protoclone = cast<TangibleObject*>( objectManager->cloneObject(asTangibleObject()));
+		/*
+		* I really didn't want to do this this way, but I had no other way of making the text on the crate be white
+		* if the item it contained has yellow magic bit set. So I stripped the yellow magic bit off when the item is placed inside
+		* the crate here, and added it back when the item is extracted from the crate if it is a crafted enhanced item.
+		*/
+		if(protoclone->getIsCraftedEnhancedItem())
+			protoclone->removeMagicBit(false);
+
+		if (protoclone == NULL) {
+			crate->destroyObjectFromDatabase(true);
+			return NULL;
+		}
 
 		protoclone->setParent(NULL);
-		crate->transferObject(protoclone, -1, false);
+		if (!crate->transferObject(protoclone, -1, false)) {
+			protoclone->destroyObjectFromDatabase(true);
+			crate->destroyObjectFromDatabase(true);
+			return NULL;
+		}
 	}
 
 	crate->setCustomObjectName(getCustomObjectName(), false);
@@ -830,6 +897,9 @@ void TangibleObjectImplementation::repair(CreatureObject* player) {
 		repairChance = 100;
 
 	String result = repairAttempt(repairChance);
+
+	Locker locker(repairTool);
+
 	repairTool->destroyObjectFromWorld(true);
 	repairTool->destroyObjectFromDatabase(true);
 
@@ -838,12 +908,18 @@ void TangibleObjectImplementation::repair(CreatureObject* player) {
 
 ThreatMap* TangibleObjectImplementation::getThreatMap() {
 	if (threatMap == NULL) {
-		Reference<ThreatMap*> newMap = new ThreatMap(_this.get());
+		Reference<ThreatMap*> newMap = new ThreatMap(asTangibleObject());
 
 		threatMap.compareAndSet(NULL, newMap.get());
 	}
 
 	return threatMap;
+}
+bool TangibleObjectImplementation::isAttackableBy(TangibleObject* object) {
+	if(object->isCreatureObject())
+		return isAttackableBy(object->asCreatureObject());
+
+	return false;
 }
 
 bool TangibleObjectImplementation::isAttackableBy(CreatureObject* object) {
@@ -861,10 +937,17 @@ bool TangibleObjectImplementation::isAttackableBy(CreatureObject* object) {
 		}
 
 	} else if (object->isAiAgent()) {
-		AiAgent* ai = cast<AiAgent*>(object);
+		AiAgent* ai = object->asAiAgent();
 
-		if (ai->getHomeObject() == _this.get()) {
+		if (ai->getHomeObject().get() == asTangibleObject()) {
 			return false;
+		}
+
+		if (ai->isPet()) {
+			ManagedReference<PetControlDevice*> pcd = ai->getControlDevice().get().castTo<PetControlDevice*>();
+			if (pcd != NULL && pcd->getPetType() == PetManager::FACTIONPET && isNeutral()) {
+				return false;
+			}
 		}
 	}
 
@@ -876,4 +959,43 @@ void TangibleObjectImplementation::addActiveArea(ActiveArea* area) {
 		area->deploy();
 
 	activeAreas.put(area);
+}
+
+void TangibleObjectImplementation::sendTo(SceneObject* player, bool doClose) {
+	if (isInvisible() && player != asTangibleObject())
+		return;
+
+	SceneObjectImplementation::sendTo(player, doClose);
+}
+
+bool TangibleObjectImplementation::isCityStreetLamp(){
+	return (templateObject != NULL && templateObject->getFullTemplateString().contains("object/tangible/furniture/city/streetlamp"));
+}
+
+bool TangibleObjectImplementation::isCityStatue(){
+	return (templateObject != NULL && templateObject->getFullTemplateString().contains("object/tangible/furniture/city/statue"));
+}
+
+bool TangibleObjectImplementation::isCityFountain(){
+	return (templateObject != NULL && templateObject->getFullTemplateString().contains("object/tangible/furniture/city/fountain"));
+}
+
+bool TangibleObjectImplementation::isRebel() const {
+	return faction == Factions::FACTIONREBEL;
+}
+
+bool TangibleObjectImplementation::isImperial() const {
+	return faction == Factions::FACTIONIMPERIAL;
+}
+
+bool TangibleObjectImplementation::isNeutral() const {
+	return faction == Factions::FACTIONNEUTRAL;
+}
+
+TangibleObject* TangibleObject::asTangibleObject() {
+	return this;
+}
+
+TangibleObject* TangibleObjectImplementation::asTangibleObject() {
+	return _this.getReferenceUnsafeStaticCast();
 }

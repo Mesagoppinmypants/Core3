@@ -1,7 +1,6 @@
 sandreaver = Creature:new {
 	objectName = "@mob/creature_names:dewback_sandreaver",
 	socialGroup = "dewback",
-	pvpFaction = "",
 	faction = "",
 	level = 26,
 	chanceHit = 0.36,
@@ -23,7 +22,7 @@ sandreaver = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/dewback.iff"},
@@ -33,7 +32,7 @@ sandreaver = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"}
+		{"dizzyattack",""}
 	}
 }
 

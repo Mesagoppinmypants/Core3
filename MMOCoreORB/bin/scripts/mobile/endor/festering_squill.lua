@@ -1,7 +1,6 @@
 festering_squill = Creature:new {
 	objectName = "@mob/creature_names:festering_squill",
 	socialGroup = "squill",
-	pvpFaction = "",
 	faction = "",
 	level = 31,
 	chanceHit = 0.38,
@@ -23,7 +22,7 @@ festering_squill = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/squill_hue.iff"},
@@ -33,7 +32,7 @@ festering_squill = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
+		{"blindattack",""},
 		{"mediumdisease",""}
 	}
 }

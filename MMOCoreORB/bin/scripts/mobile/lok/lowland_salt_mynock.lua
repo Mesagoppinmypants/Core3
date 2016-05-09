@@ -1,7 +1,6 @@
 lowland_salt_mynock = Creature:new {
 	objectName = "@mob/creature_names:lowland_salt_mynock",
 	socialGroup = "mynock",
-	pvpFaction = "",
 	faction = "",
 	level = 26,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ lowland_salt_mynock = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/salt_mynock_hue.iff"},
@@ -32,6 +31,9 @@ lowland_salt_mynock = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
+		{"dizzyattack",""},
+		{"mediumdisease",""}
+
 	}
 }
 

@@ -1,7 +1,8 @@
 rebel_sailor = Creature:new {
 	objectName = "@mob/creature_names:corvette_rebel_sailor",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 96,
 	chanceHit = 0.95,
@@ -23,19 +24,35 @@ rebel_sailor = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_crewman_human_female_01.iff",
-				 "object/mobile/dressed_rebel_crewman_human_female_02.iff",
-				 "object/mobile/dressed_rebel_crewman_human_male_01.iff",
-				 "object/mobile/dressed_rebel_crewman_human_male_02.iff",
-				 "object/mobile/dressed_rebel_crewman_human_male_03.iff",
-				 "object/mobile/dressed_rebel_crewman_human_male_04.iff"
+		"object/mobile/dressed_rebel_crewman_human_female_02.iff",
+		"object/mobile/dressed_rebel_crewman_human_male_01.iff",
+		"object/mobile/dressed_rebel_crewman_human_male_02.iff",
+		"object/mobile/dressed_rebel_crewman_human_male_03.iff",
+		"object/mobile/dressed_rebel_crewman_human_male_04.iff"
 	},
-	lootGroups = {},
+	lootGroups = {
+		{
+			groups = {
+				{group = "color_crystals", chance = 100000},
+				{group = "junk", chance = 4700000},
+				{group = "rifles", chance = 1000000},
+				{group = "pistols", chance = 1000000},
+				{group = "melee_weapons", chance = 1000000},
+				{group = "carbines", chance = 1000000},
+				{group = "clothing_attachments", chance = 100000},
+				{group = "armor_attachments", chance = 100000},
+				{group = "wearables_common", chance = 500000},
+				{group = "wearables_uncommon", chance = 500000}
+			}
+		}
+	},
 	weapons = {"rebel_weapons_medium"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/military",
 	attacks = merge(riflemanmaster,carbineermaster,marksmanmaster,brawlermaster)
 }
 

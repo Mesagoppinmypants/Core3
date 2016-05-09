@@ -1,7 +1,6 @@
 tusken_death_hunter = Creature:new {
 	objectName = "@mob/creature_names:tusken_death_hunter",
 	socialGroup = "tusken_raider",
-	pvpFaction = "tusken_raider",
 	faction = "tusken_raider",
 	level = 50,
 	chanceHit = 0.5,
@@ -10,8 +9,8 @@ tusken_death_hunter = Creature:new {
 	baseXp = 4916,
 	baseHAM = 10000,
 	baseHAMmax = 12000,
-	armor = 0,
-	resists = {0,0,0,0,0,0,0,0,-1},
+	armor = 1,
+	resists = {40,40,30,30,0,30,0,30,-1},
 	meatType = "",
 	meatAmount = 0,
 	hideType = "",
@@ -23,7 +22,7 @@ tusken_death_hunter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/tusken_raider.iff"},
@@ -40,9 +39,8 @@ tusken_death_hunter = Creature:new {
 				{group = "clothing_attachments", chance = 500000},
 				{group = "color_crystals", chance = 500000},
 				{group = "crystals_okay", chance = 500000}
-			},
-			lootChance = 3000000
-		}			
+			}
+		}
 	},
 	weapons = {"tusken_weapons"},
 	conversationTemplate = "",

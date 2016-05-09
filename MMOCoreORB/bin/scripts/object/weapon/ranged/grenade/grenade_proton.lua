@@ -43,7 +43,7 @@
 
 object_weapon_ranged_grenade_grenade_proton = object_weapon_ranged_grenade_shared_grenade_proton:new {
 
-	objectMenuComponent = {"cpp", "ThrowGrenadeMenuComponent"},
+	objectMenuComponent = "ThrowGrenadeMenuComponent",
 
 	playerRaces = { "object/creature/player/bothan_male.iff",
 			"object/creature/player/bothan_female.iff",
@@ -70,7 +70,7 @@ object_weapon_ranged_grenade_grenade_proton = object_weapon_ranged_grenade_share
 	-- HEAVYLIGHTNINGBEAMATTACK, HEAVYPARTICLEBEAMATTACK, HEAVYROCKETLAUNCHERATTACK, HEAVYLAUNCHERATTACK
 	attackType = GRENADEATTACK,
 
-	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, FORCE, LIGHTSABER
+	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, LIGHTSABER
 	damageType = HEAT,
 
 	-- NONE, LIGHT, MEDIUM, HEAVY
@@ -98,7 +98,8 @@ object_weapon_ranged_grenade_grenade_proton = object_weapon_ranged_grenade_share
 
 	useCount = 5,
 
-	combatSpam = "grenade_proton",
+	combatSpam = "throw_proton",
+	animationType = "proton",
 
 	healthAttackCost = 30,
 	actionAttackCost = 75,

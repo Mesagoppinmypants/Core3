@@ -1,7 +1,6 @@
 mutant_bark_mite_hatchling = Creature:new {
 	objectName = "@mob/creature_names:mutant_bark_mite_hatchling",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ mutant_bark_mite_hatchling = Creature:new {
 	ferocity = 1,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bark_mite_hatchling.iff"},
@@ -32,7 +31,7 @@ mutant_bark_mite_hatchling = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"blindattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 ferine_razorfang = Creature:new {
 	objectName = "@mob/creature_names:kima_ferine_razorfang",
 	socialGroup = "kima",
-	pvpFaction = "",
 	faction = "",
 	level = 21,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ ferine_razorfang = Creature:new {
 	ferocity = 8,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kima_hue.iff"},
@@ -33,8 +32,8 @@ ferine_razorfang = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"intimidationattack","intimidationChance=50"}
+		{"blindattack",""},
+		{"intimidationattack",""}
 	}
 }
 

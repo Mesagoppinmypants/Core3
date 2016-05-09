@@ -1,7 +1,6 @@
 teraud_loyalist_cyborg = Creature:new {
 	objectName = "@mob/creature_names:warren_teraud_loyalist_cyborg",
 	socialGroup = "warren_cyborg",
-	pvpFaction = "",
 	faction = "",
 	level = 38,
 	chanceHit = 0.43,
@@ -23,7 +22,7 @@ teraud_loyalist_cyborg = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -40,8 +39,7 @@ teraud_loyalist_cyborg = Creature:new {
 				{group = "clothing_attachments", chance = 500000},
 				{group = "wearables_common", chance = 1500000}
 				
-			},
-			lootChance = 3000000
+			}
 		}	
 	},
 	weapons = {"pirate_weapons_medium"},

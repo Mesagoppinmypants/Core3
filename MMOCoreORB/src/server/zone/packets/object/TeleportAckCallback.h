@@ -10,31 +10,31 @@
 
 
 class TeleportAckCallback : public MessageCallback {
-	uint32 unknown;
+	uint32 movementCounter;
 
 	ObjectControllerMessageCallback* objectControllerMain;
 public:
 	TeleportAckCallback(ObjectControllerMessageCallback* objectControllerCallback) :
-		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()) {
-
-		objectControllerMain = objectControllerCallback;
+		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()),
+		movementCounter(0), objectControllerMain(objectControllerCallback) {
 	}
 
 	void parse(Message* message) {
 		//System::out << message->toStringData() << endl;
-		unknown = message->parseInt();
+		movementCounter = message->parseInt();
 		//missionObjectID = message->parseLong();
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = cast<CreatureObject*>(client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;
 
 		PlayerObject* ghost = player->getPlayerObject();
 
-		ghost->setTeleporting(false);
+		if (ghost != NULL)
+			ghost->setTeleporting(false);
 	}
 };
 

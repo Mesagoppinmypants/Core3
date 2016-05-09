@@ -1,7 +1,6 @@
 gaping_spider_recluse = Creature:new {
 	objectName = "@mob/creature_names:gaping_spider_recluse",
 	socialGroup = "spider",
-	pvpFaction = "",
 	faction = "",
 	level = 44,
 	chanceHit = 0.46,
@@ -23,7 +22,7 @@ gaping_spider_recluse = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gaping_spider_recluse.iff"},

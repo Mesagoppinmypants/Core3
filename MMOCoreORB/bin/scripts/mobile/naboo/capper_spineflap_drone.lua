@@ -1,7 +1,6 @@
 capper_spineflap_drone = Creature:new {
 	objectName = "@mob/creature_names:capper_spineflap_drone",
 	socialGroup = "spineflap",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ capper_spineflap_drone = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/capper_spineflap_hue.iff"},

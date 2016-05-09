@@ -1,7 +1,6 @@
 dwarf_eopie = Creature:new {
 	objectName = "@mob/creature_names:dwarf_eopie",
 	socialGroup = "eopie",
-	pvpFaction = "",
 	faction = "",
 	level = 3,
 	chanceHit = 0.23,
@@ -24,7 +23,7 @@ dwarf_eopie = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dwarf_eopie.iff"},

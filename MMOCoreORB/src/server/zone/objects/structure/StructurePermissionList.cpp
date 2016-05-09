@@ -26,9 +26,8 @@ StructurePermissionList::StructurePermissionList() {
 	addList("VENDOR");
 }
 
-StructurePermissionList::StructurePermissionList(const StructurePermissionList& spl) : Object() {
-	permissionLists = spl.permissionLists;
-	idPermissionLists = spl.idPermissionLists;
+StructurePermissionList::StructurePermissionList(const StructurePermissionList& spl) : Object(), permissionLists(spl.permissionLists),
+		idPermissionLists(spl.idPermissionLists), ownerName(spl.ownerName), ownerID(spl.ownerID), lock() {
 }
 
 bool StructurePermissionList::toBinaryStream(ObjectOutputStream* stream) {
@@ -42,7 +41,7 @@ bool StructurePermissionList::toBinaryStream(ObjectOutputStream* stream) {
 
 int StructurePermissionList::writeObjectMembers(ObjectOutputStream* stream) {
 	String _name;
-	int _offset;
+	int _offset, varCount = 0;
 	uint32 _totalSize;
 
 	_name = "permissionLists";
@@ -52,6 +51,7 @@ int StructurePermissionList::writeObjectMembers(ObjectOutputStream* stream) {
 	TypeInfo<VectorMap<String, SortedVector<String> > >::toBinaryStream(&permissionLists, stream);
 	_totalSize = (uint32) (stream->getOffset() - (_offset + 4));
 	stream->writeInt(_offset, _totalSize);
+	varCount ++;
 
 	_name = "idPermissionLists";
 	_name.toBinaryStream(stream);
@@ -60,6 +60,7 @@ int StructurePermissionList::writeObjectMembers(ObjectOutputStream* stream) {
 	TypeInfo<VectorMap<String, SortedVector<uint64> > >::toBinaryStream(&idPermissionLists, stream);
 	_totalSize = (uint32) (stream->getOffset() - (_offset + 4));
 	stream->writeInt(_offset, _totalSize);
+	varCount ++;
 
 	_name = "ownerName";
 	_name.toBinaryStream(stream);
@@ -68,6 +69,7 @@ int StructurePermissionList::writeObjectMembers(ObjectOutputStream* stream) {
 	TypeInfo<String>::toBinaryStream(&ownerName, stream);
 	_totalSize = (uint32) (stream->getOffset() - (_offset + 4));
 	stream->writeInt(_offset, _totalSize);
+	varCount ++;
 
 	_name = "ownerID";
 	_name.toBinaryStream(stream);
@@ -76,6 +78,7 @@ int StructurePermissionList::writeObjectMembers(ObjectOutputStream* stream) {
 	TypeInfo<uint64>::toBinaryStream(&ownerID, stream);
 	_totalSize = (uint32) (stream->getOffset() - (_offset + 4));
 	stream->writeInt(_offset, _totalSize);
+	varCount ++;
 
 	String emptyName; // making it serialize the same way as Serializable so bas doesnt have to update all the objects
 
@@ -86,8 +89,9 @@ int StructurePermissionList::writeObjectMembers(ObjectOutputStream* stream) {
 	TypeInfo<String>::toBinaryStream(&emptyName, stream);
 	_totalSize = (uint32) (stream->getOffset() - (_offset + 4));
 	stream->writeInt(_offset, _totalSize);
+	varCount ++;
 
-	return 3;
+	return varCount;
 }
 
 bool StructurePermissionList::readObjectMember(ObjectInputStream* stream, const String& name) {
@@ -253,6 +257,7 @@ void StructurePermissionList::revokeAllPermissions() {
 }
 
 void StructurePermissionList::migrateLists(ZoneServer* zoneServer, uint64 ownerObjectID) {
+	Locker locker(&lock);
 
 	ManagedReference<GuildManager*> guildManager = zoneServer->getGuildManager();
 	ManagedReference<PlayerManager*> playerManager = zoneServer->getPlayerManager();

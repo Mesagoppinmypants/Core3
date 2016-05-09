@@ -2,7 +2,6 @@ captain_gilad_pellaeon = Creature:new {
 	objectName = "",
 	customName = "Captain Gilad Pellaeon",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ captain_gilad_pellaeon = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_captain_gilad_pellaeon.iff"},

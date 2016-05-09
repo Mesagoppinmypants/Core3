@@ -1,7 +1,6 @@
 verne_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_verne",
 	socialGroup = "verne",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ verne_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/verne.iff"},

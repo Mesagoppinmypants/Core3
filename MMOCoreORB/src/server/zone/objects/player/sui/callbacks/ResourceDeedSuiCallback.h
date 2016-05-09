@@ -19,7 +19,9 @@ public:
 		nodeName = name;
 	}
 
-	void run(CreatureObject* creature, SuiBox* sui, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* creature, SuiBox* sui, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (!sui->isListBox() || cancelPressed)
 			return;
 
@@ -27,10 +29,13 @@ public:
 
 		ManagedReference<SceneObject*> obj = sui->getUsingObject();
 
-		if (obj == NULL || !obj->isDeedObject())
+		if (obj == NULL)
 			return;
 
 		ResourceDeed* deed = cast<ResourceDeed*>( obj.get());
+
+		if (deed == NULL)
+			return;
 
 		ManagedReference<SceneObject*> inventory = creature->getSlottedObject("inventory");
 
@@ -74,8 +79,12 @@ public:
 
 			//They chose the resource, eat the deed and give them what they want...fuck it.
 			if (spawn != NULL) {
+				Locker clocker(deed, creature);
 				deed->destroyDeed();
+				clocker.release();
+
 				resourceManager->givePlayerResource(creature, nodeName, ResourceManager::RESOURCE_DEED_QUANTITY);
+
 				return;
 			}
 

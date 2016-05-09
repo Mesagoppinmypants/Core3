@@ -1,7 +1,6 @@
 shaedra_valouri = Creature:new {
 	objectName = "@mob/creature_names:corsec_investigator",
 	socialGroup = "corsec",
-	pvpFaction = "corsec",
 	faction = "corsec",
 	level = 15,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ shaedra_valouri = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_corsec_detective_human_female_01.iff"},

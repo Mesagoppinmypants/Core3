@@ -2,7 +2,6 @@ ihatha_hawit = Creature:new {
 	objectName = "@npc_name:rodian_base_female",
 	customName = "Ihatha Hawit",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ ihatha_hawit = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_bestine_rumor12.iff"},

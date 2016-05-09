@@ -1,6 +1,6 @@
 
 #include "server/zone/objects/tangible/pharmaceutical/StimPack.h"
-#include "server/zone/templates/tangible/StimPackTemplate.h"
+#include "templates/tangible/StimPackTemplate.h"
 #include "server/zone/managers/object/ObjectManager.h"
 
 bool StimPackImplementation::isPetStimPack() {
@@ -27,13 +27,19 @@ bool StimPackImplementation::isClassE() {
 }
 StimPack* StimPackImplementation::split(int charges) {
 
-	Locker locker(_this.get());
+	Locker locker(_this.getReferenceUnsafeStaticCast());
 	ObjectManager* objectManager = ObjectManager::instance();
-	ManagedReference<StimPack*> protoclone = cast<StimPack*>( objectManager->cloneObject(_this.get()));
+	ManagedReference<StimPack*> protoclone = cast<StimPack*>( objectManager->cloneObject(_this.getReferenceUnsafeStaticCast()));
 	if (protoclone != NULL) {
+		Locker cloneLocker(protoclone);
+
+		if(protoclone->hasAntiDecayKit()){
+			protoclone->removeAntiDecayKit();
+		}
+
 		protoclone->setParent(NULL);
 		protoclone->setUseCount(charges);
-		setUseCount(getUseCount() - charges);
+		decreaseUseCount(charges);
 		return protoclone;
 	}
 	return NULL;

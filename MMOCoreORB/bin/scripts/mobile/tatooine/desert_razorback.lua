@@ -1,7 +1,6 @@
 desert_razorback = Creature:new {
 	objectName = "@mob/creature_names:desert_razorback",
 	socialGroup = "boar",
-	pvpFaction = "",
 	faction = "",
 	level = 24,
 	chanceHit = 0.35,
@@ -23,17 +22,18 @@ desert_razorback = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/zucca_boar_hue.iff"},
-	controlDeviceTemplate = "object/intangible/pet/zucca_boar_hue.iff",
+	controlDeviceTemplate = "object/intangible/pet/pet_control.iff", -- zucca_boar_hue.iff bugged in client
 	scale = 1.15,
 	lootGroups = {},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"",""},
+		{"stunattack",""}
 	}
 }
 

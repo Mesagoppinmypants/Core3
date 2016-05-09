@@ -1,7 +1,6 @@
 giant_dune_kimogila = Creature:new {
 	objectName = "@mob/creature_names:giant_dune_kimogila",
 	socialGroup = "kimogila",
-	pvpFaction = "",
 	faction = "",
 	level = 153,
 	chanceHit = 8.5,
@@ -23,7 +22,7 @@ giant_dune_kimogila = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/giant_dune_kimogila.iff"},
@@ -31,10 +30,10 @@ giant_dune_kimogila = Creature:new {
 	lootGroups = {
 	 {
 	        groups = {
-				{group = "giant_dune_kimo_common", chance = 2000000},
-				{group = "kimogila_common", chance = 8000000},
+				{group = "giant_dune_kimo_common", chance = 3500000},
+				{group = "kimogila_common", chance = 6500000},
 			},
-			lootChance = 6500000
+			lootChance = 4060000
 		}
 	},
 	weapons = {},

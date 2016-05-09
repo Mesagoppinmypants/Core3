@@ -1,7 +1,6 @@
 gungan_fambaa = Creature:new {
 	objectName = "@mob/creature_names:gungan_fambaa",
 	socialGroup = "gungan",
-	pvpFaction = "",
 	faction = "gungan",
 	level = 42,
 	chanceHit = 0.44,
@@ -24,17 +23,24 @@ gungan_fambaa = Creature:new {
 	ferocity = 3,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/fambaa_hue.iff"},
 	scale = 1.2,
-	lootGroups = {},
+	lootGroups = {
+	 {
+	        groups = {
+				{group = "fambaa_common", chance = 10000000}
+			},
+			lootChance = 1840000
+		}
+	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
-		{"knockdownattack","knockdownChance=50"}
+		{"knockdownattack",""},
+		{"intimidationattack",""}
 	}
 }
 

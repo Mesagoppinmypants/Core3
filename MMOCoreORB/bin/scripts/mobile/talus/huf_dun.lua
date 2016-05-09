@@ -1,7 +1,6 @@
 huf_dun = Creature:new {
 	objectName = "@mob/creature_names:huf_dun",
 	socialGroup = "huf_dun",
-	pvpFaction = "",
 	faction = "",
 	level = 21,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ huf_dun = Creature:new {
 	ferocity = 4,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/huf_dun.iff"},
@@ -31,8 +30,8 @@ huf_dun = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"stunattack","stunChance=50"}
+		{"blindattack",""},
+		{"stunattack",""}
 	}
 }
 

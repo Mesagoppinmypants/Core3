@@ -2,7 +2,6 @@ drognuz = Creature:new {
 	objectName = "",
 	customName = "Drognuz",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 14,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ drognuz = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gamorrean.iff"},
@@ -36,9 +35,8 @@ drognuz = Creature:new {
 				{group = "melee_weapons", chance = 2500000},
 				{group = "tailor_components", chance = 1000000},
 				{group = "loot_kit_parts", chance = 1000000}
-			},
-			lootChance = 2200000
-		}				
+			}
+		}
 	},
 	weapons = {"gamorrean_weapons"},
 	conversationTemplate = "",

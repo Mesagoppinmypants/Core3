@@ -1,7 +1,8 @@
 proficient_gondula_worker = Creature:new {
 	objectName = "@mob/creature_names:proficient_gondula_worker",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "gondula_tribe",
-	pvpFaction = "gondula_tribe",
 	faction = "gondula_tribe",
 	level = 35,
 	chanceHit = 0.41,
@@ -23,7 +24,7 @@ proficient_gondula_worker = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -36,7 +37,14 @@ proficient_gondula_worker = Creature:new {
 		"object/mobile/dressed_ewok_f_09.iff",
 		"object/mobile/dressed_ewok_f_12.iff",
 		"object/mobile/dressed_ewok_m_01.iff"},
-	lootGroups = {},
+	lootGroups = {
+		{
+			groups = {
+				{group = "ewok", chance = 10000000}
+			},
+			lootChance = 1700000
+		}
+	},
 	weapons = {"ewok_weapons"},
 	conversationTemplate = "",
 	attacks = merge(riflemanmaster,brawlermaster)

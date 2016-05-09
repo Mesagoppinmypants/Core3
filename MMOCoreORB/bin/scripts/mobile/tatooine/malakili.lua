@@ -1,7 +1,6 @@
 malakili = Creature:new {
 	objectName = "@mob/creature_names:malakili",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ malakili = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/malakili.iff"},

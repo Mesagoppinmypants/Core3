@@ -6,17 +6,16 @@
  */
 
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/DroidObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/DroidObject.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/tangible/components/droid/DroidTrapModuleDataComponent.h"
 #include "server/zone/objects/player/PlayerObject.h"
 #include "TrapMenuComponent.h"
 #include "server/zone/objects/scene/components/ObjectMenuComponent.h"
 #include "server/zone/packets/object/ObjectMenuResponse.h"
-#include "server/zone/templates/tangible/TrapTemplate.h"
 #include "server/zone/managers/objectcontroller/ObjectController.h"
 
-void TrapMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) {
+void TrapMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 
 	if (!sceneObject->isTangibleObject())
 		return;
@@ -46,7 +45,7 @@ void TrapMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectM
 	}
 }
 
-int TrapMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) {
+int TrapMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) const {
 
 	if(!sceneObject->isASubChildOf(player))
 		return 0;
@@ -54,20 +53,8 @@ int TrapMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, Creature
 	if (!sceneObject->isTangibleObject())
 		return 0;
 
-	if (!sceneObject->isASubChildOf(player))
-			return 0;
-
 	if(selectedID == 20) {
-		ManagedReference<ZoneServer*> server = player->getZoneServer();
-		if(server == NULL)
-			return 0;
-
-		String args = String::valueOf(sceneObject->getObjectID());
-		String action = "/throwtrap ";
-		String command = action + args;
-
-
-		player->sendExecuteConsoleCommand(command);
+		player->sendCommand(STRING_HASHCODE("throwtrap"), String::valueOf(sceneObject->getObjectID()), player->getTargetID());
 
 		return 1;
 	}

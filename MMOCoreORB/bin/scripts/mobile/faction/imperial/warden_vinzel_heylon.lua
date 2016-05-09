@@ -2,7 +2,6 @@ warden_vinzel_heylon = Creature:new {
 	objectName = "",
 	customName = "Warden Vinzel Heylon",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 120,
 	chanceHit = 4.000000,
@@ -24,7 +23,7 @@ warden_vinzel_heylon = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_general_m.iff"},
@@ -40,12 +39,13 @@ warden_vinzel_heylon = Creature:new {
 				{group = "clothing_attachments", chance = 350000},
 				{group = "armor_attachments", chance = 350000},
 				{group = "wearables_all", chance = 1000000}
-			},
-			lootChance = 4800000
+			}
 		}
 	},
 	weapons = {"imperial_weapons_heavy"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/military",
+	personalityStf = "@hireling/hireling_military",			
 	attacks = merge(riflemanmaster,carbineermaster,brawlermaster)
 }
 

@@ -1,7 +1,6 @@
 kirkin_human_thug = Creature:new {
 	objectName = "@mob/creature_names:thug",
 	socialGroup = "thug",
-	pvpFaction = "thug",
 	faction = "thug",
 	level = 3,
 	chanceHit = 0.23,
@@ -23,7 +22,7 @@ kirkin_human_thug = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 	templates = {
 		"object/mobile/dressed_criminal_thug_human_male_01.iff",

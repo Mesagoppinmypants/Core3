@@ -1,7 +1,6 @@
 giant_worrt = Creature:new {
 	objectName = "@mob/creature_names:giant_worrt",
 	socialGroup = "worrt",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.3,
@@ -23,17 +22,17 @@ giant_worrt = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/giant_worrt.iff"},
 	controlDeviceTemplate = "object/intangible/pet/worrt_hue.iff",
-	scale = 4,
+	scale = 6.5,
 	lootGroups = {},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

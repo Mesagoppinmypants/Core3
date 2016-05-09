@@ -43,7 +43,7 @@
 
 object_weapon_ranged_grenade_grenade_thermal_detonator = object_weapon_ranged_grenade_shared_grenade_thermal_detonator:new {
 
-	objectMenuComponent = {"cpp", "ThrowGrenadeMenuComponent"},
+	objectMenuComponent = "ThrowGrenadeMenuComponent",
 
 	playerRaces = { "object/creature/player/bothan_male.iff",
 			"object/creature/player/bothan_female.iff",
@@ -70,7 +70,7 @@ object_weapon_ranged_grenade_grenade_thermal_detonator = object_weapon_ranged_gr
 	-- HEAVYLIGHTNINGBEAMATTACK, HEAVYPARTICLEBEAMATTACK, HEAVYROCKETLAUNCHERATTACK, HEAVYLAUNCHERATTACK
 	attackType = GRENADEATTACK,
 
-	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, FORCE, LIGHTSABER
+	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, LIGHTSABER
 	damageType = BLAST,
 
 	-- NONE, LIGHT, MEDIUM, HEAVY
@@ -98,7 +98,8 @@ object_weapon_ranged_grenade_grenade_thermal_detonator = object_weapon_ranged_gr
 
 	useCount = 5,
 
-	combatSpam = "grenade_thermal",
+	combatSpam = "throw_thermal_detonator",
+	animationType = "thermal_detonator",
 
 	healthAttackCost = 75,
 	actionAttackCost = 75,

@@ -1,7 +1,6 @@
 corellian_butterfly = Creature:new {
 	objectName = "@mob/creature_names:corellian_butterfly",
 	socialGroup = "butterfly",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,7 +22,7 @@ corellian_butterfly = Creature:new {
 	ferocity = 6,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/corellian_butterfly.iff"},

@@ -1,7 +1,8 @@
 imperial_recruiter = Creature:new {
 	objectName = "@mob/creature_names:imperial_recruiter",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 30,
 	chanceHit = 0.390000,
@@ -38,7 +39,7 @@ imperial_recruiter = Creature:new {
 	attacks = {},
 	conversationTemplate = "imperialRecruiterConvoTemplate",
 	containerComponentTemplate = "FactionRecruiterContainerComponent",
-	optionsBitmask = 264
+	optionsBitmask = INVULNERABLE + CONVERSABLE
 }
 
 CreatureTemplates:addCreatureTemplate(imperial_recruiter, "imperial_recruiter")

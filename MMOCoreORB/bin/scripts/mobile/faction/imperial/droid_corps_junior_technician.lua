@@ -1,7 +1,8 @@
 droid_corps_junior_technician = Creature:new {
 	objectName = "@mob/creature_names:imperial_probot_handler",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +24,7 @@ droid_corps_junior_technician = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_brigade_technician_human_male_01.iff"},
@@ -39,12 +40,13 @@ droid_corps_junior_technician = Creature:new {
 				{group = "clothing_attachments", chance = 325000},
 				{group = "armor_attachments", chance = 325000},
 				{group = "wearables_common", chance = 1000000}
-			},
-			lootChance = 2800000
+			}
 		}
 	},
 	weapons = {"imperial_weapons_light"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/military",
+	personalityStf = "@hireling/hireling_military",
 	attacks = merge(brawlernovice,marksmannovice)
 }
 

@@ -1,7 +1,6 @@
 arachne_widow = Creature:new {
 	objectName = "@mob/creature_names:arachne_widow",
 	socialGroup = "arachne",
-	pvpFaction = "",
 	faction = "",
 	level = 58,
 	chanceHit = 0.53,
@@ -23,7 +22,7 @@ arachne_widow = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/angler_hue.iff"},
@@ -33,8 +32,8 @@ arachne_widow = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"strongpoison",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"strongpoison",""}
 	}
 }
 

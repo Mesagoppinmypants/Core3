@@ -9,9 +9,9 @@
 #include "server/zone/Zone.h"
 #include "server/zone/managers/creature/CreatureManager.h"
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/creature/junkdealer/JunkdealerCreature.h"
-#include "server/conf/ConfigManager.h"
+#include "conf/ConfigManager.h"
 #include "server/zone/objects/area/areashapes/CircularAreaShape.h"
 #include "server/zone/objects/area/areashapes/RectangularAreaShape.h"
 #include "server/zone/objects/area/areashapes/RingAreaShape.h"
@@ -30,6 +30,8 @@ void SpawnAreaMap::loadMap(Zone* z) {
 		LuaObject obj = lua->getGlobalObject(planetName + "_regions");
 
 		if (obj.isValidTable()) {
+			info("loading spawn areas...", true);
+
 			lua_State* s = obj.getLuaState();
 
 			for (int i = 1; i <= obj.getTableSize(); ++i) {
@@ -48,6 +50,8 @@ void SpawnAreaMap::loadMap(Zone* z) {
 
 		for (int i = 0; i < size(); ++i) {
 			SpawnArea* area = get(i);
+
+			Locker locker(area);
 
 			for (int j = 0; j < noSpawnAreas.size(); ++j) {
 				SpawnArea* notHere = noSpawnAreas.get(j);
@@ -122,11 +126,16 @@ void SpawnAreaMap::loadStaticSpawns() {
 			ManagedReference<CreatureObject*> creatureObject = creatureManager->spawnCreature(name.hashCode(), 0, x, z, y, parentID);
 
 			if (creatureObject != NULL) {
+				Locker objLocker(creatureObject);
+
 				creatureObject->setDirection(Math::deg2rad(heading));
-				if (creatureObject->isJunkDealer()){
-					cast<JunkdealerCreature*>(creatureObject.get())->setJunkDealerConversationType(junkDealerConversationType);
-					cast<JunkdealerCreature*>(creatureObject.get())->setJunkDealerBuyerType(junkDealerBuyingType);
+				
+				if (creatureObject->isJunkDealer()) {
+					JunkdealerCreature* jdc = creatureObject.castTo<JunkdealerCreature*>();
+					jdc->setJunkDealerConversationType(junkDealerConversationType);
+					jdc->setJunkDealerBuyerType(junkDealerBuyingType);
 				}
+
 				if (!moodString.isEmpty()) {
 					creatureObject->setMoodString(moodString);
 
@@ -146,11 +155,6 @@ void SpawnAreaMap::loadStaticSpawns() {
 					if (!aiString.isEmpty()) {
 						ai->activateLoad(aiString);
 					}
-				}
-
-				if (name.contains("trainer_")) {
-					Vector3 coords(creatureObject.get()->getWorldPositionX(), creatureObject.get()->getWorldPositionY(), 0);
-					trainerObjects.add(coords);
 				}
 			} else {
 				StringBuffer msg;
@@ -180,7 +184,6 @@ void SpawnAreaMap::readAreaObject(LuaObject& areaObj) {
 	float x = areaObj.getFloatAt(2);
 	float y = areaObj.getFloatAt(3);
 	int tier = areaObj.getIntAt(5);
-	int constant = areaObj.getIntAt(6);
 
 	if (tier == UNDEFINEDAREA)
 		return;
@@ -213,34 +216,40 @@ void SpawnAreaMap::readAreaObject(LuaObject& areaObj) {
 	if (radius == 0 && width == 0 && height == 0 && innerRadius == 0 && outerRadius == 0)
 		return;
 
-	uint32 crc = String("object/spawn_area.iff").hashCode();
+	static const uint32 crc = STRING_HASHCODE("object/spawn_area.iff");
 
 	ManagedReference<SpawnArea*> area = dynamic_cast<SpawnArea*>(ObjectManager::instance()->createObject(crc, 0, "spawnareas"));
 	if (area == NULL)
 		return;
 
+	Locker objLocker(area);
+
 	StringId nameID(zone->getZoneName() + "_region_names", name);
 
-	area->setObjectName(nameID);
+	area->setObjectName(nameID, false);
 
 	if (height > 0 && width > 0) {
 		ManagedReference<RectangularAreaShape*> rectangularAreaShape = new RectangularAreaShape();
+		Locker shapeLocker(rectangularAreaShape);
 		rectangularAreaShape->setAreaCenter(x, y);
 		rectangularAreaShape->setDimensions(height, width);
 		area->setAreaShape(rectangularAreaShape);
 	} else if (radius > 0) {
 		ManagedReference<CircularAreaShape*> circularAreaShape = new CircularAreaShape();
+		Locker shapeLocker(circularAreaShape);
 		circularAreaShape->setAreaCenter(x, y);
 		circularAreaShape->setRadius(radius);
 		area->setAreaShape(circularAreaShape);
 	} else if (innerRadius > 0 && outerRadius > 0) {
 		ManagedReference<RingAreaShape*> ringAreaShape = new RingAreaShape();
+		Locker shapeLocker(ringAreaShape);
 		ringAreaShape->setAreaCenter(x, y);
 		ringAreaShape->setInnerRadius(innerRadius);
 		ringAreaShape->setOuterRadius(outerRadius);
 		area->setAreaShape(ringAreaShape);
 	} else {
 		ManagedReference<CircularAreaShape*> circularAreaShape = new CircularAreaShape();
+		Locker shapeLocker(circularAreaShape);
 		circularAreaShape->setAreaCenter(x, y);
 		circularAreaShape->setRadius(zone->getBoundingRadius());
 		area->setAreaShape(circularAreaShape);
@@ -248,11 +257,21 @@ void SpawnAreaMap::readAreaObject(LuaObject& areaObj) {
 
 	area->setTier(tier);
 
-	area->setSpawnConstant(constant);
-
 	if (tier & SPAWNAREA) {
-		area->setTemplate(areaObj.getStringAt(7).hashCode());
-		area->setMaxSpawnLimit(areaObj.getIntAt(8));
+		area->setMaxSpawnLimit(areaObj.getIntAt(7));
+		LuaObject spawnGroups = areaObj.getObjectAt(6);
+
+		if (spawnGroups.isValidTable()) {
+			Vector<uint32> groups;
+
+			for (int i = 1; i <= spawnGroups.getTableSize(); i++) {
+				groups.add(spawnGroups.getStringAt(i).hashCode());
+			}
+
+			area->buildSpawnList(&groups);
+		}
+
+		spawnGroups.pop();
 	}
 
 	if ((radius != -1) && !(tier & WORLDSPAWNAREA)) {
@@ -278,9 +297,4 @@ void SpawnAreaMap::readAreaObject(LuaObject& areaObj) {
 		area->setNoBuildArea(true);
 	}
 
-}
-
-Vector3 SpawnAreaMap::getRandomJediTrainer() {
-	uint32 size = trainerObjects.size();
-	return trainerObjects.get(System::random(size - 1));
 }

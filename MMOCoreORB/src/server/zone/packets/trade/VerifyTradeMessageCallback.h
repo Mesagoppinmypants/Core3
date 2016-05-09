@@ -8,7 +8,7 @@
 #ifndef VERIFYTRADEMESSAGECALLBACK_H_
 #define VERIFYTRADEMESSAGECALLBACK_H_
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 #include "server/zone/managers/player/PlayerManager.h"
 
 class VerifyTradeMessageCallback : public MessageCallback {
@@ -25,7 +25,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = static_cast<CreatureObject*>(client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;

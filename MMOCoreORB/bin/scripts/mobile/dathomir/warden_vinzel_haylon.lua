@@ -2,7 +2,6 @@ warden_vinzel_haylon = Creature:new {
 	objectName = "",
 	customName = "Warden Vinzel Hayon",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ warden_vinzel_haylon = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_vinzel_haylon.iff"},

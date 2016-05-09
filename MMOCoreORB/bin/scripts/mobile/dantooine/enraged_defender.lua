@@ -1,7 +1,6 @@
 enraged_defender = Creature:new {
 	objectName = "@mob/creature_names:piket_enraged_defender",
 	socialGroup = "piket",
-	pvpFaction = "",
 	faction = "",
 	level = 49,
 	chanceHit = 0.47,
@@ -23,7 +22,7 @@ enraged_defender = Creature:new {
 	ferocity = 9,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/piket_hue.iff"},
@@ -33,8 +32,8 @@ enraged_defender = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""},
+		{"blindattack",""}
 	}
 }
 

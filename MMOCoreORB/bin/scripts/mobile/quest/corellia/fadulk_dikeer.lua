@@ -1,7 +1,6 @@
 fadulk_dikeer = Creature:new {
 	objectName = "",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 3,
 	chanceHit = 0.23,
@@ -23,7 +22,7 @@ fadulk_dikeer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = { "object/mobile/dressed_hutt_informant_quest.iff" },

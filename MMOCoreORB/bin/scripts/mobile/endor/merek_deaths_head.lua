@@ -1,7 +1,6 @@
 merek_deaths_head = Creature:new {
 	objectName = "@mob/creature_names:merek_deaths_head",
 	socialGroup = "merek",
-	pvpFaction = "",
 	faction = "",
 	level = 56,
 	chanceHit = 0.55,
@@ -23,7 +22,7 @@ merek_deaths_head = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/merek_hue.iff"},
@@ -33,8 +32,8 @@ merek_deaths_head = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"strongdisease",""},
-		{"strongpoison",""}
+		{"strongpoison",""},
+		{"strongdisease",""}
 	}
 }
 

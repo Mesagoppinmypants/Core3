@@ -2,7 +2,6 @@ gilad_pellaeon = Creature:new {
 	objectName = "",
 	customName = "Captain Gilad Pellaeon",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ gilad_pellaeon = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_captain_gilad_pellaeon.iff"},

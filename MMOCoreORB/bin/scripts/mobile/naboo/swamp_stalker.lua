@@ -1,7 +1,6 @@
 swamp_stalker = Creature:new {
 	objectName = "@mob/creature_names:swamp_stalker",
 	socialGroup = "tusk_cat",
-	pvpFaction = "",
 	faction = "",
 	level = 32,
 	chanceHit = 0.39,
@@ -23,7 +22,7 @@ swamp_stalker = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/male_swamp_tusk_cat.iff", "object/mobile/female_swamp_tusk_cat.iff"},
@@ -33,8 +32,8 @@ swamp_stalker = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"stunattack","stunChance=50"}
+		{"blindattack",""},
+		{"stunattack",""}
 	}
 }
 

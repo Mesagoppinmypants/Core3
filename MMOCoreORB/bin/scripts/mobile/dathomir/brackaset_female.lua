@@ -1,7 +1,6 @@
 brackaset_female = Creature:new {
 	objectName = "@mob/creature_names:brackaset_female",
 	socialGroup = "brackaset",
-	pvpFaction = "",
 	faction = "",
 	level = 29,
 	chanceHit = 0.37,
@@ -24,7 +23,7 @@ brackaset_female = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/brackaset_hue.iff"},
@@ -35,13 +34,13 @@ brackaset_female = Creature:new {
 	        groups = {
 				{group = "brackaset_common", chance = 10000000}
 			},
-			lootChance = 2300000
+			lootChance = 1580000
 		}
 	   },
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

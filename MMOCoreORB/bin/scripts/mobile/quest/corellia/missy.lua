@@ -1,7 +1,6 @@
 missy = Creature:new {
 	objectName = "@mob/creature_names:sand_panther_cub",
 	socialGroup = "panther",
-	pvpFaction = "",
 	faction = "",
 	level = 1,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ missy = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/corellian_sand_panther_cub.iff"},
@@ -31,7 +30,7 @@ missy = Creature:new {
 	weapons = {},
 	conversationTemplate = "diktatTargetConvo",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

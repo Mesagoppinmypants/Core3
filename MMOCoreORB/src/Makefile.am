@@ -40,7 +40,7 @@
 # this exception also makes it possible to release a modified version 
 # which carries forward this exception.
 
-AM_CXXFLAGS= $(UNITTEST_DIRECTIVES) -ggdb -Wall -Wextra -Wno-unused -Wno-sign-compare -Wno-multichar -DDEFAULT_DYNAMIC_CAST -Wno-unused-parameter -Wno-overloaded-virtual -Wno-missing-declarations
+AM_CXXFLAGS= $(UNITTEST_DIRECTIVES) -ggdb -Wall -Wextra -Wno-unused -Wno-sign-compare -Wno-multichar -DDEFAULT_DYNAMIC_CAST -Wno-unused-parameter -Wno-overloaded-virtual -Wno-missing-declarations -Werror -std=c++11 
 
 ENGINE3_PATH=../../../../MMOEngine
 ENGINE3_MOCK_PATH=../../../utils
@@ -56,7 +56,7 @@ AUTOGEN_PATH=../../../src/autogen
 
 INCLUDES =  $(SYSTEM_INCLUDES) \
 	    -I$(USER_INCLUDES_PATH) -I$(USER_INCLUDES_PATH)/mysql \
-	    -I$(ENGINE3_PATH)/include -I$(ENGINE3_PATH)/src -I$(ENGINE3_MOCK_PATH) -I/usr/include/lua5.1 -I/usr/include/mysql \
+            -I$(ENGINE3_PATH)/include -I$(ENGINE3_PATH)/src -I$(ENGINE3_MOCK_PATH) -I/usr/include/lua5.1 -I/usr/include/mysql \
 	    -I/usr/local/BerkeleyDB.5.0/include \
 	    -I/usr/include/db5.0 \
 	    -I$(GTEST_PATH)/include \
@@ -78,6 +78,10 @@ LIBS =	$(SYSTEM_LIBS)  \
 
 bin_PROGRAMS = core3 #odb3
 
+noinst_LIBRARIES = libcore3templates.a libcore3terrain.a
+
+core3_LDADD = libcore3templates.a libcore3terrain.a
+
 #engine/engine.h.gch:
 #	$(CXX) $(INCLUDES) $(ENGINE3_PATH)/src/engine/engine.h
 
@@ -88,31 +92,51 @@ core3_TESTS = 	server/zone/objects/area/areashapes/tests/CircularAreaShapeTest.c
 			  	server/zone/managers/director/tests/BasicScreenPlayTest.cpp \
 			  	server/zone/managers/creature/tests/LuaMobileTest.cpp \
 			  	server/zone/managers/jedi/tests/JediManagerTest.cpp \
-			  	server/zone/managers/terrain/tests/TerrainManagerTest.cpp \
+			  	terrain/manager/tests/TerrainManagerTest.cpp \
 			  	server/zone/objects/creature/ai/bt/tests/BehaviorTest.cpp \
 			  	server/zone/objects/area/areashapes/tests/RectangularAreaShapeTest.cpp \
 			  	server/zone/objects/area/areashapes/tests/RingAreaShapeTest.cpp \
 			  	server/zone/tests/DeadlockTestBase.cpp \
-			  	server/zone/objects/terrain/tests/BasicTerrainTest.cpp \
+			  	terrain/tests/BasicTerrainTest.cpp \
 			  	server/zone/tests/ZoneTest.cpp \
 			  	server/zone/managers/objectcontroller/command/tests/CommandLuaTest.cpp
 
-core3_IDLS =	autogen/server/zone/objects/tangible/components/droid/DroidPersonalityObserver.cpp \
+core3_IDLS =	autogen/server/zone/managers/gcw/GCWBaseShutdownObserver.cpp \
+				autogen/server/zone/objects/creature/buffs/ChannelForceBuff.cpp \
+				autogen/server/zone/objects/tangible/eventperk/ShuttleBeacon.cpp \
+				autogen/server/utils/LambdaObserver.cpp \
+				autogen/server/zone/objects/tangible/misc/FsCraftingComponentObject.cpp \
+				autogen/server/zone/objects/tangible/misc/CustomIngredient.cpp \
+				autogen/server/zone/objects/tangible/misc/PlantObject.cpp \
+				autogen/server/zone/objects/tangible/misc/FsPuzzlePack.cpp \
+				autogen/server/zone/objects/tangible/eventperk/JukeboxObserver.cpp \
+				autogen/server/zone/objects/tangible/eventperk/Jukebox.cpp \
+				autogen/server/zone/objects/tangible/eventperk/FlagGame.cpp \
+				autogen/server/zone/objects/tangible/eventperk/LotteryDroid.cpp \
+				autogen/server/zone/objects/tangible/eventperk/ScavengerChest.cpp \
+				autogen/server/zone/objects/player/sessions/LootLotterySession.cpp \
+				autogen/server/zone/objects/intangible/TheaterObject.cpp \
+				autogen/server/zone/objects/building/PoiBuilding.cpp \
+				autogen/server/zone/objects/creature/conversation/PetTrainingConversationObserver.cpp \
+				autogen/server/zone/objects/tangible/components/droid/DroidPersonalityObserver.cpp \
+				autogen/server/zone/objects/player/sessions/DroidMaintenanceSession.cpp \
 				autogen/server/zone/objects/tangible/components/droid/DroidHarvestObserver.cpp \
 				autogen/server/zone/objects/tangible/components/droid/DroidPlaybackObserver.cpp \
 				autogen/server/zone/objects/tangible/tool/antidecay/AntiDecayKit.cpp \
 				autogen/server/zone/objects/tangible/deed/eventperk/EventPerkDeed.cpp \
 				autogen/server/zone/managers/director/QuestStatus.cpp \
+				autogen/server/zone/managers/director/QuestVectorMap.cpp \
 				autogen/server/zone/objects/tangible/LairObject.cpp \
 				autogen/server/zone/managers/creature/DynamicSpawnObserver.cpp \
 				autogen/server/zone/managers/creature/SpawnObserver.cpp \
+				autogen/server/zone/objects/tangible/deed/vetharvester/VetHarvesterDeed.cpp \
 				autogen/server/zone/objects/player/sessions/VeteranRewardSession.cpp \
 				autogen/server/zone/objects/player/sessions/ProposeUnitySession.cpp \
 				autogen/server/zone/managers/mission/DestroyMissionLairObserver.cpp \
 				autogen/server/zone/objects/tangible/pharmaceutical/VitalityPack.cpp \
 				autogen/server/zone/objects/creature/buffs/GallopBuff.cpp \
 				autogen/server/zone/managers/creature/PetManager.cpp \
-				autogen/server/zone/objects/creature/DroidObject.cpp \
+				autogen/server/zone/objects/creature/ai/DroidObject.cpp \
 				autogen/server/zone/objects/tangible/deed/droid/DroidDeed.cpp \
 				autogen/server/zone/objects/intangible/PetControlObserver.cpp \
 				autogen/server/zone/objects/intangible/PetControlDevice.cpp \
@@ -151,7 +175,6 @@ core3_IDLS =	autogen/server/zone/objects/tangible/components/droid/DroidPersonal
 				autogen/server/zone/objects/scene/SceneObject.cpp \
 				autogen/server/zone/objects/area/ActiveArea.cpp \
 				autogen/server/zone/objects/area/BadgeActiveArea.cpp \
-				autogen/server/zone/objects/area/GarageArea.cpp \
 				autogen/server/zone/objects/area/CampSiteActiveArea.cpp \
 				autogen/server/zone/objects/area/MissionSpawnActiveArea.cpp \
 				autogen/server/zone/objects/area/MissionReconActiveArea.cpp \
@@ -178,9 +201,9 @@ core3_IDLS =	autogen/server/zone/objects/tangible/components/droid/DroidPersonal
 				autogen/server/zone/objects/creature/CreatureObject.cpp \
 				autogen/server/zone/objects/creature/junkdealer/JunkdealerCreature.cpp \
 				autogen/server/zone/objects/creature/VehicleObject.cpp \
-				autogen/server/zone/objects/creature/NonPlayerCreatureObject.cpp \
-				autogen/server/zone/objects/creature/Creature.cpp \
-				autogen/server/zone/objects/creature/AiAgent.cpp \
+				autogen/server/zone/objects/creature/ai/NonPlayerCreatureObject.cpp \
+				autogen/server/zone/objects/creature/ai/Creature.cpp \
+				autogen/server/zone/objects/creature/ai/AiAgent.cpp \
 				autogen/server/zone/objects/creature/buffs/Buff.cpp \
 				autogen/server/zone/objects/creature/buffs/DelayedBuff.cpp \
 				autogen/server/zone/objects/creature/buffs/SpiceBuff.cpp \
@@ -190,8 +213,14 @@ core3_IDLS =	autogen/server/zone/objects/tangible/components/droid/DroidPersonal
 				autogen/server/zone/objects/creature/buffs/PerformanceBuff.cpp \
 				autogen/server/zone/objects/creature/buffs/SingleUseBuff.cpp \
 				autogen/server/zone/objects/creature/buffs/SingleUseBuffObserver.cpp \
+				autogen/server/zone/objects/creature/buffs/SquadLeaderBuff.cpp \
+				autogen/server/zone/objects/creature/buffs/SquadLeaderBuffObserver.cpp \
+				autogen/server/zone/objects/creature/buffs/PrivateBuff.cpp \
+				autogen/server/zone/objects/creature/buffs/PrivateSkillMultiplierBuff.cpp \
+				autogen/server/zone/objects/creature/buffs/PlayerVehicleBuff.cpp \
 				autogen/server/zone/objects/player/PlayerObject.cpp \
 				autogen/server/zone/objects/player/sui/SuiBox.cpp \
+				autogen/server/zone/objects/player/sui/SuiBoxPage.cpp \
 				autogen/server/zone/objects/player/sui/keypadbox/SuiKeypadBox.cpp \
 				autogen/server/zone/objects/player/sui/fireworkdelaybox/SuiFireworkDelayBox.cpp \
 				autogen/server/zone/objects/player/sui/messagebox/SuiMessageBox.cpp \
@@ -270,6 +299,7 @@ core3_IDLS =	autogen/server/zone/objects/tangible/components/droid/DroidPersonal
 				autogen/server/zone/managers/city/CityManager.cpp \
 				autogen/server/zone/managers/planet/PlanetManager.cpp \
 				autogen/server/zone/managers/radial/RadialManager.cpp \
+				autogen/server/zone/managers/reaction/ReactionManager.cpp \
 				autogen/server/zone/managers/resource/ResourceManager.cpp \
 				autogen/server/zone/managers/resource/InterplanetarySurvey.cpp \
 				autogen/server/zone/managers/creature/CreatureManager.cpp \
@@ -335,6 +365,8 @@ core3_IDLS =	autogen/server/zone/objects/tangible/components/droid/DroidPersonal
 				
 core3_SOURCES =	$(core3_IDLS) \
 		$(core3_TESTS) \
+		server/zone/objects/player/sui/LuaSuiPageData.cpp \
+		server/zone/objects/player/sui/SuiPageData.cpp \
 		server/zone/managers/vendor/VendorManager.cpp \
 		server/zone/managers/jedi/JediManager.cpp \
 		server/zone/managers/ship/ShipManager.cpp \
@@ -350,24 +382,30 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/managers/skill/SkillManager.cpp \
 		server/zone/managers/skill/SkillModManager.cpp \
 		server/login/account/AccountImplementation.cpp \
+		server/login/account/GalaxyAccountInfo.cpp \
+		server/login/account/GalaxyAccountInfoMap.cpp \
 		server/zone/objects/structure/events/StructureMaintenanceTask.cpp \
 		server/zone/objects/tangible/components/ElevatorMenuComponent.cpp \
 		server/zone/objects/tangible/components/ElevatorUpMenuComponent.cpp \
 		server/zone/objects/tangible/components/ElevatorDownMenuComponent.cpp \
+		server/zone/objects/tangible/misc/CustomIngredientImplementation.cpp \
+		server/zone/objects/tangible/misc/FsCraftingComponentObjectImplementation.cpp \
 		server/zone/managers/player/PermissionLevelList.cpp \
 		server/zone/objects/creature/components/TrainerMenuComponent.cpp \
 		server/zone/objects/creature/components/SarlaccMenuComponent.cpp \
 		server/zone/objects/creature/components/PetMenuComponent.cpp \
 		server/zone/objects/creature/components/FactionRecruiterContainerComponent.cpp \
-		server/zone/objects/creature/variables/CreatureTemplateReference.cpp \
+		server/zone/objects/creature/ai/variables/CreatureTemplateReference.cpp \
 		server/zone/objects/player/sessions/ImageDesignPositionObserverImplementation.cpp \
 		server/zone/objects/building/components/CityHallZoneComponent.cpp \
 		server/zone/objects/building/components/DestructibleBuildingDataComponent.cpp \
 		server/zone/objects/structure/components/StructureZoneComponent.cpp \
+		server/zone/objects/structure/components/GarageZoneComponent.cpp \
 		server/zone/objects/tangible/components/FireHeavyWeaponMenuComponent.cpp \
 		server/zone/objects/tangible/components/SurveyDroidMenuComponent.cpp \
 		server/zone/objects/tangible/components/ThrowGrenadeMenuComponent.cpp \
 		server/zone/objects/tangible/components/EventPerkMenuComponent.cpp \
+		server/zone/objects/tangible/components/FlagGameMenuComponent.cpp \
 		server/zone/objects/tangible/powerup/PowerupObjectImplementation.cpp \
 		server/zone/objects/tangible/firework/components/FireworkMenuComponent.cpp \
 		server/zone/objects/tangible/firework/components/FireworkShowMenuComponent.cpp \
@@ -387,6 +425,7 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/tangible/terminal/components/PowerRegulatorMenuComponent.cpp \
 		server/zone/objects/tangible/terminal/components/TurretControlMenuComponent.cpp \
 		server/zone/objects/region/events/CityUpdateEvent.cpp \
+		server/zone/objects/tangible/deed/vetharvester/VetHarvesterDeedImplementation.cpp \
 		server/zone/objects/tangible/deed/structure/StructureDeedImplementation.cpp \
 		server/zone/objects/player/sui/callbacks/CityManageMilitiaSuiCallback.cpp \
 		server/zone/objects/player/sessions/CityRemoveMilitiaSessionImplementation.cpp \
@@ -394,15 +433,17 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/player/sessions/survey/SurveySessionImplementation.cpp \
 		server/zone/objects/player/sessions/admin/PlayerManagementSessionImplementation.cpp \
 		server/zone/objects/player/sessions/StructureSetAccessFeeSessionImplementation.cpp \
+		server/zone/objects/player/sessions/DroidMaintenanceSessionImplementation.cpp \
 		server/zone/objects/region/CityRegionImplementation.cpp \
 		server/zone/objects/tangible/threat/ThreatMapObserverImplementation.cpp \
 		server/zone/objects/area/LuaActiveArea.cpp \
 		server/zone/objects/tangible/LuaTangibleObject.cpp \
 		server/zone/managers/creature/LairObserverImplementation.cpp \
 		server/zone/managers/creature/DynamicSpawnObserverImplementation.cpp \
-		server/zone/managers/customization/CustomizationIdManager.cpp \
+		server/zone/managers/creature/SpawnObserverImplementation.cpp \
 		server/zone/managers/director/ScreenPlayObserverImplementation.cpp \
 		server/zone/managers/director/PersistentEventImplementation.cpp \
+		server/zone/managers/director/QuestVectorMapImplementation.cpp \
 		server/zone/objects/ship/SpaceStationObjectImplementation.cpp \
 		server/zone/objects/ship/FighterShipObjectImplementation.cpp \
 		server/zone/objects/ship/ShipObjectImplementation.cpp \
@@ -414,7 +455,9 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/tangible/deed/components/PlaceDecorationComponent.cpp \
 		server/zone/objects/player/components/PlayerContainerComponent.cpp \
 		server/zone/objects/tangible/components/LootContainerComponent.cpp \
+		server/zone/objects/tangible/components/PersonnelPerkZoneComponent.cpp \
 		server/zone/objects/tangible/components/PlaceableLootContainerComponent.cpp \
+		server/zone/objects/tangible/components/ScavengerChestContainerComponent.cpp \
 		server/zone/objects/scene/components/ContainerComponent.cpp \
 		server/zone/objects/scene/components/DataObjectComponentReference.cpp \
 		server/zone/objects/scene/components/DataObjectComponent.cpp \
@@ -428,6 +471,7 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/tangible/components/generic/DataStorageUnitMenuComponent.cpp \
 		server/zone/objects/tangible/components/LairMenuComponent.cpp \
 		server/zone/objects/tangible/components/generic/LootSchematicMenuComponent.cpp \
+		server/zone/objects/tangible/components/generic/XpPurchaseMenuComponent.cpp \
 		server/zone/objects/tangible/components/BountyHunterDroidMenuComponent.cpp \
 		server/zone/objects/tangible/components/CampKitMenuComponent.cpp \
 		server/zone/objects/tangible/components/CampTerminalMenuComponent.cpp \
@@ -435,6 +479,7 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/tangible/components/BankTerminalMenuComponent.cpp \
 		server/zone/objects/tangible/components/HolocronMenuComponent.cpp \
 		server/zone/objects/tangible/components/WaypointDatapadMenuComponent.cpp \
+		server/zone/objects/tangible/components/ForceCrystalMenuComponent.cpp \
 		server/zone/objects/tangible/components/ForceShrineMenuComponent.cpp \
 		server/zone/objects/tangible/components/CloningTerminalMenuComponent.cpp \
 		server/zone/objects/tangible/components/generic/ArtCrateMenuComponent.cpp \
@@ -446,11 +491,14 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/tangible/components/DroidCustomKitObjectMenuComponent.cpp \
 		server/zone/objects/tangible/components/RingObjectMenuComponent.cpp \
 		server/zone/objects/tangible/components/RobeObjectMenuComponent.cpp \
+		server/zone/objects/tangible/components/HeroRingMenuComponent.cpp \
 		server/zone/objects/tangible/components/SkillBuffObjectMenuComponent.cpp \
 		server/zone/objects/tangible/components/generic/ShellfishHarvesterMenuComponent.cpp \
 		server/zone/objects/tangible/components/generic/CreatureHabitatMenuComponent.cpp \
 		server/zone/objects/tangible/components/generic/CoaMessageFragmentMenuComponent.cpp \
 		server/zone/objects/tangible/components/generic/CoaMessageMenuComponent.cpp \
+		server/zone/objects/tangible/components/generic/CoaEncodedDiskMenuComponent.cpp \
+		server/zone/objects/tangible/misc/PlantObjectImplementation.cpp \
 		server/zone/objects/scene/components/LuaObjectMenuComponent.cpp \
 		server/zone/objects/scene/components/LuaContainerComponent.cpp \
 		server/zone/objects/scene/components/LuaObjectMenuResponse.cpp \
@@ -465,7 +513,7 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/managers/player/creation/PlayerCreationManager.cpp \
 		tre3/TreeFile.cpp \
 		server/zone/managers/vendor/VendorOutfitManager.cpp \
-		server/conf/ConfigManager.cpp \
+		conf/ConfigManager.cpp \
 		server/features/Features.cpp \
 		server/db/ServerDatabase.cpp \
 		server/db/MantisDatabase.cpp \
@@ -504,6 +552,7 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/managers/faction/FactionManager.cpp \
 		server/zone/managers/faction/FactionMap.cpp \
 		server/zone/managers/gcw/GCWManagerImplementation.cpp \
+		server/zone/managers/gcw/GCWBaseShutdownObserverImplementation.cpp \
 		server/zone/managers/components/ComponentManager.cpp \
 		server/zone/managers/planet/HeightMap.cpp \
 		server/zone/managers/visibility/VisibilityManager.cpp \
@@ -513,6 +562,7 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/managers/planet/MapLocationTable.cpp \
 		server/zone/managers/planet/MapLocationEntry.cpp \
 		server/zone/managers/player/PlayerManagerImplementation.cpp \
+		server/zone/managers/player/BadgeList.cpp \
 		server/zone/managers/collision/PathFinderManager.cpp \
 		server/zone/managers/collision/CollisionManager.cpp \
 		server/zone/managers/guild/GuildManagerImplementation.cpp \
@@ -555,15 +605,6 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/area/areashapes/RectangularAreaShapeImplementation.cpp \
 		server/zone/objects/area/areashapes/RingAreaShapeImplementation.cpp \
 		server/zone/objects/region/RegionImplementation.cpp \
-		server/zone/objects/terrain/ProceduralTerrainAppearance.cpp \
-		server/zone/objects/terrain/SpaceTerrainAppearance.cpp \
-		server/zone/objects/terrain/MapFractal.cpp \
-		server/zone/objects/terrain/TargaBitmap.cpp \
-		server/zone/objects/terrain/TerrainGenerator.cpp \
-		server/zone/objects/terrain/layer/Layer.cpp \
-		server/zone/objects/terrain/layer/affectors/AffectorHeightFractal.cpp \
-		server/zone/objects/terrain/layer/filters/FilterFractal.cpp \
-		server/zone/objects/terrain/layer/filters/FilterBitmap.cpp \
 		server/zone/objects/intangible/IntangibleObjectImplementation.cpp \
 		server/zone/objects/intangible/LuaIntangibleObject.cpp \
 		server/zone/objects/staticobject/StaticObjectImplementation.cpp \
@@ -571,6 +612,11 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/intangible/PetControlDeviceImplementation.cpp \
 		server/zone/objects/tangible/TangibleObjectImplementation.cpp \
 		server/zone/objects/tangible/InstrumentImplementation.cpp \
+		server/zone/objects/tangible/eventperk/ShuttleBeaconImplementation.cpp \
+		server/zone/objects/tangible/eventperk/FlagGameImplementation.cpp \
+		server/zone/objects/tangible/eventperk/LotteryDroidImplementation.cpp \
+		server/zone/objects/tangible/eventperk/JukeboxImplementation.cpp \
+		server/zone/objects/tangible/eventperk/JukeboxObserverImplementation.cpp \
 		server/zone/objects/tangible/components/droid/DroidPlaybackObserverImplementation.cpp \
 		server/zone/objects/tangible/components/droid/DroidHarvestObserverImplementation.cpp \
 		server/zone/objects/tangible/components/droid/DroidPersonalityObserverImplementation.cpp \
@@ -596,6 +642,8 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/tangible/pharmaceutical/VitalityPackImplementation.cpp \
 		server/zone/objects/tangible/pharmaceutical/WoundPackImplementation.cpp \
 		server/zone/objects/tangible/pharmaceutical/EnhancePackImplementation.cpp \
+		server/zone/objects/tangible/pharmaceutical/CurePackImplementation.cpp \
+		server/zone/objects/tangible/pharmaceutical/DotPackImplementation.cpp \
 		server/zone/objects/tangible/sign/SignObjectImplementation.cpp \
 		server/zone/objects/installation/factory/FactoryObjectImplementation.cpp \
 		server/zone/objects/installation/shuttle/ShuttleInstallationImplementation.cpp \
@@ -619,19 +667,23 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/group/GroupObjectImplementation.cpp \
 		server/zone/objects/guild/GuildObjectImplementation.cpp \
 		server/zone/objects/creature/CreatureObjectImplementation.cpp \
-		server/zone/objects/creature/CreatureImplementation.cpp \
-		server/zone/objects/creature/NonPlayerCreatureObjectImplementation.cpp \
-		server/zone/objects/creature/AiAgentImplementation.cpp \
+		server/zone/objects/creature/ai/CreatureImplementation.cpp \
+		server/zone/objects/creature/ai/NonPlayerCreatureObjectImplementation.cpp \
+		server/zone/objects/creature/ai/AiAgentImplementation.cpp \
 		server/zone/objects/tangible/threat/ThreatMap.cpp \
 		server/zone/objects/tangible/threat/ThreatMatrix.cpp \
 		server/zone/objects/creature/damageovertime/DamageOverTime.cpp \
 		server/zone/objects/creature/damageovertime/DamageOverTimeList.cpp \
 		server/zone/objects/creature/buffs/BuffImplementation.cpp \
+		server/zone/objects/creature/buffs/PlayerVehicleBuffImplementation.cpp \
 		server/zone/objects/creature/buffs/SpiceBuffImplementation.cpp \
 		server/zone/objects/creature/buffs/PowerBoostBuffImplementation.cpp \
 		server/zone/objects/creature/buffs/PerformanceBuffImplementation.cpp \
 		server/zone/objects/creature/buffs/SingleUseBuffObserverImplementation.cpp \
+		server/zone/objects/creature/buffs/SquadLeaderBuffObserverImplementation.cpp \
+		server/zone/objects/creature/buffs/PrivateSkillMultiplierBuffImplementation.cpp \
 		server/zone/objects/creature/buffs/BuffList.cpp \
+		server/zone/objects/creature/buffs/ChannelForceBuffImplementation.cpp \
 		server/zone/objects/tangible/components/vendor/VendorContainerComponent.cpp \
 		server/zone/objects/tangible/components/vendor/VendorDataComponent.cpp \
 		server/zone/objects/tangible/components/vendor/VendorMenuComponent.cpp \
@@ -639,6 +691,7 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/tangible/components/ArmorObjectMenuComponent.cpp \
 		server/zone/objects/tangible/components/droid/BaseDroidModuleComponent.cpp \
 		server/zone/objects/tangible/components/droid/DroidPersonalityModuleDataComponent.cpp \
+		server/zone/objects/tangible/components/droid/DroidMaintenanceModuleDataComponent.cpp \
 		server/zone/objects/tangible/components/droid/DroidEffectsModuleDataComponent.cpp \
 		server/zone/objects/tangible/components/droid/DroidRepairModuleDataComponent.cpp \
 		server/zone/objects/tangible/components/droid/DroidAutoRepairModuleDataComponent.cpp \
@@ -660,12 +713,14 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/creature/junkdealer/JunkdealerCreatureImplementation.cpp \
 		server/zone/objects/creature/variables/CommandQueueAction.cpp \
 		server/zone/objects/creature/commands/QueueCommand.cpp \
+		server/zone/objects/creature/commands/ForceHealQueueCommand.cpp \
 		server/zone/objects/creature/LuaCreatureObject.cpp \
-		server/zone/objects/creature/LuaAiAgent.cpp \
+		server/zone/objects/creature/ai/LuaAiAgent.cpp \
 		server/zone/objects/scene/LuaSceneObject.cpp \
 		server/zone/managers/sui/LuaSuiManager.cpp \
+		server/zone/managers/player/LuaQuestInfo.cpp \
 		server/zone/objects/player/sui/LuaSuiBox.cpp \
-		server/zone/objects/creature/DroidObjectImplementation.cpp \
+		server/zone/objects/creature/ai/DroidObjectImplementation.cpp \
 		server/zone/objects/creature/VehicleObjectImplementation.cpp \
 		server/zone/objects/creature/variables/SkillList.cpp \
 		server/zone/objects/creature/ai/bt/Behavior.cpp \
@@ -680,9 +735,11 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/creature/conversation/ConversationObserverImplementation.cpp \
 		server/zone/objects/creature/conversation/TrainerConversationObserverImplementation.cpp \
 		server/zone/objects/creature/conversation/DeliverMissionConversationObserverImplementation.cpp \
+		server/zone/objects/creature/conversation/PetTrainingConversationObserverImplementation.cpp \
 		server/zone/objects/creature/conversation/InformantMissionConversationObserverImplementation.cpp \
 		server/zone/objects/creature/conversation/screenhandlers/TrainerScreenHandlers.cpp \
 		server/zone/objects/creature/conversation/screenhandlers/DeliverMissionScreenHandler.cpp \
+		server/zone/objects/creature/conversation/screenhandlers/PetTrainingScreenHandler.cpp \
 		server/zone/objects/creature/conversation/screenhandlers/InformantMissionScreenHandler.cpp \
 		server/zone/objects/player/PlayerObjectImplementation.cpp \
 		server/zone/objects/player/sui/callbacks/DelegateSuiCallback.cpp \
@@ -698,6 +755,8 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/scene/variables/StringIdParameter.cpp \
 		server/zone/objects/scene/variables/CustomizationVariables.cpp \
 		server/zone/objects/scene/variables/ContainerObjectsMap.cpp \
+		server/zone/objects/scene/variables/PendingTasksMap.cpp \
+		server/zone/objects/scene/variables/OrderedTaskExecutioner.cpp \
 		server/zone/objects/cell/CellObjectImplementation.cpp \
 		server/zone/objects/installation/InstallationObjectImplementation.cpp \
 		server/zone/objects/building/BuildingObjectImplementation.cpp \
@@ -718,7 +777,9 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/objects/player/sessions/vendor/VendorAdBarkingSessionImplementation.cpp \
 		server/zone/objects/player/sessions/PlaceStructureSessionImplementation.cpp \
 		server/zone/objects/player/sessions/DestroyStructureSessionImplementation.cpp \
+		server/zone/objects/player/sessions/LootLotterySessionImplementation.cpp \
 		server/zone/objects/player/sui/SuiBoxImplementation.cpp \
+		server/zone/objects/player/sui/SuiBoxPageImplementation.cpp \
 		server/zone/objects/player/sui/keypadbox/SuiKeypadBoxImplementation.cpp \
 		server/zone/objects/player/sui/inputbox/SuiInputBoxImplementation.cpp \
 		server/zone/objects/player/sui/listbox/SuiListBoxImplementation.cpp \
@@ -739,9 +800,6 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/chat/WaypointChatParameter.cpp \
 		server/zone/managers/objectcontroller/ObjectControllerImplementation.cpp \
 		server/zone/managers/objectcontroller/command/CommandConfigManager.cpp \
-		server/zone/managers/terrain/TerrainManager.cpp \
-		server/zone/managers/templates/TemplateManager.cpp \
-		server/zone/managers/templates/DataArchiveStore.cpp \
 		server/zone/managers/mission/MissionManagerImplementation.cpp \
 		server/zone/managers/mission/spawnmaps/MissionNpcSpawnMap.cpp \
 		server/zone/managers/mission/spawnmaps/NpcSpawnPoint.cpp \
@@ -767,6 +825,7 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/managers/radial/RadialManagerImplementation.cpp \
 		server/zone/managers/resource/ResourceManagerImplementation.cpp \
 		server/zone/managers/resource/InterplanetarySurveyImplementation.cpp \
+		server/zone/managers/reaction/ReactionManagerImplementation.cpp \
 		server/zone/managers/creature/CreatureManagerImplementation.cpp \
 		server/zone/managers/creature/PetManagerImplementation.cpp \
 		server/zone/managers/creature/SpawnAreaMap.cpp \
@@ -789,34 +848,52 @@ core3_SOURCES =	$(core3_IDLS) \
 		server/zone/managers/mission/DestroyMissionLairObserverImplementation.cpp \
 		server/zone/objects/installation/components/TurretObserverImplementation.cpp \
 		server/zone/objects/mission/bountyhunter/BountyHunterDroid.cpp \
-		server/zone/templates/string/StringFile.cpp \
-		server/zone/templates/faction/FactionRanks.cpp \
-		server/zone/templates/mobile/LuaConversationScreen.cpp \
-		server/zone/templates/mobile/CreatureTemplate.cpp \
-		server/zone/templates/mobile/LuaConversationTemplate.cpp \
-		server/zone/templates/datatables/DataTableIff.cpp \
-		server/zone/templates/datatables/DataTableCell.cpp \
-		server/zone/templates/snapshot/WorldSnapshotIff.cpp \
-		server/zone/templates/SharedTangibleObjectTemplate.cpp \
-		server/zone/templates/appearance/FloorMesh.cpp \
-		server/zone/templates/appearance/MeshAppearanceTemplate.cpp \
-		server/zone/templates/appearance/DetailAppearanceTemplate.cpp \
-		server/zone/templates/appearance/PortalLayout.cpp \
-		server/zone/templates/appearance/PathGraph.cpp \
-		server/zone/templates/intangible/DraftSchematicObjectTemplate.cpp \
-		server/zone/templates/SharedObjectTemplate.cpp \
-		server/zone/templates/params/PaletteColorCustomizationVariables.cpp \
-		server/zone/templates/params/RangedIntCustomizationVariables.cpp \
-		server/zone/templates/tangible/SharedBuildingObjectTemplate.cpp \
-		server/zone/templates/tangible/SharedStructureObjectTemplate.cpp \
-		server/zone/templates/tangible/CampStructureTemplate.cpp \
-		server/zone/templates/tangible/SharedCreatureObjectTemplate.cpp \
-		server/zone/templates/tangible/PlayerCreatureTemplate.cpp \
-		server/zone/templates/tangible/SharedWeaponObjectTemplate.cpp \
-		server/zone/templates/customization/AssetCustomizationManagerTemplate.cpp \
 		server/zone/objects/tangible/components/CityDecorationMenuComponent.cpp \
+		server/zone/objects/creature/conversation/LuaConversationScreen.cpp \
+		server/zone/objects/creature/ai/CreatureTemplate.cpp \
+		server/zone/objects/creature/conversation/LuaConversationTemplate.cpp \
 		main.cpp
-		
+
+libcore3terrain_a_SOURCES = terrain/ProceduralTerrainAppearance.cpp \
+		terrain/SpaceTerrainAppearance.cpp \
+		terrain/MapFractal.cpp \
+		terrain/TargaBitmap.cpp \
+		terrain/TerrainGenerator.cpp \
+		terrain/layer/Layer.cpp \
+		terrain/layer/affectors/AffectorHeightFractal.cpp \
+		terrain/layer/filters/FilterFractal.cpp \
+		terrain/layer/filters/FilterBitmap.cpp \
+		terrain/manager/TerrainManager.cpp \
+		terrain/manager/TerrainCache.cpp
+
+libcore3templates_a_SOURCES = templates/SharedObjectTemplate.cpp \
+		templates/SharedTangibleObjectTemplate.cpp \
+		templates/appearance/FloorMesh.cpp \
+		templates/appearance/CellProperty.cpp \
+		templates/appearance/MeshAppearanceTemplate.cpp \
+		templates/appearance/DetailAppearanceTemplate.cpp \
+		templates/appearance/PortalLayout.cpp \
+		templates/appearance/PathGraph.cpp \
+		templates/building/CampStructureTemplate.cpp \
+		templates/building/SharedBuildingObjectTemplate.cpp \
+		templates/crafting/ValuesMap.cpp \
+		templates/creature/PlayerCreatureTemplate.cpp \
+		templates/creature/SharedCreatureObjectTemplate.cpp \
+		templates/customization/AssetCustomizationManagerTemplate.cpp \
+		templates/customization/CustomizationIdManager.cpp \
+		templates/datatables/DataTableIff.cpp \
+		templates/datatables/DataTableCell.cpp \
+		templates/faction/FactionRanks.cpp \
+		templates/intangible/DraftSchematicObjectTemplate.cpp \
+		templates/manager/DataArchiveStore.cpp \
+		templates/manager/TemplateManager.cpp \
+		templates/params/PaletteColorCustomizationVariables.cpp \
+		templates/params/RangedIntCustomizationVariables.cpp \
+		templates/params/creature/CreatureAttribute.cpp \
+		templates/string/StringFile.cpp \
+		templates/snapshot/WorldSnapshotIff.cpp \
+		templates/tangible/SharedStructureObjectTemplate.cpp \
+		templates/tangible/SharedWeaponObjectTemplate.cpp 		
 
 #BUILT_SOURCES = engine/engine.h.gch \
 #				server/zone/objects/scene/SceneObject.h.gch
@@ -829,4 +906,3 @@ core3_SOURCES =	$(core3_IDLS) \
 #		server/zone/managers/object/UpdateModifiedObjectsThread.cpp \
 #		server/zone/objects/scene/SceneObject.cpp \
 #		server/zone/objects/scene/SceneObjectImplementation.cpp
-		

@@ -2,7 +2,6 @@ romo_vax = Creature:new {
 	objectName = "@npc_name:human_base_male",
 	customName = "Romo Vax",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ romo_vax = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_cobral_thief_human_male_01.iff"},

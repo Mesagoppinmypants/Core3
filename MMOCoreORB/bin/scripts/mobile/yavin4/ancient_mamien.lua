@@ -1,7 +1,6 @@
 ancient_mamien = Creature:new {
 	objectName = "@mob/creature_names:mamien_ancient",
 	socialGroup = "mamien",
-	pvpFaction = "",
 	faction = "",
 	level = 24,
 	chanceHit = 0.34,
@@ -23,7 +22,7 @@ ancient_mamien = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mamien_ancient.iff"},
@@ -32,7 +31,7 @@ ancient_mamien = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"}
+		{"dizzyattack",""}
 	}
 }
 

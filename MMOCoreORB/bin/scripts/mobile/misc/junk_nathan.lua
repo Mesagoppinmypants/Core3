@@ -2,7 +2,6 @@ junk_nathan = Creature:new {
 	objectName = "@mob/creature_names:junk_dealer",
 	customName = "Nathan Blyskipper (a Junk Dealer)",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ junk_nathan = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 256,
+	optionsBitmask = INVULNERABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/junk_nathan.iff"},

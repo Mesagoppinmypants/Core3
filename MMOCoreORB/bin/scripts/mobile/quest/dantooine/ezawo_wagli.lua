@@ -2,7 +2,6 @@ ezawo_wagli = Creature:new {
 	objectName = "",
 	customName = "Ezawo Wagli",
 	socialGroup = "thug",
-	pvpFaction = "thug",
 	faction = "thug",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ ezawo_wagli = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = KILLER,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

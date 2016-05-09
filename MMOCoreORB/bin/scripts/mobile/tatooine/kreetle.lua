@@ -1,7 +1,6 @@
 kreetle = Creature:new {
 	objectName = "@mob/creature_names:kreetle",
 	socialGroup = "kreetle",
-	pvpFaction = "",
 	faction = "",
 	level = 3,
 	chanceHit = 0.23,
@@ -23,7 +22,7 @@ kreetle = Creature:new {
 	ferocity = 3,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kreetle.iff"},

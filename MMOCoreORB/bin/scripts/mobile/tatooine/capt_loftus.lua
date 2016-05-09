@@ -2,7 +2,6 @@ capt_loftus = Creature:new {
 	objectName = "",
 	customName = "Captain Hantor Loftus",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ capt_loftus = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_lt_hantor_loftus.iff"},

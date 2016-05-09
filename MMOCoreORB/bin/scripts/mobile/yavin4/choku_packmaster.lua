@@ -1,7 +1,6 @@
 choku_packmaster = Creature:new {
 	objectName = "@mob/creature_names:choku_packmaster",
 	socialGroup = "choku",
-	pvpFaction = "",
 	faction = "",
 	level = 21,
 	chanceHit = 0.34,
@@ -23,7 +22,7 @@ choku_packmaster = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/choku_hue.iff"},
@@ -33,7 +32,7 @@ choku_packmaster = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

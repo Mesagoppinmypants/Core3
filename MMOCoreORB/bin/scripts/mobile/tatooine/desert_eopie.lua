@@ -1,7 +1,6 @@
 desert_eopie = Creature:new {
 	objectName = "@mob/creature_names:desert_eopie",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 16,
 	chanceHit = 0.31,
@@ -24,7 +23,7 @@ desert_eopie = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/eopie.iff"},
@@ -34,7 +33,7 @@ desert_eopie = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

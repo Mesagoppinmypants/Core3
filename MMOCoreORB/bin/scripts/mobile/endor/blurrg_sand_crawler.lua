@@ -1,7 +1,6 @@
 blurrg_sand_crawler = Creature:new {
 	objectName = "@mob/creature_names:blurrg_sand_crawler",
 	socialGroup = "blurrg",
-	pvpFaction = "",
 	faction = "",
 	level = 43,
 	chanceHit = 0.44,
@@ -23,7 +22,7 @@ blurrg_sand_crawler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/blurrg_hue.iff"},
@@ -32,8 +31,8 @@ blurrg_sand_crawler = Creature:new {
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"blindattack",""}
 	}
 }
 

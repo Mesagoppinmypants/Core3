@@ -1,7 +1,6 @@
 theme_park_marauder_ewok_pelt = Creature:new {
 	objectName = "@mob/creature_names:masterful_ewok_warrior",
 	socialGroup = "gondula_tribe",
-	pvpFaction = "gondula_tribe",
 	faction = "gondula_tribe",
 	level = 21,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ theme_park_marauder_ewok_pelt = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_ewok_f_03.iff"},

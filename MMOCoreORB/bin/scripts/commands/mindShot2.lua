@@ -53,22 +53,25 @@ MindShot2Command = {
 
 	poolsToDamage = MIND_ATTRIBUTE,
 
-	animationCRC = hashCode("fire_1_special_single_medium_face"),
+	animation = "fire_1_special_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "headshot",
 
 	dotEffects = {
 	  DotEffect( 
 		BLEEDING, 
-		{ "resistance_bleeding", "bleed_resist", "combat_bleeding_defense" },
+		{ "resistance_bleeding", "bleed_resist" },
 		MIND,
 		true,
-		125,
+		0,
 		100,
 		60, 
 		60
 	  )
 	},
+	
+	weaponType = RIFLEWEAPON,
 
 	range = -1
 }

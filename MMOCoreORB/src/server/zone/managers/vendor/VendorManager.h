@@ -52,9 +52,7 @@ public:
 
 	void promptRenameVendorTo(CreatureObject* player, TangibleObject* vendor);
 
-	void handleDestroyCallback(CreatureObject* player, TangibleObject* vendor);
-
-	void destroyVendor(SceneObject* vendor);
+	void destroyVendor(TangibleObject* vendor);
 
 	void sendRegisterVendorTo(CreatureObject* player, TangibleObject* vendor);
 
@@ -63,8 +61,6 @@ public:
 	void handleUnregisterVendor(CreatureObject* player, TangibleObject* vendor);
 
 	void handleRenameVendor(CreatureObject* player, TangibleObject* vendor, String& name);
-
-	void randomizeCustomization(TangibleObject* vendor);
 
 	inline VendorSelectionNode* getRootNode() {
 		return rootNode;

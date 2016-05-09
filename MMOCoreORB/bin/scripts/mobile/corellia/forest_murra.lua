@@ -1,7 +1,6 @@
 forest_murra = Creature:new {
 	objectName = "@mob/creature_names:forest_murra",
 	socialGroup = "murra",
-	pvpFaction = "",
 	faction = "",
 	level = 12,
 	chanceHit = 0.29,
@@ -24,7 +23,7 @@ forest_murra = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/forest_murra.iff"},
@@ -34,7 +33,7 @@ forest_murra = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

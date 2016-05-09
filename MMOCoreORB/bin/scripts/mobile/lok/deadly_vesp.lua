@@ -1,7 +1,6 @@
 deadly_vesp = Creature:new {
 	objectName = "@mob/creature_names:deadly_vesp",
 	socialGroup = "vesp",
-	pvpFaction = "",
 	faction = "",
 	level = 93,
 	chanceHit = 0.9,
@@ -23,7 +22,7 @@ deadly_vesp = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/vesp_hue.iff"},
@@ -33,7 +32,7 @@ deadly_vesp = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"strongpoison",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

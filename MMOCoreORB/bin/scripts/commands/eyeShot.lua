@@ -58,15 +58,18 @@ EyeShotCommand = {
 		{}, 
 		{ "blind_defense", "resistance_states" }, 
 		{ "jedi_state_defense" }, 
-		60, 
 		100, 
+		0, 
 		40 
 	  )
 	},
 
-	animationCRC = hashCode("fire_3_special_single_light_face"),
+	animation = "fire_3_special_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "eyeshot",
+	
+	weaponType = PISTOLWEAPON,
 
 	range = -1
 }

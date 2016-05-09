@@ -1,7 +1,6 @@
 enhanced_kwi = Creature:new {
 	objectName = "@mob/creature_names:geonosian_enhanced_kwi",
 	socialGroup = "geonosian_creature",
-	pvpFaction = "",
 	faction = "",
 	level = 106,
 	chanceHit = 1.75,
@@ -23,7 +22,7 @@ enhanced_kwi = Creature:new {
 	ferocity = 16,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/kwi.iff"},
@@ -33,14 +32,14 @@ enhanced_kwi = Creature:new {
 			groups = {
 				{group = "enhanced_kwi", chance = 10000000}
 			},
-			lootChance = 3000000
+			lootChance = 3120000
 		}
 	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"intimidationattack",""}
 	}
 }
 

@@ -2,7 +2,6 @@ kavas_urdano = Creature:new {
 	objectName = "@mob/creature_names:patron_chiss_female",
 	customName = "Kavas Urdano",
 	socialGroup = "valarian",
-	pvpFaction = "valarian",
 	faction = "valarian",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ kavas_urdano = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_kavas_urdano.iff"},

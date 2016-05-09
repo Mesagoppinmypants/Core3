@@ -1,17 +1,16 @@
 sith_shadow_mercenary = Creature:new {
-	objectName = "@mob/creature_names:shadow_mercenary_nonaggro",
+	objectName = "@mob/creature_names:shadow_mercenary",
 	socialGroup = "sith_shadow",
-	pvpFaction = "sith_shadow_nonaggro",
-	faction = "sith_shadow_nonaggro",
-	level = 148,
-	chanceHit = 7,
-	damageMin = 895,
-	damageMax = 1500,
-	baseXp = 3327,
-	baseHAM = 67900,
-	baseHAMmax = 83000,
+	faction = "sith_shadow",
+	level = 69,
+	chanceHit = 0.6,
+	damageMin = 495,
+	damageMax = 700,
+	baseXp = 6655,
+	baseHAM = 11000,
+	baseHAMmax = 13500,
 	armor = 1,
-	resists = {80,90,85,85,70,85,85,85,-1},
+	resists = {60,60,60,60,60,60,60,60,-1},
 	meatType = "",
 	meatAmount = 0,
 	hideType = "",
@@ -21,9 +20,9 @@ sith_shadow_mercenary = Creature:new {
 	milk = 0,
 	tamingChance = 0,
 	ferocity = 0,
-	pvpBitmask = ATTACKABLE,
-	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	pvpBitmask = ATTACKABLE + AGGRESSIVE + ENEMY,
+	creatureBitmask = KILLER + PACK,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -54,8 +53,20 @@ sith_shadow_mercenary = Creature:new {
 		"object/mobile/dressed_sith_shadow_zab_m_02.iff",
 		"object/mobile/dressed_sith_shadow_zab_m_03.iff"},
 	lootGroups = {
-	    {}				
+	    {
+			groups = {
+				{group = "junk", chance = 3500000},
+				{group = "tailor_components", chance = 1500000},
+				{group = "loot_kit_parts", chance = 1500000},
+				{group = "printer_parts", chance = 1000000},
+				{group = "wearables_common", chance = 1000000},
+				{group = "clothing_attachments", chance = 500000},
+				{group = "armor_attachments", chance = 500000},
+				{group = "village_resources", chance = 500000}
+			},
+		}
 	},
+
 	weapons = {"pirate_weapons_heavy"},
 	conversationTemplate = "",
 	attacks = merge(riflemanmaster,pistoleermaster,carbineermaster,marksmanmaster,brawlermaster)

@@ -13,7 +13,7 @@
 #include "server/zone/objects/building/BuildingObject.h"
 #include "server/zone/ZoneServer.h"
 #include "server/zone/Zone.h"
-#include "server/zone/templates/tangible/SharedStructureObjectTemplate.h"
+#include "templates/tangible/SharedStructureObjectTemplate.h"
 #include "server/zone/objects/region/CityRegion.h"
 
 void StructureMaintenanceTask::run() {
@@ -40,6 +40,14 @@ void StructureMaintenanceTask::run() {
 
 	ManagedReference<PlayerObject*> ghost = owner->getPlayerObject();
 
+	if (ghost == NULL) {
+		info("Player structure has NULL owner ghost, destroying.", true);
+
+		StructureManager::instance()->destroyStructure(strongRef);
+
+		return;
+	}
+
 	if (!ghost->isOwnedStructure(strongRef)) {
 		info("Removing orphaned structure.", true);
 		StructureManager::instance()->destroyStructure(strongRef);
@@ -54,6 +62,9 @@ void StructureMaintenanceTask::run() {
 		return;
 	}
 
+	Locker _ownerLock(owner);
+	Locker _lock(strongRef, owner);
+
 	//Structure is out of maintenance. Start the decaying process...
 	strongRef->updateStructureStatus();
 
@@ -66,9 +77,6 @@ void StructureMaintenanceTask::run() {
 	if(strongRef->isBuildingObject() && city != NULL){
 		oneWeekMaintenance += city->getPropertyTax() / 100.0f * oneWeekMaintenance;
 	}
-
-	Locker _ownerLock(owner);
-	Locker _lock(strongRef, owner);
 
 	//Check if owner got money in the bank and structure not decaying.
 	if (owner->getBankCredits() >= oneWeekMaintenance) {

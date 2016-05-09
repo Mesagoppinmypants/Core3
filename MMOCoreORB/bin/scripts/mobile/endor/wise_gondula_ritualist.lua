@@ -1,7 +1,8 @@
 wise_gondula_ritualist = Creature:new {
 	objectName = "@mob/creature_names:wise_gondula_ritualist",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "gondula_tribe",
-	pvpFaction = "gondula_tribe",
 	faction = "gondula_tribe",
 	level = 41,
 	chanceHit = 0.44,
@@ -23,7 +24,7 @@ wise_gondula_ritualist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -32,12 +33,12 @@ wise_gondula_ritualist = Creature:new {
 		"object/mobile/dressed_ewok_f_11.iff",
 		"object/mobile/dressed_ewok_m_02.iff"},
 	lootGroups = {
-		 {
-	        groups = {
+		{
+			groups = {
 				{group = "ewok", chance = 9000000},
 				{group = "wearables_uncommon", chance = 1000000},
 			},
-			lootChance = 3000000
+			lootChance = 1820000
 		}
 	},
 	weapons = {"ewok_weapons"},

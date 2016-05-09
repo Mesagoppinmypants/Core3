@@ -1,7 +1,6 @@
 irate_flewt_matriarch = Creature:new {
 	objectName = "@mob/creature_names:irate_flewt_matriarch",
 	socialGroup = "flewt",
-	pvpFaction = "",
 	faction = "",
 	level = 8,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ irate_flewt_matriarch = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/flewt.iff"},

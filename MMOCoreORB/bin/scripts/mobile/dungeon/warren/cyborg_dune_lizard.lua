@@ -1,7 +1,6 @@
 cyborg_dune_lizard = Creature:new {
 	objectName = "@mob/creature_names:warren_cyborg_dunelizard",
 	socialGroup = "warren_cyborg",
-	pvpFaction = "",
 	faction = "",
 	level = 30,
 	chanceHit = 0.37,
@@ -23,7 +22,7 @@ cyborg_dune_lizard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/warren_cyborg_dunelizard.iff"},
@@ -31,8 +30,8 @@ cyborg_dune_lizard = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"intimidationattack",""}
 	}
 }
 

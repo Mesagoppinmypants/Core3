@@ -1,7 +1,6 @@
 veermok_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_veermok",
 	socialGroup = "veermok",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ veermok_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/veermok_hue.iff"},

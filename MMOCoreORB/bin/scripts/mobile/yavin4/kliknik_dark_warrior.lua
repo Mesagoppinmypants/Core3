@@ -1,7 +1,6 @@
 kliknik_dark_warrior = Creature:new {
 	objectName = "@mob/creature_names:kliknik_dark_warrior",
 	socialGroup = "kliknik",
-	pvpFaction = "",
 	faction = "",
 	level = 40,
 	chanceHit = 0.43,
@@ -23,25 +22,25 @@ kliknik_dark_warrior = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kliknik_hue.iff"},
 	controlDeviceTemplate = "object/intangible/pet/kliknik_hue.iff",
 	scale = 1.2,
 	lootGroups = {
-	 {
-	        groups = {
+		{
+			groups = {
 				{group = "kliknik_common", chance = 10000000}
 			},
-			lootChance = 2500000
+			lootChance = 1800000
 		}
 	},
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"intimidationattack",""}
 	}
 }
 

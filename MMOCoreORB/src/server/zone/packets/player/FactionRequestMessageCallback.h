@@ -23,7 +23,7 @@ public:
 	}
 
 	void run() {
-		CreatureObject* object = cast<CreatureObject*>( client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> object = client->getPlayer();
 
 		if (object == NULL)
 			return;

@@ -8,7 +8,7 @@
 #ifndef CHATREQUESTPERSISTENTMESSAGECALLBACK_H_
 #define CHATREQUESTPERSISTENTMESSAGECALLBACK_H_
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 #include "server/chat/ChatManager.h"
 
 class ChatRequestPersistentMessageCallback : public MessageCallback {
@@ -16,7 +16,7 @@ class ChatRequestPersistentMessageCallback : public MessageCallback {
 
 public:
 	ChatRequestPersistentMessageCallback(ZoneClientSession* client, ZoneProcessServer* server) :
-		MessageCallback(client, server) {
+		MessageCallback(client, server), mailid(0) {
 	}
 
 	void parse(Message* message) {
@@ -25,13 +25,15 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = cast<CreatureObject*>( client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;
 
 		ChatManager* chatManager = server->getChatManager();
-		chatManager->handleRequestPersistentMsg(player, mailid);
+
+		if (chatManager != NULL)
+			chatManager->handleRequestPersistentMsg(player, mailid);
 	}
 
 };

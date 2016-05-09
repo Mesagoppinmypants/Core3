@@ -1,7 +1,6 @@
 rhea = Creature:new {
 	objectName = "@npc_spawner_n:rhea",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 19,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ rhea = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_privateer_tier1_corellia.iff"},

@@ -1,7 +1,6 @@
 domestic_humbaba = Creature:new {
 	objectName = "@mob/creature_names:domestic_humbaba",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.26,
@@ -24,7 +23,7 @@ domestic_humbaba = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/savage_humbaba.iff"},
@@ -32,7 +31,7 @@ domestic_humbaba = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

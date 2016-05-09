@@ -1,7 +1,6 @@
 vrelt = Creature:new {
 	objectName = "@mob/creature_names:vrelt",
 	socialGroup = "vrelt",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ vrelt = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/vrelt.iff"},

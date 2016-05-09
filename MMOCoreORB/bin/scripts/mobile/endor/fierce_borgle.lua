@@ -1,7 +1,6 @@
 fierce_borgle = Creature:new {
 	objectName = "@mob/creature_names:fierce_borgle",
 	socialGroup = "borgle",
-	pvpFaction = "",
 	faction = "",
 	level = 32,
 	chanceHit = 0.37,
@@ -23,7 +22,7 @@ fierce_borgle = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/borgle_hue.iff"},
@@ -32,7 +31,8 @@ fierce_borgle = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"",""},
+		{"blindattack",""}
 	}
 }
 

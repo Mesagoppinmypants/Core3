@@ -57,17 +57,19 @@ SuppressionFire2Command = {
 		{ "postureDownRecovery" }, 
 		{ "posture_change_down_defense" }, 
 		{}, 
-		40, 
 		100, 
+		0, 
 		0 
 	  )
 	},
 
 	poolsToDamage = RANDOM_ATTRIBUTE,
 
-	animationCRC = hashCode("fire_area_medium"),
+	animation = "fire_defender_posture_change_down",
 
 	combatSpam = "sup_fire",
+	
+	weaponType = CARBINEWEAPON,
 
 	range = -1
 }

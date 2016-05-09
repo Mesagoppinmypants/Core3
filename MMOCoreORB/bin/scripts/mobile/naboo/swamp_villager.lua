@@ -1,7 +1,8 @@
 swamp_villager = Creature:new {
 	objectName = "@mob/creature_names:swamp_villager",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "villager",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,7 +24,7 @@ swamp_villager = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_swamp_villager.iff"},
@@ -35,12 +36,12 @@ swamp_villager = Creature:new {
 				{group = "melee_weapons", chance = 2000000},
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000}
-			},
-			lootChance = 3200000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_medium"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/townperson",
 	attacks = merge(marksmannovice,brawlernovice)
 }
 

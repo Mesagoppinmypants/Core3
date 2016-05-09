@@ -9,7 +9,7 @@
 #define RACIALCREATIONDATA_H_
 
 #include "engine/engine.h"
-#include "server/zone/templates/datatables/DataTableRow.h"
+#include "templates/datatables/DataTableRow.h"
 
 namespace server {
 namespace zone {
@@ -89,7 +89,7 @@ public:
 		return totalAttributes;
 	}
 
-	String toString() const {
+	String toString() {
 		StringBuffer str;
 
 		for (int i = 0; i < minAttributes.size(); ++i)

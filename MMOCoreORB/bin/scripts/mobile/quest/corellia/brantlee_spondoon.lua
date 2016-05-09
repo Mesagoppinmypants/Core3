@@ -1,8 +1,7 @@
 brantlee_spondoon = Creature:new {
 	objectName = "",
 	customName = "Brantlee Spondoon",
-	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
+	socialGroup = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ brantlee_spondoon = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_brantlee_spondoon.iff"},

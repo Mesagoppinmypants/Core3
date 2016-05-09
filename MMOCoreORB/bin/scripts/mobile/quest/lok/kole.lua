@@ -1,7 +1,6 @@
 kole = Creature:new {
 	objectName = "@mob/creature_names:kole",
 	socialGroup = "nym",
-	pvpFaction = "nym",
 	faction = "nym",
 	level = 22,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ kole = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/kole.iff"},

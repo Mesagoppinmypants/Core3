@@ -13,7 +13,7 @@
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/managers/loot/LootManager.h"
 #include "server/zone/managers/gcw/GCWManager.h"
-#include "server/zone/managers/gcw/SecuritySliceTask.h"
+#include "server/zone/managers/gcw/tasks/SecuritySliceTask.h"
 #include "server/zone/objects/tangible/Container.h"
 #include "server/zone/objects/tangible/RelockLootContainerEvent.h"
 #include "server/zone/objects/tangible/weapon/WeaponObject.h"
@@ -106,8 +106,8 @@ void SlicingSessionImplementation::initalizeSlicingMenu(CreatureObject* pl, Tang
 
 	player->getPlayerObject()->addSuiBox(slicingSuiBox);
 
-	player->addActiveSession(SessionFacadeType::SLICING, _this.get());
-	tangibleObject->addActiveSession(SessionFacadeType::SLICING, _this.get());
+	player->addActiveSession(SessionFacadeType::SLICING, _this.getReferenceUnsafeStaticCast());
+	tangibleObject->addActiveSession(SessionFacadeType::SLICING, _this.getReferenceUnsafeStaticCast());
 
 }
 
@@ -160,6 +160,17 @@ void SlicingSessionImplementation::handleMenuSelect(CreatureObject* pl, byte men
 
 	if (tangibleObject == NULL || player == NULL || player != pl)
 		return;
+
+	ManagedReference<SceneObject*> inventory = player->getSlottedObject("inventory");
+	if (inventory == NULL)
+		return;
+
+	if(!isBaseSlice() && tangibleObject->getGameObjectType() != SceneObjectType::STATICLOOTCONTAINER && tangibleObject->getGameObjectType() != SceneObjectType::MISSIONTERMINAL){
+		if (!inventory->hasObjectInContainer(tangibleObject->getObjectID())) {
+			player->sendSystemMessage("The object must be in your inventory in order to perform the slice.");
+			return;
+		}
+	}
 
 	uint8 progress = getProgress();
 
@@ -275,15 +286,19 @@ bool SlicingSessionImplementation::hasPrecisionLaserKnife(bool removeItem) {
 		uint32 objType = sceno->getGameObjectType();
 
 		if (objType == SceneObjectType::LASERKNIFE) {
-			PrecisionLaserKnife* knife = cast<PrecisionLaserKnife*>( sceno.get());
-			if (removeItem)
-				knife->useCharge(player);
-			return 1;
+			PrecisionLaserKnife* knife = sceno.castTo<PrecisionLaserKnife*>();
+
+			if (knife != NULL) {
+				if (removeItem) {
+					Locker locker(knife);
+					knife->useCharge(player);
+				}
+				return 1;
+			}
 		}
 	}
 
 	return 0;
-
 }
 
 bool SlicingSessionImplementation::hasWeaponUpgradeKit() {
@@ -305,7 +320,7 @@ bool SlicingSessionImplementation::hasWeaponUpgradeKit() {
 		uint32 objType = sceno->getGameObjectType();
 
 		if (objType == SceneObjectType::WEAPONUPGRADEKIT) {
-			//inventory->removeObject(sceno, true);
+			Locker locker(sceno);
 			sceno->destroyObjectFromWorld(true);
 			sceno->destroyObjectFromDatabase(true);
 			return true;
@@ -335,9 +350,9 @@ bool SlicingSessionImplementation::hasArmorUpgradeKit() {
 		uint32 objType = sceno->getGameObjectType();
 
 		if (objType == SceneObjectType::ARMORUPGRADEKIT) {
+			Locker locker(sceno);
 			sceno->destroyObjectFromWorld(true);
 			sceno->destroyObjectFromDatabase(true);
-			//inventory->removeObject(sceno, true);
 			return true;
 		}
 	}
@@ -356,7 +371,7 @@ void SlicingSessionImplementation::useClampFromInventory(SlicingTool* clamp) {
 
 	ManagedReference<SceneObject*> inventory = player->getSlottedObject("inventory");
 
-	Locker inventoryLocker(inventory);
+	Locker locker(clamp);
 
 	//inventory->removeObject(clamp, true);
 	clamp->destroyObjectFromWorld(true);
@@ -387,7 +402,7 @@ void SlicingSessionImplementation::handleUseClamp() {
 		uint32 objType = sceno->getGameObjectType();
 
 		if (objType == SceneObjectType::MOLECULARCLAMP) {
-			//inventory->removeObject(sceno, true);
+			Locker locker(sceno);
 			sceno->destroyObjectFromWorld(true);
 			sceno->destroyObjectFromDatabase(true);
 
@@ -418,7 +433,11 @@ void SlicingSessionImplementation::handleUseFlowAnalyzer() {
 		uint32 objType = sceno->getGameObjectType();
 
 		if (objType == SceneObjectType::FLOWANALYZER) {
-			SlicingTool* node = cast<SlicingTool*>( sceno.get());
+			SlicingTool* node = cast<SlicingTool*>(sceno.get());
+
+			if (node == NULL)
+				continue;
+
 			nodeCable = node->calculateSuccessRate();
 
 			if (nodeCable) // PASSED
@@ -428,7 +447,7 @@ void SlicingSessionImplementation::handleUseFlowAnalyzer() {
 					nodeCable = 0; // Failed - Make the Cable incorrect
 			}
 
-			//inventory->removeObject(sceno, true);
+			Locker locker(sceno);
 			sceno->destroyObjectFromWorld(true);
 			sceno->destroyObjectFromDatabase(true);
 
@@ -466,27 +485,27 @@ void SlicingSessionImplementation::handleSlice(SuiListBox* suiBox) {
 
 	if (tangibleObject->isContainerObject() || tangibleObject->getGameObjectType() == SceneObjectType::PLAYERLOOTCRATE) {
 		handleContainerSlice();
-		playerManager->awardExperience(player, "slicing", 125, true); // Container Slice XP
-	} else	if (tangibleObject->isMissionTerminal()) {
+		playerManager->awardExperience(player, "slicing", 250, true); // Container Slice XP
+	} else if (tangibleObject->isMissionTerminal()) {
 		MissionTerminal* term = cast<MissionTerminal*>( tangibleObject.get());
-		playerManager->awardExperience(player, "slicing", 250, true); // Terminal Slice XP
+		playerManager->awardExperience(player, "slicing", 100, true); // Terminal Slice XP
 		term->addSlicer(player);
 		player->sendSystemMessage("@slicing/slicing:terminal_success");
 	} else if (tangibleObject->isWeaponObject()) {
 		handleWeaponSlice();
-		playerManager->awardExperience(player, "slicing", 500, true); // Weapon Slice XP
+		playerManager->awardExperience(player, "slicing", 250, true); // Weapon Slice XP
 	} else if (tangibleObject->isArmorObject()) {
 		handleArmorSlice();
-		playerManager->awardExperience(player, "slicing", 1000, true); // Armor Slice XP
+		playerManager->awardExperience(player, "slicing", 250, true); // Armor Slice XP
 	} else if ( isBaseSlice()){
 		playerManager->awardExperience(player,"slicing", 1000, true); // Base slicing
 
 		Zone* zone = player->getZone();
 
-		if(zone != NULL){
+		if (zone != NULL){
 			GCWManager* gcwMan = zone->getGCWManager();
 
-			if(gcwMan != NULL){
+			if (gcwMan != NULL){
 				SecuritySliceTask* task = new SecuritySliceTask(gcwMan, tangibleObject.get(), player);
 				task->execute();
 			}
@@ -600,12 +619,12 @@ void SlicingSessionImplementation::handleArmorSlice() {
 	switch (sliceSkill) {
 	case 5:
 		min += (sliceType == 0) ? 6 : 5;
-		max += (sliceType == 0) ? 5 : 5;
+		max += 5;
 	case 4:
 		min += (sliceType == 0) ? 0 : 10;
-		max += (sliceType == 0) ? 10 : 10;
+		max += 10;
 	case 3:
-		min += (sliceType == 0) ? 5 : 5;
+		min += 5;
 		max += (sliceType == 0) ? 20 : 30;
 		break;
 	default:
@@ -683,17 +702,19 @@ void SlicingSessionImplementation::handleContainerSlice() {
 	LootManager* lootManager = player->getZoneServer()->getLootManager();
 
 	if (tangibleObject->getGameObjectType() == SceneObjectType::PLAYERLOOTCRATE) {
-		Reference<SceneObject*> containerSceno = player->getZoneServer()->createObject(String("object/tangible/container/loot/loot_crate.iff").hashCode(), 1);
+		Reference<SceneObject*> containerSceno = player->getZoneServer()->createObject(STRING_HASHCODE("object/tangible/container/loot/loot_crate.iff"), 1);
 
 		if (containerSceno == NULL)
 			return;
 
+		Locker clocker(containerSceno, player);
+
 		Container* container = dynamic_cast<Container*>(containerSceno.get());
 
-		if (container == NULL)
+		if (container == NULL) {
+			containerSceno->destroyObjectFromDatabase(true);
 			return;
-
-		Locker clocker(container, player);
+		}
 
 		if (System::random(10) != 4)
 			lootManager->createLoot(container, "looted_container");
@@ -713,9 +734,6 @@ void SlicingSessionImplementation::handleContainerSlice() {
 		Container* container = dynamic_cast<Container*>(tangibleObject.get());
         if (container == NULL)
 			return;
-        Locker clocker(container);
-		
-
 
 		container->setSliced(true);
 		container->setLockedStatus(false);
@@ -756,7 +774,7 @@ void SlicingSessionImplementation::handleSliceFailed() {
         
 		
 		ManagedReference<Container*> container = tangibleObject.castTo<Container*>();
-        Locker clocker(container);
+        Locker clocker(container, player);
        
 		if(!container)
 			return;

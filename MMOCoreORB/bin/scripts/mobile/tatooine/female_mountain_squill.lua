@@ -1,7 +1,6 @@
 female_mountain_squill = Creature:new {
 	objectName = "@mob/creature_names:female_mountain_squill",
 	socialGroup = "squill",
-	pvpFaction = "",
 	faction = "",
 	level = 34,
 	chanceHit = 0.4,
@@ -23,7 +22,7 @@ female_mountain_squill = Creature:new {
 	ferocity = 8,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mountain_squill.iff"},
@@ -32,8 +31,8 @@ female_mountain_squill = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"stunattack","stunChance=50"}
+		{"blindattack",""},
+		{"stunattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 enhanced_kliknik = Creature:new {
 	objectName = "@mob/creature_names:geonosian_kliknik_force_strong",
 	socialGroup = "geonosian_creature",
-	pvpFaction = "",
 	faction = "",
 	level = 109,
 	chanceHit = 2.2,
@@ -23,7 +22,7 @@ enhanced_kliknik = Creature:new {
 	ferocity = 15,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kliknik.iff"},
@@ -33,14 +32,14 @@ enhanced_kliknik = Creature:new {
 	        groups = {
 				{group = "geo_kliknik", chance = 10000000}
 			},
-			lootChance = 3000000
+			lootChance = 3180000
 		}
 	},
-	weapons = {"creature_spit_small_yellow"},
+	weapons = {"creature_spit_heavy_flame"},
 	conversationTemplate = "",
 	attacks = {
-		{"creatureareaattack",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"creatureareaattack",""}
 	}
 }
 

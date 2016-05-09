@@ -1,7 +1,6 @@
 gurnaset_hatchling = Creature:new {
 	objectName = "@mob/creature_names:gurnaset_hatchling",
 	socialGroup = "gurnaset",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ gurnaset_hatchling = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gurnaset_hatchling.iff"},

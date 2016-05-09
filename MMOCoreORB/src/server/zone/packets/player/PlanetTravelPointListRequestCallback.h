@@ -9,7 +9,7 @@
 #define PLANETTRAVELPOINTLISTREQUESTCALLBACK_H_
 
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 
 #include "server/zone/managers/planet/PlanetManager.h"
 #include "PlanetTravelPointListResponse.h"
@@ -30,7 +30,7 @@ public:
 	}
 
 	void run() {
-		CreatureObject* object = cast<CreatureObject*>( client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> object = client->getPlayer();
 
 		if (object == NULL)
 			return;

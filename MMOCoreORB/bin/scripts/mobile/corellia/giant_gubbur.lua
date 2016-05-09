@@ -1,7 +1,6 @@
 giant_gubbur = Creature:new {
 	objectName = "@mob/creature_names:giant_gubbur",
 	socialGroup = "gubbur",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ giant_gubbur = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/giant_gubbur.iff"},

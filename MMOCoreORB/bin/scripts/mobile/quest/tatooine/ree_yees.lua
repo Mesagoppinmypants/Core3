@@ -1,7 +1,6 @@
 ree_yees = Creature:new {
 	objectName = "@theme_park_name:ree_yees",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 20,
 	chanceHit = 0.330000,
@@ -23,7 +22,7 @@ ree_yees = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gran_male.iff"},

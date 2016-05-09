@@ -1,7 +1,8 @@
 dulok_outcast_raider = Creature:new {
 	objectName = "@mob/creature_names:dulok_outcast_raider",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 20,
 	chanceHit = 0.33,
@@ -23,13 +24,20 @@ dulok_outcast_raider = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
-			"object/mobile/dulok_male.iff",
-			"object/mobile/dulok_female.iff"},
-	lootGroups = {},
+		"object/mobile/dulok_male.iff",
+		"object/mobile/dulok_female.iff"},
+	lootGroups = {
+		{
+			groups = {
+				{group = "ewok", chance = 10000000}
+			},
+			lootChance = 1400000
+		}
+	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = brawlermaster

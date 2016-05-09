@@ -11,7 +11,7 @@
 #include "server/zone/objects/scene/SceneObject.h"
 #include "server/zone/objects/mission/MissionObject.h"
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "engine/log/Logger.h"
 #include "server/zone/objects/mission/bountyhunter/events/FindTargetTask.h"
 #include "server/zone/objects/mission/bountyhunter/events/CallArakydTask.h"
@@ -28,10 +28,12 @@ namespace bountyhunter {
 class BountyHunterDroid : public Logger, public Object {
 public:
 
-	static const int CALLDROID = 0;
-	static const int TRANSMITBIOLOGICALSIGNATURE = 1;
-	static const int FINDTARGET = 2;
-	static const int FINDANDTRACKTARGET = 3;
+	enum {
+		CALLDROID,
+		TRANSMITBIOLOGICALSIGNATURE,
+		FINDTARGET,
+		FINDANDTRACKTARGET
+	};
 
 	BountyHunterDroid() :
 		Logger("BountyHunterDroid") {

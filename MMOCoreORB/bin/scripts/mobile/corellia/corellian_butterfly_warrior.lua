@@ -1,7 +1,6 @@
 corellian_butterfly_warrior = Creature:new {
 	objectName = "@mob/creature_names:corellian_butterfly_warrior",
 	socialGroup = "butterfly",
-	pvpFaction = "",
 	faction = "",
 	level = 14,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ corellian_butterfly_warrior = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/corellian_butterfly_hue.iff"},
@@ -33,7 +32,7 @@ corellian_butterfly_warrior = Creature:new {
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

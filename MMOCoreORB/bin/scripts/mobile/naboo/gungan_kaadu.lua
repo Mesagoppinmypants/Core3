@@ -1,7 +1,6 @@
 gungan_kaadu = Creature:new {
 	objectName = "@mob/creature_names:gungan_kaadu",
 	socialGroup = "gungan",
-	pvpFaction = "",
 	faction = "gungan",
 	level = 13,
 	chanceHit = 0.3,
@@ -23,7 +22,7 @@ gungan_kaadu = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kaadu_hue.iff"},
@@ -31,7 +30,7 @@ gungan_kaadu = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

@@ -1,7 +1,8 @@
 nym_pirate_elite = Creature:new {
 	objectName = "@mob/creature_names:nym_pirate_elite",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "nym",
-	pvpFaction = "nym",
 	faction = "nym",
 	level = 31,
 	chanceHit = 0.39,
@@ -11,7 +12,7 @@ nym_pirate_elite = Creature:new {
 	baseHAM = 8600,
 	baseHAMmax = 10600,
 	armor = 1,
-	resists = {15,15,15,15,40,-1,-1,-1,-1},
+	resists = {15,140,15,15,140,-1,-1,-1,-1},
 	meatType = "",
 	meatAmount = 0,
 	hideType = "",
@@ -23,13 +24,13 @@ nym_pirate_elite = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_nym_pirate_elite_rod_m.iff",
-				"object/mobile/dressed_nym_pirate_elite_nikto_m.iff",
-				"object/mobile/dressed_nym_pirate_elite_hum_m.iff",
-				"object/mobile/dressed_nym_pirate_elite_wee_m.iff"},
+		"object/mobile/dressed_nym_pirate_elite_nikto_m.iff",
+		"object/mobile/dressed_nym_pirate_elite_hum_m.iff",
+		"object/mobile/dressed_nym_pirate_elite_wee_m.iff"},
 	lootGroups = {
 		{
 			groups = {
@@ -39,12 +40,12 @@ nym_pirate_elite = Creature:new {
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
 				{group = "tailor_components", chance = 500000}
-			},
-			lootChance = 3500000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_heavy"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(bountyhuntermaster,marksmanmaster,brawlermaster)
 }
 

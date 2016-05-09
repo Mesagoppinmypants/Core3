@@ -53,9 +53,12 @@ ConcealShotCommand = {
 
 	poolsToDamage = RANDOM_ATTRIBUTE,
 
-	animationCRC = hashCode("fire_1_special_single_medium"),
+	animation = "fire_1_special_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "concealedshot",
+	
+	weaponType = RIFLEWEAPON,
 
 	range = -1
 }

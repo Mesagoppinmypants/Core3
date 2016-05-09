@@ -49,22 +49,25 @@ protected:
 
 	float originalDirection;
 
+	Mutex adBarkingMutex;
+
 public:
-	/// 5 minutes
-	static const int USEXPINTERVAL = 5;
 
-	// 60 Minutes
-	static const int VENDORCHECKINTERVAL = 60;
-	static const int VENDORCHECKDELAY = 20;
+	enum {
+		USEXPINTERVAL       = 5, // 5 minutes
 
-	static const int FIRSTWARNING = 60 * 60 * 24 * 25; // 5 days
-	static const int SECONDWARNING = 60 * 60 * 24 * 50; // 10 days
-	static const int EMPTYDELETE = 60 * 60 * 24 * 14; // 14 days
+		VENDORCHECKINTERVAL = 60, // 60 Minutes
+		VENDORCHECKDELAY    = 20, // 20 Minutes
 
-	static const int DELETEWARNING = 60 * 60 * 24 * 100; // 100 days
+		FIRSTWARNING        = 60 * 60 * 24 * 25, // 5 days
+		SECONDWARNING       = 60 * 60 * 24 * 50, // 10 days
+		EMPTYDELETE         = 60 * 60 * 24 * 14, // 14 days
 
-	static const int BARKRANGE = 15; //Meters
-	static const int BARKINTERVAL = 60 * 2; //Minutes
+		DELETEWARNING       = 60 * 60 * 24 * 100, // 100 days
+
+		BARKRANGE           = 15, // 15 Meters
+		BARKINTERVAL        = 60 * 2 // 2 Minutes
+	};
 
 public:
 	VendorDataComponent();
@@ -105,6 +108,7 @@ public:
 			return;
 
 		originalDirection = strongParent->getDirectionAngle();
+		setVendorSearchEnabled(true);
 	}
 
 	void setVendorSearchEnabled(bool enabled);
@@ -163,10 +167,12 @@ public:
 	}
 
 	inline bool isAdBarkingEnabled() {
+		Locker locker(&adBarkingMutex);
 		return adBarking;
 	}
 
 	inline void setAdBarking(bool value) {
+		Locker locker(&adBarkingMutex);
 		vendorBarks.removeAll();
 		adBarking = value;
 	}
@@ -212,20 +218,50 @@ public:
 		barkAnimation = animation;
 	}
 
+	String getAdPhrase() {
+		return barkMessage;
+	}
+
+	String getAdMood() {
+		return barkMood;
+	}
+
+	String getAdAnimation() {
+		return barkAnimation;
+	}
+
 	bool hasBarkTarget(SceneObject* target) {
+		Locker locker(&adBarkingMutex);
 		return vendorBarks.contains(target->getObjectID());
 	}
 
 	void addBarkTarget(SceneObject* target) {
+		Locker locker(&adBarkingMutex);
 		vendorBarks.add(target->getObjectID());
 	}
 
 	bool canBark() {
+		Locker locker(&adBarkingMutex);
 		return (time(0) - lastBark > BARKINTERVAL);
 	}
 
+	void resetLastBark() {
+		Locker locker(&adBarkingMutex);
+		lastBark = time(0);
+	}
+
 	void clearVendorBark(SceneObject* target) {
+		Locker locker(&adBarkingMutex);
 		vendorBarks.removeElement(target->getObjectID());
+	}
+
+	void removeAllVendorBarks() {
+		Locker locker(&adBarkingMutex);
+		vendorBarks.removeAll();
+	}
+
+	float getOriginalDirection() {
+		return originalDirection;
 	}
 
 	float getMaintenanceRate();
@@ -239,6 +275,8 @@ public:
 	void handleWithdrawMaintanence(int value);
 
 	void performVendorBark(SceneObject* target);
+
+	void scheduleVendorCheckTask(int delay); // In minutes
 
 private:
 	void addSerializableVariables();

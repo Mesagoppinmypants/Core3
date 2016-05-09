@@ -1,7 +1,6 @@
 purbole_stalker = Creature:new {
 	objectName = "@mob/creature_names:purbole_stalker",
 	socialGroup = "purbole",
-	pvpFaction = "",
 	faction = "",
 	level = 19,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ purbole_stalker = Creature:new {
 	ferocity = 5,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/purbole_hue.iff"},
@@ -33,7 +32,7 @@ purbole_stalker = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
+		{"dizzyattack",""},
 		{"mildpoison",""}
 	}
 }

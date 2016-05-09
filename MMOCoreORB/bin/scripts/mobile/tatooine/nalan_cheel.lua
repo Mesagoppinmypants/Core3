@@ -2,7 +2,6 @@ nalan_cheel = Creature:new {
 	objectName = "@npc_name:bith_base_male",
 	customName = "Nalan Cheel",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ nalan_cheel = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/tatooine_npc/figrin_dan.iff"},

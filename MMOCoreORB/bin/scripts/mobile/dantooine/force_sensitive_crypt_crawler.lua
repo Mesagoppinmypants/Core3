@@ -1,7 +1,8 @@
 force_sensitive_crypt_crawler = Creature:new {
 	objectName = "@mob/creature_names:force_sensitive_crypt_crawler",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "kun",
-	pvpFaction = "",
 	faction = "",
 	level = 95,
 	chanceHit = 0.9,
@@ -23,7 +24,7 @@ force_sensitive_crypt_crawler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_force_sensitive_crypt_crawler.iff"},
@@ -40,8 +41,7 @@ force_sensitive_crypt_crawler = Creature:new {
 				{group = "clothing_attachments", chance = 1000000},
 				{group = "wearables_common", chance = 750000},
 				{group = "wearables_uncommon", chance = 750000}
-			},
-			lootChance = 4500000
+			}
 		}
 	},
 	weapons = {"mixed_force_weapons"},

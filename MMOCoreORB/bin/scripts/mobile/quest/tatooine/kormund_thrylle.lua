@@ -2,7 +2,6 @@ kormund_thrylle = Creature:new {
 	objectName = "",
 	customName = "Kormund Thrylle",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ kormund_thrylle = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_kormund_thrylle.iff"},

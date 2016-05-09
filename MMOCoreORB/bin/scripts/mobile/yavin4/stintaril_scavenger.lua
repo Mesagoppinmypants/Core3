@@ -1,7 +1,6 @@
 stintaril_scavenger = Creature:new {
 	objectName = "@mob/creature_names:stintaril_scavenger",
 	socialGroup = "stinaril",
-	pvpFaction = "",
 	faction = "",
 	level = 11,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ stintaril_scavenger = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/stintaril_hue.iff"},
@@ -33,7 +32,7 @@ stintaril_scavenger = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

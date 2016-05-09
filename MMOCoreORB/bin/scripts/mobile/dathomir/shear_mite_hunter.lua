@@ -1,7 +1,6 @@
 shear_mite_hunter = Creature:new {
 	objectName = "@mob/creature_names:shear_mite_hunter",
 	socialGroup = "shear_mite",
-	pvpFaction = "",
 	faction = "",
 	level = 29,
 	chanceHit = 0.38,
@@ -23,7 +22,7 @@ shear_mite_hunter = Creature:new {
 	ferocity = 4,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/shear_mite_hunter.iff"},
@@ -34,7 +33,7 @@ shear_mite_hunter = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"mediumpoison",""},
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 rabid_squall = Creature:new {
 	objectName = "@mob/creature_names:rabid_squall",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ rabid_squall = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/squall_hue.iff"},
@@ -33,6 +32,7 @@ rabid_squall = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
+		{"",""},
 		{"milddisease",""}
 	}
 }

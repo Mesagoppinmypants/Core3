@@ -1,7 +1,6 @@
 chaw_troillya = Creature:new {
 	objectName = "@mob/creature_names:bothan_information_broker",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 3,
 	chanceHit = 0.23,
@@ -23,7 +22,7 @@ chaw_troillya = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_thug_bothan_male_01.iff"},

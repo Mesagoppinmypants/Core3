@@ -1,7 +1,6 @@
 mac_varley = Creature:new {
 	objectName = "@mob/creature_names:corsec_captain",
 	socialGroup = "corsec",
-	pvpFaction = "corsec",
 	faction = "corsec",
 	level = 22,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ mac_varley = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_corsec_captain_human_male_01.iff"},

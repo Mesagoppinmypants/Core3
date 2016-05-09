@@ -57,15 +57,18 @@ LowBlowCommand = {
 		{ "knockdownRecovery", "lastKnockdown" }, 
 		{ "knockdown_defense" }, 
 		{}, 
-		30, 
 		100, 
+		0, 
 		0 
 	  )
 	},
 
-	animationCRC = hashCode("fire_5_single_light"),
+	animation = "fire_5_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "lowblow",
+	
+	weaponType = PISTOLWEAPON,
 
 	range = -1
 }

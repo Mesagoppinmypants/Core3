@@ -1,7 +1,6 @@
 kaadu_female = Creature:new {
 	objectName = "@mob/creature_names:kaadu_female",
 	socialGroup = "kaadu",
-	pvpFaction = "",
 	faction = "",
 	level = 12,
 	chanceHit = 0.29,
@@ -24,7 +23,7 @@ kaadu_female = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kaadu_hue.iff"},
@@ -34,7 +33,8 @@ kaadu_female = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"",""},
+		{"posturedownattack",""}
 	}
 }
 

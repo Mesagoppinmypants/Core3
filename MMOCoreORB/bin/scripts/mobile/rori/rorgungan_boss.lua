@@ -1,7 +1,8 @@
 rorgungan_boss = Creature:new {
 	objectName = "@mob/creature_names:rorgungan_boss",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rorgungan",
-	pvpFaction = "rorgungan",
 	faction = "rorgungan",
 	level = 22,
 	chanceHit = 0.33,
@@ -35,8 +36,7 @@ rorgungan_boss = Creature:new {
 				{group = "loot_kit_parts", chance = 1500000},
 				{group = "color_crystals", chance = 250000},
 				{group = "crystals_poor", chance = 250000}
-			},
-			lootChance = 3200000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_medium"},

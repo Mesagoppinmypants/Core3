@@ -1,7 +1,8 @@
 proficient_panshee_worker = Creature:new {
 	objectName = "@mob/creature_names:proficient_panshee_worker",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "panshee_tribe",
-	pvpFaction = "panshee_tribe",
 	faction = "panshee_tribe",
 	level = 33,
 	chanceHit = 0.4,
@@ -23,7 +24,7 @@ proficient_panshee_worker = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -37,11 +38,11 @@ proficient_panshee_worker = Creature:new {
 		"object/mobile/dressed_ewok_f_12.iff",
 		"object/mobile/dressed_ewok_m_01.iff"},
 	lootGroups = {
-		 {
-	        groups = {
+		{
+			groups = {
 				{group = "ewok", chance = 10000000}
 			},
-			lootChance = 3000000
+			lootChance = 1660000
 		}
 	},
 	weapons = {"ewok_weapons"},

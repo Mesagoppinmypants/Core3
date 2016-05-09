@@ -2,7 +2,6 @@ sg_567_droideka = Creature:new {
 	objectName = "",
 	customName = "(an old Droideka)",	
 	socialGroup = "droideka",
-	pvpFaction = "",
 	faction = "",
 	level = 45,
 	chanceHit = 0.47,
@@ -24,7 +23,7 @@ sg_567_droideka = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/droideka.iff"},
@@ -36,13 +35,12 @@ sg_567_droideka = Creature:new {
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
 				{group = "tailor_components", chance = 500000}
-			},
-			lootChance = 3500000
+			}
 		}
 	},
 	conversationTemplate = "",
 	defaultWeapon = "object/weapon/ranged/droid/droid_droideka_ranged.iff",
-	defaultAttack = "creaturerangedattack",
+	defaultAttack = "attack",
 }
 
 CreatureTemplates:addCreatureTemplate(sg_567_droideka, "sg_567_droideka")

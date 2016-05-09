@@ -1,7 +1,6 @@
 gnarled_bark_mite_queen = Creature:new {
 	objectName = "@mob/creature_names:gnarled_bark_mite_queen",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ gnarled_bark_mite_queen = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gnarled_bark_mite_queen.iff"},
@@ -32,8 +31,8 @@ gnarled_bark_mite_queen = Creature:new {
 	weapons = {"creature_spit_small_yellow"},
 	conversationTemplate = "",
 	attacks = {
-		{"milddisease",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"milddisease",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 giant_cave_veermok = Creature:new {
 	objectName = "@mob/creature_names:veermok_giant_cave",
 	socialGroup = "veermok",
-	pvpFaction = "",
 	faction = "",
 	level = 26,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ giant_cave_veermok = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/giant_veermok.iff"},
@@ -32,7 +31,8 @@ giant_cave_veermok = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"",""},
+		{"stunattack",""}
 	}
 }
 

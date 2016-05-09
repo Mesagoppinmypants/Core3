@@ -1,7 +1,6 @@
 bomarr_monk = Creature:new {
 	objectName = "@mob/creature_names:bomarr_monk",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 3,
 	chanceHit = 0.23,
@@ -23,7 +22,7 @@ bomarr_monk = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bomarr_monk_spider_droid.iff"},

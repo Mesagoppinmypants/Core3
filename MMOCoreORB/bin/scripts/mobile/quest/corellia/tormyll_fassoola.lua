@@ -1,7 +1,6 @@
 tormyll_fassoola = Creature:new {
 	objectName = "",
 	socialGroup = "thug",
-	pvpFaction = "thug",
 	faction = "thug",
 	level = 6,
 	chanceHit = 0.250000,
@@ -24,7 +23,7 @@ tormyll_fassoola = Creature:new {
 	pvpBitmask = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_slicer_human_male_01.iff"},

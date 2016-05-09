@@ -1,7 +1,6 @@
 fambaa = Creature:new {
 	objectName = "@mob/creature_names:fambaa",
 	socialGroup = "fambaa",
-	pvpFaction = "",
 	faction = "",
 	level = 34,
 	chanceHit = 0.41,
@@ -24,7 +23,7 @@ fambaa = Creature:new {
 	ferocity = 7,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/fambaa.iff"},
@@ -34,14 +33,14 @@ fambaa = Creature:new {
 	        groups = {
 				{group = "fambaa_common", chance = 10000000}
 			},
-			lootChance = 2300000
+			lootChance = 1680000
 		}
 	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"posturedownattack","postureDownChance=50"}
+		{"dizzyattack",""},
+		{"posturedownattack",""}
 	}
 }
 

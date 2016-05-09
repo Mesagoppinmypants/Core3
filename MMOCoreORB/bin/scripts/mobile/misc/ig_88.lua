@@ -1,7 +1,6 @@
 ig_88 = Creature:new {
 	objectName = "@mob/creature_names:ig_88",
 	socialGroup = "mercenary",
-	pvpFaction = "",
 	faction = "",
 	level = 100,
 	chanceHit = 1,
@@ -23,8 +22,9 @@ ig_88 = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.35,
 
 	templates = {"object/mobile/ig_88.iff"},
 	lootGroups = {},

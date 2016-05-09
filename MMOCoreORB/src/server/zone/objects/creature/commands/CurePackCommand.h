@@ -29,9 +29,10 @@ public:
 		: QueueCommand(name, server) {
 		range = 7;
 		mindCost = 100;
+		state = 0;
 	}
 
-	void doAnimations(CreatureObject* creature, CreatureObject* creatureTarget) {
+	void doAnimations(CreatureObject* creature, CreatureObject* creatureTarget) const {
 		creatureTarget->playEffect("clienteffect/healing_healdamage.cef", "");
 
 		if (creature == creatureTarget)
@@ -40,14 +41,14 @@ public:
 			creature->doAnimation("heal_other");
 	}
 
-	void parseModifier(const String& modifier, uint64& objectId) {
+	void parseModifier(const String& modifier, uint64& objectId) const {
 		if (!modifier.isEmpty())
 			objectId = Long::valueOf(modifier);
 		else
 			objectId = 0;
 	}
 
-	CurePack* findCurePack(CreatureObject* creature) {
+	CurePack* findCurePack(CreatureObject* creature) const {
 		SceneObject* inventory = creature->getSlottedObject("inventory");
 
 		int medicineUse = creature->getSkillMod("healing_ability");
@@ -56,20 +57,16 @@ public:
 			for (int i = 0; i < inventory->getContainerObjectsSize(); ++i) {
 				SceneObject* object = inventory->getContainerObject(i);
 
-				if (!object->isTangibleObject())
+				if (!object->isPharmaceuticalObject())
 					continue;
 
-				TangibleObject* item = cast<TangibleObject*>( object);
+				PharmaceuticalObject* pharma = cast<PharmaceuticalObject*>(object);
 
-				if (item->isPharmaceuticalObject()) {
-					PharmaceuticalObject* pharma = cast<PharmaceuticalObject*>( item);
+				if (pharma->isCurePack()) {
+					CurePack* curePack = cast<CurePack*>(pharma);
 
-					if (pharma->isCurePack()) {
-						CurePack* curePack = cast<CurePack*>( pharma);
-
-						if (curePack->getMedicineUseRequired() <= medicineUse && curePack->getState() == state)
-							return curePack;
-					}
+					if (curePack->getMedicineUseRequired() <= medicineUse && curePack->getState() == state)
+						return curePack;
 				}
 			}
 		}
@@ -77,7 +74,7 @@ public:
 		return NULL;
 	}
 
-	void sendCureMessage(CreatureObject* object, CreatureObject* target) {
+	void sendCureMessage(CreatureObject* object, CreatureObject* target) const {
 		if (!object->isPlayerCreature())
 			return;
 
@@ -121,7 +118,7 @@ public:
 		}
 	}
 
-	void deactivateConditionTreatment(CreatureObject* creature) {
+	void deactivateConditionTreatment(CreatureObject* creature) const {
 		float modSkill = (float)creature->getSkillMod("healing_injury_speed");
 		int delay = (int)round(20.0f - (modSkill / 5));
 
@@ -143,7 +140,7 @@ public:
 		creature->addPendingTask("conditionTreatment", task, delay * 1000);
 	}
 
-	void awardXp(CreatureObject* creature, const String& type, int power) {
+	void awardXp(CreatureObject* creature, const String& type, int power) const {
 		if (!creature->isPlayerCreature())
 			return;
 
@@ -158,7 +155,7 @@ public:
 		playerManager->awardExperience(player, type, amount, true);
 	}
 
-	bool checkTarget(CreatureObject* creature, CreatureObject* creatureTarget) {
+	bool checkTarget(CreatureObject* creature, CreatureObject* creatureTarget) const {
 
 		switch (state) {
 		case CreatureState::POISONED:
@@ -192,20 +189,22 @@ public:
 	}
 
 	void handleArea(CreatureObject* creature, CreatureObject* areaCenter, CurePack* pharma,
-			float range) {
+			float range) const {
 
 		Zone* zone = creature->getZone();
 
 		if (zone == NULL)
 			return;
 
+
+		// TODO: Convert this to a CombatManager::getAreaTargets() call
 		try {
-			SortedVector<ManagedReference<QuadTreeEntry*> > closeObjects;
+			SortedVector<QuadTreeEntry*> closeObjects;
 			CloseObjectsVector* vec = (CloseObjectsVector*) areaCenter->getCloseObjects();
 			vec->safeCopyTo(closeObjects);
 
 			for (int i = 0; i < closeObjects.size(); i++) {
-				SceneObject* object = cast<SceneObject*>( closeObjects.get(i).get());
+				SceneObject* object = static_cast<SceneObject*>( closeObjects.get(i));
 
 				if (!object->isPlayerCreature() && !object->isPet())
 					continue;
@@ -213,7 +212,7 @@ public:
 				if (object == areaCenter || object->isDroidObject())
 					continue;
 
-				if (!areaCenter->isInRange(object, range))
+				if (areaCenter->getWorldPosition().distanceTo(object->getWorldPosition()) - object->getTemplateRadius() > range)
 					continue;
 
 				CreatureObject* creatureTarget = cast<CreatureObject*>( object);
@@ -239,7 +238,7 @@ public:
 		}
 	}
 
-	void doAreaMedicActionTarget(CreatureObject* creature, CreatureObject* creatureTarget, PharmaceuticalObject* pharma) {
+	void doAreaMedicActionTarget(CreatureObject* creature, CreatureObject* creatureTarget, PharmaceuticalObject* pharma) const {
 		CurePack* curePack = NULL;
 
 		if (pharma->isCurePack())
@@ -253,9 +252,11 @@ public:
 
 		if (creatureTarget != creature && !creatureTarget->isPet())
 			awardXp(creature, "medical", 50); //No experience for healing yourself or pets.
+
+		checkForTef(creature, creatureTarget);
 	}
 
-	bool canPerformSkill(CreatureObject* creature, CreatureObject* creatureTarget, CurePack* curePack) {
+	bool canPerformSkill(CreatureObject* creature, CreatureObject* creatureTarget, CurePack* curePack, int mindCostNew) const {
 		switch (state) {
 		case CreatureState::POISONED:
 			if (!creatureTarget->isPoisoned()) {
@@ -317,28 +318,12 @@ public:
 			return false;
 		}
 
-
-		if (creature->isProne()) {
-			creature->sendSystemMessage("You cannot Cure States while prone.");
-			return false;
-		}
-
-		if (creature->isMeditating()) {
-			creature->sendSystemMessage("You cannot Cure States while Meditating.");
-			return false;
-		}
-
-		if (creature->isRidingMount()) {
-			creature->sendSystemMessage("@error_message:survey_on_mount"); //You cannot perform that action while mounted on a creature or driving a vehicle.
-			return false;
-		}
-
 		if (!creatureTarget->isHealableBy(creature)) {
 			creature->sendSystemMessage("@healing:pvp_no_help");
 			return false;
 		}
 
-		if (creature->getHAM(CreatureAttribute::MIND) < mindCost) {
+		if (creature->getHAM(CreatureAttribute::MIND) < mindCostNew) {
 			creature->sendSystemMessage("@healing_response:not_enough_mind"); //You do not have enough mind to do that.
 			return false;
 		}
@@ -353,14 +338,12 @@ public:
 		return true;
 	}
 
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+		int result = doCommonMedicalCommandChecks(creature);
 
-		if (!checkStateMask(creature))
-			return INVALIDSTATE;
-
-		if (!checkInvalidLocomotions(creature))
-			return INVALIDLOCOMOTION;
+		if (result != SUCCESS)
+			return result;
 
 		ManagedReference<SceneObject*> object = server->getZoneServer()->getObject(target);
 
@@ -392,22 +375,26 @@ public:
 			}
 		}
 
-		if (!creature->isInRange(targetCreature, range))
+		if(!checkDistance(creature, targetCreature, range))
 			return TOOFAR;
 
-		if (!canPerformSkill(creature, targetCreature, curePack))
+		int mindCostNew = creature->calculateCostAdjustment(CreatureAttribute::FOCUS, mindCost);
+
+		if (!canPerformSkill(creature, targetCreature, curePack, mindCostNew))
 			return GENERALERROR;
 
 		sendCureMessage(creature, targetCreature);
 
 		targetCreature->healDot(state, curePack->calculatePower(creature));
 
-		creature->inflictDamage(creature, CreatureAttribute::MIND, mindCost, false);
+		creature->inflictDamage(creature, CreatureAttribute::MIND, mindCostNew, false);
 
 		deactivateConditionTreatment(creature);
 
-		if (curePack != NULL)
+		if (curePack != NULL) {
+			Locker locker(curePack);
 			curePack->decreaseUseCount();
+		}
 
 		if (targetCreature != creature && !targetCreature->isPet())
 			awardXp(creature, "medical", 50); //No experience for healing yourself or pets.
@@ -423,9 +410,10 @@ public:
 
 		creature->notifyObservers(ObserverEventType::MEDPACKUSED);
 
+		checkForTef(creature, targetCreature);
+
 		return SUCCESS;
 	}
 };
-
 
 #endif /* CURESTATECOMMAND_H_ */

@@ -31,7 +31,7 @@ void ThreatMapEntry::addDamage(String xp, uint32 damage) {
 }
 
 void ThreatMapEntry::setThreatState(uint64 state) {
-	if(!threatBitmask & state)
+	if(!(threatBitmask & state))
 		threatBitmask |= state;
 
 }
@@ -64,23 +64,14 @@ void ThreatMap::removeObservers() {
 
 	Reference<ThreatMapClearObserversTask*> task = new ThreatMapClearObserversTask(*this, threatMapObserver);
 	Core::getTaskManager()->executeTask(task);
-
-	//moved this to a task so it executes async in a different thread to avoid deadlocks
-	/*Locker locker(self);
-
-	for (int i = 0; i < size(); ++i) {
-		CreatureObject* creature = elementAt(i).getKey();
-
-		if (creature != NULL && threatMapObserver != NULL) {
-			Locker clocker(creature, self);
-
-			creature->dropObserver(ObserverEventType::HEALINGPERFORMED, threatMapObserver);
-		}
-	}*/
 }
 
 void ThreatMap::addDamage(CreatureObject* target, uint32 damage, String xp) {
 	Locker locker(&lockMutex);
+
+	ManagedReference<TangibleObject*> strongSelf = self.get();
+	if (strongSelf == NULL || strongSelf.get() == target)
+		return;
 
 	int idx = find(target);
 	String xpToAward = "";
@@ -104,17 +95,40 @@ void ThreatMap::addDamage(CreatureObject* target, uint32 damage, String xp) {
 		entry->addDamage(xpToAward, damage);
 		entry->addAggro(1);
 	}
-
-	// randomly change target everytime threatmap is added to, TODO: keep this in mind and perhaps make it slightly more complicated
-	if (System::random(5) == 0)
-		currentThreat = target;
 }
 
-void ThreatMap::removeAll() {
+void ThreatMap::removeAll(bool forceRemoveAll) {
 	Locker locker(&lockMutex);
 
 	removeObservers();
-	VectorMap<ManagedReference<CreatureObject*> , ThreatMapEntry>::removeAll();
+
+	for (int i = size() - 1; i >= 0; i--) {
+		VectorMapEntry<ManagedReference<CreatureObject*> , ThreatMapEntry> *entry = &elementAt(i);
+
+		ManagedReference<CreatureObject*> key = entry->getKey();
+		ThreatMapEntry *value = &entry->getValue();
+
+		ManagedReference<TangibleObject*> selfStrong = self.get();
+
+		// these checks will determine if we should store the damage from the dropped aggressor
+		Zone* keyZone = (key != NULL ? key->getZone() : NULL);
+		Zone* selfZone = (selfStrong != NULL ? selfStrong->getZone() : NULL);
+
+		uint32 keyPlanetCRC = (keyZone != NULL ? keyZone->getPlanetCRC() : 0);
+		uint32 selfPlanetCRC = (selfZone != NULL ? selfZone->getPlanetCRC() : 0);
+
+		if (key == NULL || selfStrong == NULL || key->isDead() || !key->isOnline() || keyPlanetCRC != selfPlanetCRC || forceRemoveAll) {
+			remove(i);
+
+			if (threatMapObserver != NULL)
+				key->dropObserver(ObserverEventType::HEALINGPERFORMED, threatMapObserver);
+		} else {
+			value->setNonAggroDamage(value->getTotalDamage());
+			value->addHeal(-value->getHeal()); // don't need to store healing
+			value->clearAggro();
+		}
+	}
+
 	currentThreat = NULL;
 	threatMatrix.clear();
 }
@@ -122,16 +136,23 @@ void ThreatMap::removeAll() {
 void ThreatMap::dropDamage(CreatureObject* target) {
 	Locker llocker(&lockMutex);
 
-	drop(target);
+	ManagedReference<TangibleObject*> selfStrong = self.get();
+	if (target == NULL || selfStrong == NULL || target->isDead() || !target->isOnline() || target->getPlanetCRC() != selfStrong->getPlanetCRC()) {
+		drop(target);
+
+		if (threatMapObserver != NULL)
+			target->dropObserver(ObserverEventType::HEALINGPERFORMED, threatMapObserver);
+	} else {
+		ThreatMapEntry *entry = &get(target);
+		entry->setNonAggroDamage(entry->getTotalDamage());
+		entry->addHeal(-entry->getHeal()); // don't need to store healing
+		entry->clearAggro();
+	}
 
 	llocker.release();
 
 	if (currentThreat == target)
 		currentThreat = NULL;
-
-	if (threatMapObserver != NULL) {
-		target->dropObserver(ObserverEventType::HEALINGPERFORMED, threatMapObserver);
-	}
 }
 
 bool ThreatMap::setThreatState(CreatureObject* target, uint64 state, uint64 duration, uint64 cooldown) {
@@ -213,11 +234,7 @@ uint32 ThreatMap::getTotalDamage() {
 	for (int i = 0; i < size(); ++i) {
 		ThreatMapEntry* entry = &elementAt(i).getValue();
 
-		for (int j = 0; j < entry->size(); ++j) {
-			uint32 damage = entry->elementAt(j).getValue();
-
-			totalDamage += damage;
-		}
+		totalDamage += entry->getTotalDamage();
 	}
 
 	return totalDamage;
@@ -233,13 +250,7 @@ CreatureObject* ThreatMap::getHighestDamagePlayer() {
 	for (int i = 0; i < size(); ++i) {
 		ThreatMapEntry* entry = &elementAt(i).getValue();
 
-		uint32 totalDamage = 0;
-
-		for (int j = 0; j < entry->size(); ++j) {
-			uint32 damage = entry->elementAt(j).getValue();
-
-			totalDamage += damage;
-		}
+		uint32 totalDamage = entry->getTotalDamage();
 
 		CreatureObject* creature = elementAt(i).getKey();
 
@@ -275,7 +286,7 @@ CreatureObject* ThreatMap::getHighestDamagePlayer() {
 	return player;
 }
 
-CreatureObject* ThreatMap::getHighestDamageGroupLeader(){
+CreatureObject* ThreatMap::getHighestDamageGroupLeader() {
 
 	Locker locker(&lockMutex);
 
@@ -289,35 +300,28 @@ CreatureObject* ThreatMap::getHighestDamageGroupLeader(){
 	for (int i = 0; i < size(); ++i) {
 		ThreatMapEntry* entry = &elementAt(i).getValue();
 
-		uint32 totalDamage = 0;
-
-		for (int j = 0; j < entry->size(); ++j) {
-			uint32 damage = entry->elementAt(j).getValue();
-
-			totalDamage += damage;
-		}
+		uint32 totalDamage = entry->getTotalDamage();
 
 		CreatureObject* creature = elementAt(i).getKey();
 		//tlog.info("Group id is " + String::valueOf(creature->getGroupID()),true);
-		if(creature->isGrouped()){
+		if (creature->isGrouped()) {
 
-			Reference<CreatureObject*> thisleader = (creature->getGroup()->getLeader()).castTo<CreatureObject*>();
+			Reference<CreatureObject*> thisleader = creature->getGroup()->getLeader();
 			//tlog.info("leader is " + thisleader->getFirstName(),true);
 
-			if(thisleader == NULL || !thisleader->isPlayerCreature())
+			if (thisleader == NULL || !thisleader->isPlayerCreature())
 				break;
 
-			if(!groupDamageMap.contains(creature->getGroupID())){
+			if (!groupDamageMap.contains(creature->getGroupID())) {
 				//tlog.info("first dmg for group " + String::valueOf(creature->getGroupID()) + " dmg: " + String::valueOf(totalDamage), true);
 				groupDamageMap.put(creature->getGroupID(),totalDamage);
 
 			} else {
 				groupDamageMap.get(creature->getGroupID()) += totalDamage;
 				//tlog.info("adding to group " + String::valueOf(creature->getGroupID()) + "  dmg total: " + String::valueOf(groupDamageMap.get(creature->getGroupID())) + " this player dmg: " + String::valueOf(totalDamage),true);
-
 			}
 
-			if(groupDamageMap.get(creature->getGroupID()) > highestGroupDmg){
+			if (groupDamageMap.get(creature->getGroupID()) > highestGroupDmg) {
 				highestGroupDmg = groupDamageMap.get(creature->getGroupID());
 				leaderCreature = thisleader;
 			}
@@ -326,29 +330,29 @@ CreatureObject* ThreatMap::getHighestDamageGroupLeader(){
 
 			if (owner != NULL && owner->isPlayerCreature()) {
 				if (owner->isGrouped()) {
-					Reference<CreatureObject*> thisleader = (owner->getGroup()->getLeader()).castTo<CreatureObject*>();
+					Reference<CreatureObject*> thisleader = owner->getGroup()->getLeader();
 
-					if(thisleader == NULL || !thisleader->isPlayerCreature())
+					if (thisleader == NULL || !thisleader->isPlayerCreature())
 						break;
 
-					if(!groupDamageMap.contains(owner->getGroupID())){
+					if (!groupDamageMap.contains(owner->getGroupID())) {
 						groupDamageMap.put(owner->getGroupID(),totalDamage);
 					} else {
 						groupDamageMap.get(owner->getGroupID()) += totalDamage;
 					}
 
-					if(groupDamageMap.get(owner->getGroupID()) > highestGroupDmg){
+					if (groupDamageMap.get(owner->getGroupID()) > highestGroupDmg) {
 						highestGroupDmg = groupDamageMap.get(owner->getGroupID());
 						leaderCreature = thisleader;
 					}
 				} else {
-					if(!groupDamageMap.contains(owner->getObjectID())){
+					if (!groupDamageMap.contains(owner->getObjectID())) {
 						groupDamageMap.put(owner->getObjectID(),totalDamage);
 					} else {
 						groupDamageMap.get(owner->getObjectID()) += totalDamage;
 					}
 
-					if(totalDamage > highestGroupDmg) {
+					if (totalDamage > highestGroupDmg) {
 						highestGroupDmg = totalDamage;
 						leaderCreature = owner;
 					}
@@ -357,7 +361,8 @@ CreatureObject* ThreatMap::getHighestDamageGroupLeader(){
 		} else {
 			//tlog.info("adding single creature damage " + String::valueOf(totalDamage),true);
 			groupDamageMap.put(creature->getObjectID(),totalDamage);
-			if(totalDamage > highestGroupDmg) {
+
+			if (totalDamage > highestGroupDmg) {
 				highestGroupDmg = totalDamage;
 				leaderCreature = creature;
 			}
@@ -397,6 +402,10 @@ CreatureObject* ThreatMap::getHighestThreatCreature() {
 
 void ThreatMap::addAggro(CreatureObject* target, int value, uint64 duration) {
 	Locker locker(&lockMutex);
+
+	ManagedReference<TangibleObject*> strongSelf = self.get();
+	if (strongSelf == NULL || strongSelf.get() == target)
+		return;
 
 	int idx = find(target);
 
@@ -442,18 +451,22 @@ void ThreatMap::clearAggro(CreatureObject* target) {
 void ThreatMap::addHeal(CreatureObject* target, int value) {
 	Locker locker(&lockMutex);
 
+	ManagedReference<TangibleObject*> strongSelf = self.get();
+	if (strongSelf == NULL || strongSelf.get() == target)
+		return;
+
 	int idx = find(target);
 
 	if (idx == -1) {
 		ThreatMapEntry entry;
 		entry.addHeal(value);
-		entry.addAggro(2);
+		entry.addAggro(1);
 		put(target, entry);
 		registerObserver(target);
 
 	} else {
 		ThreatMapEntry* entry = &elementAt(idx).getValue();
 		entry->addHeal(value);
-		entry->addAggro(2);
+		entry->addAggro(1);
 	}
 }

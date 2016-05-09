@@ -1,7 +1,6 @@
 hermit_spider_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_hermit_spider",
 	socialGroup = "spider",
-	pvpFaction = "",
 	faction = "",
 	level = 2,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ hermit_spider_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/hermit_spider_hue.iff"},

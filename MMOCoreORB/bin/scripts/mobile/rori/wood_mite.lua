@@ -1,7 +1,6 @@
 wood_mite = Creature:new {
 	objectName = "@mob/creature_names:wood_mite",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 14,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ wood_mite = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/wood_mite.iff"},
@@ -32,7 +31,7 @@ wood_mite = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"blindattack",""}
 	}
 }
 

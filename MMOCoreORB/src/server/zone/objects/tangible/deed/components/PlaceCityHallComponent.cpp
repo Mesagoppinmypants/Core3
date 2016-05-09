@@ -17,7 +17,7 @@
 #include "server/zone/objects/player/sui/callbacks/PlaceCityHallSuiCallback.h"
 #include "server/zone/objects/area/ActiveArea.h"
 
-int PlaceCityHallComponent::placeStructure(StructureDeed* deed, CreatureObject* creature, float x, float y, int angle) {
+int PlaceCityHallComponent::placeStructure(StructureDeed* deed, CreatureObject* creature, float x, float y, int angle) const {
 	PlayerObject* ghost = creature->getPlayerObject();
 
 	if (ghost == NULL)
@@ -32,7 +32,7 @@ int PlaceCityHallComponent::placeStructure(StructureDeed* deed, CreatureObject* 
 	CityManager* cityManager = zone->getZoneServer()->getCityManager();
 
 	if (cityManager->isCityRankCapped(zone->getZoneName(), CityManager::OUTPOST)) {
-		creature->sendSystemMessage("This planet cannot support anymore cities. You will have to find another planet.");
+		creature->sendSystemMessage("@player_structure:max_cities"); // This planet has already reached its max allowed number of player cities.
 		return 1;
 	}
 
@@ -62,7 +62,7 @@ int PlaceCityHallComponent::placeStructure(StructureDeed* deed, CreatureObject* 
 	return 0;
 }
 
-int PlaceCityHallComponent::notifyStructurePlaced(StructureDeed* deed, CreatureObject* creature, StructureObject* structure) {
+int PlaceCityHallComponent::notifyStructurePlaced(StructureDeed* deed, CreatureObject* creature, StructureObject* structure) const {
 	PlaceStructureComponent::notifyStructurePlaced(deed, creature, structure);
 
 	PlayerObject* ghost = creature->getPlayerObject();
@@ -71,8 +71,13 @@ int PlaceCityHallComponent::notifyStructurePlaced(StructureDeed* deed, CreatureO
 		ManagedReference<CityRegion*> city = structure->getCityRegion();
 
 		if (city != NULL && city->isMayor(creature->getObjectID())) {
+			Locker locker(city);
+
 			city->setCityHall(structure);
 			city->setLoaded();
+
+			locker.release();
+
 			StructureManager::instance()->declareResidence(creature, structure);
 		}
 	}

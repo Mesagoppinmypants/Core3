@@ -2,7 +2,6 @@ chino = Creature:new {
 	objectName = "",
 	customName = "Chino (an Empire Chief Inquisitor)",	
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 120,
 	chanceHit = 4.000000,
@@ -24,7 +23,7 @@ chino = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,	
+	optionsBitmask = AIENABLED + CONVERSABLE,	
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_inquisitor_human_male_01.iff"},

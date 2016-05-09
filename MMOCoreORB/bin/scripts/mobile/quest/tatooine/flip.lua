@@ -1,7 +1,6 @@
 flip = Creature:new {
 	objectName = "",
 	socialGroup = "valarian",
-	pvpFaction = "valarian",
 	faction = "valarian",
 	level = 11,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ flip = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

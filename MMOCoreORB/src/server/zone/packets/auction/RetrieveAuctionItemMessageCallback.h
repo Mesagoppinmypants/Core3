@@ -9,7 +9,7 @@
 #define RETRIEVEAUCTIONITEMMESSAGECALLBACK_H_
 
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 #include "server/zone/managers/auction/AuctionManager.h"
 
 
@@ -19,7 +19,7 @@ class RetrieveAuctionItemMessageCallback : public MessageCallback {
 
 public:
 	RetrieveAuctionItemMessageCallback(ZoneClientSession* client, ZoneProcessServer* server) :
-			MessageCallback(client, server) {
+			MessageCallback(client, server), objectid(0), bazaarid(0) {
 
 	}
 
@@ -29,7 +29,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = cast<CreatureObject*>( client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;
@@ -38,7 +38,8 @@ public:
 
 		AuctionManager* auctionManager = server->getZoneServer()->getAuctionManager();
 
-		auctionManager->retrieveItem(player, objectid, bazaarid);
+		if (auctionManager != NULL)
+			auctionManager->retrieveItem(player, objectid, bazaarid);
 	}
 
 };

@@ -1,7 +1,6 @@
 ephant_mon = Creature:new {
 	objectName = "@mob/creature_names:ephant_mon",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ ephant_mon = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/ephant_mon.iff"},

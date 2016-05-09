@@ -1,7 +1,6 @@
 shamdon_kree = Creature:new {
 	objectName = "@npc_spawner_n:shamdon_kree",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ shamdon_kree = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_privateer_tier2_shamdon.iff"},

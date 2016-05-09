@@ -1,59 +1,19 @@
 /*
- Copyright (C) 2007 <SWGEmu>
-
- This File is part of Core3.
-
- This program is free software; you can redistribute
- it and/or modify it under the terms of the GNU Lesser
- General Public License as published by the Free Software
- Foundation; either version 2 of the License,
- or (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- See the GNU Lesser General Public License for
- more details.
-
- You should have received a copy of the GNU Lesser General
- Public License along with this program; if not, write to
- the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
- Linking Engine3 statically or dynamically with other modules
- is making a combined work based on Engine3.
- Thus, the terms and conditions of the GNU Lesser General Public License
- cover the whole combination.
-
- In addition, as a special exception, the copyright holders of Engine3
- give you permission to combine Engine3 program with free software
- programs or libraries that are released under the GNU LGPL and with
- code included in the standard release of Core3 under the GNU LGPL
- license (or modified versions of such code, with unchanged license).
- You may copy and distribute such a system following the terms of the
- GNU LGPL for Engine3 and the licenses of the other code concerned,
- provided that you include the source code of that other code when
- and as the GNU LGPL requires distribution of source code.
-
- Note that people who make modified versions of Engine3 are not obligated
- to grant this special exception for their modified versions;
- it is their choice whether to do so. The GNU Lesser General Public License
- gives permission to release a modified version without this exception;
- this exception also makes it possible to release a modified version
- which carries forward this exception.
- */
+ 				Copyright <SWGEmu>
+		See file COPYING for copying conditions. */
 
 #include "ImageDesignManager.h"
 #include "server/zone/managers/player/PlayerManager.h"
-#include "server/zone/managers/customization/CustomizationIdManager.h"
+#include "templates/customization/CustomizationIdManager.h"
 #include "server/db/ServerDatabase.h"
 #include "server/zone/objects/scene/variables/CustomizationVariables.h"
 #include "server/zone/objects/tangible/TangibleObject.h"
 #include "server/zone/packets/creature/CreatureObjectDeltaMessage3.h"
 #include "server/zone/ZoneServer.h"
-#include "server/zone/managers/templates/TemplateManager.h"
-#include "server/zone/templates/tangible/PlayerCreatureTemplate.h"
-#include "server/zone/templates/customization/AssetCustomizationManagerTemplate.h"
-#include "server/zone/templates/customization/BasicRangedIntCustomizationVariable.h"
+#include "templates/manager/TemplateManager.h"
+#include "templates/creature/PlayerCreatureTemplate.h"
+#include "templates/customization/AssetCustomizationManagerTemplate.h"
+#include "templates/customization/BasicRangedIntCustomizationVariable.h"
 
 
 ImageDesignManager::ImageDesignManager() {
@@ -146,8 +106,8 @@ void ImageDesignManager::updateCustomization(CreatureObject* imageDesigner, cons
 					// ex: received value 0.5 is for i == 0 -> 0.0, i == 1 -> 0.0
 					// ex: received value 1 is for i == 0 -> 0.0, i == 1 -> 1.0
 
-					// pre: i Û [0, 1] && value Û [0, 1]
-					// post f Û [0, 1]
+					// pre: i ï¿½ [0, 1] && value ï¿½ [0, 1]
+					// post f ï¿½ [0, 1]
 					currentValue = MAX(0, ((value - 0.5) * 2) * (-1 + (i * 2)));
 				}
 
@@ -204,6 +164,7 @@ void ImageDesignManager::updateColorVariable(const Vector<String>& fullVariables
 					}
 				}
 
+				Locker locker(tano);
 				tano->setCustomizationVariable(fullVariableNameLimit, currentVal, true);
 
 				//info("setting " + fullVariableNameLimit + " to " + String::valueOf(currentVal), true);
@@ -317,7 +278,7 @@ void ImageDesignManager::loadCustomizationData() {
 
 		//Get the species gender
 		String speciesGender = dataRow->getCell(0)->toString();
-		uint32 templateCRC = String("object/creature/player/" + speciesGender + ".iff").hashCode();
+		uint32 templateCRC = String::hashCode("object/creature/player/" + speciesGender + ".iff");
 		PlayerCreatureTemplate* tmpl = dynamic_cast<PlayerCreatureTemplate*>(templateManager->getTemplate(templateCRC));
 
 		if (tmpl == NULL)
@@ -349,9 +310,13 @@ void ImageDesignManager::loadCustomizationData() {
 CustomizationData* ImageDesignManager::getCustomizationData(const String& speciesGender, const String& customizationName) {
 	TemplateManager* templateManager = TemplateManager::instance();
 
-	uint32 templateCRC = String("object/creature/player/" + speciesGender + ".iff").hashCode();
+	uint32 templateCRC = String::hashCode("object/creature/player/" + speciesGender + ".iff");
 
 	PlayerCreatureTemplate* tmpl = dynamic_cast<PlayerCreatureTemplate*>(templateManager->getTemplate(templateCRC));
+
+	if (tmpl == NULL)
+		return NULL;
+
 	CustomizationData* customization = tmpl->getCustomizationData(customizationName);
 
 	if (customization == NULL)
@@ -404,10 +369,19 @@ TangibleObject* ImageDesignManager::createHairObject(CreatureObject* imageDesign
 	ManagedReference<SceneObject*> hair = imageDesigner->getZoneServer()->createObject(hairTemplate.hashCode(), 1);
 
 	//TODO: Validate hairCustomization
-	if (hair == NULL || !hair->isTangibleObject())
+	if (hair == NULL || !hair->isTangibleObject()) {
+		if (hair != NULL) {
+			Locker locker(hair);
+			hair->destroyObjectFromDatabase(true);
+		}
+
 		return oldHair;
+	}
 
 	TangibleObject* tanoHair = cast<TangibleObject*>( hair.get());
+
+	Locker locker(tanoHair);
+
 	tanoHair->setContainerDenyPermission("owner", ContainerPermissions::MOVECONTAINER);
 	tanoHair->setContainerDefaultDenyPermission(ContainerPermissions::MOVECONTAINER);
 
@@ -429,7 +403,12 @@ TangibleObject* ImageDesignManager::updateHairObject(CreatureObject* creo, Tangi
 
 	ManagedReference<TangibleObject*> hair = creo->getSlottedObject("hair").castTo<TangibleObject*>();
 
+	if (hair == hairObject) {
+		return hairObject;
+	}
+
 	if (hair != NULL) {
+		Locker locker(hair);
 		hair->destroyObjectFromWorld(true);
 		hair->destroyObjectFromDatabase(true);
 	}
@@ -437,8 +416,16 @@ TangibleObject* ImageDesignManager::updateHairObject(CreatureObject* creo, Tangi
 	if (hairObject == NULL)
 		return NULL;
 
-	creo->transferObject(hairObject, 4);
-	creo->broadcastObject(hairObject, true);
+	// Some race condition in the client prevents both the destroy and transfer from happening too close together
+	// Without it placing a hair object in the inventory.
+	ManagedReference<CreatureObject*> strongCreo = creo;
+	ManagedReference<TangibleObject*> strongHair = hairObject;
+	Core::getTaskManager()->scheduleTask([strongCreo, strongHair]{
+		Locker locker(strongCreo);
+		Locker cLocker(strongCreo, strongHair);
+		strongCreo->transferObject(strongHair, 4);
+		strongCreo->broadcastObject(strongHair, true);
+	}, "TransferHairTask", 100);
 
 	return hair;
 }

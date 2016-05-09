@@ -8,7 +8,7 @@
 #ifndef SKILLBUFFATTRIBUTELISTCOMPONENT_H_
 #define SKILLBUFFATTRIBUTELISTCOMPONENT_H_
 
-#include "server/zone/templates/tangible/SkillBuffTemplate.h"
+#include "templates/tangible/SkillBuffTemplate.h"
 #include "server/zone/objects/scene/components/AttributeListComponent.h"
 #include "server/zone/objects/tangible/TangibleObject.h"
 
@@ -21,7 +21,7 @@ public:
 	 * @post { this object is locked, menuResponse is complete}
 	 * @param menuResponse ObjectMenuResponse that will be sent to the client
 	 */
-	void fillAttributeList(AttributeListMessage* alm, CreatureObject* creature, SceneObject* object) {
+	void fillAttributeList(AttributeListMessage* alm, CreatureObject* creature, SceneObject* object) const {
 
 		ManagedReference<SkillBuffTemplate*> skillBuff = cast<SkillBuffTemplate*>(object->getObjectTemplate());
 		if (skillBuff == NULL) {

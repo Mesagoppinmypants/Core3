@@ -1,7 +1,6 @@
 wooded_paralope = Creature:new {
 	objectName = "@mob/creature_names:wooded_paralope",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,7 +22,7 @@ wooded_paralope = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/paralope.iff"},

@@ -1,7 +1,8 @@
 crackdown_swamp_trooper = Creature:new {
 	objectName = "@mob/creature_names:crackdown_swamp_trooper",
+	randomNameType = NAME_SWAMPTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 1,
 	chanceHit = 0.36,
@@ -23,8 +24,9 @@ crackdown_swamp_trooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.05,
 
 	templates = {"object/mobile/dressed_swamp_trooper.iff"},
 	lootGroups = {},

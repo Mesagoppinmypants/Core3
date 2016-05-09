@@ -1,7 +1,8 @@
 imperial_cadet_squadleader = Creature:new {
 	objectName = "@mob/creature_names:imperial_cadet_squadleader",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 11,
 	chanceHit = 0.29,
@@ -23,7 +24,7 @@ imperial_cadet_squadleader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_captain_m.iff"},
@@ -39,12 +40,13 @@ imperial_cadet_squadleader = Creature:new {
 				{group = "clothing_attachments", chance = 50000},
 				{group = "armor_attachments", chance = 50000},
 				{group = "wearables_common", chance = 1000000}
-			},
-			lootChance = 2200000
+			}
 		}
 	},
 	weapons = {"ranged_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/military",
+	personalityStf = "@hireling/hireling_military",
 	attacks = merge(brawlermid,marksmanmid)
 }
 

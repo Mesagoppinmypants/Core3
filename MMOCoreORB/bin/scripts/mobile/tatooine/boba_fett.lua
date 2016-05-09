@@ -1,7 +1,6 @@
 boba_fett = Creature:new {
 	objectName = "@mob/creature_names:boba_fett",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 99,
 	chanceHit = 0.99,
@@ -23,7 +22,7 @@ boba_fett = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/boba_fett.iff"},

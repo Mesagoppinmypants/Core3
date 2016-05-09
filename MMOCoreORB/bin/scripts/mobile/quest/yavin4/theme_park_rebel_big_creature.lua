@@ -1,7 +1,6 @@
 theme_park_rebel_big_creature = Creature:new {
 	objectName = "@mob/creature_names:mawgax_raptor",
 	socialGroup = "mawgax",
-	pvpFaction = "",
 	faction = "",
 	level = 30,
 	chanceHit = 0.39,
@@ -23,8 +22,9 @@ theme_park_rebel_big_creature = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
+	scale = 1.5,
 
 	templates = {"object/mobile/mawgax_hue.iff"},
 	lootGroups = {
@@ -38,7 +38,7 @@ theme_park_rebel_big_creature = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

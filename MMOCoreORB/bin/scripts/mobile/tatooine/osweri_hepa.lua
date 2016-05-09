@@ -2,7 +2,6 @@ osweri_hepa = Creature:new {
 	objectName = "@npc_name:twilek_base_female",
 	customName = "Osweri Hepa",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ osweri_hepa = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_rebel_specforce_pathfinder_twk_female_01.iff"},

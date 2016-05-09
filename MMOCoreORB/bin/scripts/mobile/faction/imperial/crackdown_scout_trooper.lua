@@ -1,7 +1,8 @@
 crackdown_scout_trooper = Creature:new {
 	objectName = "@mob/creature_names:crackdown_scout_trooper",
+	randomNameType = NAME_SCOUTTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 1,
 	chanceHit = 0.35,
@@ -23,8 +24,9 @@ crackdown_scout_trooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.05,
 
 	templates = {"object/mobile/dressed_scout_trooper_white_white.iff"},
 	lootGroups = {

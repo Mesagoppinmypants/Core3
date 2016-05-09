@@ -1,7 +1,6 @@
 swift_charging_bol = Creature:new {
 	objectName = "@mob/creature_names:bol_swift_charger",
 	socialGroup = "bol",
-	pvpFaction = "",
 	faction = "",
 	level = 34,
 	chanceHit = 0.41,
@@ -23,7 +22,7 @@ swift_charging_bol = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bol_hue.iff"},
@@ -33,8 +32,8 @@ swift_charging_bol = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"knockdownattack","knockdownChance=50"},
-		{"stunattack","stunChance=50"}
+		{"knockdownattack",""},
+		{"stunattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 kai_tok_prowler = Creature:new {
 	objectName = "@mob/creature_names:kai_tok_prowler",
 	socialGroup = "kai_tok",
-	pvpFaction = "",
 	faction = "",
 	level = 26,
 	chanceHit = 0.36,
@@ -23,7 +22,7 @@ kai_tok_prowler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kai_tok_hue.iff"},
@@ -33,8 +32,8 @@ kai_tok_prowler = Creature:new {
 	weapons = {"creature_spit_small_red"},
 	conversationTemplate = "",
 	attacks = {
-		{"mediumpoison",""},
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""},
+		{"mediumpoison",""}
 	}
 }
 

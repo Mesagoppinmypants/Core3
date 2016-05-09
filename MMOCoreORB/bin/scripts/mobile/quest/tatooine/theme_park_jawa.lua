@@ -1,7 +1,6 @@
 theme_park_jawa = Creature:new {
 	objectName = "@mob/creature_names:jawa_henchman",
 	socialGroup = "jawa",
-	pvpFaction = "jawa",
 	faction = "jawa",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ theme_park_jawa = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/jawa_male.iff"},

@@ -1,7 +1,6 @@
 bolma_male = Creature:new {
 	objectName = "@mob/creature_names:bolma_male",
 	socialGroup = "bolma",
-	pvpFaction = "",
 	faction = "",
 	level = 27,
 	chanceHit = 0.37,
@@ -23,7 +22,7 @@ bolma_male = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bolma_hue.iff"},
@@ -33,7 +32,8 @@ bolma_male = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"",""},
+		{"stunattack",""}
 	}
 }
 

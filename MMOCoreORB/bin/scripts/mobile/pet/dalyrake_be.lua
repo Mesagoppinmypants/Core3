@@ -1,7 +1,6 @@
 dalyrake_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_dalyrake",
 	socialGroup = "dalyrake",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ dalyrake_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/dalyrake_hue.iff"},

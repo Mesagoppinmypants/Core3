@@ -1,7 +1,8 @@
 jinda_veteran = Creature:new {
 	objectName = "@mob/creature_names:jinda_veteran",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jinda_tribe",
-	pvpFaction = "",
 	faction = "",
 	level = 45,
 	chanceHit = 0.47,
@@ -23,23 +24,23 @@ jinda_veteran = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
-			"object/mobile/jinda_male.iff",
-			"object/mobile/jinda_male_01.iff",
-			"object/mobile/jinda_female.iff",
-			"object/mobile/jinda_female_01.iff"},
+		"object/mobile/jinda_male.iff",
+		"object/mobile/jinda_male_01.iff",
+		"object/mobile/jinda_female.iff",
+		"object/mobile/jinda_female_01.iff"},
 	lootGroups = {
 		{
-	        groups = {
+			groups = {
 				{group = "ewok", chance = 8100000},
 				{group = "wearables_uncommon", chance = 1000000},
 				{group = "armor_attachments", chance = 450000},
 				{group = "clothing_attachments", chance = 450000}
 			},
-			lootChance = 2700000
+			lootChance = 1900000
 		}
 	},
 	weapons = {"ewok_weapons"},

@@ -1,6 +1,6 @@
 DathomirTradeOutpostScreenPlay = ScreenPlay:new {
 	numberOfActs = 1,
-	
+
 	screenplayName = "DathomirTradeOutpostScreenPlay"
 }
 
@@ -13,12 +13,13 @@ function DathomirTradeOutpostScreenPlay:start()
 end
 
 function DathomirTradeOutpostScreenPlay:spawnMobiles()
-	
+
 	--In buildings
-	spawnMobile("dathomir", "noble", 60, 3.00888, 0.125266, -2.92449, 279.334, 1392894)
+	local pNpc = spawnMobile("dathomir", "scientist",60,5.7,0.6,-6.3,-132,6955370)
+	self:setMoodString(pNpc, "conversation")
+	spawnMobile("dathomir", "noble", 60, 3.00888, 0.125266, -2.92449, -90, 1392894)
 	spawnMobile("dathomir", "businessman", 60, 6.94935, 0.624998, 2.6394, 198.079, 6955367)
 	spawnMobile("dathomir", "businessman", 60, -8.09806, 0.625, 4.31086, 153.675, 6955368)
-	spawnMobile("dathomir", "scientist", 60, 8.38532, 0.625, -5.44432, 228.681, 6955370)
 
 	--Outside
 	spawnMobile("dathomir", "businessman", 60, 590.176, 6, 3058.45, 264.528, 0)
@@ -28,7 +29,6 @@ function DathomirTradeOutpostScreenPlay:spawnMobiles()
 	spawnMobile("dathomir", "commoner", 60, 598.679, 6, 3046.85, 261.619, 0)
 	spawnMobile("dathomir", "commoner", 60, 577.196, 6, 3100.6, 52.588, 0)
 	spawnMobile("dathomir", "commoner", 60, 585.757, 6, 3072.92, 217.734, 0)
-	spawnMobile("dathomir", "commoner", 60, 611.089, 6, 3084.06, 359.767, 0)
 	spawnMobile("dathomir", "commoner", 60, 621.667, 6, 3092.75, 351.148, 0)
 	spawnMobile("dathomir", "commoner", 60, 605.584, 6, 3080.71, 149.629, 0)
 	spawnMobile("dathomir", "commoner", 60, 616.733, 6, 3056.95, 135.38, 0)

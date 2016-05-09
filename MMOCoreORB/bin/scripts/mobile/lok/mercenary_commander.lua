@@ -1,7 +1,8 @@
 mercenary_commander = Creature:new {
 	objectName = "@mob/creature_names:mercenary_commander",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "lok_mercenaries",
-	pvpFaction = "lok_mercenaries",
 	faction = "lok_mercenaries",
 	level = 42,
 	chanceHit = 0.44,
@@ -23,7 +24,7 @@ mercenary_commander = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -31,7 +32,7 @@ mercenary_commander = Creature:new {
 		"object/mobile/dressed_mercenary_commander_nikto_m.iff",
 		"object/mobile/dressed_mercenary_commander_wee_m.iff",
 		"object/mobile/dressed_mercenary_commander_zab_m.iff"
-		},
+	},
 	lootGroups = {
 		{
 			groups = {
@@ -41,12 +42,12 @@ mercenary_commander = Creature:new {
 				{group = "loot_kit_parts", chance = 2000000},
 				{group = "tailor_components", chance = 1000000},
 				{group = "heavy_weapons", chance = 2000000}
-			},
-			lootChance = 3000000
+			}
 		}
 	},
 	weapons = {"rebel_weapons_heavy"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(commandomaster,marksmanmaster,brawlermaster)
 }
 

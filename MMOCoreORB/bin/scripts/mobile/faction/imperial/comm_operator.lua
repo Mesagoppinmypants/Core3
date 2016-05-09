@@ -1,7 +1,8 @@
 comm_operator = Creature:new {
 	objectName = "@mob/creature_names:comm_operator",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 14,
 	chanceHit = 0.3,
@@ -23,10 +24,18 @@ comm_operator = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
-	templates = {"object/mobile/dressed_stormtrooper_m.iff"},
+	templates = {
+		"object/mobile/dressed_imperial_officer_f.iff",
+		"object/mobile/dressed_imperial_officer_m.iff",
+		"object/mobile/dressed_imperial_officer_m_2.iff",
+		"object/mobile/dressed_imperial_officer_m_3.iff",
+		"object/mobile/dressed_imperial_officer_m_4.iff",
+		"object/mobile/dressed_imperial_officer_m_5.iff",
+		"object/mobile/dressed_imperial_officer_m_6.iff"
+		},
 	lootGroups = {
 		{
 			groups = {
@@ -37,12 +46,13 @@ comm_operator = Creature:new {
 				{group = "clothing_attachments", chance = 150000},
 				{group = "armor_attachments", chance = 150000},
 				{group = "wearables_common", chance = 1000000}
-			},
-			lootChance = 2200000
+			}
 		}
 	},
 	weapons = {"imperial_weapons_light"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/military",
+	personalityStf = "@hireling/hireling_military",
 	attacks = merge(brawlermid,marksmanmid)
 }
 

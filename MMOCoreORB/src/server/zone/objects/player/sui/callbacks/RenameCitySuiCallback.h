@@ -20,30 +20,34 @@ class RenameCitySuiCallback : public SuiCallback {
 	ManagedWeakReference<CityRegion*> city;
 
 public:
-	RenameCitySuiCallback(Zone* zone, CityRegion* city)
-			: SuiCallback(zone->getZoneServer()) {
-
+	RenameCitySuiCallback(Zone* zone, CityRegion* city) : SuiCallback(zone->getZoneServer()) {
 		this->zne = zone;
 		this->city = city;
 	}
 
-	void run(CreatureObject* creature, SuiBox* sui, bool cancelPressed, Vector<UnicodeString>* args) {
-		if(cancelPressed)
+	void run(CreatureObject* creature, SuiBox* sui, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
+		if(cancelPressed || server == NULL)
 			return;
 
-		if(city == NULL || server == NULL)
+		ManagedReference<CityRegion*> cityObject = city.get();
+		if(cityObject == NULL)
 			return;
 
 		ManagedReference<Zone*> zone = this->zne.get();
-
 		if (zone == NULL)
+			return;
+
+		PlayerObject* ghost = creature->getPlayerObject();
+		if (ghost == NULL)
 			return;
 
 		String cityName = args->get(0).toString();
 
 		NameManager* nameManager = NameManager::instance();
 
-		int result = nameManager->validateName(cityName);
+		int result = nameManager->validateCityName(cityName);
 
 		switch (result) {
 		case NameManagerResult::DECLINED_PROFANE:
@@ -72,9 +76,7 @@ public:
 			return;
 		}
 
-		ManagedReference<CityRegion*> cityObject = city.get();
-
-		if(cityObject->getMayorID() != creature->getObjectID())
+		if(cityObject->getMayorID() != creature->getObjectID() && !ghost->isStaff())
 			return;
 
 		Locker mlock(cityManager, creature);
@@ -104,12 +106,12 @@ public:
 				planetManager->addPlayerCityTravelPoint(newTP);
 			}
 		}
+
 		if(isRegistered)
 			cityManager->registerCity(cityObject, creature);
 
 		creature->addCooldown("rename_city_cooldown", 604800 * 4); // 4 week cooldown.  need to investigate
 		creature->sendSystemMessage("@city/city:name_changed"); // The city name has been successfully changed.");
-
 	}
 };
 

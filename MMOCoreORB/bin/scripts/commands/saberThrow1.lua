@@ -43,18 +43,23 @@
 
 SaberThrow1Command = {
         name = "saberthrow1",                
-        
-	damageMultiplier = 1.5,
-	speedMultiplier = 1.5,
-	coneAngle = 60,
-	coneAction = true,
-	forceCostMultiplier = 1.5,
 
-	animationCRC = hashCode("saberthrow_light"),
+	damageMultiplier = 1.5,
+	speedMultiplier = 2.0,
+	healthCostMultiplier = 0,
+	actionCostMultiplier = 0,
+	mindCostMultiplier = 0,
+	forceCostMultiplier = 1.5,
+	visMod = 25,
+
+	animation = "saberthrow", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "saberthrow1",
-	
+
 	poolsToDamage = RANDOM_ATTRIBUTE,
+
+	weaponType = JEDIWEAPON,
 
 	range = 32
 }

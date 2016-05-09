@@ -15,17 +15,16 @@
 class HQMenuComponent : public ObjectMenuComponent {
 protected:
 
-	static const int MAKEREBEL = 222;
-	static const int MAKEIMPERIAL = 223;
-	// 37 is something in the objectcontroller
-	static const int MAKENEUTRAL = 224;
-	static const int DESTROY = 225;
-	static const int ABORTSHUTDOWN = 226;
+	enum {
+		MAKEREBEL     = 222,
+		MAKEIMPERIAL  = 223,
+		// 37 is something in the objectcontroller
+		MAKENEUTRAL   = 224,
+		DESTROY       = 225,
+		ABORTSHUTDOWN = 226,
 
-	static const int JAMUPLINK = 227;
-
-
-
+		JAMUPLINK     = 227
+	};
 
 public:
 
@@ -35,7 +34,7 @@ public:
 	 * @post { this object is locked, menuResponse is complete}
 	 * @param menuResponse ObjectMenuResponse that will be sent to the client
 	 */
-	 void fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player);
+	 void fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const;
 
 	/**
 	 * Handles the radial selection sent by the client, must be overriden by inherited objects
@@ -45,10 +44,8 @@ public:
 	 * @param selectedID selected menu id
 	 * @returns 0 if successfull
 	 */
-	 int handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID);
+	 int handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) const;
 };
-
-
 
 
 #endif /* HQMENUCOMPONENT_H_ */

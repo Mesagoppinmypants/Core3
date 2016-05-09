@@ -1,15 +1,16 @@
 plasma_thief = Creature:new {
 	objectName = "@mob/creature_names:plasma_thief",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "plasma_thief",
-	pvpFaction = "plasma_thief",
 	faction = "plasma_thief",
-	level = 3,
-	chanceHit = 0.23,
-	damageMin = 35,
-	damageMax = 45,
-	baseXp = 62,
-	baseHAM = 90,
-	baseHAMmax = 110,
+	level = 7,
+	chanceHit = 0.26,
+	damageMin = 55,
+	damageMax = 65,
+	baseXp = 187,
+	baseHAM = 270,
+	baseHAMmax = 330,
 	armor = 0,
 	resists = {0,0,0,0,0,0,0,-1,-1},
 	meatType = "",
@@ -33,11 +34,11 @@ plasma_thief = Creature:new {
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000},
 				{group = "plasma_thief_common", chance = 1000000},
-			},
-			lootChance = 3200000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_light"},
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(marksmannovice,brawlernovice)
 }
 

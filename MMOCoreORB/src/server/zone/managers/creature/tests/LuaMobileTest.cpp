@@ -6,18 +6,21 @@
  */
 
 #include "gtest/gtest.h"
-#include "server/zone/templates/LootItemTemplate.h"
-#include "server/zone/templates/LootGroupTemplate.h"
+#include "templates/LootItemTemplate.h"
+#include "templates/SharedObjectTemplate.h"
+#include "templates/creature/SharedCreatureObjectTemplate.h"
+#include "templates/LootGroupTemplate.h"
 #include "server/zone/managers/faction/FactionManager.h"
+#include "server/zone/managers/creature/DnaManager.h"
 #include "server/zone/managers/loot/LootGroupMap.h"
 #include "server/zone/managers/creature/CreatureTemplateManager.h"
 #include "server/zone/managers/loot/lootgroup/LootGroupCollectionEntry.h"
-#include "server/conf/ConfigManager.h"
-#include "server/zone/managers/templates/DataArchiveStore.h"
+#include "conf/ConfigManager.h"
+#include "templates/manager/DataArchiveStore.h"
 #include "server/zone/managers/objectcontroller/command/CommandConfigManager.h"
 #include "server/zone/managers/objectcontroller/command/CommandList.h"
 #include "server/zone/managers/creature/SpawnAreaMap.h"
-#include "server/zone/templates/string/StringFile.h"
+#include "templates/string/StringFile.h"
 
 class LuaMobileTest : public ::testing::Test {
 protected:
@@ -65,6 +68,7 @@ public:
 		files.add("string/en/bestine.stf");
 		files.add("string/en/theme_park/warren/warren_system_messages.stf");
 		files.add("string/en/newbie_tutorial/system_messages.stf");
+		files.add("string/en/chassis_npc.stf");
 
 		int count = 0;
 
@@ -76,10 +80,7 @@ public:
 
 				if (stream->size() > 4) {
 					StringFile stringFile;
-					if (!stringFile.load(stream)) {
-						delete stream;
-
-					} else {
+					if (stringFile.load(stream)) {
 						file = file.replaceFirst("string/en/","");
 						file = file.replaceFirst(".stf","");
 
@@ -168,13 +169,16 @@ TEST_F(LuaMobileTest, LuaMobileTemplatesTest) {
 		TemplateManager::instance()->loadLuaTemplates();
 		ASSERT_EQ(TemplateManager::ERROR_CODE, 0);
 	}
+	// verify DNA manager loads
+	DnaManager::instance()->loadSampleData();
+	ASSERT_TRUE( DnaManager::instance() != NULL);
+
 
 	// Test Creature Templates
 	HashTableIterator<uint32, Reference<CreatureTemplate*> > creatureIterator = CreatureTemplateManager::instance()->iterator();
 	while (creatureIterator.hasNext()) {
 		CreatureTemplate* creature = creatureIterator.next();
 		std::string templateName( creature->getTemplateName().toCharArray() );
-
 		//Verify non-empty objectName is a valid string
 		String objName = creature->getObjectName();
 		if (!objName.isEmpty()) {
@@ -191,11 +195,17 @@ TEST_F(LuaMobileTest, LuaMobileTemplatesTest) {
 			std::string objName = objTemps.get(j).toCharArray();
 			EXPECT_TRUE( templateData != NULL ) << "Mobile " << templateName << " has invalid template configured: " << objName;
 
+			// Check Template Genetics math to find invalid mobs
+			if (templateData != NULL) {
+				SharedCreatureObjectTemplate* creoData = dynamic_cast<SharedCreatureObjectTemplate*> (templateData);
+				if (creoData != NULL) {
+				}
+			}
+
 			if (objectType == 0) {
 				objectType = templateData->getGameObjectType();
 			}
 		}
-
 		// Verify that control device template is valid
 		String controlDeviceTemplate = creature->getControlDeviceTemplate();
 		if (!controlDeviceTemplate.isEmpty()) {
@@ -204,14 +214,10 @@ TEST_F(LuaMobileTest, LuaMobileTemplatesTest) {
 			EXPECT_TRUE( controlDeviceTemplate.beginsWith("object/intangible/pet/") ) << "Control device template " << controlDeviceTemplate.toCharArray() << " from " << templateName << " is not a pet/droid control device template.";
 		}
 
-		// Verify that faction and pvpFaction are valid
+		// Verify that faction is valid
 		String faction = creature->getFaction();
 		if (!faction.isEmpty()) {
 			EXPECT_TRUE( FactionManager::instance()->isFaction(faction) ) << "Faction, " << faction.toCharArray() << ", from mobile template " << templateName << " does not exist.";
-		}
-		String pvpFaction = creature->getPvpFaction();
-		if (!pvpFaction.isEmpty()) {
-			EXPECT_TRUE( FactionManager::instance()->isFaction(pvpFaction) ) << "PvpFaction, " << pvpFaction.toCharArray() << ", from mobile template " << templateName << " does not exist.";
 		}
 
 		// Verify level
@@ -343,9 +349,22 @@ TEST_F(LuaMobileTest, LuaMobileTemplatesTest) {
 		float tamingChance = creature->getTame();
 		EXPECT_TRUE( tamingChance >= 0 && tamingChance <= 1 ) << "Taming chance is not a valid value on mobile: " << templateName;
 
+		// Verify diet on creatures
+		if (boneMax > 0 || hideMax > 0 || meatMax > 0 || milkMax > 0 || tamingChance > 0) {
+			uint32 diet = creature->getDiet();
+			EXPECT_TRUE( diet != 0 ) << "Diet is NONE on creature type mobile " << templateName;
+		}
+
 		// Verify scale
 		float scale = creature->getScale();
 		EXPECT_TRUE( scale > 0 ) << "Scale is not a positive value on mobile: " << templateName;
+
+		// Verify PACK mobs have a social group
+		uint32 creatureBitmask = creature->getCreatureBitmask();
+		String socialGroup = creature->getSocialGroup();
+		if (creatureBitmask & CreatureFlag::PACK) {
+			EXPECT_FALSE( socialGroup.isEmpty() ) << "Social group is empty on pack mobile: " << templateName;
+		}
 
 		// Verify loot group percentages
 		LootGroupCollection* groupCollection = creature->getLootGroups();
@@ -410,7 +429,7 @@ TEST_F(LuaMobileTest, LuaMobileTemplatesTest) {
 		for (int i = 0; i < cam->size(); i++) {
 			String commandName = cam->getCommand(i);
 
-			EXPECT_TRUE( commandConfigManager->contains(commandName) ) << "Attack: " << commandName.toCharArray() << " is not a valid command in mobile template: " << templateName;
+			EXPECT_TRUE( commandName.isEmpty() || commandConfigManager->contains(commandName) ) << "Attack: " << commandName.toCharArray() << " is not a valid command in mobile template: " << templateName;
 		}
 
 		// Very attackable npcs
@@ -475,13 +494,24 @@ TEST_F(LuaMobileTest, LuaMobileTemplatesTest) {
 			}
 		}
 
+		// Verify mission buildings exist and are lairs
+		String missionBuilding = lair->getMissionBuilding(10);
+		if (!missionBuilding.isEmpty()) {
+			std::string buildingStr = missionBuilding.toCharArray();
+			SharedObjectTemplate* templateObject = templateManager->getTemplate(missionBuilding.hashCode());
+			EXPECT_TRUE( templateObject != NULL && templateObject->isSharedTangibleObjectTemplate() ) << "Mission building template " << buildingStr << " in lair template " << templateName << " does not exist";
+			EXPECT_TRUE( missionBuilding.beginsWith( "object/tangible/lair/") ) << "Mission building template " << buildingStr << " in lair template " << templateName << " is not a child of object/tangible/lair/";
+		}
+
 		if( lair->getBuildingType() == LairTemplate::THEATER ){
 			EXPECT_TRUE( buildingCount > 0 ) << "There are no buildings configured in theater type lair template " << templateName;
 		}
 		if( lair->getBuildingType() == LairTemplate::NONE ){
 			EXPECT_TRUE( buildingCount == 0 ) << "There are buildings configured in 'none' type lair template " << templateName;
 		}
-		// TODO: Add test to enforce LAIRs have at least one building configured
+		if( lair->getBuildingType() == LairTemplate::LAIR ){
+			EXPECT_TRUE( buildingCount > 0 ) << "There are no buildings configured in lair type lair template " << templateName;
+		}
 
 	}
 
@@ -536,6 +566,8 @@ TEST_F(LuaMobileTest, LuaMobileTemplatesTest) {
 		SpawnGroup* group = missionIterator.next();
 		std::string templateName( group->getTemplateName().toCharArray() );
 
+		Vector<String> lairTemplates;
+
 		// Verify spawn list
 		Vector<Reference<LairSpawn*> >* spawnList = group->getSpawnList();
 		for (int i = 0; i < spawnList->size(); i++) {
@@ -545,17 +577,32 @@ TEST_F(LuaMobileTest, LuaMobileTemplatesTest) {
 			// Verify lair template exists
 			String lairTemplateName = spawn->getLairTemplateName();
 			Reference<LairTemplate*> lairTemplate = CreatureTemplateManager::instance()->getLairTemplate(lairTemplateName.hashCode());
-			EXPECT_TRUE( lairTemplate != NULL ) << "Lair template " << lairName << " in spawn group " << templateName << " does not exist.";
+			EXPECT_TRUE( lairTemplate != NULL ) << "Lair template " << lairName << " in destroy mission spawn group " << templateName << " does not exist.";
+			EXPECT_FALSE( lairTemplates.contains(lairTemplateName) ) << "Lair template " << lairName << " is duplicated in destroy mission spawn group " << templateName;
+			lairTemplates.add(lairTemplateName);
+
+			if (lairTemplate != NULL) {
+				// Verify that lair template has a valid mission building or is of type LAIR
+				String missionBuilding = lairTemplate->getMissionBuilding(10);
+				if (!missionBuilding.isEmpty()) {
+					std::string buildingStr = missionBuilding.toCharArray();
+					SharedObjectTemplate* templateObject = templateManager->getTemplate(missionBuilding.hashCode());
+					EXPECT_TRUE( templateObject != NULL && templateObject->isSharedTangibleObjectTemplate() ) << "Mission building template " << buildingStr << " in lair template " << lairName << ", part of destroy mission group " << templateName << " does not exist";
+					EXPECT_TRUE( missionBuilding.beginsWith( "object/tangible/lair/") ) << "Mission building template " << buildingStr << " in lair template " << lairName << ", part of destroy mission group " << templateName << " is not a child of object/tangible/lair/";
+				} else {
+					EXPECT_TRUE( lairTemplate->getBuildingType() == LairTemplate::LAIR ) << "Lair template " << lairName << ", part of destroy mission group " << templateName << " is not of type LAIR";
+				}
+			}
 
 			// Verify difficulties
 			int minDiff = spawn->getMinDifficulty();
 			int maxDiff = spawn->getMaxDifficulty();
-			EXPECT_TRUE( minDiff > 0 ) << "MinDifficulty for lairTemplate " << lairName << " in spawn group " << templateName << " is not positive.";
-			EXPECT_TRUE( maxDiff >= minDiff ) << "MaxDifficulty for lairTemplate " << lairName << " in spawn group " << templateName << " is less than min difficulty.";
+			EXPECT_TRUE( minDiff > 0 ) << "MinDifficulty for lairTemplate " << lairName << " in destroy mission spawn group " << templateName << " is not positive.";
+			EXPECT_TRUE( maxDiff >= minDiff ) << "MaxDifficulty for lairTemplate " << lairName << " in destroy mission spawn group " << templateName << " is less than min difficulty.";
 
 			// Verify size is at least 1
 			float size = spawn->getSize();
-			EXPECT_TRUE( size >= 1 ) << "Size for lairTemplate " << lairName << " in spawn group " << templateName << " is less than 1.";
+			EXPECT_TRUE( size >= 1 ) << "Size for lairTemplate " << lairName << " in destroy mission spawn group " << templateName << " is less than 1.";
 		}
 	}
 }
@@ -648,8 +695,17 @@ TEST_F(LuaMobileTest, LuaSpawnManagerTest) {
 			}
 
 			if (tier & SpawnAreaMap::SPAWNAREA) {
-				String group = region.getStringAt(7);
-				EXPECT_TRUE( CreatureTemplateManager::instance()->getSpawnGroup(group.hashCode()) != NULL ) << "Spawn group " << std::string(group.toCharArray()) << " for spawn area " << std::string(area.toCharArray()) << " on planet " << std::string(zoneNames.get(i).toCharArray()) << " does not exist.";
+				LuaObject spawnGroups = region.getObjectAt(6);
+
+				ASSERT_TRUE( spawnGroups.isValidTable() ) << "Invalid spawnGroups table in spawn area " << std::string(area.toCharArray()) << " in " << zoneNames.get(i).toCharArray() << "_regions.";
+
+				for (int k = 1; k <= spawnGroups.getTableSize(); k++) {
+					String group = spawnGroups.getStringAt(k);
+
+					EXPECT_TRUE( CreatureTemplateManager::instance()->getSpawnGroup(group.hashCode()) != NULL ) << "Spawn group " << std::string(group.toCharArray()) << " for spawn area " << std::string(area.toCharArray()) << " on planet " << std::string(zoneNames.get(i).toCharArray()) << " does not exist.";
+				}
+
+				spawnGroups.pop();
 			}
 
 			region.pop();
@@ -676,25 +732,7 @@ TEST_F(LuaMobileTest, LuaSpawnManagerTest) {
 		}
 
 		spawns.pop();
-
-		// Verify badges
-		LuaObject badges = lua->getGlobalObject(zoneNames.get(i) + "_badges");
-
-		ASSERT_TRUE( badges.isValidTable() ) << "Badges table in " << zoneNames.get(i).toCharArray() << " spawn manager is invalid.";
-
-		for (int j = 1; j <= badges.getTableSize(); ++j) {
-			lua_rawgeti(badges.getLuaState(), -1, j);
-			LuaObject badge(badges.getLuaState());
-
-			ASSERT_TRUE( badge.isValidTable() ) << "Invalid badge table #" << String::valueOf(j).toCharArray() << " in " << zoneNames.get(i).toCharArray() << "_badges.";
-
-			uint8 id = badge.getIntAt(5);
-
-			EXPECT_TRUE( Badge::exists(id) ) << "Badge id #" << String::valueOf(id).toCharArray() << " does not exist.";
-
-			badge.pop();
-		}
-
-		badges.pop();
 	}
+
+	delete lua;
 }

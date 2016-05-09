@@ -2,7 +2,6 @@ oka_alewame = Creature:new {
 	objectName = "@npc_name:moncal_base_male",
 	customName = "Oka Alewame",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ oka_alewame = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_sean_questn_university.iff"},

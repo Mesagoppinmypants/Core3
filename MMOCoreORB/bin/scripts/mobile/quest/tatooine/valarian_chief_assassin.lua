@@ -1,7 +1,6 @@
 valarian_chief_assassin = Creature:new {
 	objectName = "",
 	socialGroup = "valarian",
-	pvpFaction = "valarian",
 	faction = "valarian",
 	level = 16,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ valarian_chief_assassin = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_valarian_assassin.iff"},

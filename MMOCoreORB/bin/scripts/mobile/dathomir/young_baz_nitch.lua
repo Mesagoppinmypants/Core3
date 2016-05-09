@@ -1,7 +1,6 @@
 young_baz_nitch = Creature:new {
 	objectName = "@mob/creature_names:young_baz_nitch",
 	socialGroup = "baz_nitch",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ young_baz_nitch = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/young_baz_nitch.iff"},

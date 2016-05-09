@@ -1,8 +1,8 @@
 rancher = Creature:new {
 	objectName = "@mob/creature_names:farmer_rancher",
-	generateRandomName = true,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 12,
 	chanceHit = 0.290000,

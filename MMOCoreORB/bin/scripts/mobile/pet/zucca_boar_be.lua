@@ -1,7 +1,6 @@
 zucca_boar_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_zucca_boar",
 	socialGroup = "boar",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ zucca_boar_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/zucca_boar.iff"},

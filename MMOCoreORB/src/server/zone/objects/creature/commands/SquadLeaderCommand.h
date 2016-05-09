@@ -28,7 +28,7 @@ public:
 		actionCRC = 0;
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
 		if (!checkStateMask(creature))
 			return INVALIDSTATE;
@@ -39,7 +39,7 @@ public:
 		return SUCCESS;
 	}
 
-	bool checkGroupLeader(CreatureObject* player, GroupObject* group) {
+	bool checkGroupLeader(CreatureObject* player, GroupObject* group) const {
 		if (player == NULL)
 			return false;
 
@@ -56,25 +56,47 @@ public:
 		if (group->getLeader() != player) {
 			player->sendSystemMessage("@error_message:not_group_leader");
 			return false;
-		}	
+		}
+
+		if (player->hasAttackDelay() || !player->checkPostureChangeDelay())
+			return false;
 
 		return true;
 	}
 
-	bool isValidGroupAbilityTarget(CreatureObject* leader, CreatureObject* target) {
-		if (!target->isPlayerCreature())
+	bool isValidGroupAbilityTarget(CreatureObject* leader, CreatureObject* target, bool allowPet) const {
+		if (allowPet) {
+			if (!target->isPlayerCreature() && !target->isPet()) {
+				return false;
+			}
+		} else if (!target->isPlayerCreature()) {
 			return false;
+		}
 
 		if (target == leader)
 			return true;
 
-		PlayerObject* leaderGhost = leader->getPlayerObject();
-		PlayerObject* targetGhost = target->getPlayerObject();
-
-		if (leaderGhost == NULL || targetGhost == NULL)
+		if (target->getParentRecursively(SceneObjectType::BUILDING) != leader->getParentRecursively(SceneObjectType::BUILDING))
 			return false;
 
-		if (targetGhost->getFactionStatus() == FactionStatus::CHANGINGSTATUS || leaderGhost->getFactionStatus() == FactionStatus::CHANGINGSTATUS)
+		PlayerObject* leaderGhost = leader->getPlayerObject();
+
+		if (leaderGhost == NULL)
+			return false;
+
+		PlayerObject* targetGhost = NULL;
+
+		if (allowPet && target->isPet()) {
+			ManagedReference<CreatureObject*> owner = target->getLinkedCreature().get();
+
+			if (owner != NULL && owner->isPlayerCreature()) {
+				targetGhost = owner->getPlayerObject();
+			}
+		} else {
+			targetGhost = target->getPlayerObject();
+		}
+
+		if (targetGhost == NULL)
 			return false;
 
 		if (leader->getFaction() != 0 && target->getFaction() != 0) {
@@ -111,7 +133,7 @@ public:
 		return true;
 	}
 */
-	float calculateGroupModifier(GroupObject* group) {
+	float calculateGroupModifier(GroupObject* group) const {
 		if (group == NULL)
 			return 0;
 
@@ -121,13 +143,13 @@ public:
 
 			return modifier;
     }
-    bool inflictHAM(CreatureObject* player, int health, int action, int mind){
+    bool inflictHAM(CreatureObject* player, int health, int action, int mind) const {
         if (player == NULL)
 			return false;
         if(health < 0 || action < 0 || mind < 0)
             return false;
 
-        if(player->getHAM(CreatureAttribute::ACTION) < action || player->getHAM(CreatureAttribute::HEALTH) < health || player->getHAM(CreatureAttribute::MIND) < mind)
+        if(player->getHAM(CreatureAttribute::ACTION) <= action || player->getHAM(CreatureAttribute::HEALTH) <= health || player->getHAM(CreatureAttribute::MIND) <= mind)
             return false;
 
         if(health > 0)
@@ -141,8 +163,8 @@ public:
 
         return true;
     }
-	
-    void sendCombatSpam(CreatureObject* player){
+
+    void sendCombatSpam(CreatureObject* player) const {
         if (player == NULL)
 			return;
         if(combatSpam == "")
@@ -150,39 +172,39 @@ public:
 
         player->sendSystemMessage("@cbt_spam:" + combatSpam);
     }
-	
+
 /*    bool setCommandMessage(CreatureObject* creature, String message){
         if(!creature->isPlayerCreature())
             return false;
-			
+
         ManagedReference<CreatureObject*> player = (creature);
-        ManagedReference<PlayerObject*> playerObject = player->getPlayerObject();	
-			
+        ManagedReference<PlayerObject*> playerObject = player->getPlayerObject();
+
 		if (message.length()>128){
 			player->sendSystemMessage("Your message can only be up to 128 characters long.");
 			return false;
 		}
 		if (NameManager::instance()->isProfane(message)){
 			player->sendSystemMessage("Your message has failed the profanity filter.");
-			return false;				
+			return false;
 		}
-		
+
         if(message.isEmpty()) {
             playerObject->removeCommandMessageString(actionCRC);
 			player->sendSystemMessage("Your message has been removed.");
 		} else {
             playerObject->setCommandMessageString(actionCRC, message);
 			player->sendSystemMessage("Your message was set to :-\n" + message);
-		}		
-		
+		}
+
         return true;
     }
-*/	
+*/
     bool isSquadLeaderCommand(){
         return true;
     }
 
-	float getCommandDuration(CreatureObject* object, const UnicodeString& arguments) {
+	float getCommandDuration(CreatureObject* object, const UnicodeString& arguments) const {
 		return defaultTime;
 	}
 

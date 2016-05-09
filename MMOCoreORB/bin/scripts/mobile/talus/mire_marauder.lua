@@ -1,7 +1,6 @@
 mire_marauder = Creature:new {
 	objectName = "@mob/creature_names:mire_marauder",
 	socialGroup = "panther",
-	pvpFaction = "",
 	faction = "",
 	level = 56,
 	chanceHit = 0.55,
@@ -23,7 +22,7 @@ mire_marauder = Creature:new {
 	ferocity = 12,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/minor_sludge_panther.iff"},
@@ -32,8 +31,8 @@ mire_marauder = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"},
-		{"stunattack","stunChance=50"}
+		{"posturedownattack",""},
+		{"stunattack",""}
 	}
 }
 

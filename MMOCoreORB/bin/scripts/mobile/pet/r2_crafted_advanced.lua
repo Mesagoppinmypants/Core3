@@ -1,7 +1,6 @@
 r2_crafted_advanced = Creature:new {
 	objectName = "@droid_name:r2_crafted_advanced",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 4,
 	chanceHit = 0.24,
@@ -23,14 +22,15 @@ r2_crafted_advanced = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
 		"object/creature/npc/droid/crafted/r2_droid_advanced.iff"
-	},		
+	},
 	lootGroups = {},
-	weapons = {},
+	defaultAttack = "attack",
+	defaultWeapon = "object/weapon/ranged/droid/droid_astromech_ranged.iff",
 	conversationTemplate = "",
 }
 

@@ -43,7 +43,7 @@
 
 object_weapon_ranged_grenade_grenade_glop = object_weapon_ranged_grenade_shared_grenade_glop:new {
 
-	objectMenuComponent = {"cpp", "ThrowGrenadeMenuComponent"},
+	objectMenuComponent = "ThrowGrenadeMenuComponent",
 
 	playerRaces = { "object/creature/player/bothan_male.iff",
 			"object/creature/player/bothan_female.iff",
@@ -70,7 +70,7 @@ object_weapon_ranged_grenade_grenade_glop = object_weapon_ranged_grenade_shared_
 	-- HEAVYLIGHTNINGBEAMATTACK, HEAVYPARTICLEBEAMATTACK, HEAVYROCKETLAUNCHERATTACK, HEAVYLAUNCHERATTACK
 	attackType = GRENADEATTACK,
 
-	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, FORCE, LIGHTSABER
+	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, LIGHTSABER
 	damageType = ACID,
 
 	-- NONE, LIGHT, MEDIUM, HEAVY
@@ -98,7 +98,8 @@ object_weapon_ranged_grenade_grenade_glop = object_weapon_ranged_grenade_shared_
 
 	useCount = 5,
 
-	combatSpam = "grenade_glop",
+	combatSpam = "throw_glop",
+	animationType = "glop",
 
 	healthAttackCost = 100,
 	actionAttackCost = 40,

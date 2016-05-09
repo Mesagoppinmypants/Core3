@@ -2,7 +2,6 @@ rageon_vart = Creature:new {
 	objectName = "",
 	customName = "Rageon Vart",
 	socialGroup = "death_watch",
-	pvpFaction = "",
 	faction = "",
 	level = 178,
 	chanceHit = 12.25,
@@ -24,8 +23,9 @@ rageon_vart = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.15,
 	
 	templates = {"object/mobile/dressed_death_watch_grey.iff"},
 	lootGroups = {
@@ -38,7 +38,7 @@ rageon_vart = Creature:new {
 	},
 	weapons = {"death_watch_commander_weapons"},
 	conversationTemplate = "",
-	attacks = merge(carbineermaster,marksmanmaster,brawlermaster)
+	attacks = merge(carbineermaster,marksmanmaster,brawlermaster,pistoleermaster)
 }
 
 CreatureTemplates:addCreatureTemplate(rageon_vart, "rageon_vart")

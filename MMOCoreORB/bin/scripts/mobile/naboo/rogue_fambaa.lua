@@ -1,7 +1,6 @@
 rogue_fambaa = Creature:new {
 	objectName = "@mob/creature_names:rogue_fambaa",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 37,
 	chanceHit = 0.42,
@@ -24,7 +23,7 @@ rogue_fambaa = Creature:new {
 	ferocity = 9,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/fambaa_hue.iff"},
@@ -34,13 +33,13 @@ rogue_fambaa = Creature:new {
 	        groups = {
 				{group = "fambaa_common", chance = 10000000}
 			},
-			lootChance = 2200000
+			lootChance = 1740000
 		}
 	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

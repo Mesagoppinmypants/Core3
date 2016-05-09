@@ -1,7 +1,6 @@
 fassa = Creature:new {
 	objectName = "",
 	socialGroup = "gungan",
-	pvpFaction = "gungan",
 	faction = "gungan",
 	level = 26,
 	chanceHit = 0.36,
@@ -23,7 +22,7 @@ fassa = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gungan_male.iff"},

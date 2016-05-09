@@ -1,7 +1,6 @@
 theme_park_rebel_edycu = Creature:new {
 	objectName = "@mob/creature_names:binayre_smuggler",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "pirate",
 	level = 17,
 	chanceHit = 0.32,
@@ -22,8 +21,8 @@ theme_park_rebel_edycu = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
-	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	creatureBitmask = NONE,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_binayre_smuggler_trandoshan_male_01.iff"},

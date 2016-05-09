@@ -1,7 +1,6 @@
 swirl_prong = Creature:new {
 	objectName = "@mob/creature_names:swirl_prong",
 	socialGroup = "prong",
-	pvpFaction = "",
 	faction = "",
 	level = 19,
 	chanceHit = 0.32,
@@ -24,7 +23,7 @@ swirl_prong = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/swirl_prong.iff"},
@@ -32,8 +31,8 @@ swirl_prong = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"knockdownattack","knockdownChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"knockdownattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 ferocious_kusak = Creature:new {
 	objectName = "@mob/creature_names:ferocious_kusak",
 	socialGroup = "kusak",
-	pvpFaction = "",
 	faction = "",
 	level = 21,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ ferocious_kusak = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kusak_hue.iff"},
@@ -33,7 +32,8 @@ ferocious_kusak = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"blindattack",""},
+		{"posturedownattack",""}
 	}
 }
 

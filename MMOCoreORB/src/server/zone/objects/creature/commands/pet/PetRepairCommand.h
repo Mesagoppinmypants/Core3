@@ -3,8 +3,8 @@
 #define PETREPAIRCOMMAND_H_
 
 #include "server/zone/objects/creature/commands/QueueCommand.h"
-#include "server/zone/objects/creature/AiAgent.h"
-#include "server/zone/objects/creature/DroidObject.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
+#include "server/zone/objects/creature/ai/DroidObject.h"
 
 class PetRepairCommand : public QueueCommand {
 public:
@@ -12,7 +12,7 @@ public:
 		: QueueCommand(name, server) {
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
 		ManagedReference<PetControlDevice*> controlDevice = creature->getControlDevice().castTo<PetControlDevice*>();
 
@@ -35,7 +35,7 @@ public:
 		}
 
 		// Check range between droids
-		if (!droidPet->isInRange(targetDroid, 30.0f)){ // Same range as auto-repair
+		if (!checkDistance(droidPet, targetDroid, 30.0f)){ // Same range as auto-repair
 			droidPet->showFlyText("npc_reaction/flytext","confused", 204, 0, 0);  // "?!!?!?!"
 			return GENERALERROR;
 		}
@@ -51,7 +51,7 @@ public:
 		bool targetHealed = false;
 		for( int attr = 0; attr <= 8; attr++ ){
 			if( targetDroid->getWounds( attr ) > 0 ){
-				targetDroid->addWounds(attr, -targetDroid->getWounds( attr ));
+				targetDroid->healWound(droidPet, attr, targetDroid->getWounds( attr ), true, false);
 				targetHealed = true;
 			}
 		}

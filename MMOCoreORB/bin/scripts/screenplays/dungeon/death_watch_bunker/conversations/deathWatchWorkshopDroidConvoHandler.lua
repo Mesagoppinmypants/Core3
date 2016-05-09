@@ -23,7 +23,7 @@ end
 function deathWatchWorkshopDroidConvoHandler:getInitialScreen(pPlayer, pNpc, pConversationTemplate)
 	local convoTemplate = LuaConversationTemplate(pConversationTemplate)
 	return ObjectManager.withCreatureObject(pPlayer, function(player)
-		if (player:hasScreenPlayState(16, "death_watch_foreman_stage") == 1 or player:hasScreenPlayState(8, "death_watch_foreman_stage") == 0) then
+		if (player:hasScreenPlayState(16, "death_watch_foreman_stage") or not player:hasScreenPlayState(8, "death_watch_foreman_stage")) then
 			player:sendSystemMessage("@dungeon/death_watch:not_authorized")
 			return convoTemplate:getScreen("end_convo")
 		end
@@ -48,16 +48,22 @@ function deathWatchWorkshopDroidConvoHandler:runScreenHandlers(conversationTempl
 	local screen = LuaConversationScreen(conversationScreen)
 
 	local screenID = screen:getScreenID()
+	local conversationScreen = screen:cloneScreen()
+	local clonedConversation = LuaConversationScreen(conversationScreen)
+
+	if (screenID == "no_battery_intro" or screenID == "intro") then
+		CreatureObject(conversingNPC):playEffect("clienteffect/treadwell_chatter_01.cef", "")
+	elseif (screenID == "clean_battery" or screenID == "end_convo") then
+		CreatureObject(conversingNPC):playEffect("clienteffect/treadwell_chatter_02.cef", "")
+	end
 
 	return ObjectManager.withCreatureObject(conversingPlayer, function(player)
-		local conversationScreen = screen:cloneScreen()
-		local clonedConversation = LuaConversationScreen(conversationScreen)
 		if (screenID == "clean_battery") then
 			local pInventory = player:getSlottedObject("inventory")
 
 			if (pInventory ~= nil) then
 				local pBatt = getContainerObjectByTemplate(pInventory, "object/tangible/dungeon/death_watch_bunker/drill_battery.iff", true)
-				
+
 				if (pBatt == nil) then
 					player:sendSystemMessage("Error: Battery not found in inventory.")
 					return 0
@@ -66,7 +72,7 @@ function deathWatchWorkshopDroidConvoHandler:runScreenHandlers(conversationTempl
 				SceneObject(pBatt):destroyObjectFromWorld()
 				SceneObject(pBatt):destroyObjectFromDatabase()
 
-				if (SceneObject(pInventory):hasFullContainerObjects() == true) then
+				if (SceneObject(pInventory):isContainerFullRecursive() == true) then
 					player:sendSystemMessage("@error_message:inv_full")
 				else
 					local pCleanBatt = giveItem(pInventory, "object/tangible/dungeon/death_watch_bunker/drill_battery_clean.iff", -1)

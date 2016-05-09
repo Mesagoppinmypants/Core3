@@ -12,14 +12,13 @@
 #include "server/zone/objects/scene/components/ObjectMenuComponent.h"
 #include "server/zone/packets/object/ObjectMenuResponse.h"
 #include "server/zone/objects/structure/StructureObject.h"
-#include "server/zone/templates/tangible/CampStructureTemplate.h"
 #include "server/zone/objects/tangible/terminal/Terminal.h"
 #include "server/zone/objects/player/sui/listbox/SuiListBox.h"
 #include "server/zone/managers/structure/StructureManager.h"
 
 
 void CampTerminalMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
-		ObjectMenuResponse* menuResponse, CreatureObject* player) {
+		ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 
 	if (!sceneObject->isTerminal())
 		return;
@@ -46,7 +45,7 @@ void CampTerminalMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
 		return;
 	}
 
-	if (!player->isInRange(terminal, 7)) {
+	if (!player->isInRange(terminal, 16)) {
 		return;
 	}
 
@@ -64,7 +63,7 @@ void CampTerminalMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
 		}
 	}
 
-	Vector < ManagedReference<ActiveArea*> > *areas = camp->getActiveAreas();
+	SortedVector<ManagedReference<ActiveArea*> >* areas = camp->getActiveAreas();
 	ManagedReference<ActiveArea*> area = NULL;
 	for (int i = 0; i < areas->size(); ++i) {
 		area = areas->get(i);
@@ -74,13 +73,13 @@ void CampTerminalMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
 		area == NULL;
 	}
 
-	if (area != NULL && cast<CampSiteActiveArea*> (area.get()) != NULL &&
-			cast<CampSiteActiveArea*> (area.get())->isAbandoned())
+	if (area != NULL && area->isCampArea() && (area.castTo<CampSiteActiveArea*>())->isAbandoned()) {
 		menuResponse->addRadialMenuItem(183, 3, "@camp:mnu_assume_ownership");
+	}
 }
 
 int CampTerminalMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
-		CreatureObject* player, byte selectedID) {
+		CreatureObject* player, byte selectedID) const {
 	if (!sceneObject->isTangibleObject())
 		return 0;
 
@@ -103,12 +102,11 @@ int CampTerminalMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
 				player, selectedID);
 	}
 
-
 	return 0;
 }
 
 void CampTerminalMenuComponent::disbandCamp(SceneObject* sceneObject,
-		CreatureObject* player) {
+		CreatureObject* player) const {
 
 	Terminal* terminal = cast<Terminal*>(sceneObject);
 	if(terminal == NULL) {
@@ -116,7 +114,7 @@ void CampTerminalMenuComponent::disbandCamp(SceneObject* sceneObject,
 		return;
 	}
 
-	if (!player->isInRange(terminal, 7)) {
+	if (!player->isInRange(terminal, 16)) {
 		return;
 	}
 
@@ -144,7 +142,7 @@ void CampTerminalMenuComponent::disbandCamp(SceneObject* sceneObject,
 	}
 
 	// Find Camp Area
-	Vector<ManagedReference<ActiveArea* > >* areas = camp->getActiveAreas();
+	SortedVector<ManagedReference<ActiveArea* > >* areas = camp->getActiveAreas();
 	ManagedReference<ActiveArea*> area = NULL;
 	for(int i = 0; i < areas->size(); ++i) {
 		area = areas->get(i);
@@ -167,7 +165,7 @@ void CampTerminalMenuComponent::disbandCamp(SceneObject* sceneObject,
 }
 
 void CampTerminalMenuComponent::assumeCampOwnership(SceneObject* sceneObject,
-		CreatureObject* player) {
+		CreatureObject* player) const {
 
 	Terminal* terminal = cast<Terminal*>(sceneObject);
 	if(terminal == NULL) {
@@ -175,7 +173,7 @@ void CampTerminalMenuComponent::assumeCampOwnership(SceneObject* sceneObject,
 		return;
 	}
 
-	if (!player->isInRange(terminal, 7)) {
+	if (!player->isInRange(terminal, 16)) {
 		return;
 	}
 
@@ -186,7 +184,7 @@ void CampTerminalMenuComponent::assumeCampOwnership(SceneObject* sceneObject,
 	}
 
 	// Find Camp Area
-	Vector<ManagedReference<ActiveArea* > >* areas = camp->getActiveAreas();
+	SortedVector<ManagedReference<ActiveArea* > >* areas = camp->getActiveAreas();
 	ManagedReference<ActiveArea*> area = NULL;
 	for(int i = 0; i < areas->size(); ++i) {
 		area = areas->get(i);
@@ -198,18 +196,24 @@ void CampTerminalMenuComponent::assumeCampOwnership(SceneObject* sceneObject,
 		area = NULL;
 	}
 
-	CampSiteActiveArea* campArea = cast<CampSiteActiveArea*>(area.get());
+	ManagedReference<CampSiteActiveArea*> campArea = cast<CampSiteActiveArea*>(area.get());
 
 	if (campArea != NULL) {
 		if(!campArea->isAbandoned())
 			return;
 
-		campArea->assumeOwnership(player);
+		ManagedReference<CreatureObject*> play = player;
+
+		EXECUTE_TASK_2(campArea, play, {
+				Locker locker(campArea_p);
+				campArea_p->assumeOwnership(play_p);
+		});
+
 	}
 }
 
 void CampTerminalMenuComponent::showCampStatus(SceneObject* sceneObject,
-		CreatureObject* player) {
+		CreatureObject* player) const {
 
 	Terminal* terminal = cast<Terminal*>(sceneObject);
 	if(terminal == NULL) {
@@ -217,7 +221,7 @@ void CampTerminalMenuComponent::showCampStatus(SceneObject* sceneObject,
 		return;
 	}
 
-	if (!player->isInRange(terminal, 7)) {
+	if (!player->isInRange(terminal, 16)) {
 		return;
 	}
 
@@ -228,7 +232,7 @@ void CampTerminalMenuComponent::showCampStatus(SceneObject* sceneObject,
 	}
 
 	// Get Camp Area
-	Vector<ManagedReference<ActiveArea* > >* areas = camp->getActiveAreas();
+	SortedVector<ManagedReference<ActiveArea* > >* areas = camp->getActiveAreas();
 	ManagedReference<ActiveArea*> area = NULL;
 	for(int i = 0; i < areas->size(); ++i) {
 		area = areas->get(i);
@@ -286,7 +290,7 @@ void CampTerminalMenuComponent::showCampStatus(SceneObject* sceneObject,
 }
 
 void CampTerminalMenuComponent::awardCampExperience(PlayerObject* ghost,
-		CampSiteActiveArea* campArea) {
+		CampSiteActiveArea* campArea) const {
 
 }
 

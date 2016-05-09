@@ -1,7 +1,6 @@
 nien_nunb = Creature:new {
 	objectName = "@mob/creature_names:nien_nunb",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 100,
 	chanceHit = 1.000000,
@@ -23,7 +22,7 @@ nien_nunb = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_patron_sullustan_01.iff"},

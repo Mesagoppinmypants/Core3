@@ -1,7 +1,6 @@
 eryk_chinn = Creature:new {
 	objectName = "@npc_spawner_n:eryk_chinn",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 23,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ eryk_chinn = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_stormtrooper_black_black.iff"},

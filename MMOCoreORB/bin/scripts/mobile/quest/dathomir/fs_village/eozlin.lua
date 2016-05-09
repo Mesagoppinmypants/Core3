@@ -1,7 +1,6 @@
 eozlin = Creature:new {
 	objectName = "@mob/creature_names:fs_villager_surveyor",
 	socialGroup = "fs_villager",
-	pvpFaction = "fs_villager",
 	faction = "fs_villager",
 	level = 12,
 	chanceHit = 0.29,
@@ -23,13 +22,13 @@ eozlin = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_fs_village_surveyor.iff"},
 	lootGroups = {},
 	weapons = {},
-	conversationTemplate = "",
+	conversationTemplate = "villageSurveyorConvoTemplate",
 	attacks = {
 	}
 }

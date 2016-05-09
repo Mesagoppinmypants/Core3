@@ -1,7 +1,6 @@
 stoos_imperial_ensign = Creature:new {
   objectName = "",
   socialGroup = "imperial",
-  pvpFaction = "imperial",
   faction = "imperial",
   level = 30,
   chanceHit = 0.390000,
@@ -23,7 +22,7 @@ stoos_imperial_ensign = Creature:new {
   ferocity = 0,
   pvpBitmask = NONE,
   creatureBitmask = NONE,
-  optionsBitmask = 136,
+  optionsBitmask = AIENABLED + CONVERSABLE,
   diet = HERBIVORE,
 
   templates = {

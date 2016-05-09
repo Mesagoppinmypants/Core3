@@ -2,7 +2,6 @@ bruce_mcbrain = Creature:new {
 	objectName = "",
 	customName = "Bruce Mcbrain",
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ bruce_mcbrain = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_corvette_neutral_bruce.iff"},

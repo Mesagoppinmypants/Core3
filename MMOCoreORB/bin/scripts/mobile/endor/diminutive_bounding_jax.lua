@@ -1,7 +1,6 @@
 diminutive_bounding_jax = Creature:new {
 	objectName = "@mob/creature_names:jax_bounding_dwarf",
 	socialGroup = "jax",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ diminutive_bounding_jax = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/bearded_jax_hue.iff"},

@@ -1,7 +1,6 @@
 krahbu = Creature:new {
 	objectName = "@mob/creature_names:krahbu",
 	socialGroup = "krahbu",
-	pvpFaction = "",
 	faction = "",
 	level = 10,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ krahbu = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/krahbu.iff"},
@@ -32,7 +31,7 @@ krahbu = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

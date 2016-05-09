@@ -1,7 +1,6 @@
 lian_spynet_operative = Creature:new {
 	objectName = "@mob/creature_names:spynet_operative",
 	socialGroup = "spynet",
-	pvpFaction = "",
 	faction = "",
 	level = 17,
 	chanceHit = 0.320000,
@@ -21,7 +20,7 @@ lian_spynet_operative = Creature:new {
 	milk = 0,
 	tamingChance = 0.000000,
 	ferocity = 0,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	pvpBitmask = ATTACKABLE + ENEMY + AGGRESSIVE,
 	creatureBitmask = PACK,
 	diet = HERBIVORE,

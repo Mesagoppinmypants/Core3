@@ -1,7 +1,6 @@
 gins_scientist = Creature:new {
 	objectName = "@mob/creature_names:thug",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 15,
 	chanceHit = 0.26,
@@ -23,7 +22,7 @@ gins_scientist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE + ENEMY + AGGRESSIVE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = { "object/mobile/dressed_combatmedic_trainer_human_male_01.iff",
@@ -42,8 +41,7 @@ gins_scientist = Creature:new {
 				{group = "pistols", chance = 1000000},
 				{group = "melee_weapons", chance = 1000000},
 				{group = "carbines", chance = 1000000},
-			},
-			lootChance = 2600000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_light"},

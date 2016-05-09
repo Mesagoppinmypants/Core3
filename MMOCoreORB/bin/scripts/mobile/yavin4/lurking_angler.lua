@@ -1,7 +1,6 @@
 lurking_angler = Creature:new {
 	objectName = "@mob/creature_names:lurking_angler",
 	socialGroup = "angler",
-	pvpFaction = "",
 	faction = "",
 	level = 30,
 	chanceHit = 0.39,
@@ -23,7 +22,7 @@ lurking_angler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/angler_hue.iff"},
@@ -32,8 +31,8 @@ lurking_angler = Creature:new {
 	weapons = {"creature_spit_small_toxicgreen"},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
-		{"mediumpoison",""}
+		{"mediumpoison",""},
+		{"intimidationattack",""}
 	}
 }
 

@@ -42,36 +42,38 @@
 --true = 1, false = 0
 
 ForceThrow1Command = {
-        name = "forcethrow1",
+	name = "forcethrow1",
 
-    damage = 200, -- NOT CORRECT, Need data.
+	minDamage = 375,
+	maxDamage = 500,
 	speed = 4.0,
 	forceCost = 28,
-	accuracySkillMod = "forcethrow_accuracy";
+	visMod = 25,
+	accuracySkillMod = "forcethrow_accuracy",
 
 	stateEffects = {
-	  StateEffect( 
-		STUN_EFFECT, 
-		{}, 
-		{ "jedi_state_defense" }, 
-		{}, 
-		65, 
-		100, 
-		10 
+	  StateEffect(
+		STUN_EFFECT,
+		{},
+		{ "jedi_state_defense" },
+		{},
+		65,
+		0,
+		10
 	  )
 	},
-	
-		
-	animationCRC = hashCode("force_throw_1_particle_level_1_light"),
+
+	animation = "force_throw_1_particle_level_1",
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "forcethrow1",
-	
+
 	poolsToDamage = RANDOM_ATTRIBUTE,
-	
-	attackType = FORCEATTACK,
+
+	forceAttack = true,
+	damageType = KINETIC_DAMAGE,
 
 	range = 32
-}			
+}
 
 AddCommand(ForceThrow1Command)
-

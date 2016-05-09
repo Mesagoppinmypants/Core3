@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef HEALPETCOMMAND_H_
 #define HEALPETCOMMAND_H_
@@ -61,7 +21,7 @@ public:
 		mindCost = 50;
 	}
 
-	void deactivateInjuryTreatment(CreatureObject* creature) {
+	void deactivateInjuryTreatment(CreatureObject* creature) const {
 		int delay = 20;
 
 		StringIdChatParameter message("healing_response", "healing_response_58"); //You are now ready to heal more damage.
@@ -69,33 +29,28 @@ public:
 		creature->addPendingTask("injuryTreatment", task, delay * 1000);
 	}
 
-	void doAnimations(CreatureObject* creature, CreatureObject* pet) {
+	void doAnimations(CreatureObject* creature, CreatureObject* pet) const {
 		pet->playEffect("clienteffect/healing_healdamage.cef", "");
 
 		creature->doAnimation("heal_other");
 	}
 
-	StimPack* findStimPack(CreatureObject* creature) {
+	StimPack* findStimPack(CreatureObject* creature) const {
 		SceneObject* inventory = creature->getSlottedObject("inventory");
 
 		if (inventory != NULL) {
 			for (int i = 0; i < inventory->getContainerObjectsSize(); ++i) {
 				SceneObject* item = inventory->getContainerObject(i);
 
-				if (!item->isTangibleObject())
+				if (!item->isPharmaceuticalObject())
 					continue;
 
-				TangibleObject* tano = cast<TangibleObject*>( item);
+				PharmaceuticalObject* pharma = cast<PharmaceuticalObject*>(item);
 
-				if (tano->isPharmaceuticalObject()) {
-					PharmaceuticalObject* pharma = cast<PharmaceuticalObject*>( tano);
+				if (pharma->isPetStimPack()) {
+					StimPack* stimPack = cast<StimPack*>(pharma);
 
-					if (pharma->isPetStimPack()) {
-						StimPack* stimPack = cast<StimPack*>( pharma);
-
-						return stimPack;
-					}
-
+					return stimPack;
 				}
 			}
 		}
@@ -103,7 +58,7 @@ public:
 		return NULL;
 	}
 
-	bool canPerformSkill(CreatureObject* creature, CreatureObject* pet, StimPack* stimPack) {
+	bool canPerformSkill(CreatureObject* creature, CreatureObject* pet, StimPack* stimPack, int mindCostNew) const {
 		if (!creature->canTreatInjuries()) {
 			creature->sendSystemMessage("@healing_response:healing_must_wait"); //You must wait before you can do that.
 			return false;
@@ -114,17 +69,7 @@ public:
 			return false;
 		}
 
-		if (creature->isProne() || creature->isMeditating()) {
-			creature->sendSystemMessage("@error_message:wrong_state"); //You cannot complete that action while in your current state.
-			return false;
-		}
-
-		if (creature->isRidingMount()) {
-			creature->sendSystemMessage("@error_message:survey_on_mount"); //You cannot perform that action while mounted on a creature or driving a vehicle.
-			return false;
-		}
-
-		if (creature->getHAM(CreatureAttribute::MIND) < mindCost) {
+		if (creature->getHAM(CreatureAttribute::MIND) < mindCostNew) {
 			creature->sendSystemMessage("@healing_response:not_enough_mind"); //You do not have enough mind to do that.
 			return false;
 		}
@@ -144,7 +89,7 @@ public:
 		return true;
 	}
 
-	void sendHealMessage(CreatureObject* creature, CreatureObject* pet, int healthDamage, int actionDamage, int mindDamage) {
+	void sendHealMessage(CreatureObject* creature, CreatureObject* pet, int healthDamage, int actionDamage, int mindDamage) const {
 		if (!creature->isPlayerCreature())
 			return;
 
@@ -174,13 +119,12 @@ public:
 		creature->sendSystemMessage(msgPlayer.toString());
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
-		if (!checkStateMask(creature))
-			return INVALIDSTATE;
+		int result = doCommonMedicalCommandChecks(creature);
 
-		if (!checkInvalidLocomotions(creature))
-			return INVALIDLOCOMOTION;
+		if (result != SUCCESS)
+			return result;
 
 		ManagedReference<SceneObject*> object = server->getZoneServer()->getObject(target);
 
@@ -198,7 +142,13 @@ public:
 			return GENERALERROR;
 		}
 
-		if (!creature->isInRange(pet, range))
+		PetControlDevice* pcd = pet->getControlDevice().get().castTo<PetControlDevice*>();
+		if (pcd == NULL || pcd->getPetType() != PetManager::CREATUREPET) {
+			creature->sendSystemMessage("Invalid Target.");
+			return GENERALERROR;
+		}
+
+		if(!checkDistance(creature, pet, range))
 			return TOOFAR;
 
 		uint64 objectID = 0;
@@ -222,7 +172,9 @@ public:
 			}
 		}
 
-		if (!canPerformSkill(creature, pet, stimPack))
+		int mindCostNew = creature->calculateCostAdjustment(CreatureAttribute::FOCUS, mindCost);
+
+		if (!canPerformSkill(creature, pet, stimPack, mindCostNew))
 			return GENERALERROR;
 
 		uint32 stimPower = 0;
@@ -239,12 +191,16 @@ public:
 
 		sendHealMessage(creature, pet, healthHealed, actionHealed, mindHealed);
 
-		creature->inflictDamage(creature, CreatureAttribute::MIND, mindCost, false);
+		creature->inflictDamage(creature, CreatureAttribute::MIND, mindCostNew, false);
+
+		Locker locker(stimPack);
 		stimPack->decreaseUseCount();
 
 		doAnimations(creature, pet);
 
 		deactivateInjuryTreatment(creature);
+
+		checkForTef(creature, pet);
 
 		return SUCCESS;
 	}

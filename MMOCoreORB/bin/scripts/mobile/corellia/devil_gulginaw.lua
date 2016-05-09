@@ -1,7 +1,6 @@
 devil_gulginaw = Creature:new {
 	objectName = "@mob/creature_names:devil_gulginaw",
 	socialGroup = "gulginaw",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ devil_gulginaw = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/devil_gulginaw.iff"},
@@ -33,7 +32,8 @@ devil_gulginaw = Creature:new {
 	weapons = {"creature_spit_small_red"},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"}
+		{"",""},
+		{"dizzyattack",""}
 	}
 }
 

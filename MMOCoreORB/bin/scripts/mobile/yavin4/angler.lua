@@ -1,7 +1,6 @@
 angler = Creature:new {
 	objectName = "@mob/creature_names:angler",
 	socialGroup = "angler",
-	pvpFaction = "",
 	faction = "",
 	level = 22,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ angler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/angler.iff"},
@@ -32,8 +31,8 @@ angler = Creature:new {
 	weapons = {"creature_spit_small_green","creature_spit_small_green"},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
-		{"strongpoison",""}
+		{"strongpoison",""},
+		{"intimidationattack",""}
 	}
 }
 

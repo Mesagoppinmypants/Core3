@@ -2,7 +2,6 @@ huff_darklighter = Creature:new {
 	objectName = "",
 	customName = "Huff Darklighter",
 	socialGroup = "darklighter",
-	pvpFaction = "",
 	faction = "",
 	level = 99,
 	chanceHit = 0.99,
@@ -24,7 +23,7 @@ huff_darklighter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/huff_darklighter.iff"},

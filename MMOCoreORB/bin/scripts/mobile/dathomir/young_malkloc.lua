@@ -1,7 +1,6 @@
 young_malkloc = Creature:new {
 	objectName = "@mob/creature_names:young_malkloc",
 	socialGroup = "malkloc",
-	pvpFaction = "",
 	faction = "",
 	level = 20,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ young_malkloc = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/young_malkloc.iff"},
@@ -32,7 +31,7 @@ young_malkloc = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

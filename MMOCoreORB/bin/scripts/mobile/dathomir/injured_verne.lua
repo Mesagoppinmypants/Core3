@@ -1,7 +1,6 @@
 injured_verne = Creature:new {
 	objectName = "@mob/creature_names:injured_verne",
 	socialGroup = "verne",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ injured_verne = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/verne.iff"},

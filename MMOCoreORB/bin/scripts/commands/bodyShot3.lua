@@ -53,9 +53,12 @@ BodyShot3Command = {
 
 	poolsToDamage = HEALTH_ATTRIBUTE,
 
-	animationCRC = hashCode("fire_1_special_single_light"),
+	animation = "fire_1_special_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "bodyshot",
+	
+	weaponType = PISTOLWEAPON,
 
 	range = -1
 }

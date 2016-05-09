@@ -1,7 +1,6 @@
 stoos_bandit = Creature:new {
 	objectName = "@mob/creature_names:bandit",
 	socialGroup = "bandit",
-	pvpFaction = "bandit",
 	faction = "bandit",
 	level = 8,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ stoos_bandit = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER, KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_plasma_bandit.iff"},
@@ -34,8 +33,7 @@ stoos_bandit = Creature:new {
 				{group = "tailor_components", chance = 1500000},
 				{group = "loot_kit_parts", chance = 2000000},
 				{group = "wearables_common", chance = 1500000}
-			},
-			lootChance = 2100000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_light"},

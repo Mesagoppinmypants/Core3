@@ -10,6 +10,9 @@
 #include "FactionStatus.h"
 #include "server/zone/managers/crafting/schematicmap/SchematicMap.h"
 #include "server/zone/objects/tangible/deed/eventperk/EventPerkDeed.h"
+#include "server/zone/objects/tangible/eventperk/Jukebox.h"
+#include "server/zone/objects/tangible/eventperk/ShuttleBeacon.h"
+#include "server/zone/managers/skill/SkillManager.h"
 
 const char LuaPlayerObject::className[] = "LuaPlayerObject";
 
@@ -21,13 +24,14 @@ Luna<LuaPlayerObject>::RegType LuaPlayerObject::Register[] = {
 		{ "isOnLeave", &LuaPlayerObject::isOnLeave },
 		{ "isOvert", &LuaPlayerObject::isOvert },
 		{ "isCovert", &LuaPlayerObject::isCovert },
-		{ "isChangingFactionStatus", &LuaPlayerObject::isChangingFactionStatus },
 		{ "increaseFactionStanding", &LuaPlayerObject::increaseFactionStanding },
 		{ "decreaseFactionStanding", &LuaPlayerObject::decreaseFactionStanding },
 		{ "addWaypoint", &LuaPlayerObject::addWaypoint },
 		{ "removeWaypoint", &LuaPlayerObject::removeWaypoint },
 		{ "removeWaypointBySpecialType", &LuaPlayerObject::removeWaypointBySpecialType },
 		{ "addRewardedSchematic", &LuaPlayerObject::addRewardedSchematic },
+		{ "removeRewardedSchematic", &LuaPlayerObject::removeRewardedSchematic },
+		{ "hasSchematic", &LuaPlayerObject::hasSchematic },
 		{ "addPermissionGroup", &LuaPlayerObject::addPermissionGroup },
 		{ "removePermissionGroup", &LuaPlayerObject::removePermissionGroup },
 		{ "hasPermissionGroup", &LuaPlayerObject::hasPermissionGroup },
@@ -39,6 +43,8 @@ Luna<LuaPlayerObject>::RegType LuaPlayerObject::Register[] = {
 		{ "getForcePowerMax", &LuaPlayerObject::getForcePowerMax },
 		{ "setForcePower", &LuaPlayerObject::setForcePower },
 		{ "isJedi", &LuaPlayerObject::isJedi },
+		{ "isJediLight", &LuaPlayerObject::isJediLight },
+		{ "isJediDark", &LuaPlayerObject::isJediDark },
 		{ "setJediState", &LuaPlayerObject::setJediState },
 		{ "isOnline", &LuaPlayerObject::isOnline },
 		{ "setActiveQuestsBit", &LuaPlayerObject::setActiveQuestsBit },
@@ -48,32 +54,48 @@ Luna<LuaPlayerObject>::RegType LuaPlayerObject::Register[] = {
 		{ "setCompletedQuestsBit", &LuaPlayerObject::setCompletedQuestsBit },
 		{ "clearCompletedQuestsBit", &LuaPlayerObject::clearCompletedQuestsBit },
 		{ "hasAbility", &LuaPlayerObject::hasAbility},
-		{ "getForceSensitiveUnlockedBranches", &LuaPlayerObject::getForceSensitiveUnlockedBranches},
-		{ "setForceSensitiveUnlockedBranches", &LuaPlayerObject::setForceSensitiveUnlockedBranches},
+		{ "addAbility", &LuaPlayerObject::addAbility},
 		{ "getExperience", &LuaPlayerObject::getExperience },
-		{ "getExperienceForType", &LuaPlayerObject::getExperienceForType},
-		{ "getExperienceType", &LuaPlayerObject::getExperienceType},
 		{ "addEventPerk", &LuaPlayerObject::addEventPerk},
 		{ "getEventPerkCount", &LuaPlayerObject::getEventPerkCount},
+		{ "hasEventPerk", &LuaPlayerObject::hasEventPerk},
 		{ "getCharacterAgeInDays", &LuaPlayerObject::getCharacterAgeInDays},
+		{ "hasGodMode", &LuaPlayerObject::hasGodMode},
 		{ "isPrivileged", &LuaPlayerObject::isPrivileged},
-		{ "getExperienceRatio", &LuaPlayerObject::getExperienceRatio},
-		{ "setExperience", &LuaPlayerObject::setExperience},
+		{ "closeSuiWindowType", &LuaPlayerObject::closeSuiWindowType},
+		{ "getExperienceList", &LuaPlayerObject::getExperienceList},
+		{ "getExperienceCap", &LuaPlayerObject::getExperienceCap},
+		{ "activateQuest", &LuaPlayerObject::activateQuest },
+		{ "canActivateQuest", &LuaPlayerObject::canActivateQuest },
+		{ "getSuiBox", &LuaPlayerObject::getSuiBox },
+		{ "addSuiBox", &LuaPlayerObject::addSuiBox },
 		{ 0, 0 }
 };
 
 
 LuaPlayerObject::LuaPlayerObject(lua_State *L) : LuaIntangibleObject(L) {
-	realObject = (PlayerObject*)lua_touserdata(L, 1);
+#ifdef DYNAMIC_CAST_LUAOBJECTS
+	realObject = dynamic_cast<PlayerObject*>(_getRealSceneObject());
+
+	assert(!_getRealSceneObject() || realObject != NULL);
+#else
+	realObject = reinterpret_cast<PlayerObject*>(lua_touserdata(L, 1));
+#endif
 }
 
 LuaPlayerObject::~LuaPlayerObject() {
 }
 
 int LuaPlayerObject::_setObject(lua_State* L) {
-	realObject = (PlayerObject*)lua_touserdata(L, -1);
-
 	LuaIntangibleObject::_setObject(L);
+
+#ifdef DYNAMIC_CAST_LUAOBJECTS
+	realObject = dynamic_cast<PlayerObject*>(_getRealSceneObject());
+
+	assert(!_getRealSceneObject() || realObject != NULL);
+#else
+	realObject = (PlayerObject*)lua_touserdata(L, -1);
+#endif
 
 	return 0;
 }
@@ -106,12 +128,6 @@ int LuaPlayerObject::isOvert(lua_State* L) {
 
 int LuaPlayerObject::isCovert(lua_State* L) {
 	lua_pushboolean(L, realObject->getFactionStatus() == FactionStatus::COVERT);
-
-	return 1;
-}
-
-int LuaPlayerObject::isChangingFactionStatus(lua_State* L) {
-	lua_pushboolean(L, realObject->getFactionStatus() == FactionStatus::CHANGINGSTATUS);
 
 	return 1;
 }
@@ -175,6 +191,9 @@ int LuaPlayerObject::addWaypoint(lua_State* L) {
 	}
 
 	ManagedReference<WaypointObject*> waypoint = realObject->getZoneServer()->createObject(0xc456e788, persistence).castTo<WaypointObject*>();
+
+	Locker locker(waypoint);
+
 	waypoint->setPlanetCRC(planet.hashCode());
 	waypoint->setPosition(x, 0, y);
 	waypoint->setSpecialTypeID(specialTypeID);
@@ -219,6 +238,27 @@ int LuaPlayerObject::addRewardedSchematic(lua_State* L){
 
 	if (schematic != NULL)
 		realObject->addRewardedSchematic(schematic, type, quantity, notifyClient);
+
+	return 0;
+}
+
+int LuaPlayerObject::hasSchematic(lua_State* L) {
+	String templateString = lua_tostring(L, -1);
+	DraftSchematic* schematic = SchematicMap::instance()->get(templateString.hashCode());
+
+	lua_pushboolean(L, realObject->hasSchematic(schematic));
+
+	return 1;
+}
+
+int LuaPlayerObject::removeRewardedSchematic(lua_State* L){
+	String templateString = lua_tostring(L, -2);
+	bool notifyClient = lua_toboolean(L, -1);
+
+	DraftSchematic* schematic = SchematicMap::instance()->get(templateString.hashCode());
+
+	if (schematic != NULL)
+		realObject->removeRewardedSchematic(schematic, notifyClient);
 
 	return 0;
 }
@@ -313,6 +353,18 @@ int LuaPlayerObject::isJedi(lua_State* L) {
 	return 1;
 }
 
+int LuaPlayerObject::isJediLight(lua_State* L) {
+	lua_pushboolean(L, realObject->isJediLight());
+
+	return 1;
+}
+
+int LuaPlayerObject::isJediDark(lua_State* L) {
+	lua_pushboolean(L, realObject->isJediDark());
+
+	return 1;
+}
+
 int LuaPlayerObject::setJediState(lua_State* L) {
 	int jediState = lua_tointeger(L, -1);
 
@@ -377,12 +429,41 @@ int LuaPlayerObject::clearCompletedQuestsBit(lua_State* L) {
 	return 0;
 }
 
+int LuaPlayerObject::activateQuest(lua_State* L) {
+	int quest = lua_tointeger(L, -1);
+
+	realObject->activateQuest(quest);
+
+	return 0;
+}
+
+int LuaPlayerObject::canActivateQuest(lua_State* L) {
+	int quest = lua_tointeger(L, -1);
+
+	lua_pushboolean(L, realObject->canActivateQuest(quest));
+
+	return 1;
+}
+
+
 int LuaPlayerObject::hasAbility(lua_State* L) {
 	String value = lua_tostring(L, -1);
 
 	bool check = realObject->hasAbility(value);
 
 	lua_pushboolean(L, check);
+
+	return 1;
+
+}
+
+int LuaPlayerObject::addAbility(lua_State* L) {
+	String value = lua_tostring(L, -1);
+
+	SkillManager* skillManager = SkillManager::instance();
+
+	if (!realObject->hasAbility(value))
+		skillManager->addAbility(realObject, value);
 
 	return 1;
 
@@ -396,85 +477,51 @@ int LuaPlayerObject::getExperience(lua_State* L) {
 	return 1;
 }
 
-int LuaPlayerObject::getExperienceForType(lua_State* L) {
-	int type = lua_tointeger(L, -1);
-
-	realObject->updateForceSensitiveElegibleExperiences(type);
-	Vector<String>* experiences = realObject->getForceSensitiveElegibleExperiences();
-
-	lua_newtable(L);
-
-	for (int i=0; i < experiences->size(); ++i) {
-		String value = experiences->get(i);
-		lua_pushstring(L, value.toCharArray());
-		//Logger::console.info("Pushed " + value, true);
-	}
-
-
-	for (int j = experiences->size(); j > 0; --j) {
-		lua_rawseti(L, -j - 1, j);
-	}
-
-
-	return 1;
-}
-
-int LuaPlayerObject::getExperienceType(lua_State* L) {
-	int type = lua_tointeger(L, -1);
-
-	realObject->updateForceSensitiveElegibleExperiences(type);
-	String experience = realObject->getForceSensitiveElegibleExperienceType(type);
-
-	lua_pushstring(L, experience.toCharArray());
-
-	return 1;
-}
-
-int LuaPlayerObject::getForceSensitiveUnlockedBranches(lua_State* L) {
-
-	Vector<String>* branches = realObject->getForceSensitiveElegibleBranches();
-
-	lua_newtable(L);
-
-	for (int i=0; i < branches->size(); ++i) {
-		String value = branches->get(i);
-		lua_pushstring(L, value.toCharArray());
-	}
-
-	for (int j = branches->size(); j > 0; --j) {
-		lua_rawseti(L, -j - 1, j);
-	}
-
-	return 1;
-}
-
-int LuaPlayerObject::setForceSensitiveUnlockedBranches(lua_State* L) {
-	String branchname = lua_tostring(L, -1);
-
-	realObject->addForceSensitiveElegibleBranch(branchname);
-
-	return 0;
-}
-
 int LuaPlayerObject::getEventPerkCount(lua_State* L) {
 	lua_pushinteger(L, realObject->getEventPerkCount());
 
 	return 1;
 }
 
-int LuaPlayerObject::addEventPerk(lua_State* L) {
-	EventPerkDeed* perk = (EventPerkDeed*) lua_touserdata(L, -1);
+int LuaPlayerObject::hasEventPerk(lua_State* L) {
+	String templateString = lua_tostring(L, -1);
 
-	if (perk == NULL) {
+	lua_pushboolean(L, realObject->hasEventPerk(templateString));
+
+	return 1;
+}
+
+int LuaPlayerObject::addEventPerk(lua_State* L) {
+	SceneObject* item = (SceneObject*) lua_touserdata(L, -1);
+
+	if (item == NULL) {
 		return 0;
 	}
 
+	Locker locker(item);
+
 	ManagedReference<CreatureObject*> creature = dynamic_cast<CreatureObject*>(realObject->getParent().get().get());
+
 	if (creature != NULL) {
-		perk->setOwner(creature);
+		if (item->isEventPerkDeed()) {
+			EventPerkDeed* deed = cast<EventPerkDeed*>(item);
+			deed->setOwner(creature);
+		} else if (item->isEventPerkItem()) {
+			if (item->getServerObjectCRC() == 0x46BD798B) { // Jukebox
+				Jukebox* jbox = cast<Jukebox*>(item);
+
+				if (jbox != NULL)
+					jbox->setOwner(creature);
+			} else if (item->getServerObjectCRC() == 0x255F612C) { // Shuttle Beacon
+				ShuttleBeacon* beacon = cast<ShuttleBeacon*>(item);
+
+				if (beacon != NULL)
+					beacon->setOwner(creature);
+			}
+		}
 	}
 
-	realObject->addEventPerk(perk);
+	realObject->addEventPerk(item);
 
 	return 0;
 }
@@ -485,26 +532,69 @@ int LuaPlayerObject::getCharacterAgeInDays(lua_State* L) {
 	return 1;
 }
 
+int LuaPlayerObject::hasGodMode(lua_State* L) {
+	lua_pushboolean(L, realObject->hasGodMode());
+
+	return 1;
+}
+
 int LuaPlayerObject::isPrivileged(lua_State* L) {
 	lua_pushboolean(L, realObject->isPrivileged());
 
 	return 1;
 }
 
-int LuaPlayerObject::getExperienceRatio(lua_State* L) {
-	String type = lua_tostring(L, -1);
+int LuaPlayerObject::closeSuiWindowType(lua_State* L) {
+	int type = lua_tointeger(L, -1);
+	unsigned suiType = (unsigned)type;
 
-	String ratio = realObject->getForceSensitiveExperienceRatio(type);
-	lua_pushstring(L, ratio.toCharArray());
+	realObject->closeSuiWindowType( suiType );
+
+	return 0;
+}
+
+int LuaPlayerObject::getExperienceList(lua_State* L) {
+	DeltaVectorMap<String, int>* expList = realObject->getExperienceList();
+
+	lua_newtable(L);
+	for (int i = 0; i < expList->size(); i++) {
+		lua_pushstring(L, expList->getKeyAt(i).toCharArray());
+	}
+	for (int i = expList->size(); i > 0; i--) {
+		lua_rawseti(L, -i - 1, i);
+	}
 
 	return 1;
 }
 
-int LuaPlayerObject::setExperience(lua_State* L) {
-	String experienceType = lua_tostring(L, -2);
-	int experienceAmount = lua_tointeger(L, -1);
+int LuaPlayerObject::getExperienceCap(lua_State* L) {
+	String type = lua_tostring(L, -1);
+	lua_pushinteger(L, realObject->getXpCap(type));
 
-	realObject->addExperience(experienceType, experienceAmount, true);
+	return 1;
+}
+
+int LuaPlayerObject::getSuiBox(lua_State* L) {
+	uint32 pageId = lua_tointeger(L, -1);
+	Reference<SuiBox*> object = realObject->getSuiBox(pageId);
+
+	if (object == NULL) {
+		lua_pushnil(L);
+	} else {
+		lua_pushlightuserdata(L, object.get());
+		object->_setUpdated(true); //mark updated so the GC doesnt delete it while in LUA
+	}
+
+	return 1;
+}
+
+int LuaPlayerObject::addSuiBox(lua_State* L) {
+	Reference<SuiBox*> box = (SuiBox*) lua_touserdata(L, -1);
+
+	if (box == NULL)
+		return 0;
+
+	realObject->addSuiBox(box);
 
 	return 0;
 }

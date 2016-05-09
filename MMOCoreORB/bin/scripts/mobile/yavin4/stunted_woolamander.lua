@@ -1,7 +1,6 @@
 stunted_woolamander = Creature:new {
 	objectName = "@mob/creature_names:stunted_woolamander",
 	socialGroup = "woolamander",
-	pvpFaction = "",
 	faction = "",
 	level = 19,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ stunted_woolamander = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/woolamander_hue.iff"},
@@ -32,7 +31,7 @@ stunted_woolamander = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"}
+		{"dizzyattack",""}
 	}
 }
 

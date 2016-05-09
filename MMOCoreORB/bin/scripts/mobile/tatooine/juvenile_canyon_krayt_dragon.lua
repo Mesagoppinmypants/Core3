@@ -1,7 +1,6 @@
 juvenile_canyon_krayt_dragon = Creature:new {
 	objectName = "@mob/creature_names:juvenile_canyon_krayt",
 	socialGroup = "krayt",
-	pvpFaction = "",
 	faction = "",
 	level = 122,
 	chanceHit = 4.0,
@@ -23,7 +22,7 @@ juvenile_canyon_krayt_dragon = Creature:new {
 	ferocity = 20,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/juvenile_canyon_krayt.iff"},
@@ -32,26 +31,19 @@ juvenile_canyon_krayt_dragon = Creature:new {
 	lootGroups = {
 		{
 	        groups = {
-				{group = "krayt_tissue_common", chance = 3500000},
-				{group = "krayt_dragon_common", chance = 6500000},
+				{group = "krayt_tissue_common", chance = 2500000},
+				{group = "krayt_dragon_common", chance = 3500000},
+				{group = "armor_all", chance = 2000000},
+				{group = "weapons_all", chance = 2000000},
 			},
-			lootChance = 4000000
-		},
-		{
-	        groups = {
-				{group = "composite_armor", chance = 2000000},
-				{group = "ubese_armor", chance = 2000000},
-				{group = "melee_two_handed", chance = 2000000},
-				{group = "rifles", chance = 2000000},
-				{group = "wearables_all", chance = 2000000},				
-			},
-			lootChance = 2500000
+			lootChance = 3440000
 		}
 	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"posturedownattack",""},
+		{"creatureareaattack",""}
 	}
 }
 

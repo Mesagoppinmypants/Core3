@@ -8,8 +8,8 @@
 #include "ContainerPermissions.h"
 
 ContainerPermissions::ContainerPermissions() : groupPermissions(3, 1), ownerID(0), inheritPermissionsFromParent(true) {
-	groupPermissions.put(String("owner").hashCode(), 0xFFFF0000);
-	groupPermissions.put(String("admin").hashCode(), 0xFFFF0000);
+	groupPermissions.put(STRING_HASHCODE("owner"), 0xFFFF0000);
+	groupPermissions.put(STRING_HASHCODE("admin"), 0xFFFF0000);
 
 	groupPermissions.setNullValue((uint32)MOVECONTAINER << 16);
 }
@@ -77,7 +77,7 @@ void ContainerPermissions::setDenyPermission(const String& group, uint16 permiss
 }
 
 void ContainerPermissions::clearAllowPermission(const String& group, uint16 permission) {
-	clearAllowPermission(group, permission);
+	clearAllowPermission(group.hashCode(), permission);
 }
 
 void ContainerPermissions::clearDenyPermission(const String& group, uint16 permission) {

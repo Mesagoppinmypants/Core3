@@ -1,7 +1,8 @@
 foul_donkuwah_laborer = Creature:new {
 	objectName = "@mob/creature_names:foul_donkuwah_laborer",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "donkuwah_tribe",
-	pvpFaction = "donkuwah_tribe",
 	faction = "donkuwah_tribe",
 	level = 24,
 	chanceHit = 0.35,
@@ -23,18 +24,18 @@ foul_donkuwah_laborer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
-			"object/mobile/dulok_male.iff",
-			"object/mobile/dulok_female.iff"},
+		"object/mobile/dulok_male.iff",
+		"object/mobile/dulok_female.iff"},
 	lootGroups = {
-		 {
-	        groups = {
+		{
+			groups = {
 				{group = "donkuwah_common", chance = 10000000}
 			},
-			lootChance = 2300000
+			lootChance = 1480000
 		}
 	},
 	weapons = {"donkuwah_weapons"},

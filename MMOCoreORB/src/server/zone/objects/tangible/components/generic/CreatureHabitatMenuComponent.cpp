@@ -9,14 +9,14 @@
 #include "CreatureHabitatMenuComponent.h"
 #include "server/zone/objects/scene/components/ObjectMenuComponent.h"
 #include "server/zone/objects/scene/components/DataObjectComponentReference.h"
-#include "server/zone/templates/tangible/LiveSampleTemplate.h"
+#include "templates/tangible/LiveSampleTemplate.h"
 #include "server/zone/packets/object/ObjectMenuResponse.h"
 #include "server/zone/packets/chat/ChatSystemMessage.h"
 #include "server/zone/packets/object/PlayClientEffectObjectMessage.h"
 #include "server/zone/objects/building/BuildingObject.h"
 
 void CreatureHabitatMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
-		ObjectMenuResponse* menuResponse, CreatureObject* player) {
+		ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 	TangibleObjectMenuComponent::fillObjectMenuResponse(sceneObject, menuResponse, player);
 
 	if (!sceneObject->isCreatureHabitat())
@@ -50,7 +50,7 @@ void CreatureHabitatMenuComponent::fillObjectMenuResponse(SceneObject* sceneObje
 
 }
 
-ManagedReference<TangibleObject*> CreatureHabitatMenuComponent::getLiveCreatures( TangibleObject* creatureHabitat ){
+ManagedReference<TangibleObject*> CreatureHabitatMenuComponent::getLiveCreatures(TangibleObject* creatureHabitat) const {
 
 	ManagedReference<SceneObject*> craftedContainer = creatureHabitat->getSlottedObject("crafted_components");
 	if(craftedContainer == NULL || craftedContainer->getContainerObjectsSize() == 0)
@@ -70,11 +70,10 @@ ManagedReference<TangibleObject*> CreatureHabitatMenuComponent::getLiveCreatures
 	}
 
 	return NULL;
-
 }
 
 int CreatureHabitatMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
-		CreatureObject* player, byte selectedID) {
+		CreatureObject* player, byte selectedID) const {
 
 	if(selectedID == 69) {
 

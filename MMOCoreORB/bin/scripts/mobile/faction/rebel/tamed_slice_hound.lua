@@ -1,7 +1,6 @@
 tamed_slice_hound = Creature:new {
 	objectName = "@mob/creature_names:rebel_tamed_slice_hound",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,7 +22,7 @@ tamed_slice_hound = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/corellian_slice_hound.iff"},
@@ -31,7 +30,7 @@ tamed_slice_hound = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

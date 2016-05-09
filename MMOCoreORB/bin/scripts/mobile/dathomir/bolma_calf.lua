@@ -1,7 +1,6 @@
 bolma_calf = Creature:new {
 	objectName = "@mob/creature_names:bolma_calf",
 	socialGroup = "bolma",
-	pvpFaction = "",
 	faction = "",
 	level = 19,
 	chanceHit = 0.33,
@@ -24,7 +23,7 @@ bolma_calf = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bolma_calf.iff"},

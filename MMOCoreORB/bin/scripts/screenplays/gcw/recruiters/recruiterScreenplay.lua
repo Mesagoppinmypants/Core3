@@ -70,6 +70,10 @@ function recruiterScreenplay:getRecruiterEnemyFactionHashCode(pNpc)
 end
 
 function recruiterScreenplay:grantBribe(pRecruiter, pPlayer, cost, factionPoints)
+	if (pRecruiter == nil or pPlayer == nil) then
+		return
+	end
+
 	ObjectManager.withCreatureAndPlayerObject(pPlayer, function(player, playerObject)
 		if (player:getCashCredits() >= cost) then
 			player:subtractCashCredits(cost)
@@ -277,6 +281,10 @@ function recruiterScreenplay:getBonusItemCount(faction, itemString)
 end
 
 function recruiterScreenplay:sendPurchaseSui(pNpc, pPlayer, screenID)
+	if (pNpc == nil or pPlayer == nil) then
+		return
+	end
+
 	local faction = self:getRecruiterFaction(pNpc)
 	local gcwDiscount = getGCWDiscount(pPlayer)
 	local smugglerDiscount = self:getSmugglerDiscount(pPlayer)
@@ -299,18 +307,31 @@ function recruiterScreenplay:sendPurchaseSui(pNpc, pPlayer, screenID)
 	suiManager:sendListBox(pNpc, pPlayer, "@faction_recruiter:faction_purchase", "@faction_recruiter:select_item_purchase", 2, "@cancel", "", "@ok", "recruiterScreenplay", "handleSuiPurchase", options)
 end
 
-function recruiterScreenplay:handleSuiPurchase(pCreature, pSui, cancelPressed, arg0)
-	if (cancelPressed) then
+function recruiterScreenplay:handleSuiPurchase(pCreature, pSui, eventIndex, arg0)
+	local cancelPressed = (eventIndex == 1)
+
+	if pCreature == nil then
+		return
+	end
+
+	if cancelPressed then
 		deleteStringData(CreatureObject(pCreature):getObjectID() .. ":faction_purchase")
 		return
 	end
-	local purchaseCategory = readStringData(CreatureObject(pCreature):getObjectID() .. ":faction_purchase")
+
+	local playerID = SceneObject(pCreature):getObjectID()
+	local purchaseCategory = readStringData(playerID .. ":faction_purchase")
+
+	if purchaseCategory == "" then
+		return
+	end
+
 	local purchaseIndex = arg0 + 1
 	local faction = self:getFactionFromHashCode(CreatureObject(pCreature):getFaction())
 	local dataTable = self:getFactionDataTable(faction)
 	local itemListTable = self:getItemListTable(faction, purchaseCategory)
 	local itemString = itemListTable[purchaseIndex]
-	deleteStringData(CreatureObject(pCreature):getObjectID() .. ":faction_purchase")
+	deleteStringData(playerID .. ":faction_purchase")
 
 	local awardResult = nil
 
@@ -321,15 +342,7 @@ function recruiterScreenplay:handleSuiPurchase(pCreature, pSui, cancelPressed, a
 	end
 
 	if (awardResult == self.errorCodes.SUCCESS) then
-		local messageString
-		if (self:isHireling(faction, itemString)) then
-			messageString = LuaStringIdChatParameter("@faction_recruiter:hireling_purchase_complete")
-		else
-			messageString = LuaStringIdChatParameter("@faction_recruiter:item_purchase_complete")
-		end
-
-		messageString:setTT(self:getDisplayName(faction, itemString))
-		CreatureObject(pCreature):sendSystemMessage(messageString:_getObject())
+		return
 	elseif (awardResult == self.errorCodes.INVENTORYFULL) then
 		CreatureObject(pCreature):sendSystemMessage("@dispenser:inventory_full") -- Your inventory is full. You must make some room before you can purchase.
 	elseif (awardResult == self.errorCodes.DATAPADFULL) then
@@ -341,9 +354,9 @@ function recruiterScreenplay:handleSuiPurchase(pCreature, pSui, cancelPressed, a
 		messageString:setDI(self.minimumFactionStanding)
 		messageString:setTO(self:toTitleCase(faction))
 		CreatureObject(pCreature):sendSystemMessage(messageString:_getObject()) -- You do not have enough faction standing to spend. You must maintain at least %DI to remain part of the %TO faction.
-	elseif ( awardResult == self.errorCodes.ITEMCOST ) then
+	elseif (awardResult == self.errorCodes.ITEMCOST) then
 		CreatureObject(pCreature):sendSystemMessage("Error determining cost of item. Please post a bug report regarding the item you attempted to purchase.")
-	elseif ( awardResult == self.errorCodes.INVENTORYERROR or awardResult == self.DATAPADERROR) then
+	elseif (awardResult == self.errorCodes.INVENTORYERROR or awardResult == self.DATAPADERROR) then
 		CreatureObject(pCreature):sendSystemMessage("Error finding location to put item. Please post a report.")
 	elseif (awardResult == self.errorCodes.TEMPLATEPATHERROR) then
 		CreatureObject(pCreature):sendSystemMessage("Error determining data for item. Please post a bug report regarding the item you attempted to purchase..")
@@ -354,22 +367,24 @@ function recruiterScreenplay:awardItem(pPlayer, faction, itemString)
 	return ObjectManager.withCreatureAndPlayerObject(pPlayer, function(player, playerObject)
 		local pInventory = SceneObject(pPlayer):getSlottedObject("inventory")
 
+		if (pInventory == nil) then
+			return self.errorCodes.INVENTORYERROR
+		end
+
 		local factionStanding = playerObject:getFactionStanding(faction)
 		local itemCost = self:getItemCost(faction, itemString)
 
 		if itemCost == nil then
 			return self.errorCodes.ITEMCOST
-		elseif ( pInventory == nil  ) then
-			return self.errorCodes.INVENTORYERROR
 		end
 
-		itemCost  = math.ceil(itemCost *  getGCWDiscount(pPlayer) * self:getSmugglerDiscount(pPlayer))
+		itemCost = math.ceil(itemCost * getGCWDiscount(pPlayer) * self:getSmugglerDiscount(pPlayer))
 
 		if (factionStanding < (itemCost + self.minimumFactionStanding)) then
 			return self.errorCodes.NOTENOUGHFACTION
 		end
 
-		local slotsremaining = SceneObject(pInventory):getContainerVolumeLimit() - SceneObject(pInventory):getContainerObjectsSize()
+		local slotsremaining = SceneObject(pInventory):getContainerVolumeLimit() - SceneObject(pInventory):getCountableObjectsRecursive()
 
 		local bonusItemCount = self:getBonusItemCount(faction, itemString)
 
@@ -379,20 +394,31 @@ function recruiterScreenplay:awardItem(pPlayer, faction, itemString)
 
 		local transferResult =  self:transferItem(player, pInventory, faction, itemString)
 
-		if(transferResult ~= self.errorCodes.SUCCESS) then
+		if (transferResult ~= self.errorCodes.SUCCESS) then
 			return transferResult
 		end
 
 		playerObject:decreaseFactionStanding(faction, itemCost)
 
+		local messageString = LuaStringIdChatParameter("@faction_recruiter:item_purchase_complete") -- Your requisition of %TT is complete.
+		messageString:setTT(self:getDisplayName(faction, itemString))
+		player:sendSystemMessage(messageString:_getObject())
+
 		if bonusItemCount then
 			local bonusItems = self:getBonusItems(faction, itemString)
 			if bonusItems ~= nil then
+				messageString = LuaStringIdChatParameter("@faction_perk:given_extra_bases") -- Congratulations! In addition to the base that you purchased, we have given you two additional bases. They are:
+				player:sendSystemMessage(messageString:_getObject())
+
 				for k, v in pairs(bonusItems) do
 					transferResult = self:transferItem(pPlayer, pInventory, faction, v)
 					if(transferResult ~= self.errorCodes.SUCCESS) then
 						return transferResult
 					end
+
+					messageString = LuaStringIdChatParameter("@faction_perk:bonus_base_name") -- You received a: %TO
+					messageString:setTO(self:getDisplayName(faction, v))
+					player:sendSystemMessage(messageString:_getObject())
 				end
 			end
 		end
@@ -403,7 +429,7 @@ end
 
 function recruiterScreenplay:toTitleCase(str)
 	local buf = {}
-	for word in string.gfind(str, "%S+") do
+	for word in string.gmatch(str, "%S+") do
 		local first, rest = string.sub(word, 1, 1), string.sub(word, 2)
 		table.insert(buf, string.upper(first) .. string.lower(rest))
 	end
@@ -414,12 +440,14 @@ function recruiterScreenplay:awardData(pPlayer, faction, itemString)
 	return ObjectManager.withCreatureAndPlayerObject(pPlayer, function(player, playerObject)
 		local pDatapad = SceneObject(pPlayer):getSlottedObject("datapad")
 
+		if pDatapad == nil then
+			return self.errorCodes.DATAPADERROR
+		end
+
 		local factionStanding = playerObject:getFactionStanding(faction)
 		local itemCost = self:getItemCost(faction, itemString)
 
-		if pDatapad == nil then
-			return self.errorCodes.DATAPADERROR
-		elseif itemCost == nil then
+		if itemCost == nil then
 			return self.errorCodes.ITEMCOST
 		end
 
@@ -429,7 +457,7 @@ function recruiterScreenplay:awardData(pPlayer, faction, itemString)
 			return self.errorCodes.NOTENOUGHFACTION
 		end
 
-		local slotsRemaining = SceneObject(pDatapad):getContainerVolumeLimit() - SceneObject(pDatapad):getContainerObjectsSize()
+		local slotsRemaining = SceneObject(pDatapad):getContainerVolumeLimit() - SceneObject(pDatapad):getCountableObjectsRecursive()
 		local bonusItemCount = self:getBonusItemCount(faction, itemString)
 
 		if (slotsRemaining < (1 + bonusItemCount)) then
@@ -444,6 +472,10 @@ function recruiterScreenplay:awardData(pPlayer, faction, itemString)
 
 		playerObject:decreaseFactionStanding(faction, itemCost)
 
+		local messageString = LuaStringIdChatParameter("@faction_recruiter:hireling_purchase_complete") -- The %TT is now under your command.
+		messageString:setTT(self:getDisplayName(faction, itemString))
+		player:sendSystemMessage(messageString:_getObject())
+
 		if bonusItemCount then
 			local bonusItems = self:getBonusItems(faction, itemString)
 			if bonusItems ~= nil then
@@ -455,11 +487,12 @@ function recruiterScreenplay:awardData(pPlayer, faction, itemString)
 				end
 			end
 		end
+
 		return self.errorCodes.SUCCESS
 	end)
 end
 
-function recruiterScreenplay:transferData(player, pDatapad, faction, itemString)
+function recruiterScreenplay:transferData(pPlayer, pDatapad, faction, itemString)
 	local pItem
 	local templatePath = self:getTemplatePath(faction, itemString)
 
@@ -484,10 +517,7 @@ function recruiterScreenplay:transferData(player, pDatapad, faction, itemString)
 	end
 
 	if pItem ~= nil then
-		if SceneObject(pItem) == nil then
-			return self.errorCodes.GIVEERROR
-		end
-		SceneObject(pItem):sendTo(player)
+		SceneObject(pItem):sendTo(pPlayer)
 	else
 		return self.errorCodes.GIVEERROR
 	end
@@ -495,26 +525,21 @@ function recruiterScreenplay:transferData(player, pDatapad, faction, itemString)
 	return self.errorCodes.SUCCESS
 end
 
-function recruiterScreenplay:transferItem(player, pInventory, faction, itemString)
-	local pItem
+function recruiterScreenplay:transferItem(pPlayer, pInventory, faction, itemString)
 	local templatePath = self:getTemplatePath(faction, itemString)
 
 	if templatePath == nil then
 		return self.errorCodes.TEMPLATEPATHERROR
 	end
 
-	pItem = giveItem(pInventory, templatePath, -1)
+	local pItem = giveItem(pInventory, templatePath, -1)
 
 	if (pItem == nil) then
 		return self.errorCodes.GIVEERROR
 	end
 
-	if SceneObject(pItem) == nil then
-		return self.GIVEERROR
-	end
-
 	if (self:isInstallation(faction, itemString)) then
-		SceneObject(pItem):setObjectName("deed", itemString)
+		SceneObject(pItem):setObjectName("deed", itemString, true)
 		local deed = LuaDeed(pItem)
 		local genPath = self:getGeneratedObjectTemplate(faction, itemString)
 
@@ -558,27 +583,31 @@ function recruiterScreenplay:getSmugglerDiscount(pPlayer)
 end
 
 function recruiterScreenplay:handleGoOnLeave(pPlayer)
-	ObjectManager.withCreaturePlayerObject(pPlayer, function(playerObject)
+	ObjectManager.withCreatureAndPlayerObject(pPlayer, function(player, playerObject)
+		deleteData(player:getObjectID() .. ":changingFactionStatus")
 		playerObject:setFactionStatus(0)
 	end)
 end
 
 function recruiterScreenplay:handleGoCovert(pPlayer)
-	ObjectManager.withCreaturePlayerObject(pPlayer, function(playerObject)
+	ObjectManager.withCreatureAndPlayerObject(pPlayer, function(player, playerObject)
+		deleteData(player:getObjectID() .. ":changingFactionStatus")
 		playerObject:setFactionStatus(1)
 	end)
 end
 
 function recruiterScreenplay:handleGoOvert(pPlayer)
-	ObjectManager.withCreaturePlayerObject(pPlayer, function(playerObject)
+	ObjectManager.withCreatureAndPlayerObject(pPlayer, function(player, playerObject)
+		deleteData(player:getObjectID() .. ":changingFactionStatus")
 		playerObject:setFactionStatus(2)
 	end)
 end
 
 function recruiterScreenplay:handleResign(pPlayer)
 	ObjectManager.withCreatureAndPlayerObject(pPlayer, function(player, playerObject)
-		oldFaction = player:getFaction()
-		oldFactionName = self:getFactionFromHashCode(oldFaction)
+		deleteData(player:getObjectID() .. ":changingFactionStatus")
+		local oldFaction = player:getFaction()
+		local oldFactionName = self:getFactionFromHashCode(oldFaction)
 		player:setFactionRank(0)
 		player:setFaction(0)
 		playerObject:setFactionStatus(0)

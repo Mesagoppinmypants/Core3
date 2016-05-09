@@ -1,7 +1,6 @@
 fightmaster_jorak = Creature:new {
 	objectName = "@mob/creature_names:fightmaster_jorak",
 	socialGroup = "endor_marauder",
-	pvpFaction = "endor_marauder",
 	faction = "endor_marauder",
 	level = 22,
 	chanceHit = 0.33,
@@ -23,8 +22,9 @@ fightmaster_jorak = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
+	scale = 1.2,
 
 	templates = {"object/mobile/dressed_fightmaster_jorak.iff"},
 	lootGroups = {},

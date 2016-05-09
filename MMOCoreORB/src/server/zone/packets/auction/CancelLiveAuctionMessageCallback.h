@@ -8,7 +8,7 @@
 #ifndef CANCELLIVEAUCTIONMESSAGECALLBACK_H_
 #define CANCELLIVEAUCTIONMESSAGECALLBACK_H_
 
-#include "../MessageCallback.h"
+#include "server/zone/packets/MessageCallback.h"
 #include "server/zone/managers/auction/AuctionManager.h"
 
 
@@ -17,7 +17,7 @@ class CancelLiveAuctionMessageCallback : public MessageCallback {
 
 public:
 	CancelLiveAuctionMessageCallback(ZoneClientSession* client, ZoneProcessServer* server) :
-			MessageCallback(client, server) {
+			MessageCallback(client, server), objectid(0) {
 
 	}
 
@@ -27,7 +27,7 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = cast<CreatureObject*>( client->getPlayer().get().get());
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;
@@ -36,7 +36,8 @@ public:
 
 		AuctionManager* auctionManager = server->getZoneServer()->getAuctionManager();
 
-		auctionManager->cancelItem(player, objectid);
+		if (auctionManager != NULL)
+			auctionManager->cancelItem(player, objectid);
 	}
 
 };

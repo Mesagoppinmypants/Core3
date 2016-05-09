@@ -1,7 +1,8 @@
 jinda_loremaster = Creature:new {
 	objectName = "@mob/creature_names:jinda_loremaster",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jinda_tribe",
-	pvpFaction = "",
 	faction = "",
 	level = 40,
 	chanceHit = 0.44,
@@ -23,22 +24,22 @@ jinda_loremaster = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
-			"object/mobile/jinda_male.iff",
-			"object/mobile/jinda_male_01.iff",
-			"object/mobile/jinda_female.iff",
-			"object/mobile/jinda_female_01.iff"},
+		"object/mobile/jinda_male.iff",
+		"object/mobile/jinda_male_01.iff",
+		"object/mobile/jinda_female.iff",
+		"object/mobile/jinda_female_01.iff"},
 	lootGroups = {
 		{
-	        groups = {
+			groups = {
 				{group = "ewok", chance = 9100000},
 				{group = "armor_attachments", chance = 450000},
 				{group = "clothing_attachments", chance = 450000}
 			},
-			lootChance = 2600000
+			lootChance = 1800000
 		}
 	},
 	weapons = {"ewok_weapons"},

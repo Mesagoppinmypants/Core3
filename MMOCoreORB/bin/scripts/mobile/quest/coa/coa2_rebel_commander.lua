@@ -1,7 +1,8 @@
 coa2_rebel_commander = Creature:new {
 	objectName = "@mob/creature_names:coa2_rebel_commander",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 100,
 	chanceHit = 1,
@@ -23,13 +24,17 @@ coa2_rebel_commander = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
-	templates = {"object/mobile/dressed_rebel_commando_zabrak_female_01.iff"},
+	templates = {
+		"object/mobile/dressed_rebel_recruiter_human_female_01.iff",
+		"object/mobile/dressed_rebel_recruiter_human_female_02.iff",
+		"object/mobile/dressed_rebel_recruiter_moncal_male_01.iff",
+		"object/mobile/dressed_rebel_recruiter_twilek_female_01.iff"},
 	lootGroups = {},
-	weapons = {"rebel_weapons_medium"},
-	conversationTemplate = "",
+	weapons = {},
+	conversationTemplate = "rebelCommanderConvoTemplate",
 	attacks = merge(riflemanmaster,pistoleermaster,carbineermaster,brawlermaster)
 }
 

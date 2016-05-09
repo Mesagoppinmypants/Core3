@@ -2,7 +2,6 @@ haf_mandrox = Creature:new {
 	objectName = "",
 	customName = "Haf Mandrox",
 	socialGroup = "borvo",
-	pvpFaction = "borvo",
 	faction = "borvo",
 	level = 4,
 	chanceHit = 0.24,
@@ -24,7 +23,7 @@ haf_mandrox = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = { "object/mobile/dressed_unarmed_trainer_01.iff" },

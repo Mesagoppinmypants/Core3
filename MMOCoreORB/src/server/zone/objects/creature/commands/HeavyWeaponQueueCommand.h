@@ -14,8 +14,8 @@
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/managers/combat/CreatureAttackData.h"
 #include "server/zone/managers/collision/CollisionManager.h"
-#include "server/zone/objects/creature/CreatureAttribute.h"
-#include "server/zone/objects/creature/CreatureState.h"
+#include "templates/params/creature/CreatureAttribute.h"
+#include "templates/params/creature/CreatureState.h"
 #include "server/zone/objects/creature/commands/effect/StateEffect.h"
 #include "server/zone/objects/creature/commands/effect/DotEffect.h"
 #include "server/zone/objects/creature/commands/effect/CommandEffect.h"
@@ -27,19 +27,17 @@ public:
 
 	HeavyWeaponQueueCommand(const String& name, ZoneProcessServer* server) : CombatQueueCommand(name, server) {}
 
-	int doCombatAction(CreatureObject* creature, const uint64& target, const UnicodeString& arguments = "") {
+	int doCombatAction(CreatureObject* creature, const uint64& target, const UnicodeString& arguments = "") const {
 			ManagedReference<SceneObject*> targetObject = server->getZoneServer()->getObject(target);
 			PlayerManager* playerManager = server->getPlayerManager();
 
 			if (targetObject == NULL || !targetObject->isTangibleObject() || targetObject == creature)
 				return INVALIDTARGET;
 
-			float checkRange = range;
-
 			if (creature->isProne())
 				return NOPRONE;
 
-			if (!targetObject->isInRange(creature, checkRange))
+			if(!checkDistance(creature, targetObject, range))
 				return TOOFAR;
 
 			if (!CollisionManager::checkLineOfSight(creature, targetObject)) {
@@ -50,7 +48,7 @@ public:
 			CombatManager* combatManager = CombatManager::instance();
 
 			try {
-				int res = combatManager->doCombatAction(creature, cast<TangibleObject*>(targetObject.get()), CreatureAttackData(arguments, this));
+				int res = combatManager->doCombatAction(creature, creature->getWeapon(), cast<TangibleObject*>(targetObject.get()), CreatureAttackData(arguments, this, target));
 
 				switch (res) {
 				case -1:
@@ -66,7 +64,7 @@ public:
 			return SUCCESS;
 		}
 
-	float getCommandDuration(CreatureObject *object, const UnicodeString& arguments) {
+	float getCommandDuration(CreatureObject *object, const UnicodeString& arguments) const {
 		return defaultTime * speed;
 	}
 

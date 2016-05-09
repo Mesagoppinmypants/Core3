@@ -1,7 +1,6 @@
 swirl_prong_pack_leader = Creature:new {
 	objectName = "@mob/creature_names:swirl_prong_pack_leader",
 	socialGroup = "prong",
-	pvpFaction = "",
 	faction = "",
 	level = 32,
 	chanceHit = 0.4,
@@ -24,7 +23,7 @@ swirl_prong_pack_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/swirl_prong_hue.iff"},

@@ -1,7 +1,8 @@
 hidden_daggers_leader = Creature:new {
 	objectName = "@mob/creature_names:hidden_daggers_leader",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "hidden_daggers",
-	pvpFaction = "hidden_daggers",
 	faction = "hidden_daggers",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,7 +24,7 @@ hidden_daggers_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -40,13 +41,13 @@ hidden_daggers_leader = Creature:new {
 				{group = "tailor_components", chance = 1000000},
 				{group = "hidden_dagger_common", chance = 2700000},
 				{group = "wearables_all", chance = 1000000},
-				
-			},
-			lootChance = 3000000
+
+			}
 		}
 	},
 	weapons = {"ranged_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 

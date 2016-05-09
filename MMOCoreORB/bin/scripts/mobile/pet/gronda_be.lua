@@ -1,7 +1,6 @@
 gronda_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_gronda",
 	socialGroup = "gronda",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ gronda_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gronda_hue.iff"},

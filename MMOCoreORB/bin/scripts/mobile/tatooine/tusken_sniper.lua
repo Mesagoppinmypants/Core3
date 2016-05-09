@@ -1,7 +1,6 @@
 tusken_sniper = Creature:new {
 	objectName = "@mob/creature_names:tusken_sniper",
 	socialGroup = "tusken_raider",
-	pvpFaction = "tusken_raider",
 	faction = "tusken_raider",
 	level = 22,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ tusken_sniper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/tusken_raider.iff"},
@@ -32,16 +31,15 @@ tusken_sniper = Creature:new {
 			groups = {
 				{group = "junk", chance = 1500000},
 				{group = "tusken_common", chance = 3000000},
-				{group = "wearables_common", chance = 2000000},				
+				{group = "wearables_common", chance = 2000000},
 				{group = "bone_armor", chance = 750000},
 				{group = "chitin_armor", chance = 750000},
 				{group = "armor_attachments", chance = 500000},
 				{group = "clothing_attachments", chance = 500000},
 				{group = "color_crystals", chance = 500000},
 				{group = "crystals_poor", chance = 500000}
-			},
-			lootChance = 2400000
-		}	
+			}
+		}
 	},
 	weapons = {"tusken_weapons"},
 	conversationTemplate = "",

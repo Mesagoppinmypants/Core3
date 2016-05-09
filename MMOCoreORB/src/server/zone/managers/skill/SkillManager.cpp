@@ -1,45 +1,7 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-This File is part of Core3.
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.
+ */
 
 #include "SkillManager.h"
 #include "SkillModManager.h"
@@ -50,15 +12,17 @@ which carries forward this exception.
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/player/badges/Badge.h"
 #include "server/zone/managers/player/PlayerManager.h"
-#include "server/zone/managers/templates/TemplateManager.h"
-#include "server/zone/templates/datatables/DataTableIff.h"
-#include "server/zone/templates/datatables/DataTableRow.h"
+#include "templates/manager/TemplateManager.h"
+#include "templates/datatables/DataTableIff.h"
+#include "templates/datatables/DataTableRow.h"
 #include "server/zone/managers/crafting/schematicmap/SchematicMap.h"
 #include "server/zone/packets/creature/CreatureObjectDeltaMessage4.h"
-#include "../../packets/creature/CreatureObjectDeltaMessage6.h"
+#include "server/zone/packets/creature/CreatureObjectDeltaMessage6.h"
+#include "server/zone/objects/tangible/weapon/WeaponObject.h"
+#include "server/zone/objects/tangible/wearables/RobeObject.h"
 
 SkillManager::SkillManager()
-		: Logger("SkillManager") {
+: Logger("SkillManager") {
 
 	rootNode = new Skill();
 
@@ -147,9 +111,13 @@ void SkillManager::loadClientData() {
 	if (!abilityMap.containsKey("admin"))
 		abilityMap.put("admin", new Ability("admin"));
 
-	// Need this to be able to counterattack
-	if (!abilityMap.containsKey("counterAttack"))
-		abilityMap.put("counterAttack", new Ability("counterAttack"));
+	// These are not listed in skills.iff and need to be added manually
+	if (!abilityMap.containsKey("startMusic+western"))
+		abilityMap.put("startMusic+western", new Ability("startMusic+western"));
+	if (!abilityMap.containsKey("startDance+theatrical"))
+		abilityMap.put("startDance+theatrical", new Ability("startDance+theatrical"));
+	if (!abilityMap.containsKey("startDance+theatrical2"))
+		abilityMap.put("startDance+theatrical2", new Ability("startDance+theatrical2"));
 
 	loadXpLimits();
 
@@ -340,21 +308,19 @@ bool SkillManager::awardSkill(const String& skillName, CreatureObject* creature,
 		updateXpLimits(ghost);
 
 
-		// Update Force Power Max and Regen.
+		// Update Force Power Max.
 		ghost->setForcePowerMax(creature->getSkillMod("jedi_force_power_max"), true);
-		ghost->setForcePowerRegen(creature->getSkillMod("jedi_force_power_regen"));
 
 		if (skillName.contains("master")) {
-			uint32 badge = Badge::getID(skillName);
+			ManagedReference<PlayerManager*> playerManager = creature->getZoneServer()->getPlayerManager();
+			if (playerManager != NULL) {
+				const Badge* badge = BadgeList::instance()->get(skillName);
 
-			if (badge == -1 && skillName == "crafting_shipwright_master") {
-				badge = Badge::getID("crafting_shipwright");
-			}
+				if (badge == NULL && skillName == "crafting_shipwright_master") {
+					badge = BadgeList::instance()->get("crafting_shipwright");
+				}
 
-			if (badge != -1) {
-				ManagedReference<PlayerManager*> playerManager = creature->getZoneServer()->getPlayerManager();
-
-				if (playerManager != NULL) {
+				if (badge != NULL) {
 					playerManager->awardBadge(ghost, badge);
 				}
 			}
@@ -407,6 +373,15 @@ bool SkillManager::surrenderSkill(const String& skillName, CreatureObject* creat
 
 	SkillList* skillList = creature->getSkillList();
 
+	if(skillName == "force_title_jedi_novice" && getForceSensitiveSkillCount(creature, true) > 0) {
+		return false;
+	}
+
+	if(skillName.beginsWith("force_sensitive_") &&
+		getForceSensitiveSkillCount(creature, false) <= 24 &&
+		creature->hasSkill("force_title_jedi_rank_01"))
+		return false;
+
 	for (int i = 0; i < skillList->size(); ++i) {
 		Skill* checkSkill = skillList->get(i);
 
@@ -414,7 +389,11 @@ bool SkillManager::surrenderSkill(const String& skillName, CreatureObject* creat
 			return false;
 	}
 
-	//If they already have the skill, then return true.
+	if(creature->hasSkill("force_title_jedi_rank_03") && skillName.contains("force_discipline_") && !knightPrereqsMet(creature, skillName)) {
+		return false;
+	}
+
+	//If they have already surrendered the skill, then return true.
 	if (!creature->hasSkill(skill->getSkillName()))
 		return true;
 
@@ -435,9 +414,31 @@ bool SkillManager::surrenderSkill(const String& skillName, CreatureObject* creat
 		//Give the player the used skill points back.
 		ghost->addSkillPoints(skill->getSkillPointsRequired());
 
-		//Remove abilities
-		Vector<String>* abilityNames = skill->getAbilities();
-		removeAbilities(ghost, *abilityNames, notifyClient);
+		//Remove abilities but only if the creature doesn't still have a skill that grants the
+		//ability.  Some abilities are granted by multiple skills. For example Dazzle for dancers
+		//and musicians.
+		Vector<String>* skillAbilities = skill->getAbilities();
+		if (skillAbilities->size() > 0) {
+			SortedVector<String> abilitiesLost;
+			for (int i = 0; i < skillAbilities->size(); i++) {
+				abilitiesLost.put(skillAbilities->get(i));
+			}
+			for (int i = 0; i < skillList->size(); i++) {
+				Skill* remainingSkill = skillList->get(i);
+				Vector<String>* remainingAbilities = remainingSkill->getAbilities();
+				for(int j = 0; j < remainingAbilities->size(); j++) {
+					if (abilitiesLost.contains(remainingAbilities->get(j))) {
+						abilitiesLost.drop(remainingAbilities->get(j));
+						if (abilitiesLost.size() == 0) {
+							break;
+						}
+					}
+				}
+			}
+			if (abilitiesLost.size() > 0) {
+				removeAbilities(ghost, abilitiesLost, notifyClient);
+			}
+		}
 
 		//Remove draft schematic groups
 		Vector<String>* schematicsGranted = skill->getSchematicsGranted();
@@ -446,9 +447,8 @@ bool SkillManager::surrenderSkill(const String& skillName, CreatureObject* creat
 		//Update maximum experience.
 		updateXpLimits(ghost);
 
-		/// Update Force Power Max and Regen
+		/// Update Force Power Max
 		ghost->setForcePowerMax(creature->getSkillMod("jedi_force_power_max"), true);
-		ghost->setForcePowerRegen(creature->getSkillMod("jedi_force_power_regen"));
 
 		SkillList* list = creature->getSkillList();
 
@@ -529,7 +529,6 @@ void SkillManager::surrenderAllSkills(CreatureObject* creature, bool notifyClien
 
 				/// update force
 				ghost->setForcePowerMax(creature->getSkillMod("jedi_force_power_max"), true);
-				ghost->setForcePowerRegen(creature->getSkillMod("jedi_force_power_regen"));
 			}
 		}
 	}
@@ -572,6 +571,10 @@ void SkillManager::updateXpLimits(PlayerObject* ghost) {
 
 	for(int i = 0; i < playerSkillBoxList->size(); ++i) {
 		Skill* skillBox = playerSkillBoxList->get(i);
+
+		if (skillBox == NULL)
+			continue;
+
 		if (xpTypeCapList->contains(skillBox->getXpType()) && (xpTypeCapList->get(skillBox->getXpType()) < skillBox->getXpCap())) {
 			xpTypeCapList->get(skillBox->getXpType()) = skillBox->getXpCap();
 		}
@@ -669,7 +672,6 @@ bool SkillManager::fullfillsSkillPrerequisites(const String& skillName, Creature
 		}
 	}
 
-
 	//Check for required skills.
 	Vector<String>* requiredSkills = skill->getSkillsRequired();
 	for (int i = 0; i < requiredSkills->size(); ++i) {
@@ -685,5 +687,78 @@ bool SkillManager::fullfillsSkillPrerequisites(const String& skillName, Creature
 		}
 	}
 
+	PlayerObject* ghost = creature->getPlayerObject();
+	if(ghost == NULL || ghost->getJediState() < skill->getJediStateRequired()) {
+		return false;
+	}
+
+	if (ghost->isPrivileged())
+		return true;
+
+	if (skillName.beginsWith("force_sensitive")) { // Check for Force Sensitive boxes.
+		int index = skillName.indexOf("0");
+		if (index != -1) {
+			String skillNameFinal = skillName.subString(0, skillName.length() - 3);
+			if (creature->getScreenPlayState("VillageUnlockScreenPlay:" + skillNameFinal) < 2) {
+				return false;
+			}
+		}
+	}
+
+	if(skillName == "force_title_jedi_rank_01" && getForceSensitiveSkillCount(creature, false) < 24) {
+		return false;
+	}
+
+	if(skillName == "force_title_jedi_rank_03" && !knightPrereqsMet(creature, "")) {
+		return false;
+	}
+
 	return true;
+}
+
+int SkillManager::getForceSensitiveSkillCount(CreatureObject* creature, bool includeNoviceMasterBoxes) {
+	SkillList* skills =  creature->getSkillList();
+	int forceSensitiveSkillCount = 0;
+
+	for(int i = 0; i < skills->size(); ++i) {
+		String skillName = skills->get(i)->getSkillName();
+		if(skillName.contains("force_sensitive") && (includeNoviceMasterBoxes || skillName.indexOf("0") != -1)) {
+			forceSensitiveSkillCount++;
+		}
+	}
+
+	return forceSensitiveSkillCount;
+}
+
+bool SkillManager::knightPrereqsMet(CreatureObject* creature, const String& skillNameBeingDropped) {
+	SkillList* skillList = creature->getSkillList();
+
+	int fullTrees = 0;
+	int totalJediPoints = 0;
+
+	for(int i = 0; i < skillList->size(); ++i) {
+		Skill* skill = skillList->get(i);
+
+		String skillName = skill->getSkillName();
+		if(skillName.contains("force_discipline_") &&
+			(skillName.indexOf("0") != -1 || skillName.contains("novice") || skillName.contains("master") )) {
+			totalJediPoints += skill->getSkillPointsRequired();
+
+			if(skillName.indexOf("4") != -1) {
+				fullTrees++;
+			}
+		}
+	}
+
+	if(!skillNameBeingDropped.isEmpty()) {
+		Skill* skillBeingDropped = skillMap.get(skillNameBeingDropped.hashCode());
+
+		if(skillNameBeingDropped.indexOf("4") != -1) {
+			fullTrees--;
+		}
+
+		totalJediPoints -= skillBeingDropped->getSkillPointsRequired();
+	}
+
+	return fullTrees >= 2 && totalJediPoints >= 206;
 }

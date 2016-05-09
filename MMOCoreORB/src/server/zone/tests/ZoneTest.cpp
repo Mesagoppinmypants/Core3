@@ -12,7 +12,7 @@
 #include "server/zone/ZoneProcessServer.h"
 #include "server/zone/objects/scene/SceneObject.h"
 #include "server/zone/objects/area/ActiveArea.h"
-#include "server/conf/ConfigManager.h"
+#include "conf/ConfigManager.h"
 #include "server/zone/managers/player/PlayerManager.h"
 
 class ZoneTest : public ::testing::Test {
@@ -153,19 +153,21 @@ TEST_F(ZoneTest, InRangeTest) {
 
 TEST_F(ZoneTest, ActiveAreaTest) {
 	Reference<ActiveArea*> activeArea = createActiveArea();
-	activeArea->setRadius(128);
-	activeArea->initializePosition(0, 0, 0);
 
 	Locker alocker(activeArea);
+
+	activeArea->setRadius(128);
+	activeArea->initializePosition(0, 0, 0);
 
 	zone->transferObject(activeArea, -1);
 
 	alocker.release();
 
 	Reference<TangibleObject*> tano = createTangibleObject();
-	tano->initializePosition(0, 0, 0);
 
 	Locker slocker(tano);
+
+	tano->initializePosition(0, 0, 0);
 
 	ASSERT_EQ(tano->getActiveAreasSize(), 0);
 

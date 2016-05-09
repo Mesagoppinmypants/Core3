@@ -1,7 +1,6 @@
 puny_tanc_mite = Creature:new {
 	objectName = "@mob/creature_names:puny_tanc_mite",
 	socialGroup = "mite",
-	pvpFaction = "",
 	faction = "",
 	level = 2,
 	chanceHit = 0.21,
@@ -23,7 +22,7 @@ puny_tanc_mite = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/puny_tanc_mite.iff"},

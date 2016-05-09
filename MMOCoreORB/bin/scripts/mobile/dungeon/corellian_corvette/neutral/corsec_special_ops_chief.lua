@@ -1,7 +1,8 @@
 corsec_special_ops_chief = Creature:new {
 	objectName = "@mob/creature_names:corsec_chief_aggro",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "corsec",
-	pvpFaction = "corsec",
 	faction = "corsec",
 	level = 200,
 	chanceHit = 16.0,
@@ -23,26 +24,26 @@ corsec_special_ops_chief = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_corellia_local_corsec_chief.iff"},
 	lootGroups = {
-	  {
+		{
 			groups = {
 				{group = "junk", chance = 4500000},
 				{group = "wearables_scarce", chance = 1000000},
-                                {group = "clothing_attachments", chance = 250000},
+				{group = "clothing_attachments", chance = 250000},
 				{group = "armor_attachments", chance = 250000},
 				{group = "corsec_weapons", chance = 2500000},
 				{group = "crystals_premium", chance = 650000},
 				{group = "color_crystals", chance = 850000}
-			},
-			lootChance = 3300000
+			}
 		}
 	},
 	weapons = {"corsec_police_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/military",
 	attacks = merge(riflemanmaster,pistoleermaster,carbineermaster,brawlermaster)
 }
 

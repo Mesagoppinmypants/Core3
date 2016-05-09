@@ -1,7 +1,6 @@
 captain_heff = Creature:new {
 	objectName = "@theme_park/warren/warren_system_messages:name_heff",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 23,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ captain_heff = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_captain_m.iff"},

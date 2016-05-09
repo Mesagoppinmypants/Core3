@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 package server.zone;
 
@@ -54,6 +14,8 @@ import engine.core.ManagedObject;
 
 import server.zone.ZoneProcessServer;
 include server.zone.ZoneServer;
+include server.zone.InRangeObjectsVector;
+include server.zone.ActiveAreasVector;
 import server.zone.objects.scene.SceneObject;
 import server.zone.objects.area.ActiveArea;
 import server.zone.managers.planet.PlanetManager;
@@ -76,6 +38,8 @@ import server.zone.objects.tangible.TangibleObject;
 import server.zone.objects.scene.SceneObject;
 import server.zone.objects.region.CityRegion;
 
+import system.thread.atomic.AtomicInteger;
+
 @mock
 class Zone extends SceneObject {
 	private string zoneName;
@@ -90,9 +54,7 @@ class Zone extends SceneObject {
 
 	private transient CreatureManager creatureManager;
 
-	private transient GCWManager gcwManager;
-
-	private ChatRoom chatRoom;
+	private transient ChatRoom planetChatRoom;
 
 	@dereferenced
 	private transient SortedVector<CityRegion> cityRegionUpdateVector;
@@ -110,6 +72,9 @@ class Zone extends SceneObject {
 
 	@transactional
 	private transient MapLocationTable mapLocations;
+
+	@dereferenced
+	protected AtomicInteger spawnedAiAgents;
 
 	private transient boolean managersStarted;
 
@@ -130,14 +95,21 @@ class Zone extends SceneObject {
 	@local
 	public native int getInRangeObjects(float x, float y, float range, SortedVector<QuadTreeEntry> objects, boolean readLockZone);
 
+	@local
+	public native int getInRangeObjects(float x, float y, float range, InRangeObjectsVector objects, boolean readLockZone);
+
 	public native void createContainerComponent();
 
 	@local
 	public native int getInRangeActiveAreas(float x, float y, SortedVector<ActiveArea> objects, boolean readLockZone);
+	@local
+	public native int getInRangeActiveAreas(float x, float y, ActiveAreasVector objects, boolean readLockZone);
 
 	/* gets active areas whose center is within the given range */
 	@local
 	public native int getInRangeActiveAreas(float x, float y, float range, SortedVector<ActiveArea> objects, boolean readLockZone);
+	@local
+	public native int getInRangeActiveAreas(float x, float y, float range, ActiveAreasVector objects, boolean readLockZone);
 
 	@local
 	@dereferenced
@@ -165,6 +137,8 @@ class Zone extends SceneObject {
 	@mock
 	public native float getHeight(float x, float y);
 
+	@arg1preLocked
+	@preLocked
 	public native void addSceneObject(SceneObject object);
 
 	public synchronized void addCityRegionToUpdate(CityRegion city) {
@@ -175,6 +149,8 @@ class Zone extends SceneObject {
 
 	public native void sendMapLocationsTo(SceneObject player);
 
+	@arg1preLocked
+	@preLocked
 	public native void dropSceneObject(SceneObject object);
 
 	@dirty
@@ -192,12 +168,21 @@ class Zone extends SceneObject {
 		return creatureManager;
 	}
 
+	@dirty
+	public GCWManager getGCWManager() {
+		return planetManager.getGCWManager();
+	}
+
 	public unsigned long getGalacticTime() {
 		return galacticTime.miliDifference() / 1000;
 	}
 
 	public boolean hasManagersStarted() {
 		return managersStarted;
+	}
+
+	public int getSpawnedAiAgents() {
+		return spawnedAiAgents.get();
 	}
 
 	/**
@@ -232,6 +217,8 @@ class Zone extends SceneObject {
 	 */
 	public native void unregisterObjectWithPlanetaryMap(SceneObject object);
 
+	public native boolean objectIsValidPlanetaryMapPerformanceLocation(SceneObject object);
+
 	public native boolean isObjectRegisteredWithPlanetaryMap(SceneObject object);
 	public native void updatePlanetaryMapIcon(SceneObject object, byte icon);
 
@@ -245,15 +232,13 @@ class Zone extends SceneObject {
 		return zoneCRC;
 	}
 
-	public native GCWManager getGCWManager(){
-		return gcwManager;
+	public void setPlanetChatRoom(ChatRoom room) {
+		planetChatRoom = room;
 	}
 
-	public void setChatRoom(ChatRoom room) {
-		chatRoom = room;
+	public ChatRoom getPlanetChatRoom() {
+		return planetChatRoom;
 	}
 
-	public ChatRoom getChatRoom() {
-		return chatRoom;
-	}
 }
+

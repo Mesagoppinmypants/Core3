@@ -1,7 +1,8 @@
 janta_hunter = Creature:new {
 	objectName = "@mob/creature_names:janta_hunter",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "janta_tribe",
-	pvpFaction = "janta_tribe",
 	faction = "janta_tribe",
 	level = 50,
 	chanceHit = 0.5,
@@ -23,7 +24,7 @@ janta_hunter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -35,8 +36,7 @@ janta_hunter = Creature:new {
 				{group = "junk", chance = 5500000},
 				{group = "janta_common", chance = 1500000},
 				{group = "loot_kit_parts", chance = 3000000}
-			},
-			lootChance = 2000000
+			}
 		}
 	},
 	weapons = {"primitive_weapons"},

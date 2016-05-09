@@ -1,7 +1,8 @@
 crackdown_storm_commando = Creature:new {
 	objectName = "@mob/creature_names:crackdown_storm_commando",
+	randomNameType = NAME_STORMTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 1,
 	chanceHit = 0.38,
@@ -23,8 +24,9 @@ crackdown_storm_commando = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.05,
 
 	templates = {"object/mobile/dressed_stormtrooper_commando1_m.iff",
 				"object/mobile/dressed_scout_trooper_black_black.iff"

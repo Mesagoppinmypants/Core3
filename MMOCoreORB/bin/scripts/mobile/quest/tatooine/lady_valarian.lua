@@ -1,7 +1,6 @@
 lady_valarian = Creature:new {
 	objectName = "@mob/creature_names:lady_valarian",
 	socialGroup = "valarian",
-	pvpFaction = "valarian",
 	faction = "valarian",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ lady_valarian = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/lady_valarian.iff"},

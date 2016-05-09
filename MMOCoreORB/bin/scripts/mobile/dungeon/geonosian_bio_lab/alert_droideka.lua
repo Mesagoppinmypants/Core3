@@ -1,7 +1,6 @@
 alert_droideka = Creature:new {
 	objectName = "@mob/creature_names:geonosian_droideka_crazed",
 	socialGroup = "geonosian",
-	pvpFaction = "",
 	faction = "",
 	level = 86,
 	chanceHit = 0.81,
@@ -23,7 +22,7 @@ alert_droideka = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/droideka.iff"},
@@ -35,7 +34,7 @@ alert_droideka = Creature:new {
 			lootChance = 1800000
 	    }	
 	},
-	defaultAttack = "creaturerangedattack",
+	defaultAttack = "attack",
 	defaultWeapon = "object/weapon/ranged/droid/droid_droideka_ranged.iff",
 }
 

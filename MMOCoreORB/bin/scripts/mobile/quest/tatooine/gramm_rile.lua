@@ -2,7 +2,6 @@ gramm_rile = Creature:new {
 	objectName = "@mob/creature_names:mos_taike_mayor",
 	customName = "Gramm Rile",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 20,
 	chanceHit = 0.33,
@@ -24,7 +23,7 @@ gramm_rile = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/mos_taike_mayor.iff"},

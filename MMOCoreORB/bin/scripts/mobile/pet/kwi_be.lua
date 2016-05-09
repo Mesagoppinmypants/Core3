@@ -1,7 +1,6 @@
 kwi_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_kwi",
 	socialGroup = "kwi",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ kwi_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/kwi_hue.iff"},

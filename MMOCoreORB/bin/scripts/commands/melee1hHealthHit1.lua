@@ -53,22 +53,25 @@ Melee1hHealthHit1Command = {
 
 	poolsToDamage = HEALTH_ATTRIBUTE,
 
-	animationCRC = hashCode("counter_low_left_light"),
+	animation = "counter_low_left", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "shiim",
 
 	dotEffects = {
 	  DotEffect( 
 		BLEEDING, 
-		{ "resistance_bleeding", "bleed_resist", "combat_bleeding_defense" },
+		{ "resistance_bleeding", "bleed_resist" },
 		HEALTH,
 		true,
-		125,
+		0,
 		100,
 		30, 
 		30
 	  )
 	},
+	
+	weaponType = ONEHANDMELEEWEAPON,
 
 	range = -1
 }

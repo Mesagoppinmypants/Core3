@@ -1,7 +1,6 @@
 dalyrake_harvester = Creature:new {
 	objectName = "@mob/creature_names:dalyrake_harvester",
 	socialGroup = "dalyrake",
-	pvpFaction = "",
 	faction = "",
 	level = 15,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ dalyrake_harvester = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/dalyrake_hue.iff"},
@@ -33,7 +32,8 @@ dalyrake_harvester = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"",""},
+		{"intimidationattack",""}
 	}
 }
 

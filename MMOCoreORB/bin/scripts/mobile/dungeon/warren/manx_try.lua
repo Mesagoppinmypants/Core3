@@ -1,7 +1,6 @@
 manx_try = Creature:new {
 	objectName = "@theme_park/warren/warren_system_messages:name_manx",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 23,
 	chanceHit = 1,
@@ -22,8 +21,8 @@ manx_try = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = NONE,
-	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	creatureBitmask = NONE,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/warren_research_scientist.iff"},

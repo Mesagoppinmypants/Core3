@@ -29,13 +29,14 @@ public:
 	int isOvert(lua_State* L);
 	int isCovert(lua_State* L);
 	int setFactionStatus(lua_State* L);
-	int isChangingFactionStatus(lua_State* L);
 	int increaseFactionStanding(lua_State* L);
 	int decreaseFactionStanding(lua_State* L);
 	int addWaypoint(lua_State* L);
 	int removeWaypoint(lua_State* L);
 	int removeWaypointBySpecialType(lua_State* L);
 	int addRewardedSchematic(lua_State* L);
+	int removeRewardedSchematic(lua_State* L);
+	int hasSchematic(lua_State* L);
 	int addPermissionGroup(lua_State* L);
 	int removePermissionGroup(lua_State* L);
 	int hasPermissionGroup(lua_State* L);
@@ -47,6 +48,8 @@ public:
 	int getForcePowerMax(lua_State* L);
 	int setForcePower(lua_State* L);
 	int isJedi(lua_State* L);
+	int isJediLight(lua_State* L);
+	int isJediDark(lua_State* L);
 	int setJediState(lua_State* L);
 	int isOnline(lua_State* L);
 	int setActiveQuestsBit(lua_State* L);
@@ -56,17 +59,21 @@ public:
 	int setCompletedQuestsBit(lua_State* L);
 	int clearCompletedQuestsBit(lua_State* L);
 	int hasAbility(lua_State* L);
-	int getForceSensitiveUnlockedBranches(lua_State* L);
-	int setForceSensitiveUnlockedBranches(lua_State* L);
+	int addAbility(lua_State* L);
 	int getExperience(lua_State* L);
-	int getExperienceForType(lua_State* L);
-	int getExperienceType(lua_State* L);
 	int addEventPerk(lua_State* L);
 	int getEventPerkCount(lua_State* L);
+	int hasEventPerk(lua_State* L);
 	int getCharacterAgeInDays(lua_State* L);
+	int hasGodMode(lua_State* L);
 	int isPrivileged(lua_State* L);
-	int getExperienceRatio(lua_State* L);
-	int setExperience(lua_State* L);
+	int closeSuiWindowType(lua_State* L);
+	int getExperienceList(lua_State* L);
+	int getExperienceCap(lua_State* L);
+	int activateQuest(lua_State* L);
+	int canActivateQuest(lua_State* L);
+	int getSuiBox(lua_State* L);
+	int addSuiBox(lua_State* L);
 
 private:
 	// The pointer to the 'real object' defined in object.cc

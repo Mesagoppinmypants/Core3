@@ -2,7 +2,6 @@ rath_kanaz = Creature:new {
 	objectName = "",
 	customName = "Rath Kanaz",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 23,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ rath_kanaz = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/ig_assassin_droid.iff"},
@@ -38,13 +37,12 @@ rath_kanaz = Creature:new {
 				{group = "carbines", chance = 1000000},
 				{group = "tailor_components", chance = 1000000},
 				{group = "loot_kit_parts", chance = 1000000}
-			},
-			lootChance = 2400000
-		}				
+			}
+		}
 	},
 	conversationTemplate = "",
 	defaultWeapon = "object/weapon/ranged/droid/droid_droideka_ranged.iff",
-	defaultAttack = "creaturerangedattack"
+	defaultAttack = "attack"
 }
 
 CreatureTemplates:addCreatureTemplate(rath_kanaz, "rath_kanaz")

@@ -1,7 +1,6 @@
 woolamander_harvester = Creature:new {
 	objectName = "@mob/creature_names:woolamander_harvester",
 	socialGroup = "woolamander",
-	pvpFaction = "",
 	faction = "",
 	level = 38,
 	chanceHit = 0.43,
@@ -23,7 +22,7 @@ woolamander_harvester = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/woolamander_hue.iff"},
@@ -33,7 +32,7 @@ woolamander_harvester = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"creatureareaattack",""},
-		{"dizzyattack","dizzyChance=50"}
+		{"dizzyattack",""}
 	}
 }
 

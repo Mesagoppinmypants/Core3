@@ -1,7 +1,6 @@
 kiin_dray = Creature:new {
 	objectName = "@mob/creature_names:gaping_spider_recluse_giant_kiin_dray",
 	socialGroup = "spider_nightsister",
-	pvpFaction = "spider_nightsister",
 	faction = "spider_nightsister",
 	level = 126,
 	chanceHit = 4.75,
@@ -23,7 +22,7 @@ kiin_dray = Creature:new {
 	ferocity = 8,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gaping_spider_recluse_giant_kiin_dray.iff"},

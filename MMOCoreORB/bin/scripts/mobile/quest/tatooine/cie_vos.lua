@@ -1,7 +1,6 @@
 cie_vos = Creature:new {
 	objectName = "",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 13,
 	chanceHit = 0.3,
@@ -22,8 +21,8 @@ cie_vos = Creature:new {
 	tamingChance = 0,
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
-	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	creatureBitmask = KILLER,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

@@ -1,7 +1,6 @@
 mutant_baz_nitch = Creature:new {
 	objectName = "@mob/creature_names:mutant_baz_nitch",
 	socialGroup = "baz_nitch",
-	pvpFaction = "",
 	faction = "",
 	level = 30,
 	chanceHit = 0.39,
@@ -23,19 +22,16 @@ mutant_baz_nitch = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mutant_baz_nitch.iff"},
 	controlDeviceTemplate = "object/intangible/pet/nuna_hue.iff",
 	scale = 1.15,
 	lootGroups = {},
-	weapons = {"creature_spit_small_toxicgreen"},
+	weapons = {},
 	conversationTemplate = "",
-	attacks = {
-		{"posturedownattack","postureDownChance=50"},
-		{"mediumpoison",""}
-	}
+	attacks = {}
 }
 
 CreatureTemplates:addCreatureTemplate(mutant_baz_nitch, "mutant_baz_nitch")

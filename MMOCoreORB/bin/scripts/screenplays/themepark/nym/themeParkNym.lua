@@ -125,15 +125,20 @@ function ThemeParkNym:notifyNymContainerUsed(pDroid, pPlayer, radialSelected)
 	if (radialSelected ~= 16) then
 		return 0
 	end
-	ObjectManager.withCreatureAndPlayerObject(pPlayer, function(player, playerObject)
+
+	if not SceneObject(pPlayer):isPlayerCreature() then
+		return 0
+	end
+
+	return ObjectManager.withCreatureAndPlayerObject(pPlayer, function(player, playerObject)
 		local questItem, questMsg, questNpc
 		local pInventory = SceneObject(pPlayer):getSlottedObject("inventory")
 		if (SceneObject(pDroid):getTemplateObjectPath() == "object/tangible/container/loot/astromech_container.iff") then
-			if (player:hasScreenPlayState(1, "nym_theme_park_jinkinsNpc") ~= 1 or player:hasScreenPlayState(2, "nym_theme_park_jinkinsNpc") == 1) then
-				return 1
-			elseif (SceneObject(pInventory):hasFullContainerObjects()) then
+			if (not player:hasScreenPlayState(1, "nym_theme_park_jinkinsNpc") or player:hasScreenPlayState(2, "nym_theme_park_jinkinsNpc")) then
+				return 0
+			elseif (SceneObject(pInventory):isContainerFullRecursive()) then
 				player:sendSystemMessage("@error_message:inv_full")
-				return 1
+				return 0
 			end
 			questItem = "object/tangible/loot/quest/nym_droid_memory_chip.iff"
 			questMsg = "@theme_park_nym/messages:acquired_memory"
@@ -141,11 +146,11 @@ function ThemeParkNym:notifyNymContainerUsed(pDroid, pPlayer, radialSelected)
 			local jinkinsWaypoint = playerObject:addWaypoint("lok", "Return the chip to Jinkins", "Return the chip to Jinkins", ThemeParkNym.waypointMap.jinkins.x, ThemeParkNym.waypointMap.jinkins.y, WAYPOINT_COLOR_PURPLE, true, true, 0)
 			setQuestStatus(player:getObjectID() .. ":jinkinsWaypointID", jinkinsWaypoint)
 		elseif (SceneObject(pDroid):getTemplateObjectPath() == "object/tangible/container/loot/gas_filter_container.iff") then
-			if (player:hasScreenPlayState(1, "nym_theme_park_koleNpc") ~= 1 or player:hasScreenPlayState(2, "nym_theme_park_koleNpc") == 1) then
-				return 1
-			elseif (SceneObject(pInventory):hasFullContainerObjects()) then
+			if (not player:hasScreenPlayState(1, "nym_theme_park_koleNpc") or player:hasScreenPlayState(2, "nym_theme_park_koleNpc")) then
+				return 0
+			elseif (SceneObject(pInventory):isContainerFullRecursive()) then
 				player:sendSystemMessage("@error_message:inv_full")
-				return 1
+				return 0
 			end
 			questItem = "object/tangible/loot/quest/nym_filtered_gas.iff"
 			questMsg = "@theme_park_nym/messages:acquired_gas"
@@ -153,11 +158,11 @@ function ThemeParkNym:notifyNymContainerUsed(pDroid, pPlayer, radialSelected)
 			local koleWaypoint = playerObject:addWaypoint("lok", "Return the filter to Kole", "Return the filter to Kole", ThemeParkNym.waypointMap.kole.x, ThemeParkNym.waypointMap.kole.y, WAYPOINT_COLOR_PURPLE, true, true, 0)
 			setQuestStatus(player:getObjectID() .. ":koleWaypointID", koleWaypoint)
 		elseif (SceneObject(pDroid):getTemplateObjectPath() == "object/tangible/container/loot/computer_container.iff") then
-			if (player:hasScreenPlayState(1, "nym_theme_park_nymNpc") ~= 1 or player:hasScreenPlayState(8, "nym_theme_park_nymNpc") == 1 or player:hasScreenPlayState(16, "nym_theme_park_nymNpc") == 1) then
-				return 1
-			elseif (SceneObject(pInventory):hasFullContainerObjects()) then
+			if (not player:hasScreenPlayState(1, "nym_theme_park_nymNpc") or player:hasScreenPlayState(8, "nym_theme_park_nymNpc") or player:hasScreenPlayState(16, "nym_theme_park_nymNpc")) then
+				return 0
+			elseif (SceneObject(pInventory):isContainerFullRecursive()) then
 				player:sendSystemMessage("@error_message:inv_full")
-				return 1
+				return 0
 			end
 			questItem = "object/tangible/loot/quest/nym_hard_drive.iff"
 			if (getContainerObjectByTemplate(pInventory, "object/tangible/loot/quest/nym_imggc.iff", true) ~= nil) then
@@ -170,11 +175,11 @@ function ThemeParkNym:notifyNymContainerUsed(pDroid, pPlayer, radialSelected)
 			end
 			questNpc = "nym"
 		elseif (SceneObject(pDroid):getTemplateObjectPath() == "object/tangible/container/loot/loot_crate.iff") then
-			if (player:hasScreenPlayState(1, "nym_theme_park_nymNpc") ~= 1 or player:hasScreenPlayState(4, "nym_theme_park_nymNpc") == 1 or player:hasScreenPlayState(16, "nym_theme_park_nymNpc") == 1) then
-				return 1
-			elseif (SceneObject(pInventory):hasFullContainerObjects()) then
+			if (not player:hasScreenPlayState(1, "nym_theme_park_nymNpc") or player:hasScreenPlayState(4, "nym_theme_park_nymNpc") or player:hasScreenPlayState(16, "nym_theme_park_nymNpc")) then
+				return 0
+			elseif (SceneObject(pInventory):isContainerFullRecursive()) then
 				player:sendSystemMessage("@error_message:inv_full")
-				return 1
+				return 0
 			end
 			questItem = "object/tangible/loot/quest/nym_imggc.iff"
 			if (getContainerObjectByTemplate(pInventory, "object/tangible/loot/quest/nym_hard_drive.iff", true) ~= nil) then
@@ -195,6 +200,8 @@ function ThemeParkNym:notifyNymContainerUsed(pDroid, pPlayer, radialSelected)
 			end)
 			player:sendSystemMessage(questMsg)
 		end
+
+		return 0
 	end)
 end
 
@@ -241,7 +248,7 @@ function NymContainerComponent:transferObject(pContainer, pObj, slot)
 				return 0
 			end
 			if (SceneObject(pObj):getTemplateObjectPath() == "object/tangible/loot/quest/nym_hard_drive.iff") then
-				if (playerCreo:hasScreenPlayState(4, "nym_theme_park_nymNpc") == 1) then
+				if (playerCreo:hasScreenPlayState(4, "nym_theme_park_nymNpc")) then
 					correctItemMsg = "@celebrity/nym:your_the_best" -- Has turned in both items
 					ThemeParkNym:removeNpcWaypoints(playerCreo, playerObject)
 					ThemeParkNym:completePark(pPlayer)
@@ -252,7 +259,7 @@ function NymContainerComponent:transferObject(pContainer, pObj, slot)
 				questState = "nym_theme_park_nymNpc"
 				questStateValue = 8
 			elseif (SceneObject(pObj):getTemplateObjectPath() == "object/tangible/loot/quest/nym_imggc.iff") then
-				if (playerCreo:hasScreenPlayState(8, "nym_theme_park_nymNpc") == 1) then
+				if (playerCreo:hasScreenPlayState(8, "nym_theme_park_nymNpc")) then
 					correctItemMsg = "@celebrity/nym:your_the_best" -- Has turned in both items
 					ThemeParkNym:removeNpcWaypoints(playerCreo, playerObject)
 					ThemeParkNym:completePark(pPlayer)
@@ -355,11 +362,11 @@ function NymContainerComponent:canAddObject(pContainer, pObj, slot)
 	
 	local containerSceo = SceneObject(pContainer)
 	local creature = CreatureObject(pPlayer)
-	if ((containerSceo:getObjectName() == "jinkins") and (creature:hasScreenPlayState(1, "nym_theme_park_jinkinsNpc") == 1) and (creature:hasScreenPlayState(2, "nym_theme_park_jinkinsNpc") ~= 1)) then
+	if (containerSceo:getObjectName() == "jinkins" and creature:hasScreenPlayState(1, "nym_theme_park_jinkinsNpc") and not creature:hasScreenPlayState(2, "nym_theme_park_jinkinsNpc")) then
 		return true
-	elseif ((containerSceo:getObjectName() == "kole") and (creature:hasScreenPlayState(1, "nym_theme_park_koleNpc") == 1) and (creature:hasScreenPlayState(2, "nym_theme_park_koleNpc") ~= 1)) then
+	elseif (containerSceo:getObjectName() == "kole" and creature:hasScreenPlayState(1, "nym_theme_park_koleNpc") and not creature:hasScreenPlayState(2, "nym_theme_park_koleNpc")) then
 		return true
-	elseif ((containerSceo:getObjectName() == "nym") and (creature:hasScreenPlayState(1, "nym_theme_park_nymNpc") == 1) and ((creature:hasScreenPlayState(4, "nym_theme_park_nymNpc") ~= 1) or (creature:hasScreenPlayState(8, "nym_theme_park_nymNpc") ~= 1)) and (creature:hasScreenPlayState(16, "nym_theme_park_nymNpc") ~= 1)) then
+	elseif (containerSceo:getObjectName() == "nym" and creature:hasScreenPlayState(1, "nym_theme_park_nymNpc") and (not creature:hasScreenPlayState(4, "nym_theme_park_nymNpc") or not creature:hasScreenPlayState(8, "nym_theme_park_nymNpc")) and not creature:hasScreenPlayState(16, "nym_theme_park_nymNpc")) then
 		return true
 	end
 	return -1

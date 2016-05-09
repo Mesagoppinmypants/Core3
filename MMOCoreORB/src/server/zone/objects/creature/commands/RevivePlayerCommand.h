@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef REVIVEPLAYERCOMMAND_H_
 #define REVIVEPLAYERCOMMAND_H_
@@ -62,12 +22,12 @@ public:
 
 	RevivePlayerCommand(const String& name, ZoneProcessServer* server)
 		: QueueCommand(name, server) {
-		
+
 		mindCost = 200;
 		range = 7;
 	}
 
-	bool canPerformSkill(CreatureObject* creature, CreatureObject* creatureTarget, RevivePack* revivePack) {
+	bool canPerformSkill(CreatureObject* creature, CreatureObject* creatureTarget, RevivePack* revivePack, int mindCostNew) const {
 		if (!creatureTarget->isDead()) {
 			creature->sendSystemMessage("@healing_response:healing_response_a4"); //Your target does not require resuscitation!
 			return 0;
@@ -83,20 +43,10 @@ public:
 			return false;
 		}
 
-		if (creature->isProne() || creature->isMeditating()) {
-			creature->sendSystemMessage("@error_message:wrong_state"); //You cannot complete that action while in your current state.
-			return false;
-		}
-
-		if (creature->isRidingMount()) {
-			creature->sendSystemMessage("@error_message:survey_on_mount"); //You cannot perform that action while mounted on a creature or driving a vehicle.
-			return false;
-		}
-		
 		if (!creatureTarget->isHealableBy(creature)) {
 			creature->sendSystemMessage("@healing:pvp_no_help");  //It would be unwise to help such a patient.
 			return false;
-		}		
+		}
 
 		ManagedReference<GroupObject*> group = creature->getGroup();
 
@@ -121,7 +71,7 @@ public:
 
 		}
 
-		if (creature->getHAM(CreatureAttribute::MIND) < mindCost) {
+		if (creature->getHAM(CreatureAttribute::MIND) < mindCostNew) {
 			creature->sendSystemMessage("@healing_response:not_enough_mind"); //You do not have enough mind to do that.
 			return false;
 		}
@@ -129,14 +79,14 @@ public:
 		return true;
 	}
 
-	void parseModifier(const String& modifier, uint64& objectId) {
+	void parseModifier(const String& modifier, uint64& objectId) const {
 		if (!modifier.isEmpty())
 			objectId = Long::valueOf(modifier);
 		else
 			objectId = 0;
 	}
 
-	void awardXp(CreatureObject* creature, const String& type, int power) {
+	void awardXp(CreatureObject* creature, const String& type, int power) const {
 		if (!creature->isPlayerCreature())
 			return;
 
@@ -151,7 +101,21 @@ public:
 		playerManager->awardExperience(player, type, amount, true);
 	}
 
-	RevivePack* findRevivePack(CreatureObject* creature) {
+	void applyDebuff(CreatureObject* creature) const {
+		// Apply grogginess debuff
+		ManagedReference<PrivateBuff *> debuff = new PrivateBuff(creature, STRING_HASHCODE("private_groggy_debuff"), 60, BuffType::JEDI);
+		Locker locker(debuff);
+
+		for(int i=0; i<CreatureAttribute::ARRAYSIZE; i++)
+			debuff->setAttributeModifier(i, -100);
+
+		creature->sendSystemMessage("Your grogginess will expire in 60.0 seconds.");
+		// TODO: Find potential end message for groggy debuff
+
+		creature->addBuff(debuff);
+	}
+
+	RevivePack* findRevivePack(CreatureObject* creature) const {
 		SceneObject* inventory = creature->getSlottedObject("inventory");
 		int medicineUse = creature->getSkillMod("healing_ability");
 
@@ -159,20 +123,16 @@ public:
 			for (int i = 0; i < inventory->getContainerObjectsSize(); ++i) {
 				SceneObject* object = inventory->getContainerObject(i);
 
-				if (!object->isTangibleObject())
+				if (!object->isPharmaceuticalObject())
 					continue;
 
-				TangibleObject* item = cast<TangibleObject*>( object);
+				PharmaceuticalObject* pharma = cast<PharmaceuticalObject*>(object);
 
-				if (item->isPharmaceuticalObject()) {
-					PharmaceuticalObject* pharma = cast<PharmaceuticalObject*>( item);
+				if (pharma->isRevivePack()) {
+					RevivePack* revivePack = cast<RevivePack*>(pharma);
 
-					if (pharma->isRevivePack()) {
-						RevivePack* revivePack = cast<RevivePack*>( pharma);
-
-						if (revivePack->getMedicineUseRequired() <= medicineUse)
-							return revivePack;
-					}
+					if (revivePack->getMedicineUseRequired() <= medicineUse)
+						return revivePack;
 				}
 			}
 		}
@@ -180,7 +140,7 @@ public:
 		return NULL;
 	}
 
-	void doAnimations(CreatureObject* creature, CreatureObject* creatureTarget) {
+	void doAnimations(CreatureObject* creature, CreatureObject* creatureTarget) const {
 		creatureTarget->playEffect("clienteffect/healing_healwound.cef", "");
 
 		if (creature == creatureTarget)
@@ -189,13 +149,12 @@ public:
 			creature->doAnimation("heal_other");
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) {
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const {
 
-		if (!checkStateMask(creature))
-			return INVALIDSTATE;
+		int result = doCommonMedicalCommandChecks(creature);
 
-		if (!checkInvalidLocomotions(creature))
-			return INVALIDLOCOMOTION;
+		if (result != SUCCESS)
+			return result;
 
 		ManagedReference<SceneObject*> object = server->getZoneServer()->getObject(target);
 
@@ -210,8 +169,9 @@ public:
 					return GENERALERROR;
 				}
 			}
-		} else
+		} else {
 			object = creature;
+		}
 
 		CreatureObject* creatureTarget = cast<CreatureObject*>( object.get());
 
@@ -227,7 +187,7 @@ public:
 			return GENERALERROR;
 		}
 
-		if (!creatureTarget->isInRange(creature, range))
+		if(!checkDistance(creature, creatureTarget, range))
 			return TOOFAR;
 
 		uint64 objectId = 0;
@@ -245,7 +205,9 @@ public:
 		if (revivePack == NULL)
 			revivePack = findRevivePack(creature);
 
-		if (!canPerformSkill(creature, creatureTarget, revivePack))
+		int mindCostNew = creature->calculateCostAdjustment(CreatureAttribute::FOCUS, mindCost);
+
+		if (!canPerformSkill(creature, creatureTarget, revivePack, mindCostNew))
 			return 0;
 
 		int healthToHeal = MAX(1, (int) round(revivePack->getHealthHealed()));
@@ -258,20 +220,27 @@ public:
 
 		creatureTarget->setPosture(CreaturePosture::UPRIGHT);
 
-		int healedHealthWounds = creatureTarget->addWounds(CreatureAttribute::HEALTH, - (int) (round(revivePack->getHealthWoundHealed())));
-		int healedActionWounds = creatureTarget->addWounds(CreatureAttribute::ACTION, - (int) (round(revivePack->getActionWoundHealed())));
-		int healedMindWounds = creatureTarget->addWounds(CreatureAttribute::MIND, - (int) (round(revivePack->getMindWoundHealed())));
+		int healedHealthWounds = creatureTarget->healWound(creature, CreatureAttribute::HEALTH, (int) (round(revivePack->getHealthWoundHealed())));
+		int healedActionWounds = creatureTarget->healWound(creature, CreatureAttribute::ACTION, (int) (round(revivePack->getActionWoundHealed())));
+		int healedMindWounds = creatureTarget->healWound(creature, CreatureAttribute::MIND, (int) (round(revivePack->getMindWoundHealed())));
 
-		creature->inflictDamage(creature, CreatureAttribute::MIND, mindCost, false);
+		creature->inflictDamage(creature, CreatureAttribute::MIND, mindCostNew, false);
 
-		if (revivePack != NULL)
+		if (revivePack != NULL) {
+			Locker locker(revivePack);
+
 			revivePack->decreaseUseCount();
+		}
 
 		int xpAmount = healedHealth + healedAction + healedMind + healedHealthWounds + healedActionWounds + healedMindWounds + 250;
-		
+
 		awardXp(creature, "medical", xpAmount);
 
 		doAnimations(creature, creatureTarget);
+
+		checkForTef(creature, creatureTarget);
+
+		applyDebuff(creatureTarget);
 
 		return SUCCESS;
 	}

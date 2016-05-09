@@ -1,7 +1,8 @@
 swooper_leader = Creature:new {
 	objectName = "@mob/creature_names:swooper_leader",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "cor_swoop",
-	pvpFaction = "cor_swoop",
 	faction = "cor_swoop",
 	level = 12,
 	chanceHit = 0.29,
@@ -23,7 +24,7 @@ swooper_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_swooper_zabrak_male_01.iff"},
@@ -35,13 +36,13 @@ swooper_leader = Creature:new {
 				{group = "tailor_components", chance = 1500000},
 				{group = "printer_parts", chance = 1000000},
 				{group = "swooper_common", chance = 2000000}
-				
-			},
-			lootChance = 2200000
+
+			}
 		}
 	},
 	weapons = {"pirate_weapons_medium"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermid,marksmanmid)
 }
 

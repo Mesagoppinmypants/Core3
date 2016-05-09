@@ -1,7 +1,8 @@
 vicious_donkuwah_battlelord = Creature:new {
 	objectName = "@mob/creature_names:vicious_donkuwah_battlelord",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "donkuwah_tribe",
-	pvpFaction = "donkuwah_tribe",
 	faction = "donkuwah_tribe",
 	level = 51,
 	chanceHit = 0.51,
@@ -23,19 +24,19 @@ vicious_donkuwah_battlelord = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
-			"object/mobile/dulok_male.iff",
-			"object/mobile/dulok_female.iff"},
+		"object/mobile/dulok_male.iff",
+		"object/mobile/dulok_female.iff"},
 	lootGroups = {
-		 {
-	        groups = {
+		{
+			groups = {
 				{group = "donkuwah_common", chance = 9000000},
 				{group = "wearables_all", chance = 1000000},
 			},
-			lootChance = 2300000
+			lootChance = 2020000
 		}
 	},
 	weapons = {"donkuwah_weapons"},

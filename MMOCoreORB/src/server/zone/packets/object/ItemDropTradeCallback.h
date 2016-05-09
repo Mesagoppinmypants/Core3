@@ -19,9 +19,9 @@ class ItemDropTradeCallback : public MessageCallback {
 	ObjectControllerMessageCallback* objectControllerMain;
 public:
 	ItemDropTradeCallback(ObjectControllerMessageCallback* objectControllerCallback) :
-		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()) {
+		MessageCallback(objectControllerCallback->getClient(), objectControllerCallback->getServer()),
+		targetToTrade(0), objectControllerMain(objectControllerCallback) {
 
-		objectControllerMain = objectControllerCallback;
 	}
 
 	void parse(Message* message) {
@@ -31,20 +31,20 @@ public:
 	}
 
 	void run() {
-		ManagedReference<CreatureObject*> player = cast<CreatureObject*>( client->getPlayer().get().get());
-		ManagedReference<PlayerObject*> playerObject = NULL;
-		bool privileged = false;
+		ManagedReference<CreatureObject*> player = client->getPlayer();
 
 		if (player == NULL)
 			return;
 
-		playerObject = player->getPlayerObject();
+		ManagedReference<PlayerObject*> playerObject = player->getPlayerObject();
 
 		if (playerObject == NULL)
 			return;
 
-		if (playerObject->isPrivileged())
-			privileged = true;
+		bool godMode = false;
+
+		if (playerObject->hasGodMode())
+			godMode = true;
 
 		ManagedReference<SceneObject*> targetObject = server->getZoneServer()->getObject(targetToTrade);
 
@@ -55,10 +55,8 @@ public:
 
 		CreatureObject* targetPlayer = cast<CreatureObject*>( targetObject.get());
 
-		if (targetPlayer->getPlayerObject()->isIgnoring(player->getFirstName().toLowerCase()) && !privileged)
+		if (targetPlayer->getPlayerObject()->isIgnoring(player->getFirstName().toLowerCase()) && !godMode)
 			return;
-
-		PlayerObject* ghost = player->getPlayerObject();
 
 		ManagedReference<TradeSession*> playerTradeContainer = player->getActiveSession(SessionFacadeType::TRADE).castTo<TradeSession*>();
 
@@ -73,8 +71,6 @@ public:
 		playerTradeContainer->setTradeTargetPlayer(targetToTrade);
 
 		Locker clocker(targetPlayer, player);
-
-		PlayerObject* targetGhost = targetPlayer->getPlayerObject();
 
 		ManagedReference<TradeSession*> targetTradeContainer = targetPlayer->getActiveSession(SessionFacadeType::TRADE).castTo<TradeSession*>();
 

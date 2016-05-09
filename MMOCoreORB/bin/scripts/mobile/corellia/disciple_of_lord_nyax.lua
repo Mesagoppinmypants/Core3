@@ -1,7 +1,8 @@
 disciple_of_lord_nyax = Creature:new {
 	objectName = "@mob/creature_names:lord_nyax_disciple",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "followers_of_lord_nyax",
-	pvpFaction = "followers_of_lord_nyax",
 	faction = "followers_of_lord_nyax",
 	level = 16,
 	chanceHit = 0.31,
@@ -23,23 +24,24 @@ disciple_of_lord_nyax = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_patron_nikto_01.iff"},
 	lootGroups = {
 		{
 			groups = {
-				{group = "junk", chance = 7000000},
+				{group = "junk", chance = 6000000},
 				{group = "pistols", chance = 1000000},
 				{group = "rifles", chance = 1000000},
-               			{group = "carbines", chance = 1000000}
-			},
-			lootChance = 3000000
+				{group = "carbines", chance = 1000000},
+				{group = "color_crystals", chance = 1000000}
+			}
 		}
 	},
 	weapons = {"ranged_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/fancy",
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 

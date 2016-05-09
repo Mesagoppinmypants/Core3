@@ -1,7 +1,6 @@
 swamp_gurrcat = Creature:new {
 	objectName = "@mob/creature_names:swamp_gurrcat",
 	socialGroup = "gurrcat",
-	pvpFaction = "",
 	faction = "",
 	level = 12,
 	chanceHit = 0.29,
@@ -23,7 +22,7 @@ swamp_gurrcat = Creature:new {
 	ferocity = 2,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gurrcat.iff"},
@@ -33,7 +32,7 @@ swamp_gurrcat = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""}
 	}
 }
 

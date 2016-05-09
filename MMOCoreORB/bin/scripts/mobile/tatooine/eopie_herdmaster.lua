@@ -1,7 +1,6 @@
 eopie_herdmaster = Creature:new {
 	objectName = "@mob/creature_names:eopie_herdmaster",
 	socialGroup = "eopie",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ eopie_herdmaster = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/eopie.iff"},

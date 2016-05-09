@@ -16,9 +16,11 @@ class CombatQueueCommand;
 
 class CreatureAttackData {
 protected:
-	CombatQueueCommand* baseCommand;
+	const CombatQueueCommand* baseCommand;
 
-	float damage;
+	float minDamage;
+	float maxDamage;
+	int damageType;
 	float damageMultiplier;
 	float healthDamageMultiplier;
 	float actionDamageMultiplier;
@@ -32,31 +34,27 @@ protected:
 	float mindCostMultiplier;
 	float forceCostMultiplier;
 
-	int nextAttackDelayChance;
-	int durationStateTime;
-
-	uint32 dotDuration;
-	uint64 dotType;
-	uint8 dotPool;
-	uint32 dotStrength;
-	float dotPotency;
-
     int range;
+    int coneRange;
     int coneAngle;
     int areaRange;
 
-    uint32 animationCRC;
+    bool splashDamage;
 
-    VectorMap<uint64, StateEffect>* stateEffects;
-    VectorMap<uint64, DotEffect>* dotEffects;
+    uint64 targetID;
 
-	uint8 attackType;
+    VectorMap<uint8, StateEffect>* stateEffects;
+    Vector<DotEffect>* dotEffects;
+
+	bool forceAttack;
 	uint8 trails;
 
 	String combatSpam;
 
+	int stateAccuracyBonus;
+
 public:
-    CreatureAttackData(const UnicodeString & dataString, CombatQueueCommand *base);
+    CreatureAttackData(const UnicodeString & dataString, const CombatQueueCommand *base, uint64 target);
     CreatureAttackData(const CreatureAttackData& data);
     virtual ~CreatureAttackData() {}
 
@@ -90,12 +88,20 @@ public:
 		this->mindDamageMultiplier = mindDamageMultiplier;
 	}
 
-    CombatQueueCommand* getCommand() const {
+    const CombatQueueCommand* getCommand() const {
     	return baseCommand;
     }
 
-    float getDamage() const {
-    	return damage;
+    float getMinDamage() const {
+    	return minDamage;
+    }
+
+    float getMaxDamage() const {
+    	return maxDamage;
+    }
+
+    int getDamageType() const {
+    	return damageType;
     }
 
     int getAccuracyBonus() const {
@@ -106,8 +112,13 @@ public:
 		return actionCostMultiplier;
 	}
 
-	uint32 getAnimationCRC() const {
-		return animationCRC;
+
+	void setSplashDamage(bool b) {
+		splashDamage = b;
+	}
+
+	bool isSplashDamage() const {
+		return splashDamage;
 	}
 
 	int getAreaRange() const {
@@ -122,30 +133,6 @@ public:
 		return damageMultiplier;
 	}
 
-	uint32 getDotDuration() const {
-		return dotDuration;
-	}
-
-	uint8 getDotPool() const {
-		return dotPool;
-	}
-
-	float getDotPotency() const {
-		return dotPotency;
-	}
-
-	uint32 getDotStrength() const {
-		return dotStrength;
-	}
-
-	uint64 getDotType() const {
-		return dotType;
-	}
-
-	int getDurationStateTime() const {
-		return durationStateTime;
-	}
-
 	float getForceCostMultiplier() const {
 		return forceCostMultiplier;
 	}
@@ -158,12 +145,12 @@ public:
 		return mindCostMultiplier;
 	}
 
-	int getNextAttackDelayChance() const {
-		return nextAttackDelayChance;
-	}
-
 	int getPoolsToDamage() const {
 		return poolsToDamage;
+	}
+
+	int getConeRange() const {
+		return coneRange;
 	}
 
 	int getRange() const {
@@ -174,28 +161,28 @@ public:
 		return speedMultiplier;
 	}
 
-	VectorMap<uint64, StateEffect>* getStateEffects() const {
+	VectorMap<uint8, StateEffect>* getStateEffects() const {
 		return stateEffects;
 	}
 
-	VectorMap<uint64, DotEffect>* getDotEffects() const {
+	Vector<DotEffect>* getDotEffects() const {
 		return dotEffects;
 	}
 
-	void setAnimationCRC(uint32 animationCRC) {
-		this->animationCRC = animationCRC;
+	bool isForceAttack() const {
+		return forceAttack;
 	}
 
-	uint8 getAttackType() const {
-		return attackType;
-	}
-
-	void setAttackType(uint8 attackType) {
-		this->attackType = attackType;
+	void setForceAttack(bool forceAttack) {
+		this->forceAttack = forceAttack;
 	}
 
 	uint8 getTrails() const {
 		return trails;
+	}
+
+	uint64 getPrimaryTarget() const {
+		return targetID;
 	}
 
 	void setTrails(uint8 trails) {
@@ -209,6 +196,22 @@ public:
 	void setCombatSpam(String spam) {
 		this->combatSpam = spam;
 	}
+
+	bool isStateOnlyAttack() const {
+		return poolsToDamage == 0;
+	}
+
+	int getStateAccuracyBonus() const {
+		return stateAccuracyBonus;
+	}
+
+	void setStateAccuracyBonus(int stateAccuracyBonus) {
+		this->stateAccuracyBonus = stateAccuracyBonus;
+	}
+
+	bool changesDefenderPosture() const;
+
+	bool changesAttackerPosture() const;
 };
 
 #endif /* CREATUREATTACKDATA_H_ */

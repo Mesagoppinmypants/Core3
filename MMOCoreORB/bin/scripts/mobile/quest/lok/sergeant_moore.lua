@@ -2,7 +2,6 @@ sergeant_moore = Creature:new {
 	objectName = "@mob/creature_names:commoner",
 	customName = "Sergeant Moore (Retired)",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 4,
 	chanceHit = 0.24,
@@ -24,7 +23,7 @@ sergeant_moore = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = HERD,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = { "object/mobile/dressed_commoner_old_human_male_02.iff" },

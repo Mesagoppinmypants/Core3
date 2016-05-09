@@ -52,11 +52,13 @@ PolearmLunge1Command = {
 	actionCostMultiplier = 1.0,
 	mindCostMultiplier = 0.5,
 
-	animationCRC = hashCode("lower_posture_polearm_1"),
+	animation = "lower_posture_polearm_2",
 
 	combatSpam = "lungestrike",
 
-	range = 15,
+	range = 20,
+	
+	weaponType = POLEARMWEAPON,
 
 	stateEffects = {
 	  StateEffect( 

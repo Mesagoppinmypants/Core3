@@ -1,7 +1,8 @@
 beldonnas_league_scout = Creature:new {
 	objectName = "@mob/creature_names:beldonnas_scout",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "beldonnas_league",
-	pvpFaction = "beldonnas_league",
 	faction = "beldonnas_league",
 	level = 19,
 	chanceHit = 0.33,
@@ -23,7 +24,7 @@ beldonnas_league_scout = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_ravager_human_female_01.iff",
@@ -46,12 +47,12 @@ beldonnas_league_scout = Creature:new {
 				{group = "loot_kit_parts", chance = 2000000},
 				{group = "tailor_components", chance = 1000000},
 				{group = "beldonnas_common", chance = 2000000}
-			},
-			lootChance = 3000000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_light"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 

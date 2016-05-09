@@ -2,15 +2,8 @@ deathWatchQuestNpcs = {
 	{"mand_bunker_foreman", 1, 27.6, -61.5, -297.6, -112, 5996355},
 	{"death_watch_workshop_droid", 1, -113.3, -20, -101.3, 35, 5996328},
 	{"mand_bunker_technician", 1, -23.9, -52, -163.8, 45, 5996378},
-	--{"ventilation_quest_droid", 1, -6.2, -52.0, -119.6, 62, 5996379},
 	{"death_watch_medical_droid", 1, -80.3, -20, -121, -34, 5996329},
 	{"death_watch_rescue_scientist", 1, 113.9,-68,-187,1,5996351},
-	
-	-- ***** TEMPORARY FOR TESTING *****
-	{"boba_fett", 0, -4677,13,4325,-90,0},
-	{"death_watch_herald_imperial", 0, -4677,13,4323,-90,0},
-	{"death_watch_herald_rebel", 0, -4677,13,4321,-90,0},
-	
 }
 
 deathWatchSpecialSpawns = {
@@ -64,6 +57,8 @@ deathWatchSpecialSpawns = {
 	droidengineerattack2 = {"death_watch_wraith", 0, -241.9, -40.0, -95.8, 23, 5996370},
 	droidengineerattack3 = {"death_watch_ghost", 0,-249.1, -40.0, -85.1, 114, 5996370},
 	droidengineerattack4 = {"death_watch_bloodguard", 0,-254.9, -40.0, -92.7, -130, 5996370},
+	bombdroid = {"r2", 0, 94, -64, -132, 90, 5996348},
+	ventdroid = {"mand_bunker_vent_droid", 0, -20.3, -52, -160.9, 0, 5996378},
 }
 
 deathWatchStaticSpawns = {
@@ -71,7 +66,6 @@ deathWatchStaticSpawns = {
 	{"death_watch_s_battle_droid", 300, 110, -64, -92, 150, 5996349},
 	{"death_watch_ghost", 300, 116, -64, -101, -156, 5996349},
 	{"death_watch_wraith", 300, 113, -64, -100.7, -36, 5996349},
-	{"blastromech", 300, 98, -64, -132, -90, 5996348},
 	{"death_watch_s_battle_droid", 300, 22.1, -64, -97, 110, 5996347},
 	{"death_watch_wraith", 300, 22.6, -64, -111.1, 128, 5996347},
 	{"death_watch_battle_droid", 300, 40.2, -64, -154.6, -71, 5996347},
@@ -85,7 +79,7 @@ deathWatchStaticSpawns = {
 	{"death_watch_bloodguard", 300, 32.5, -42.0, -111.6, 65, 5996338},
 	{"death_watch_bloodguard", 300, 36.3, -32.0, -107.3, -56, 5996338},
 	{"death_watch_battle_droid", 300, 40.2, -32, -112.6, 2, 5996338},
-	{"death_watch_battle_droid", 300, 46.6, -32, -111.8, 74, 5996338},
+	{"death_watch_blastromech", 600, 46.6, -32, -111.8, 74, 5996338},
 	{"death_watch_wraith", 300, 54.2, -32, -103.9, -82, 5996338},
 	{"death_watch_battle_droid", 300, 71.4, -32, -101.3, -86, 5996339},
 	{"death_watch_s_battle_droid", 300, 70.3, -32.0, -87.5, -116, 5996340},
@@ -129,6 +123,7 @@ deathWatchStaticSpawns = {
 	{"death_watch_black_sun_thug", 300, -15.1, -12.0, 13.5, -163, 5996316},
 	{"death_watch_black_sun_guard", 300, -1.3, -12, 28.4, 22, 5996318},
 	{"death_watch_black_sun_assassin", 300, 0.6, -12, 34.0, -80, 5996318},
+	{"death_watch_blastromech", 600, 6.3, -12.0, 31.0, -106, 5996318},
 	{"death_watch_s_battle_droid", 300, -57.1, -20, 27.8, -121, 5996319},
 	{"death_watch_black_sun_henchman", 300, -62.1, -20, 25.1, -63, 5996319},
 	{"death_watch_black_sun_assassin", 300, -67.3, -20, 35.6, 131, 5996319},
@@ -143,6 +138,7 @@ deathWatchStaticSpawns = {
 	{"death_watch_black_sun_thug", 300, -92.5, -20, -28.3, -37, 5996323},
 	{"death_watch_black_sun_assassin", 300, -98.2, -20, -25.8, 114, 5996323},
 	{"death_watch_black_sun_henchman", 300, -112.6, -20, -53.3, -57, 5996323},
+	{"death_watch_blastromech", 600, -100.8, -22.0, -39.2, 41, 5996323},
 	{"death_watch_wraith", 300, -126, -20, -49.2, -164, 5996325},
 	{"death_watch_bloodguard", 300, -126, -20, -55.2, 55, 5996325},
 	{"death_watch_battle_droid", 300, -129.6, -20, -53.0, 37, 5996325},
@@ -161,10 +157,12 @@ deathWatchStaticSpawns = {
 	{"death_watch_bloodguard", 300, -103, -20, -100.4, -154, 5996328},
 	{"death_watch_s_battle_droid", 300, -114.3, -20, -95.3, -77, 5996328},
 	{"death_watch_black_sun_henchman", 300, -110.2, -20, -91.9, 56, 5996328},
+	{"death_watch_blastromech", 600, -108.3, -20.0, -101.7, 12, 5996328},
 
 	{"death_watch_black_sun_thug", 300, -93.5, -20, -114.7, 21, 5996329},
 	{"death_watch_bloodguard", 300, -82.3, -20, -112.1, -50, 5996329},
 	{"death_watch_black_sun_guard", 300, -38, -20, -46.3, 12, 5996330},
+	{"death_watch_blastromech", 600, -12.0, -22.0, -52.9, -92, 5996331},
 	{"death_watch_scientist", 300, 20.9, -20, -55.8, 121, 5996332},
 	{"death_watch_scientist", 300, 5, -22, -74.2, 65, 5996332},
 	{"death_watch_scientist", 300, -1.3, -32, -79.8, 90, 5996337},
@@ -173,7 +171,7 @@ deathWatchStaticSpawns = {
 	{"death_watch_s_battle_droid", 300, -21.2, -52, -156.9, 19, 5996378},
 	{"death_watch_s_battle_droid", 300, -26.3, -52, -149.1, 129, 5996378},
 	{"death_watch_battle_droid", 300, -28.9, -52, -161.1, 111, 5996378},
-	{"death_watch_battle_droid", 300, -16.7, -52, -168.4, -5, 5996378},
+	{"death_watch_blastromech", 600, -16.7, -52, -168.4, -5, 5996378},
 	{"death_watch_battle_droid", 300, -9.6, -52, -153.4, -25, 5996378},
 
 	{"death_watch_wraith", 300, -11.5, -60.3, -293.4, -6, 5996354},
@@ -259,7 +257,7 @@ deathWatchStaticSpawns = {
 	{"death_watch_mine_rat", 300, -124.3, -60.1, -150.7, 175, 5996361},
 	{"death_watch_mine_rat", 300, -120.4, -60.0, -136.9, 111, 5996361},
 	{"death_watch_mine_rat", 300, -127.8, -60.0, -137.8, 111, 5996361},
-	{"death_watch_battle_droid", 300, -135.4, -59.9, -143.6, 111, 5996361},
+	{"death_watch_blastromech", 600, -135.4, -59.9, -143.6, 111, 5996361},
 
 	{"death_watch_battle_droid", 300, -95.9, -60.1, -139.1, 156, 5996362},
 	{"death_watch_mine_rat", 300, -93.7, -59.7, -150.1, -65, 5996362},

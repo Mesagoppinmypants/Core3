@@ -1,7 +1,6 @@
 graul_marauder = Creature:new {
 	objectName = "@mob/creature_names:graul_marauder",
 	socialGroup = "graul",
-	pvpFaction = "",
 	faction = "",
 	level = 173,
 	chanceHit = 10.75,
@@ -23,7 +22,7 @@ graul_marauder = Creature:new {
 	ferocity = 15,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/graul_hue.iff"},
@@ -33,7 +32,7 @@ graul_marauder = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"creatureareableeding",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

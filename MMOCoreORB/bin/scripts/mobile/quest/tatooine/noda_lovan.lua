@@ -1,8 +1,7 @@
 noda_lovan = Creature:new {
 	objectName = "",
 	socialGroup = "thug",
-	pvpFaction = "thug",
-	faction = "",
+	faction = "thug",
 	level = 14,
 	chanceHit = 0.3,
 	damageMin = 150,
@@ -23,7 +22,7 @@ noda_lovan = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_criminal_slicer_human_male_01.iff"},

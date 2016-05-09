@@ -1,53 +1,16 @@
 /*
-Copyright (C) 2013 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef DROIDPOWERTASK_H_
 #define DROIDPOWERTASK_H_
 
-#include "server/zone/objects/creature/DroidObject.h"
+#include "server/zone/objects/creature/ai/DroidObject.h"
 #include "server/zone/objects/tangible/components/droid/DroidPlaybackModuleDataComponent.h"
 #include "server/zone/packets/creature/CreatureObjectDeltaMessage6.h"
+#include "server/zone/managers/skill/Performance.h"
+#include "server/zone/managers/skill/PerformanceManager.h"
+#include "server/zone/managers/skill/SkillManager.h"
 
 namespace server {
 namespace zone {
@@ -112,18 +75,28 @@ public:
 			module->deactivate();
 			return;
 		}
+		SkillManager* skillManager = droid->getZoneServer()->getSkillManager();
+		if (skillManager == NULL)
+			return;
 
+		PerformanceManager* performanceManager = skillManager->getPerformanceManager();
+		if (performanceManager == NULL)
+			return;
+
+		String instrumentAnimation;
+		int instrid = performanceManager->getInstrumentId(performance);
+		instrid += performanceManager->getInstrumentAnimation(instrument, instrumentAnimation);
 		if (!playing) {
-			DroidObject* droid = module->getDroidObject();
+			droid->setPosture(CreaturePosture::SKILLANIMATING);
 			// we fire off the performance piece and let it run
-			droid->setPerformanceAnimation(performance, false);
+			droid->setPerformanceAnimation(instrumentAnimation, false);
 			droid->setPerformanceCounter(0, false);
-			droid->setInstrumentID(instrument, false);
+			droid->setInstrumentID(instrid, false);
 			// broadcast the song
 			CreatureObjectDeltaMessage6* dcreo6 = new CreatureObjectDeltaMessage6(droid);
-			dcreo6->updatePerformanceAnimation(performance);
+			dcreo6->updatePerformanceAnimation(instrumentAnimation);
 			dcreo6->updatePerformanceCounter(0);
-			dcreo6->updateInstrumentID(instrument);
+			dcreo6->updateInstrumentID(instrid);
 			dcreo6->close();
 			droid->broadcastMessage(dcreo6, true);
 			playing = true;

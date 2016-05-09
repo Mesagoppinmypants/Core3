@@ -1,7 +1,6 @@
 arachne_fleshripper = Creature:new {
 	objectName = "@mob/creature_names:arachne_fleshripper",
 	socialGroup = "arachne",
-	pvpFaction = "",
 	faction = "",
 	level = 30,
 	chanceHit = 0.36,
@@ -23,7 +22,7 @@ arachne_fleshripper = Creature:new {
 	ferocity = 10,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/angler_hue.iff"},
@@ -33,8 +32,8 @@ arachne_fleshripper = Creature:new {
 	weapons = {"creature_spit_small_toxicgreen"},
 	conversationTemplate = "",
 	attacks = {
-		{"posturedownattack","postureDownChance=50"},
-		{"strongpoison",""}
+		{"strongpoison",""},
+		{"posturedownattack",""}
 	}
 }
 

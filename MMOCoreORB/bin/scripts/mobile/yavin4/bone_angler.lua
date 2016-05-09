@@ -1,7 +1,6 @@
 bone_angler = Creature:new {
 	objectName = "@mob/creature_names:angler_bone",
 	socialGroup = "angler",
-	pvpFaction = "",
 	faction = "",
 	level = 27,
 	chanceHit = 0.37,
@@ -23,7 +22,7 @@ bone_angler = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/angler_hue.iff"},
@@ -33,8 +32,8 @@ bone_angler = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"},
-		{"strongpoison",""}
+		{"strongpoison",""},
+		{"intimidationattack",""}
 	}
 }
 

@@ -1,8 +1,8 @@
 vordin_girlfriend = Creature:new {
 	objectName = "@mob/creature_names:commoner_twilek_female",
-	generateRandomName = true,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 7,
 	chanceHit = 0.26,
@@ -24,7 +24,7 @@ vordin_girlfriend = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/twilek_female.iff"},

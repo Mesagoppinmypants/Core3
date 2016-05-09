@@ -1,7 +1,8 @@
 renegade_corsec_trooper = Creature:new {
 	objectName = "@mob/creature_names:corsec_renegade",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rogue_corsec",
-	pvpFaction = "rogue_corsec",
 	faction = "rogue_corsec",
 	level = 12,
 	chanceHit = 0.29,
@@ -23,7 +24,7 @@ renegade_corsec_trooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -35,12 +36,12 @@ renegade_corsec_trooper = Creature:new {
 				{group = "junk", chance = 6000000},
 				{group = "corsec_weapons", chance = 2500000},
 				{group = "tailor_components", chance = 1500000}
-			},
-			lootChance = 3000000
+			}
 		}
 	},
 	weapons = {"ranged_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermid,marksmanmid)
 }
 

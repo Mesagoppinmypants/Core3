@@ -1,7 +1,6 @@
 skreeg_male = Creature:new {
 	objectName = "@mob/creature_names:skreeg_male",
 	socialGroup = "skreeg",
-	pvpFaction = "",
 	faction = "",
 	level = 22,
 	chanceHit = 0.35,
@@ -23,7 +22,7 @@ skreeg_male = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/skreeg.iff"},
@@ -33,7 +32,7 @@ skreeg_male = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

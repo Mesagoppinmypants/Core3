@@ -18,7 +18,9 @@ public:
 		: SuiCallback(server) {
 	}
 
-	void run(CreatureObject* player, SuiBox* suiBox, bool cancelPressed, Vector<UnicodeString>* args) {
+	void run(CreatureObject* player, SuiBox* suiBox, uint32 eventIndex, Vector<UnicodeString>* args) {
+		bool cancelPressed = (eventIndex == 1);
+
 		if (!suiBox->isListBox() || cancelPressed)
 			return;
 
@@ -27,10 +29,13 @@ public:
 
 		ManagedReference<SceneObject*> object = suiBox->getUsingObject();
 
-		if (!object->isVendor() || object == NULL)
+		if (object == NULL || !object->isVendor())
 			return;
 
 		TangibleObject* vendor = cast<TangibleObject*>(object.get());
+
+		if (vendor == NULL)
+			return;
 
 		SuiListBox* suiListBox = cast<SuiListBox*>( suiBox);
 

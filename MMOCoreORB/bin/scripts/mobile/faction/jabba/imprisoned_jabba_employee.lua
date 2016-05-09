@@ -1,7 +1,8 @@
 imprisoned_jabba_employee = Creature:new {
 	objectName = "@mob/creature_names:imprisoned_jabba_employee",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "jabba",
-	pvpFaction = "jabba",
 	faction = "jabba",
 	level = 12,
 	chanceHit = 0.29,
@@ -23,7 +24,7 @@ imprisoned_jabba_employee = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_jabba_thief.iff"},
@@ -38,8 +39,7 @@ imprisoned_jabba_employee = Creature:new {
 				{group = "clothing_attachments", chance = 200000},
 				{group = "armor_attachments", chance = 200000},
 				{group = "wearables_common", chance = 1000000}
-			},
-			lootChance = 2500000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_light"},

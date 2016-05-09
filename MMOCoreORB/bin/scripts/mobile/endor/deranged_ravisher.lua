@@ -1,7 +1,6 @@
 deranged_ravisher = Creature:new {
 	objectName = "@mob/creature_names:squill_deranged_ravisher",
 	socialGroup = "squill",
-	pvpFaction = "",
 	faction = "",
 	level = 35,
 	chanceHit = 0.39,
@@ -23,7 +22,7 @@ deranged_ravisher = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/squill_hue.iff"},
@@ -33,7 +32,7 @@ deranged_ravisher = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"knockdownattack","knockdownChance=50"},
+		{"knockdownattack",""},
 		{"mediumdisease",""}
 	}
 }

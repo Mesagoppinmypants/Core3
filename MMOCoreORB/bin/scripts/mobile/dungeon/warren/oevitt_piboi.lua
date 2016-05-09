@@ -2,7 +2,6 @@ oevitt_piboi = Creature:new {
 	objectName = "",
 	customName = "O'Evitt Piboi (en escapee)",
 	socialGroup = "warren_imperial_worker",
-	pvpFaction = "",
 	faction = "",
 	level = 12,
 	chanceHit = 0.29,
@@ -24,7 +23,7 @@ oevitt_piboi = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/warren_escapee.iff"},

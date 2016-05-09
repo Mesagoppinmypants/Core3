@@ -1,7 +1,8 @@
 mokk_shaman = Creature:new {
 	objectName = "@mob/creature_names:mokk_shaman",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "mokk_tribe",
-	pvpFaction = "mokk_tribe",
 	faction = "mokk_tribe",
 	level = 60,
 	chanceHit = 0.6,
@@ -23,7 +24,7 @@ mokk_shaman = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -32,12 +33,12 @@ mokk_shaman = Creature:new {
 	lootGroups = {
 		{
 			groups = {
-				{group = "junk", chance = 6000000},
+				{group = "junk", chance = 5000000},
 				{group = "loot_kit_parts", chance = 3000000},
 				{group = "armor_attachments", chance = 500000},
-				{group = "clothing_attachments", chance = 500000}
-			},
-			lootChance = 3000000
+				{group = "clothing_attachments", chance = 500000},
+				{group = "color_crystals", chance = 1000000}
+			}
 		}
 	},
 	weapons = {"primitive_weapons"},

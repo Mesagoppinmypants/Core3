@@ -1,7 +1,6 @@
 veneral_devourer = Creature:new {
 	objectName = "@mob/creature_names:pugoriss_venerable_devourer",
 	socialGroup = "pugoriss",
-	pvpFaction = "",
 	faction = "",
 	level = 20,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ veneral_devourer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/pugoriss.iff"},
@@ -33,8 +32,8 @@ veneral_devourer = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""},
+		{"blindattack",""}
 	}
 }
 

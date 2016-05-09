@@ -1,7 +1,8 @@
 imperial_officer = Creature:new {
 	objectName = "@mob/creature_names:warren_imperial_officer",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 30,
 	chanceHit = 0.39,
@@ -46,14 +47,15 @@ imperial_officer = Creature:new {
 				{group = "armor_attachments", chance = 25000},
 				{group = "imperial_officer_common", chance = 450000},
 				{group = "wearables_common", chance = 1000000}
-			},
-			lootChance = 2800000
+			}
 		}
 	},
 	weapons = {"imperial_weapons_medium"},
 	attacks = merge(riflemanmaster,carbineermaster,brawlermaster,marksmanmaster),
 	conversationTemplate = "",
-	optionsBitmask = 128
+	reactionStf = "@npc_reaction/military",
+	personalityStf = "@hireling/hireling_military",
+	optionsBitmask = AIENABLED
 }
 
 CreatureTemplates:addCreatureTemplate(imperial_officer, "imperial_officer")

@@ -1,8 +1,9 @@
 gungan_thug = Creature:new {
 	objectName = "",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	customName = "a Gungan Thug",
 	socialGroup = "gungan",
-	pvpFaction = "gungan",
 	faction = "gungan",
 	level = 14,
 	chanceHit = 0.3,
@@ -24,11 +25,11 @@ gungan_thug = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE + AGGRESSIVE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/gungan_male.iff",
-			"object/mobile/gungan_s02_male.iff"},
+		"object/mobile/gungan_s02_male.iff"},
 	lootGroups = {
 		{
 			groups = {
@@ -36,8 +37,7 @@ gungan_thug = Creature:new {
 				{group = "gungan_common", chance = 2000000},
 				{group = "tailor_components", chance = 2000000},
 				{group = "loot_kit_parts", chance = 2000000}
-			},
-			lootChance = 3200000
+			}
 		}
 	},
 	weapons = {"rebel_weapons_medium"},

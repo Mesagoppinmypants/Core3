@@ -1,8 +1,8 @@
 coa2_drall_scientist = Creature:new {
-	objectName = "",
-	customName = "a Drall Scientist",
+	objectName = "@mob/creature_names:scientist",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "drall",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 24,
 	chanceHit = 0.35,
@@ -12,7 +12,7 @@ coa2_drall_scientist = Creature:new {
 	baseHAM = 6800,
 	baseHAMmax = 8300,
 	armor = 0,
-	resists = {0,0,0,0,0,0,0,0,-1},
+	resists = {15,15,15,15,15,15,15,15,-1},
 	meatType = "",
 	meatAmount = 0,
 	hideType = "",
@@ -24,11 +24,21 @@ coa2_drall_scientist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
-	templates = {"object/mobile/drall_male.iff"},
-	lootGroups = {},
+	templates = {"object/mobile/drall_male.iff",
+			"object/mobile/drall_female.iff"},
+	lootGroups = {
+		{
+			groups = {
+				{group = "junk", chance = 4000000},
+				{group = "weapons_all", chance = 2000000},
+				{group = "armor_all", chance = 2000000},
+				{group = "wearables_all", chance = 2000000}
+			}
+		}
+	},
 	weapons = {"pirate_weapons_heavy"},
 	conversationTemplate = "",
 	attacks = merge(brawlermaster,marksmanmaster)

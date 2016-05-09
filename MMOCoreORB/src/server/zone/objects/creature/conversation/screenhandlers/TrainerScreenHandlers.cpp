@@ -1,51 +1,12 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
- */
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions. */
 
 #include "TrainerScreenHandlers.h"
 #include "server/zone/managers/skill/SkillManager.h"
 #include "server/zone/objects/player/sessions/TrainerConversationSession.h"
 #include "server/zone/Zone.h"
+#include "server/zone/managers/jedi/JediManager.h"
 
 const String TrainerScreenHandlers::STARTSCREENHANDLERID = "convoscreenstart";
 const String TrainerScreenHandlers::INFOSCREENHANDLERID = "convoscreentrainerinfo";
@@ -96,6 +57,18 @@ ConversationScreen* TrainerInfoScreenHandler::handleScreen(CreatureObject* conve
 		session->addAdditionalMasterSkill(jedi5);
 	}
 
+	if (conversingNPC->getObjectNameStringIdName().contains("trainer_fs")) {
+		String fs1 = "force_sensitive_combat_prowess_master";
+		String fs2 = "force_sensitive_enhanced_reflexes_master";
+		String fs3 = "force_sensitive_crafting_mastery_master";
+		String fs4 = "force_sensitive_heightened_senses_master";
+
+		session->addAdditionalMasterSkill(fs1);
+		session->addAdditionalMasterSkill(fs2);
+		session->addAdditionalMasterSkill(fs3);
+		session->addAdditionalMasterSkill(fs4);
+	}
+
 	if (conversingPlayer->hasSkill(session->getMasterSkill())) {
 		nextScreenId = TrainerScreenHandlers::TRAINEDMASTERSCREENHANDLERID;
 		return NULL;
@@ -126,14 +99,6 @@ ConversationScreen* TrainerTrainableSkillsScreenHandler::handleScreen(CreatureOb
 	}
 
 	PlayerObject* ghost = conversingPlayer->getPlayerObject();
-
-	if (ghost != NULL) {
-		Vector<String>* fsBranches = ghost->getForceSensitiveElegibleBranches();
-		for (int i = 0; i < fsBranches->size(); i++) {
-			Skill* skill = SkillManager::instance()->getSkill(fsBranches->get(i));
-			getTrainableSkillsList(conversingPlayer, &trainableSkills, skill);
-		}
-	}
 
 	if (masterSkills.size() <= 0)
 		masterSkills.add(startingMasterSkill);
@@ -225,6 +190,7 @@ ConversationScreen* TrainerNextSkillsScreenHandler::handleScreen(CreatureObject*
 		for (int i = 0; i < nextSkills.size(); ++i) {
 			conversationScreen->addOption("@skl_n:" + nextSkills.get(i), TrainerScreenHandlers::SKILLINFOSCREENHANDLERID);
 			session->addNextSkill(nextSkills.get(i));
+
 		}
 		conversationScreen->addOption("@skill_teacher:back", TrainerScreenHandlers::STARTSCREENHANDLERID);
 	} else {
@@ -297,8 +263,14 @@ ConversationScreen* TrainerCanLearnSkillScreenHandler::handleScreen(CreatureObje
 		//Skill selected.
 		Skill* trainingSkill = SkillManager::instance()->getSkill(session->getTrainableSkills(selectedOption));
 		if (trainingSkill != NULL) {
+			int skillCost = trainingSkill->getMoneyRequired();
+			int persuasion = conversingPlayer->getSkillMod("force_persuade");
+
+			if (persuasion > 0)
+				skillCost -= (skillCost * persuasion) / 100;
+
 			StringIdChatParameter optionText("@skill_teacher:prose_cost");
-			optionText.setDI(trainingSkill->getMoneyRequired());
+			optionText.setDI(skillCost);
 			optionText.setTO("@skl_n:" + trainingSkill->getSkillName());
 			conversationScreen->setDialogText(optionText);
 			//Store selected skill in player session for next screen.
@@ -346,8 +318,15 @@ ConversationScreen* TrainerTrainSkillScreenHandler::handleScreen(CreatureObject*
 		//Check if the player lacks skill points.
 		playerLacksSkillPoints = SkillManager::instance()->fullfillsSkillPrerequisitesAndXp(skill->getSkillName(), conversingPlayer);
 	}
+
+	int skillCost = skill->getMoneyRequired();
+	int persuasion = conversingPlayer->getSkillMod("force_persuade");
+
+	if (persuasion > 0)
+		skillCost -= (skillCost * persuasion) / 100;
+
 	// Verify that the player has enough credits.
-	if (conversingPlayer->getCashCredits() + conversingPlayer->getBankCredits() >= skill->getMoneyRequired()) {
+	if (conversingPlayer->getCashCredits() + conversingPlayer->getBankCredits() >= skillCost) {
 		enoughCredits = true;
 	}
 
@@ -355,7 +334,6 @@ ConversationScreen* TrainerTrainSkillScreenHandler::handleScreen(CreatureObject*
 		//Train skill.
 
 		//Withdraw money from player.
-		int skillCost = skill->getMoneyRequired();
 		if (skillCost <= conversingPlayer->getCashCredits()) {
 			conversingPlayer->subtractCashCredits(skillCost);
 		} else {
@@ -369,7 +347,7 @@ ConversationScreen* TrainerTrainSkillScreenHandler::handleScreen(CreatureObject*
 
 		//Send message to client
 		StringIdChatParameter systemMessageCredits("@skill_teacher:prose_pay");
-		systemMessageCredits.setDI(skill->getMoneyRequired());
+		systemMessageCredits.setDI(skillCost);
 		systemMessageCredits.setTO("@skl_n:" + skill->getSkillName());
 		conversingPlayer->sendSystemMessage(systemMessageCredits);
 		StringIdChatParameter systemMessageSkillLearned("@skill_teacher:prose_skill_learned");
@@ -381,6 +359,13 @@ ConversationScreen* TrainerTrainSkillScreenHandler::handleScreen(CreatureObject*
 			//Mastered profession.
 			nextScreenId = TrainerScreenHandlers::TRAINEDMASTERSCREENHANDLERID;
 			conversationScreen = NULL;
+		}
+
+		// Set the screen play state if they mastered a fourth-tier box.
+		if (skill->getSkillName().contains("force_sensitive")) {
+			if (skill->getSkillName().contains("_04")) {
+				JediManager::instance()->onFSTreeCompleted(conversingPlayer, skill->getSkillName());
+			}
 		}
 
 	} else {
@@ -410,8 +395,14 @@ ConversationScreen* TrainerNotEnoughCreditsScreenHandler::handleScreen(CreatureO
 	Skill* skill = SkillManager::instance()->getSkill(session->getSelectedSkill());
 
 	if (skill != NULL) {
+		int skillCost = skill->getMoneyRequired();
+		int persuasion = conversingPlayer->getSkillMod("force_persuade");
+
+		if (persuasion > 0)
+			skillCost -= (skillCost * persuasion) / 100;
+
 		StringIdChatParameter* dialogText = conversationScreen->getDialogText();
-		dialogText->setDI(skill->getMoneyRequired());
+		dialogText->setDI(skillCost);
 		dialogText->setTO("@skl_n:" + skill->getSkillName());
 	} else {
 		nextScreenId = TrainerScreenHandlers::ERRORSCREENHANDLERID;

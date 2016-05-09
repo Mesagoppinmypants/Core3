@@ -67,20 +67,22 @@ CityUpdateInterval = 10080
 NewCityGracePeriod = 1440
 
 --The amount of time in minutes an old city has to regain enough citizens to remain a city.
-OldCityGracePeriod = 30240
+OldCityGracePeriod = 4320
 
 --Whether or not to allow the use of the command, /cityWarn to give players a TEF while in the city limits.
 EnableCityWarn = false
 
 --The number of citizens required to achieve each city rank. (Outpost, Village, Township, City, Metropolis)
-CitizensPerRank = {1, 2, 3, 5, 8}
+CitizensPerRank = {2, 4, 6, 8, 10}
 --CitizensPerRank = {10, 20, 35, 55, 85}
 
 --The radius in meters of the city at each city rank. (Outpost, Village, Township, City, Metropolis)
 RadiusPerRank = {150, 200, 300, 400, 450}
 
--- Maximum for each rank.  rank 1 = decorationsperrank * 1, rank 5 = decorationsperrank * 5	82
+-- Maximum for each rank.  ex. rank 1 = DecorationsPerRank * 1, rank 5 = DecorationsPerRank * 5
 DecorationsPerRank = 10
+TrainersPerRank = 3
+MissionTerminalsPerRank = 3
 
 -- Amount to discount city maintenance  float.  1 = 100%, .75 =75%, .5=50% etc
 maintenanceDiscount = 1.0
@@ -123,16 +125,6 @@ CitiesAllowed = {
 	emailBody: The body of the email that is sent to citizens when this tax changes. %DI = Amount of new tax; %TO = Name of the city.
 --]]
 CityTaxes = {
-	{--Property Tax
-		min = 0, max = 50,
-		menuText = "@city/city:property_tax_prompt",
-		inputTitle = "@city/city:set_tax_t_property",
-		inputText = "@city/city:set_tax_d_property",
-		statusPrompt = "@city/city:promperty_tax_prompt",
-		systemMessage = "@city/city:set_property_tax",
-		emailSubject = "@city/city:tax_property_subject",
-		emailBody = "@city/city:tax_property_body"
-	},
 	{--Income Tax
 		min = 0, max = 2000,
 		menuText = "@city/city:income_tax",
@@ -142,6 +134,16 @@ CityTaxes = {
 		systemMessage = "@city/city:set_income_tax",
 		emailSubject = "@city/city:tax_income_subject",
 		emailBody = "@city/city:tax_income_body"
+	},
+	{--Property Tax
+		min = 0, max = 50,
+		menuText = "@city/city:property_tax_prompt",
+		inputTitle = "@city/city:set_tax_t_property",
+		inputText = "@city/city:set_tax_d_property",
+		statusPrompt = "@city/city:promperty_tax_prompt",
+		systemMessage = "@city/city:set_property_tax",
+		emailSubject = "@city/city:tax_property_subject",
+		emailBody = "@city/city:tax_property_body"
 	},
 	{--Sales Tax
 		min = 0, max = 20,
@@ -166,9 +168,9 @@ CityTaxes = {
 	{--Garage Tax
 		min = 0, max = 30,
 		menuText = "@city/city:garage_tax",
-		inputTitle = "@city/city:set_tax_t_garage",
+		inputTitle = "Adjust Garage Service Fee", -- missing from stf
 		inputText = "@city/city:set_tax_d_garage",
-		statusPrompt = "Garage Cost: ",
+		statusPrompt = "Garage Cost: ", -- missing from stf
 		systemMessage = "@city/city:set_garage_tax",
 		emailSubject = "@city/city:garage_fee_subject",
 		emailBody = "@city/city:garage_fee_body"
@@ -205,7 +207,7 @@ CitySpecializations = {
 		}
 	},
 	{--Clone Lab
-		name = "@city/city:city_spec_clone",
+		name = "@city/city:city_spec_cloning",
 		cost = 80000,
 		skillMods = {
 			{"private_spec_cloning", 20}
@@ -222,7 +224,7 @@ CitySpecializations = {
 		name = "@city/city:city_spec_missions",
 		cost = 80000,
 		skillMods = {
-			{"private_spec_missions", 20}
+			{"private_spec_missions", 15}
 		}
 	},
 	{--Entertainment District
@@ -236,7 +238,7 @@ CitySpecializations = {
 		name = "@city/city:city_spec_stronghold",
 		cost = 150000,
 		skillMods = {
-			{"private_defense", 50}
+			{"private_defense", 90}
 		}
 	},
 }

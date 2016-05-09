@@ -18,7 +18,7 @@
 
 
 void FireworkShowMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
-		ObjectMenuResponse* menuResponse, CreatureObject* player) {
+		ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 
 	if (!sceneObject->isFireworkObject())
 		return;
@@ -52,7 +52,7 @@ void FireworkShowMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject,
 }
 
 int FireworkShowMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
-		CreatureObject* player, byte selectedID) {
+		CreatureObject* player, byte selectedID) const {
 
 	if(!sceneObject->isASubChildOf(player))
 		return 0;
@@ -92,11 +92,11 @@ int FireworkShowMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
 	return 0;
 }
 
-void FireworkShowMenuComponent::addEvent(CreatureObject* player, FireworkObject* fireworkShow) {
+void FireworkShowMenuComponent::addEvent(CreatureObject* player, FireworkObject* fireworkShow) const {
 
 	DataObjectComponent* data = fireworkShow->getDataObjectComponent()->get();
 
-	if(data == NULL || !data->isFireworkShowData())
+	if (data == NULL || !data->isFireworkShowData())
 		return;
 
 	FireworkShowDataComponent* fireworkShowData = cast<FireworkShowDataComponent*>(data);
@@ -104,18 +104,17 @@ void FireworkShowMenuComponent::addEvent(CreatureObject* player, FireworkObject*
 	int curFireworks = fireworkShowData->getTotalFireworkCount();
 	int showCapacity = fireworkShow->getCapacity();
 
-	ManagedReference<PlayerObject*> playerObject = player->getPlayerObject();
+	ManagedReference<PlayerObject*> ghost = player->getPlayerObject();
 
-	if (playerObject == NULL)
+	if (ghost == NULL)
 		return;
 
-	if (curFireworks == showCapacity && !playerObject->isPrivileged()) {
+	if (curFireworks >= showCapacity && !ghost->isPrivileged()) {
 		player->sendSystemMessage("This firework show is at full capacity.");
 		return;
 	}
 
-	ManagedReference<PlayerObject*> ghost = player->getPlayerObject();
-	if (ghost == NULL || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_ADDEVENT) || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_REMOVEEVENT)
+	if (ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_ADDEVENT) || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_REMOVEEVENT)
 			|| ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_REORDERSHOW) || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_MODIFYEVENT)
 				|| ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_DELAYSELECTION)) {
 		return;
@@ -133,7 +132,7 @@ void FireworkShowMenuComponent::addEvent(CreatureObject* player, FireworkObject*
 	ManagedReference<SceneObject*> inventory = player->getSlottedObject("inventory");
 	SceneObject* sceneObject = NULL;
 
-	for (int i=0; i< inventory->getContainerObjectsSize(); i++) {
+	for (int i = 0; i < inventory->getContainerObjectsSize(); i++) {
 		sceneObject = inventory->getContainerObject(i);
 		if (sceneObject == NULL)
 			continue;
@@ -144,22 +143,21 @@ void FireworkShowMenuComponent::addEvent(CreatureObject* player, FireworkObject*
 
 		DataObjectComponent* data = firework->getDataObjectComponent()->get();
 
-		if(data != NULL && data->isFireworkShowData())
+		if (data != NULL && data->isFireworkShowData())
 			continue;
 
-		if (sceneObject->isFireworkObject() && sceneObject->getObjectID() != fireworkShow->getObjectID()) {
-			TangibleObject* tano = cast<TangibleObject*>(sceneObject);
-			String itemWithUseCount = sceneObject->getDisplayedName() + " (" + tano->getUseCount() + ")";
+		if (sceneObject->getObjectID() != fireworkShow->getObjectID()) {
+			String itemWithUseCount = sceneObject->getDisplayedName() + " (" + firework->getUseCount() + ")";
 			suiBox->addMenuItem(itemWithUseCount, sceneObject->getObjectID());
 		}
 	}
 
 	suiBox->setCallback(new FireworkShowAddEventSuiCallback(player->getZoneServer()));
-	player->getPlayerObject()->addSuiBox(suiBox);
+	ghost->addSuiBox(suiBox);
 	player->sendMessage(suiBox->generateMessage());
 }
 
-void FireworkShowMenuComponent::showData(CreatureObject* player, FireworkObject* fireworkShow) {
+void FireworkShowMenuComponent::showData(CreatureObject* player, FireworkObject* fireworkShow) const {
 	ManagedReference<PlayerObject*> ghost = player->getPlayerObject();
 	if (ghost == NULL || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_ADDEVENT) || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_REMOVEEVENT)
 			|| ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_REORDERSHOW) || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_MODIFYEVENT)
@@ -167,22 +165,20 @@ void FireworkShowMenuComponent::showData(CreatureObject* player, FireworkObject*
 		return;
 	}
 
-	Locker plocker(player);
+	DataObjectComponent* data = fireworkShow->getDataObjectComponent()->get();
 
-	ZoneServer* server = player->getZoneServer();
+	if (data == NULL || !data->isFireworkShowData())
+		return;
+
+	FireworkShowDataComponent* fireworkShowData = cast<FireworkShowDataComponent*>(data);
+
+	Locker plocker(player);
 
 	ManagedReference<SuiListBox*> suiBox = new SuiListBox(player, SuiWindowType::FIREWORK_SHOW_ADDEVENT, SuiListBox::HANDLESINGLEBUTTON);
 	suiBox->setPromptTitle("@firework:data_title");
 	suiBox->setPromptText("@firework:data_prompt");
 	suiBox->setOkButton(true, "@ok");
 	suiBox->setUsingObject(fireworkShow);
-
-	DataObjectComponent* data = fireworkShow->getDataObjectComponent()->get();
-
-	if(data == NULL || !data->isFireworkShowData())
-		return;
-
-	FireworkShowDataComponent* fireworkShowData = cast<FireworkShowDataComponent*>(data);
 
 	int totalFireworks = fireworkShowData->getTotalFireworkCount();
 
@@ -193,17 +189,24 @@ void FireworkShowMenuComponent::showData(CreatureObject* player, FireworkObject*
 		suiBox->addMenuItem(menuItem);
 	}
 
-	player->getPlayerObject()->addSuiBox(suiBox);
+	ghost->addSuiBox(suiBox);
 	player->sendMessage(suiBox->generateMessage());
 }
 
-void FireworkShowMenuComponent::removeEvent(CreatureObject* player, FireworkObject* fireworkShow) {
+void FireworkShowMenuComponent::removeEvent(CreatureObject* player, FireworkObject* fireworkShow) const {
 	ManagedReference<PlayerObject*> ghost = player->getPlayerObject();
 	if (ghost == NULL || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_ADDEVENT) || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_REMOVEEVENT)
 			|| ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_REORDERSHOW) || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_MODIFYEVENT)
 				|| ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_DELAYSELECTION)) {
 		return;
 	}
+
+	DataObjectComponent* data = fireworkShow->getDataObjectComponent()->get();
+
+	if (data == NULL || !data->isFireworkShowData())
+		return;
+
+	FireworkShowDataComponent* fireworkShowData = cast<FireworkShowDataComponent*>(data);
 
 	Locker plocker(player);
 
@@ -213,13 +216,6 @@ void FireworkShowMenuComponent::removeEvent(CreatureObject* player, FireworkObje
 	suiBox->setOkButton(true, "@ok");
 	suiBox->setCancelButton(true, "@cancel");
 	suiBox->setUsingObject(fireworkShow);
-
-	DataObjectComponent* data = fireworkShow->getDataObjectComponent()->get();
-
-	if(data == NULL || !data->isFireworkShowData())
-		return;
-
-	FireworkShowDataComponent* fireworkShowData = cast<FireworkShowDataComponent*>(data);
 
 	int totalFireworks = fireworkShowData->getTotalFireworkCount();
 
@@ -231,17 +227,24 @@ void FireworkShowMenuComponent::removeEvent(CreatureObject* player, FireworkObje
 	}
 
 	suiBox->setCallback(new FireworkShowRemoveEventSuiCallback(player->getZoneServer()));
-	player->getPlayerObject()->addSuiBox(suiBox);
+	ghost->addSuiBox(suiBox);
 	player->sendMessage(suiBox->generateMessage());
 }
 
-void FireworkShowMenuComponent::modifyEvent(CreatureObject* player, FireworkObject* fireworkShow) {
+void FireworkShowMenuComponent::modifyEvent(CreatureObject* player, FireworkObject* fireworkShow) const {
 	ManagedReference<PlayerObject*> ghost = player->getPlayerObject();
 	if (ghost == NULL || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_ADDEVENT) || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_REMOVEEVENT)
 			|| ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_REORDERSHOW) || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_MODIFYEVENT)
 				|| ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_DELAYSELECTION)) {
 		return;
 	}
+
+	DataObjectComponent* data = fireworkShow->getDataObjectComponent()->get();
+
+	if (data == NULL || !data->isFireworkShowData())
+		return;
+
+	FireworkShowDataComponent* fireworkShowData = cast<FireworkShowDataComponent*>(data);
 
 	Locker plocker(player);
 
@@ -251,13 +254,6 @@ void FireworkShowMenuComponent::modifyEvent(CreatureObject* player, FireworkObje
 	suiBox->setOkButton(true, "@ok");
 	suiBox->setCancelButton(true, "@cancel");
 	suiBox->setUsingObject(fireworkShow);
-
-	DataObjectComponent* data = fireworkShow->getDataObjectComponent()->get();
-
-	if(data == NULL || !data->isFireworkShowData())
-		return;
-
-	FireworkShowDataComponent* fireworkShowData = cast<FireworkShowDataComponent*>(data);
 
 	int totalFireworks = fireworkShowData->getTotalFireworkCount();
 
@@ -269,17 +265,24 @@ void FireworkShowMenuComponent::modifyEvent(CreatureObject* player, FireworkObje
 	}
 
 	suiBox->setCallback(new FireworkShowModifyEventSuiCallback(player->getZoneServer()));
-	player->getPlayerObject()->addSuiBox(suiBox);
+	ghost->addSuiBox(suiBox);
 	player->sendMessage(suiBox->generateMessage());
 }
 
-void FireworkShowMenuComponent::reorderShow(CreatureObject* player, FireworkObject* fireworkShow) {
+void FireworkShowMenuComponent::reorderShow(CreatureObject* player, FireworkObject* fireworkShow) const {
 	ManagedReference<PlayerObject*> ghost = player->getPlayerObject();
 	if (ghost == NULL || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_ADDEVENT) || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_REMOVEEVENT)
 			|| ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_REORDERSHOW) || ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_MODIFYEVENT)
 				|| ghost->hasSuiBoxWindowType(SuiWindowType::FIREWORK_SHOW_DELAYSELECTION)) {
 		return;
 	}
+
+	DataObjectComponent* data = fireworkShow->getDataObjectComponent()->get();
+
+	if (data == NULL || !data->isFireworkShowData())
+		return;
+
+	FireworkShowDataComponent* fireworkShowData = cast<FireworkShowDataComponent*>(data);
 
 	Locker plocker(player);
 
@@ -291,13 +294,6 @@ void FireworkShowMenuComponent::reorderShow(CreatureObject* player, FireworkObje
 	suiBox->setOtherButton(true, "@ui:movedown");
 	suiBox->setUsingObject(fireworkShow);
 
-	DataObjectComponent* data = fireworkShow->getDataObjectComponent()->get();
-
-	if(data == NULL || !data->isFireworkShowData())
-		return;
-
-	FireworkShowDataComponent* fireworkShowData = cast<FireworkShowDataComponent*>(data);
-
 	int totalFireworks = fireworkShowData->getTotalFireworkCount();
 
 	for (int i = 0; i < totalFireworks; i++) {
@@ -308,6 +304,6 @@ void FireworkShowMenuComponent::reorderShow(CreatureObject* player, FireworkObje
 	}
 
 	suiBox->setCallback(new FireworkShowReorderShowSuiCallback(player->getZoneServer()));
-	player->getPlayerObject()->addSuiBox(suiBox);
+	ghost->addSuiBox(suiBox);
 	player->sendMessage(suiBox->generateMessage());
 }

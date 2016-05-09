@@ -1,7 +1,8 @@
 kunga_loreweaver = Creature:new {
 	objectName = "@mob/creature_names:kunga_loreweaver",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "kunga_tribe",
-	pvpFaction = "kunga_tribe",
 	faction = "kunga_tribe",
 	level = 51,
 	chanceHit = 0.48,
@@ -23,7 +24,7 @@ kunga_loreweaver = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -32,14 +33,14 @@ kunga_loreweaver = Creature:new {
 	lootGroups = {
 		{
 			groups = {
-				{group = "junk", chance = 4000000},
+				{group = "junk", chance = 3500000},
 				{group = "loot_kit_parts", chance = 3000000},
 				{group = "armor_attachments", chance = 500000},
 				{group = "clothing_attachments", chance = 500000},
 				{group = "wearables_common", chance = 1000000},
-				{group = "wearables_uncommon", chance = 1000000}
-			},
-			lootChance = 3000000
+				{group = "wearables_uncommon", chance = 1000000},
+				{group = "crystals_poor", chance = 500000}
+			}
 		}
 	},
 	weapons = {"primitive_weapons"},

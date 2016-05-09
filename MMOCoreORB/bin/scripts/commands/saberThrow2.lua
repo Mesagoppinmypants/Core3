@@ -43,10 +43,14 @@
 
 SaberThrow2Command = {
         name = "saberthrow2",
-                       
+    
 	damageMultiplier = 2.0,
-	speedMultiplier = 1.5,
+	speedMultiplier = 3.0,
+	healthCostMultiplier = 0,
+	actionCostMultiplier = 0,
+	mindCostMultiplier = 0,
 	forceCostMultiplier = 2.0,
+	visMod = 25,
 
 	stateEffects = {
 	   StateEffect( 
@@ -54,17 +58,19 @@ SaberThrow2Command = {
 		{ "knockdownRecovery", "lastKnockdown" }, 
 		{ "knockdown_defense" }, 
 		{}, 
-		30, 
 		100, 
+		0, 
 		0
 	  )
 	},
 
-	animationCRC = hashCode("saberthrow_light"),
+	animation = "saberthrow_posture_change",
 
 	combatSpam = "saberthrow2",
-	
+
 	poolsToDamage = RANDOM_ATTRIBUTE,
+
+	weaponType = JEDIWEAPON,
 
 	range = 32
 }

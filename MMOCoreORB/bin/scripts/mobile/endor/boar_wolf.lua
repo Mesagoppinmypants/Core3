@@ -1,7 +1,6 @@
 boar_wolf = Creature:new {
 	objectName = "@mob/creature_names:boar_wolf",
 	socialGroup = "boar",
-	pvpFaction = "",
 	faction = "",
 	level = 25,
 	chanceHit = 0.36,
@@ -23,7 +22,7 @@ boar_wolf = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/boar_wolf.iff"},
@@ -32,7 +31,7 @@ boar_wolf = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

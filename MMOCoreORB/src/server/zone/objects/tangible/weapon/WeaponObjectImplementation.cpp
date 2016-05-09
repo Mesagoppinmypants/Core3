@@ -11,8 +11,8 @@
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/packets/scene/AttributeListMessage.h"
 #include "server/zone/objects/player/PlayerObject.h"
-#include "server/zone/templates/tangible/SharedWeaponObjectTemplate.h"
-#include "server/zone/managers/templates/TemplateManager.h"
+#include "templates/tangible/SharedWeaponObjectTemplate.h"
+#include "templates/manager/TemplateManager.h"
 #include "server/zone/objects/manufactureschematic/craftingvalues/CraftingValues.h"
 #include "server/zone/objects/tangible/powerup/PowerupObject.h"
 #include "server/zone/objects/tangible/component/lightsaber/LightsaberCrystalComponent.h"
@@ -40,6 +40,15 @@ void WeaponObjectImplementation::initializeTransientMembers() {
 	}
 }
 
+void WeaponObjectImplementation::notifyLoadFromDatabase() {
+	if (forceCost != 0) {
+		saberForceCost = forceCost;
+		forceCost = 0;
+	}
+
+	TangibleObjectImplementation::notifyLoadFromDatabase();
+}
+
 void WeaponObjectImplementation::loadTemplateData(SharedObjectTemplate* templateData) {
 	TangibleObjectImplementation::loadTemplateData(templateData);
 
@@ -58,7 +67,7 @@ void WeaponObjectImplementation::loadTemplateData(SharedObjectTemplate* template
 	healthAttackCost = weaponTemplate->getHealthAttackCost();
 	actionAttackCost = weaponTemplate->getActionAttackCost();
 	mindAttackCost = weaponTemplate->getMindAttackCost();
-	forceCost = weaponTemplate->getForceCost();
+	saberForceCost = weaponTemplate->getForceCost();
 
 	pointBlankAccuracy = weaponTemplate->getPointBlankAccuracy();
 	pointBlankRange = weaponTemplate->getPointBlankRange();
@@ -121,7 +130,7 @@ void WeaponObjectImplementation::createChildObjects() {
 				continue;
 
 			ManagedReference<SceneObject*> obj = zoneServer->createObject(
-					child->getTemplateFile().hashCode(), 1);
+					child->getTemplateFile().hashCode(), getPersistenceLevel());
 
 			if (obj == NULL)
 				continue;
@@ -132,11 +141,14 @@ void WeaponObjectImplementation::createChildObjects() {
 			permissions->setDefaultDenyPermission(ContainerPermissions::MOVECONTAINER);
 			permissions->setDenyPermission("owner", ContainerPermissions::MOVECONTAINER);
 
+			if (!transferObject(obj, child->getContainmentType())) {
+				obj->destroyObjectFromDatabase(true);
+				continue;
+			}
+
 			childObjects.put(obj);
 
-			obj->initializeChildObject(_this.get());
-
-			transferObject(obj, child->getContainmentType());
+			obj->initializeChildObject(_this.getReferenceUnsafeStaticCast());
 		}
 
 }
@@ -144,14 +156,14 @@ void WeaponObjectImplementation::createChildObjects() {
 void WeaponObjectImplementation::sendBaselinesTo(SceneObject* player) {
 	info("sending weapon object baselines");
 
-	BaseMessage* weao3 = new WeaponObjectMessage3(_this.get());
+	BaseMessage* weao3 = new WeaponObjectMessage3(_this.getReferenceUnsafeStaticCast());
 	player->sendMessage(weao3);
 
-	BaseMessage* weao6 = new WeaponObjectMessage6(_this.get());
+	BaseMessage* weao6 = new WeaponObjectMessage6(_this.getReferenceUnsafeStaticCast());
 	player->sendMessage(weao6);
 
 	if (player->isCreatureObject()) {
-		BaseMessage* ranges = new WeaponRanges(cast<CreatureObject*>(player), _this.get());
+		BaseMessage* ranges = new WeaponRanges(cast<CreatureObject*>(player), _this.getReferenceUnsafeStaticCast());
 		player->sendMessage(ranges);
 	}
 }
@@ -230,16 +242,16 @@ void WeaponObjectImplementation::fillAttributeList(AttributeListMessage* alm, Cr
 	String ap;
 
 	switch (armorPiercing) {
-	case NONE:
+	case SharedWeaponObjectTemplate::NONE:
 		ap = "None";
 		break;
-	case LIGHT:
+	case SharedWeaponObjectTemplate::LIGHT:
 		ap = "Light";
 		break;
-	case MEDIUM:
+	case SharedWeaponObjectTemplate::MEDIUM:
 		ap = "Medium";
 		break;
-	case HEAVY:
+	case SharedWeaponObjectTemplate::HEAVY:
 		ap = "Heavy";
 		break;
 	default:
@@ -258,31 +270,31 @@ void WeaponObjectImplementation::fillAttributeList(AttributeListMessage* alm, Cr
 	StringBuffer dmgtxt;
 
 	switch (damageType) {
-	case KINETIC:
+	case SharedWeaponObjectTemplate::KINETIC:
 		dmgtxt << "Kinetic";
 		break;
-	case ENERGY:
+	case SharedWeaponObjectTemplate::ENERGY:
 		dmgtxt << "Energy";
 		break;
-	case ELECTRICITY:
+	case SharedWeaponObjectTemplate::ELECTRICITY:
 		dmgtxt << "Electricity";
 		break;
-	case STUN:
+	case SharedWeaponObjectTemplate::STUN:
 		dmgtxt << "Stun";
 		break;
-	case BLAST:
+	case SharedWeaponObjectTemplate::BLAST:
 		dmgtxt << "Blast";
 		break;
-	case HEAT:
+	case SharedWeaponObjectTemplate::HEAT:
 		dmgtxt << "Heat";
 		break;
-	case COLD:
+	case SharedWeaponObjectTemplate::COLD:
 		dmgtxt << "Cold";
 		break;
-	case ACID:
+	case SharedWeaponObjectTemplate::ACID:
 		dmgtxt << "Acid";
 		break;
-	case LIGHTSABER:
+	case SharedWeaponObjectTemplate::LIGHTSABER:
 		dmgtxt << "Lightsaber";
 		break;
 	default:
@@ -343,7 +355,7 @@ void WeaponObjectImplementation::fillAttributeList(AttributeListMessage* alm, Cr
 
 	// Force Cost
 	if (getForceCost() > 0)
-		alm->insertAttribute("forcecost", getForceCost());
+		alm->insertAttribute("forcecost", (int)getForceCost());
 
 	for (int i = 0; i < getNumberOfDots(); i++) {
 
@@ -432,7 +444,7 @@ void WeaponObjectImplementation::fillAttributeList(AttributeListMessage* alm, Cr
 		}
 
 	if(hasPowerup())
-		powerupObject->fillWeaponAttributeList(alm, _this.get());
+		powerupObject->fillWeaponAttributeList(alm, _this.getReferenceUnsafeStaticCast());
 
 	if (sliced == 1)
 		alm->insertAttribute("wpn_attr", "@obj_attr_n:hacked1");
@@ -612,31 +624,31 @@ void WeaponObjectImplementation::updateCraftingValues(CraftingValues* values, bo
 	}
 
 	value = values->getCurrentValue("woundchance");
-	if(value != CraftingValues::VALUENOTFOUND)
+	if (value != ValuesMap::VALUENOTFOUND)
 		setWoundsRatio(value);
 
 	//value = craftingValues->getCurrentValue("roundsused");
 	//if(value != DraftSchematicValuesImplementation::VALUENOTFOUND)
-		//_this.get()->set_______(value);
+		//_this.getReferenceUnsafeStaticCast()->set_______(value);
 
 	value = values->getCurrentValue("zerorangemod");
-	if(value != CraftingValues::VALUENOTFOUND)
+	if (value != ValuesMap::VALUENOTFOUND)
 		setPointBlankAccuracy((int)value);
 
 	value = values->getCurrentValue("maxrange");
-	if(value != CraftingValues::VALUENOTFOUND)
+	if (value != ValuesMap::VALUENOTFOUND)
 		setMaxRange((int)value);
 
 	value = values->getCurrentValue("maxrangemod");
-	if(value != CraftingValues::VALUENOTFOUND)
+	if (value != ValuesMap::VALUENOTFOUND)
 		setMaxRangeAccuracy((int)value);
 
 	value = values->getCurrentValue("midrange");
-	if(value != CraftingValues::VALUENOTFOUND)
+	if (value != ValuesMap::VALUENOTFOUND)
 		setIdealRange((int)value);
 
 	value = values->getCurrentValue("midrangemod");
-	if(value != CraftingValues::VALUENOTFOUND)
+	if (value != ValuesMap::VALUENOTFOUND)
 		setIdealAccuracy((int)value);
 
 	//value = craftingValues->getCurrentValue("charges");
@@ -644,7 +656,7 @@ void WeaponObjectImplementation::updateCraftingValues(CraftingValues* values, bo
 	//	setUsesRemaining((int)value);
 
 	value = values->getCurrentValue("hitpoints");
-	if(value != CraftingValues::VALUENOTFOUND)
+	if (value != ValuesMap::VALUENOTFOUND)
 		setMaxCondition((int)value);
 
 	setConditionDamage(0);
@@ -673,13 +685,19 @@ void WeaponObjectImplementation::decreasePowerupUses(CreatureObject* player) {
 	if (hasPowerup()) {
 		powerupObject->decreaseUses();
 		if (powerupObject->getUses() < 1) {
-			Locker locker(_this.get());
+			Locker locker(_this.getReferenceUnsafeStaticCast());
 			StringIdChatParameter message("powerup", "prose_pup_expire"); //The powerup on your %TT has expired.
 			message.setTT(getDisplayedName());
 
 			player->sendSystemMessage(message);
 
-			powerupObject = NULL;
+			ManagedReference<PowerupObject*> pup = removePowerup();
+			if(pup != NULL) {
+				Locker plocker(pup);
+
+				pup->destroyObjectFromWorld( true );
+				pup->destroyObjectFromDatabase( true );
+			}
 		}
 		sendAttributeListTo(player);
 	}
@@ -710,33 +728,40 @@ String WeaponObjectImplementation::repairAttempt(int repairChance) {
 	return message;
 }
 
-void WeaponObjectImplementation::decay(CreatureObject* user, float damage) {
-	if (_this.get() == user->getSlottedObject("default_weapon") || user->isAiAgent() || hasAntiDecayKit()) {
+void WeaponObjectImplementation::decay(CreatureObject* user) {
+	if (_this.getReferenceUnsafeStaticCast() == user->getSlottedObject("default_weapon") || user->isAiAgent() || hasAntiDecayKit()) {
 		return;
 	}
 
-	damage = damage / 10000.f;
-	if (isSliced()) damage *= 1.1;
-	if (hasPowerup()) damage *= 1.1;
+	int roll = System::random(100);
+	int chance = 5;
 
-	if (isJediWeapon()) {
-		ManagedReference<SceneObject*> saberInv = getSlottedObject("saber_inv");
-		damage = damage / saberInv->getContainerObjectsSize();
+	if (hasPowerup())
+		chance += 10;
 
-		for (int i = 0; i < saberInv->getContainerObjectsSize(); i++) {
-			ManagedReference<LightsaberCrystalComponent*> crystal = saberInv->getContainerObject(i).castTo<LightsaberCrystalComponent*>();
+	if (roll < chance) {
+		if (isJediWeapon()) {
+			ManagedReference<SceneObject*> saberInv = getSlottedObject("saber_inv");
 
-			if (crystal != NULL) {
-				crystal->inflictDamage(crystal, 0, damage, true, true);
+			if (saberInv == NULL)
+				return;
+
+			// TODO: is this supposed to be every crystal, or random crystal(s)?
+			for (int i = 0; i < saberInv->getContainerObjectsSize(); i++) {
+				ManagedReference<LightsaberCrystalComponent*> crystal = saberInv->getContainerObject(i).castTo<LightsaberCrystalComponent*>();
+
+				if (crystal != NULL) {
+					crystal->inflictDamage(crystal, 0, 1, true, true);
+				}
 			}
-		}
-	} else {
-		inflictDamage(_this.get(), 0, damage, true, true);
+		} else {
+			inflictDamage(_this.getReferenceUnsafeStaticCast(), 0, 1, true, true);
 
-		if ((conditionDamage - damage / maxCondition < 0.75) && (conditionDamage / maxCondition > 0.75))
-			user->sendSystemMessage("@combat_effects:weapon_quarter");
-		if ((conditionDamage - damage / maxCondition < 0.50) && (conditionDamage / maxCondition > 0.50))
-			user->sendSystemMessage("@combat_effects:weapon_half");
+			if (((float)conditionDamage - 1 / (float)maxCondition < 0.75) && ((float)conditionDamage / (float)maxCondition > 0.75))
+				user->sendSystemMessage("@combat_effects:weapon_quarter");
+			if (((float)conditionDamage - 1 / (float)maxCondition < 0.50) && ((float)conditionDamage / (float)maxCondition > 0.50))
+				user->sendSystemMessage("@combat_effects:weapon_half");
+		}
 	}
 }
 
@@ -778,4 +803,34 @@ void WeaponObjectImplementation::removeSkillModsFrom(CreatureObject* creature) {
 	}
 
 	SkillModManager::instance()->verifyWearableSkillMods(creature);
+}
+
+bool WeaponObjectImplementation::applyPowerup(CreatureObject* player, PowerupObject* pup) {
+	if(hasPowerup())
+		return false;
+
+	addMagicBit(true);
+
+	powerupObject = pup;
+
+	if(pup->getParent() != NULL) {
+		Locker clocker(pup, player);
+		pup->destroyObjectFromWorld(true);
+	}
+
+	sendAttributeListTo(player);
+
+	return true;
+}
+
+PowerupObject* WeaponObjectImplementation::removePowerup() {
+	if(!hasPowerup())
+		return NULL;
+
+	PowerupObject* pup = powerupObject;
+	powerupObject = NULL;
+
+	removeMagicBit(true);
+
+	return pup;
 }

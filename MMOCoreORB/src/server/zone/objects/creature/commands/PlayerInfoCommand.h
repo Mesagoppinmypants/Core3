@@ -14,13 +14,11 @@
 #include "server/zone/objects/creature/CreatureObject.h"
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/managers/mission/MissionManager.h"
+#include "server/zone/managers/player/BadgeList.h"
 
 class PlayerInfoCommand {
 public:
 	static int executeCommand(CreatureObject* creature, uint64 target, const UnicodeString& arguments) {
-		if (!creature->getPlayerObject()->isPrivileged())
-			return 1;
-
 		ManagedReference<CreatureObject*> targetObject;
 
 		if (!arguments.isEmpty()) {
@@ -44,12 +42,16 @@ public:
 		box->setPromptTitle("Player Info"); //Register City
 		//box->setPromptText("@city/city:register_d");
 
+		Locker smodLocker(targetObject->getSkillModMutex());
+
 		SkillModList* skillModList = targetObject->getSkillModList();
 
 		StringBuffer promptText;
 		promptText << "ObjectID: " << targetObject->getObjectID() << endl;
 		promptText << "SkillMods:" << endl;
 		promptText << skillModList->getPrintableSkillModList() << endl;
+
+		smodLocker.release();
 
 		promptText << "Skills:" << endl;
 		SkillList* list = targetObject->getSkillList();
@@ -82,14 +84,18 @@ public:
 			promptText << endl;
 			promptText << "Hologrind professions:\n";
 
-			for (int i = 0; i < holoProfessions->size(); ++i) {
-				byte prof = holoProfessions->get(i);
-
-				int badgeIdx = 42 + prof;
-
-				String stringKey = creature->getZoneServer()->getPlayerManager()->getBadgeKey(badgeIdx);
-
-				promptText << "@skl_n:" + stringKey << endl;
+			BadgeList* badgeList = BadgeList::instance();
+			if (badgeList != NULL) {
+				for (int i = 0; i < holoProfessions->size(); ++i) {
+					byte prof = holoProfessions->get(i);
+					const Badge* badge = badgeList->get(prof);
+					if (prof) {
+						String stringKey = badge->getKey();
+						promptText << "@skl_n:" + stringKey << " badgeid: " << String::valueOf(prof)<<  endl;
+					} else {
+						promptText << "unknown profession " << String::valueOf(prof) << endl;
+					}
+				}
 			}
 
 			promptText << endl << "Visibility = " << ghost->getVisibility() << endl;

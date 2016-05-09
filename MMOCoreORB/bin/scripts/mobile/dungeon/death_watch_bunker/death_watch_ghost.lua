@@ -1,7 +1,8 @@
 death_watch_ghost = Creature:new {
 	objectName = "@mob/creature_names:mand_bunker_dthwatch_grey",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "death_watch",
-	pvpFaction = "",
 	faction = "",
 	level = 152,
 	chanceHit = 8.5,
@@ -23,8 +24,9 @@ death_watch_ghost = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.15,
 
 	templates = {"object/mobile/dressed_death_watch_grey.iff"},
 	lootGroups = {
@@ -40,7 +42,7 @@ death_watch_ghost = Creature:new {
 	},
 	weapons = {"pirate_weapons_heavy"},
 	conversationTemplate = "",
-	attacks = merge(bountyhuntermaster,marksmanmaster,brawlermaster)
+	attacks = merge(bountyhuntermaster,marksmanmaster,brawlermaster,pikemanmaster,fencermaster,swordsmanmaster)
 }
 
 CreatureTemplates:addCreatureTemplate(death_watch_ghost, "death_watch_ghost")

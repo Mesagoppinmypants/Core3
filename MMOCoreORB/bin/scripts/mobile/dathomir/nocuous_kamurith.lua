@@ -1,7 +1,6 @@
 nocuous_kamurith = Creature:new {
 	objectName = "@mob/creature_names:kamurith_nocuous",
 	socialGroup = "kamurith",
-	pvpFaction = "",
 	faction = "",
 	level = 46,
 	chanceHit = 0.48,
@@ -23,7 +22,7 @@ nocuous_kamurith = Creature:new {
 	ferocity = 2,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/voritor_lizard_hue.iff"},
@@ -32,7 +31,7 @@ nocuous_kamurith = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
+		{"dizzyattack",""},
 		{"strongpoison",""}
 	}
 }

@@ -42,19 +42,21 @@
 --true = 1, false = 0
 
 ForceWeaken2Command = {
-        name = "forceweaken2",
-        
-            damage = 0,
+	name = "forceweaken2",
+
+	damageMultiplier = 0,
 	speed = 4.0,
 	forceCost = 400,
-	accuracySkillMod = "forceweaken_accuracy";
-	
-	
-	animationCRC = hashCode("force_weaken_1_particle_level_1_light"),
+	visMod = 25,
+	accuracySkillMod = "forceweaken_accuracy",
+	forceAttack = true,
+
+	animation = "force_weaken_1_particle_level_1", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "forceweaken2",
-	
-	poolsToDamage = NONE,
+
+	poolsToDamage = NO_ATTRIBUTE,
 
 	range = 32
 }

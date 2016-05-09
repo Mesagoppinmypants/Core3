@@ -1,7 +1,8 @@
 feral_force_wielder = Creature:new {
 	objectName = "@mob/creature_names:feral_force_wilder",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "force",
-	pvpFaction = "",
 	faction = "",
 	level = 115,
 	chanceHit = 1,
@@ -10,7 +11,7 @@ feral_force_wielder = Creature:new {
 	baseXp = 10921,
 	baseHAM = 24000,
 	baseHAMmax = 30000,
-	armor = 0,
+	armor = 1,
 	resists = {80,80,80,80,80,80,80,80,-1},
 	meatType = "",
 	meatAmount = 0,
@@ -23,7 +24,7 @@ feral_force_wielder = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_feral_force_wielder.iff"},
@@ -37,8 +38,7 @@ feral_force_wielder = Creature:new {
 				{group = "armor_attachments", chance = 750000},
 				{group = "clothing_attachments", chance = 750000},
 				{group = "wearables_all", chance = 1000000}
-			},
-			lootChance = 3500000
+			}
 		}
 	},
 	weapons = {"mixed_force_weapons"},

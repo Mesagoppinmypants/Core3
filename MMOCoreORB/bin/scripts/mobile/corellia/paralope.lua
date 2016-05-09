@@ -1,7 +1,6 @@
 paralope = Creature:new {
 	objectName = "@mob/creature_names:paralope",
 	socialGroup = "paralope",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -24,7 +23,7 @@ paralope = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/paralope.iff"},

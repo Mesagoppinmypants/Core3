@@ -1,7 +1,6 @@
 flesh_eating_chuba = Creature:new {
 	objectName = "@mob/creature_names:flesh_eating_chuba",
 	socialGroup = "self",
-	pvpFaction = "",
 	faction = "",
 	level = 6,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ flesh_eating_chuba = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/chuba_hue.iff"},

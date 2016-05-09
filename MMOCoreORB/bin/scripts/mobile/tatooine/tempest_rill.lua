@@ -1,7 +1,6 @@
 tempest_rill = Creature:new {
 	objectName = "@mob/creature_names:rill_tempest",
 	socialGroup = "rill",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ tempest_rill = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/rill.iff"},

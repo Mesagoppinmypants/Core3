@@ -1,7 +1,6 @@
 flewt_leviathan = Creature:new {
 	objectName = "@mob/creature_names:flewt_leviathan",
 	socialGroup = "flewt",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ flewt_leviathan = Creature:new {
 	ferocity = 5,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/flewt_hue.iff"},
@@ -33,7 +32,8 @@ flewt_leviathan = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"}
+		{"",""},
+		{"dizzyattack",""}
 	}
 }
 

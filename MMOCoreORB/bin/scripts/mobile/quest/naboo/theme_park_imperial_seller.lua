@@ -2,7 +2,6 @@ theme_park_imperial_seller = Creature:new {
 	objectName = "",
 	customName = "escort",
 	socialGroup = "thug",
-	pvpFaction = "thug",
 	faction = "thug",
 	level = 4,
 	chanceHit = 0.24,
@@ -24,7 +23,7 @@ theme_park_imperial_seller = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_commoner_naboo_bothan_female_02.iff"},

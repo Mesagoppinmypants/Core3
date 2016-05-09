@@ -1,7 +1,6 @@
 whisper_bird_male = Creature:new {
 	objectName = "@mob/creature_names:whisper_bird_male",
 	socialGroup = "whisperbird",
-	pvpFaction = "",
 	faction = "",
 	level = 16,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ whisper_bird_male = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/whisper_bird.iff"},
@@ -32,7 +31,7 @@ whisper_bird_male = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

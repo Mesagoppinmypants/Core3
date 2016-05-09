@@ -1,7 +1,8 @@
 assault_trooper_squad_leader = Creature:new {
 	objectName = "@mob/creature_names:fbase_stormtrooper_squad_leader",
+	randomNameType = NAME_STORMTROOPER,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 27,
 	chanceHit = 0.37,
@@ -23,8 +24,9 @@ assault_trooper_squad_leader = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.05,
 
 	templates = {"object/mobile/dressed_stormtrooper_squad_leader_white_white.iff"},
 	lootGroups = {
@@ -40,12 +42,13 @@ assault_trooper_squad_leader = Creature:new {
 				{group = "armor_attachments", chance = 200000},
 				{group = "stormtrooper_common", chance = 700000},
 				{group = "wearables_common", chance = 1000000}
-			},
-			lootChance = 2500000
+			}
 		}
 	},
 	weapons = {"st_assault_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/stormtrooper",
+	personalityStf = "@hireling/hireling_stormtrooper",
 	attacks = merge(marksmanmaster,carbineermaster,brawlermaster)
 }
 

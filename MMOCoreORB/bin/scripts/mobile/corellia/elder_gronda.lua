@@ -1,7 +1,6 @@
 elder_gronda = Creature:new {
 	objectName = "@mob/creature_names:gronda_elder",
 	socialGroup = "gronda",
-	pvpFaction = "",
 	faction = "",
 	level = 33,
 	chanceHit = 0.39,
@@ -23,7 +22,7 @@ elder_gronda = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gronda_hue.iff"},
@@ -32,7 +31,7 @@ elder_gronda = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 insane_mantigrue_berserker = Creature:new {
 	objectName = "@mob/creature_names:mantigrue_insane_berserker",
 	socialGroup = "mantigrue",
-	pvpFaction = "",
 	faction = "",
 	level = 50,
 	chanceHit = 0.43,
@@ -23,7 +22,7 @@ insane_mantigrue_berserker = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/mantigrue_night_stalker.iff"},
@@ -33,7 +32,8 @@ insane_mantigrue_berserker = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"}
+		{"blindattack",""},
+		{"stunattack",""}
 	}
 }
 

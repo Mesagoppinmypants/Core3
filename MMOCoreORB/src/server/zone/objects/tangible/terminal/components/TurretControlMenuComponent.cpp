@@ -20,38 +20,37 @@
 #include "TurretControlTerminalDataComponent.h"
 
 
-void TurretControlMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) {
-
+void TurretControlMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 	ManagedReference<BuildingObject*> building = cast<BuildingObject*>(sceneObject->getParentRecursively(SceneObjectType::FACTIONBUILDING).get().get());
 	ManagedReference<PlayerObject*> thisPlayer = player->getPlayerObject();
 
-
-	if ( thisPlayer == NULL || building == NULL || player->isDead() || player->isIncapacitated())
+	if (thisPlayer == NULL || building == NULL || player->isDead() || player->isIncapacitated())
 		return;
 
-
-	if(player->getFaction() == 0)
-		player->sendSystemMessage("@faction_recruiter:must_be_declared_use"); // Your faction affiliation must be delcared in order to use that item.
+	if (player->getFaction() == 0) {
+		player->sendSystemMessage("@hq:declared_only"); // Only Special Forces personnel may access this terminal!
+		return;
+	}
 
 	Zone* zone = building->getZone();
 
-	if(zone == NULL)
+	if (zone == NULL)
 		return;
 
 	GCWManager* gcwMan = zone->getGCWManager();
 
-
-	if(!gcwMan->canUseTerminals(player, building, sceneObject))
+	if (gcwMan == NULL)
 		return;
 
-	if(building->getFaction() == player->getFaction() && player->getFaction() != 0) {
+	if (!gcwMan->canUseTerminals(player, building, sceneObject))
+		return;
+
+	if (building->getFaction() == player->getFaction()) {
 		menuResponse->addRadialMenuItem(222, 3, "@hq:mnu_turret_control"); // "Turret Control"
 	}
-
-	//menuResponse->addRadialMenuItem(222, 3, "OH YEA");
 }
 
-int TurretControlMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) {
+int TurretControlMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) const {
 	if (sceneObject == NULL || !sceneObject->isTangibleObject() || player == NULL)
 		return 0;
 
@@ -61,29 +60,28 @@ int TurretControlMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject,
 
 	ManagedReference<BuildingObject*> building = cast<BuildingObject*>(sceneObject->getParentRecursively(SceneObjectType::FACTIONBUILDING).get().get());
 
-	if(building == NULL)
+	if (building == NULL)
 		return 1;
 
 	Zone* zone = building->getZone();
 
-	if(zone == NULL)
+	if (zone == NULL)
 		return 1;
 
 	ManagedReference<GCWManager*> gcwMan = zone->getGCWManager();
 
-	if(gcwMan == NULL)
+	if (gcwMan == NULL)
 		return 1;
 
-	if(!gcwMan->canUseTerminals(player, building, sceneObject))
+	if (!gcwMan->canUseTerminals(player, building, sceneObject))
 		return 1;
 
-	if(selectedID == 222){
+	if (building->getFaction() != player->getFaction())
+		return 1;
+
+	if (selectedID == 222) {
 		gcwMan->sendTurretAttackListTo(player,sceneObject);
 	}
 
 	return 0;
 }
-
-
-
-

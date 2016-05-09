@@ -1,7 +1,6 @@
 gert_talnin = Creature:new {
 	objectName = "@npc_spawner_n:gert_talnin",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 19,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ gert_talnin = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_lieutenant_m.iff"},

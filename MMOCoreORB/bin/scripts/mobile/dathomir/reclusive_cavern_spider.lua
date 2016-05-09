@@ -1,7 +1,6 @@
 reclusive_cavern_spider = Creature:new {
 	objectName = "@mob/creature_names:cave_gaping_spider_recluse",
 	socialGroup = "spider",
-	pvpFaction = "",
 	faction = "",
 	level = 46,
 	chanceHit = 0.46,
@@ -11,7 +10,7 @@ reclusive_cavern_spider = Creature:new {
 	baseHAM = 11000,
 	baseHAMmax = 12000,
 	armor = 1,
-	resists = {140,140,60,125,-1,-1,0,-1,-1},
+	resists = {140,140,160,125,-1,-1,0,-1,-1},
 	meatType = "meat_insect",
 	meatAmount = 41,
 	hideType = "",
@@ -23,7 +22,7 @@ reclusive_cavern_spider = Creature:new {
 	ferocity = 8,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gaping_spider_recluse.iff"},

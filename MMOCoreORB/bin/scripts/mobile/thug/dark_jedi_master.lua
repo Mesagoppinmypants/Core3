@@ -1,7 +1,8 @@
 dark_jedi_master = Creature:new {
 	objectName = "@mob/creature_names:dark_jedi_master",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "dark_jedi",
-	pvpFaction = "",
 	faction = "",
 	level = 291,
 	chanceHit = 27.25,
@@ -23,7 +24,7 @@ dark_jedi_master = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -41,9 +42,8 @@ dark_jedi_master = Creature:new {
 				{group = "armor_attachments", chance = 1100000},
 				{group = "clothing_attachments", chance = 1100000},
 				{group = "carbines", chance = 1300000},
-				{group = "wearables_scarce", chance = 800000}			
-			},
-			lootChance = 8500000
+				{group = "dark_jedi_common", chance = 800000}
+			}
 		}
 	},
 	weapons = {"dark_jedi_weapons_gen4"},

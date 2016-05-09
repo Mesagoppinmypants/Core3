@@ -1,7 +1,6 @@
 giant_dalyrake = Creature:new {
 	objectName = "@mob/creature_names:giant_dalyrake",
 	socialGroup = "dalyrake",
-	pvpFaction = "",
 	faction = "",
 	level = 18,
 	chanceHit = 0.32,
@@ -23,7 +22,7 @@ giant_dalyrake = Creature:new {
 	ferocity = 4,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/giant_dalyrake.iff"},
@@ -33,8 +32,8 @@ giant_dalyrake = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"mildpoison",""}
+		{"mildpoison",""},
+		{"dizzyattack",""}
 	}
 }
 

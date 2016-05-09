@@ -1,54 +1,16 @@
 /*
- * Copyright (C) 2014 <SWGEmu>
- * This File is part of Core3.
- * This program is free software; you can redistribute
- * it and/or modify it under the terms of the GNU Lesser
- * General Public License as published by the Free Software
- * Foundation; either version 2 of the License,
- * or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for
- * more details.
- *
- * You should have received a copy of the GNU Lesser General
- * Public License along with this program; if not, write to
- * the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
- * Linking Engine3 statically or dynamically with other modules
- * is making a combined work based on Engine3.
- * Thus, the terms and conditions of the GNU Lesser General Public License
- * cover the whole combination.
- *
- * In addition, as a special exception, the copyright holders of Engine3
- * give you permission to combine Engine3 program with free software
- * programs or libraries that are released under the GNU LGPL and with
- * code included in the standard release of Core3 under the GNU LGPL
- * license (or modified versions of such code, with unchanged license).
- * You may copy and distribute such a system following the terms of the
- * GNU LGPL for Engine3 and the licenses of the other code concerned,
- * provided that you include the source code of that other code when
- * and as the GNU LGPL requires distribution of source code.
- *
- * Note that people who make modified versions of Engine3 are not obligated
- * to grant this special exception for their modified versions;
- * it is their choice whether to do so. The GNU Lesser General Public License
- * gives permission to release a modified version without this exception;
- * this exception also makes it possible to release a modified version
- * which carries forward this exception.
- */
+ * 				Copyright <SWGEmu>
+		See file COPYING for copying conditions. */
 
 #include "DroidTrapModuleDataComponent.h"
 #include "server/zone/ZoneServer.h"
 #include "server/zone/objects/tangible/component/droid/DroidComponent.h"
 #include "server/zone/packets/object/ObjectMenuResponse.h"
 #include "server/zone/objects/group/GroupObject.h"
-#include "server/zone/objects/creature/CreatureAttribute.h"
+#include "templates/params/creature/CreatureAttribute.h"
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/creature/events/DroidTrapTask.h"
-#include "server/zone/templates/tangible/TrapTemplate.h"
+#include "templates/tangible/TrapTemplate.h"
 
 const String DroidTrapModuleDataComponent::EMPTY_TRAP_MESSAGE = "@pet/droid_modules:no_trap_loaded";
 DroidTrapModuleDataComponent::DroidTrapModuleDataComponent() {
@@ -187,6 +149,7 @@ int DroidTrapModuleDataComponent::handleObjectMenuSelect(CreatureObject* player,
 		if( controller == NULL )
 			return 0;
 
+		Locker locker(controller);
 		controller->setTrainingCommand( PetManager::THROWTRAP );
 		return 0;
 	}
@@ -227,50 +190,64 @@ void DroidTrapModuleDataComponent::handlePetCommand(String cmd, CreatureObject* 
 			speaker->sendSystemMessage("@pet/droid_modules:no_trap_loaded");
 			return;
 		}
-		petManager->enqueuePetCommand(speaker, droid, String("petThrow").toLowerCase().hashCode(), "");
+		petManager->enqueuePetCommand(speaker, droid, STRING_HASHCODE("petthrow"), "");
 	}
 }
 
 
 void DroidTrapModuleDataComponent::handleInsertTrap(CreatureObject* player, TangibleObject* input) {
+	if (input == NULL) {
+		return;
+	}
+
 	// we need to send the invlid stimpack message just wher eis a good question
-	if (player != NULL && (!player->hasSkill("outdoors_scout_novice") || !compatibleTrap(player,input->getServerObjectCRC())) ) {
+	if (!player->hasSkill("outdoors_scout_novice") || !compatibleTrap(player, input->getServerObjectCRC()) ) {
 		player->sendSystemMessage("@pet/droid_modules:insufficient_skill");
 		return;
 	}
 
 	ManagedReference<DroidObject*> droid = getDroidObject();
-	Locker dlock(droid);
-	Locker crossLock(player,droid);
+
 	if (droid == NULL) {
 		return;
 	}
-	if (input == NULL) {
-		return;
-	}
+
+	Locker dlock(droid);
+	Locker crossLock(player, droid);
+
 	if(droid->getLinkedCreature().get() != player) {
 		return;
 	}
+
 	int loaded = 0;
 	if (trap != NULL) {
 		loaded = trap->getUseCount();
 	}
 
 	int allowed = (modules * 10) - loaded;
+
 	Locker locker(input);
+
 	// adding to existing trap
 	if (trap == NULL) {
 		// add the trap into the unit
 		ObjectManager* objectManager = ObjectManager::instance();
+
 		if (allowed > input->getUseCount()) {
-			// just clone it and set old one to 0 ues to destroy it so it transfer correctly as we dont store this directly in the droid
+			// just clone it and set old one to 0 uses to destroy it so it transfer correctly as we dont store this directly in the droid
 			ManagedReference<TangibleObject*> protoclone = cast<TangibleObject*>( objectManager->cloneObject(input));
+
 			if (protoclone != NULL) {
+				Locker cloneLocker(protoclone);
+
+				if (protoclone->hasAntiDecayKit()) {
+					protoclone->removeAntiDecayKit();
+				}
+
 				protoclone->setParent(NULL);
 				protoclone->setUseCount(input->getUseCount());
-				input->setUseCount(input->getUseCount() - allowed);
 				trap = protoclone;
-				input->setUseCount(0);
+				input->decreaseUseCount(input->getUseCount());
 				StringIdChatParameter msg;
 				msg.setStringId("@pet/droid_modules:trap_module_initialize");
 				msg.setTU(trap->getObjectName()->getFullPath());
@@ -280,10 +257,17 @@ void DroidTrapModuleDataComponent::handleInsertTrap(CreatureObject* player, Tang
 		} else {
 			// should technically never happen as you cant experiment traps use count but someone might config base useCount > 10
 			ManagedReference<TangibleObject*> protoclone = cast<TangibleObject*>( objectManager->cloneObject(input));
+
 			if (protoclone != NULL) {
+				Locker cloneLocker(protoclone);
+
+				if (protoclone->hasAntiDecayKit()) {
+					protoclone->removeAntiDecayKit();
+				}
+
 				protoclone->setParent(NULL);
 				protoclone->setUseCount(allowed);
-				input->setUseCount(input->getUseCount() - allowed);
+				input->decreaseUseCount(allowed);
 				trap = protoclone;
 				StringIdChatParameter msg;
 				msg.setStringId("@pet/droid_modules:trap_module_initialize");
@@ -298,15 +282,17 @@ void DroidTrapModuleDataComponent::handleInsertTrap(CreatureObject* player, Tang
 		// trap already loaded
 		if (trap->getServerObjectCRC() == input->getServerObjectCRC()) {
 			// same trap
-			if (allowed <= 0)
+			if (allowed <= 0) {
 				player->sendSystemMessage("@pet/droid_modules:trap_matrix_full");
-			else {
+			} else {
+				Locker tlocker(trap);
+
 				if (allowed > input->getUseCount()) {
 					trap->setUseCount(trap->getUseCount() + input->getUseCount());
-					input->setUseCount(0);
+					input->decreaseUseCount(input->getUseCount());
 				} else {
 					trap->setUseCount(trap->getUseCount() + allowed);
-					input->setUseCount(input->getUseCount() - allowed);
+					input->setUseCount(allowed);
 					player->sendSystemMessage("@pet/droid_modules:trap_max_reached");
 				}
 			}
@@ -365,7 +351,10 @@ int DroidTrapModuleDataComponent::writeObjectMembers(ObjectOutputStream* stream)
 }
 void DroidTrapModuleDataComponent::decrementTrap() {
 	if(trap != NULL) {
+		Locker locker(trap);
+
 		trap->decreaseUseCount();
+
 		if(trap->getUseCount() == 0) {
 			trap = NULL;
 		}

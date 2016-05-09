@@ -1,7 +1,6 @@
 emperors_hand = Creature:new {
 	objectName = "@mob/creature_names:emperors_hand",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 252,
 	chanceHit = 23.5,
@@ -23,7 +22,7 @@ emperors_hand = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -42,9 +41,8 @@ emperors_hand = Creature:new {
 				{group = "melee_weapons", chance = 1500000},
 				{group = "armor_attachments", chance = 1100000},
 				{group = "clothing_attachments", chance = 1100000},
-				{group = "carbines", chance = 1000000}				
-			},
-			lootChance = 8500000
+				{group = "carbines", chance = 1000000}
+			}
 		}
 	},
 	weapons = {"dark_jedi_weapons_gen3"},

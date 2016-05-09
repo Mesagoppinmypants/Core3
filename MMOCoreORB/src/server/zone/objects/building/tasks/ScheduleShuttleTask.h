@@ -16,7 +16,7 @@ public:
 	}
 
 	void run() {
-		if (!zone->hasManagersStarted()) {
+		if (zone->getZoneServer()->isServerLoading()) {
 			schedule(1000);
 			return;
 		}
@@ -37,7 +37,7 @@ public:
 
 		ManagedReference<CityRegion*> cityRegion = strongReference->getCityRegion();
 
-		if ((cityRegion != NULL) && (cityRegion->getMayorID() != 0)){
+		if ((cityRegion != NULL) && (cityRegion->getMayorID() != 0)) {
 			float x = strongReference->getWorldPositionX();
 			float y = strongReference->getWorldPositionY();
 			float z = strongReference->getWorldPositionZ();
@@ -46,21 +46,32 @@ public:
 
 			String zoneName = zone->getZoneName();
 
+			Locker clocker(cityRegion, strongReference);
+			cityRegion->setShuttleID(strongReference->getObjectID());
+			clocker.release();
+
 			PlanetTravelPoint* planetTravelPoint = new PlanetTravelPoint(zoneName, cityRegion->getRegionName(), arrivalVector, arrivalVector, strongReference);
 			planetManager->addPlayerCityTravelPoint(planetTravelPoint);
-			cityRegion->setShuttleID(strongReference->getObjectID());
 			planetManager->scheduleShuttle(strongReference, PlanetManager::SHUTTLEPORT);
 
 		} else {
 			Reference<PlanetTravelPoint*> ptp = planetManager->getNearestPlanetTravelPoint(strongReference, 128.f);
 
 			if (ptp != NULL) {
-				if (ptp->isInterplanetary())
-					planetManager->scheduleShuttle(strongReference, PlanetManager::STARPORT);
-				else
-					planetManager->scheduleShuttle(strongReference, PlanetManager::SHUTTLEPORT);
+				CreatureObject* oldShuttle = ptp->getShuttle();
 
-				ptp->setShuttle(strongReference);
+				if (oldShuttle == NULL) {
+					if (ptp->isInterplanetary())
+						planetManager->scheduleShuttle(strongReference, PlanetManager::STARPORT);
+					else
+						planetManager->scheduleShuttle(strongReference, PlanetManager::SHUTTLEPORT);
+
+					ptp->setShuttle(strongReference);
+
+				} else if (oldShuttle != strongReference) {
+					strongReference->destroyObjectFromWorld(true);
+					strongReference->destroyObjectFromDatabase(true);
+				}
 			}
 		}
 	}

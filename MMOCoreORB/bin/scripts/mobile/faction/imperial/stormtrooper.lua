@@ -1,7 +1,7 @@
 stormtrooper = Creature:new {
 	objectName = "@mob/creature_names:stormtrooper",
+	randomNameType = NAME_STORMTROOPER,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 25,
 	chanceHit = 0.36,
@@ -23,8 +23,9 @@ stormtrooper = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.05,
 
 	templates = {"object/mobile/dressed_stormtrooper_m.iff"},
 	lootGroups = {
@@ -40,13 +41,14 @@ stormtrooper = Creature:new {
 				{group = "armor_attachments", chance = 250000},
 				{group = "stormtrooper_common", chance = 700000},
 				{group = "wearables_common", chance = 500000}
-			},
-			lootChance = 2800000
-		}						
+			}
+		}
 	},
 	weapons = {"stormtrooper_weapons"},
 	conversationTemplate = "",
-	attacks = merge(riflemanmaster,carbineermaster,brawlermaster)
+	reactionStf = "@npc_reaction/stormtrooper",
+	personalityStf = "@hireling/hireling_stormtrooper",		
+	attacks = merge(riflemanmaster,carbineermaster,brawlermaster,marksmanmaster)
 }
 
 CreatureTemplates:addCreatureTemplate(stormtrooper, "stormtrooper")

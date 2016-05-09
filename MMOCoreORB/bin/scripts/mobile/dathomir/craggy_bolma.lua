@@ -1,7 +1,6 @@
 craggy_bolma = Creature:new {
 	objectName = "@mob/creature_names:craggy_bolma",
 	socialGroup = "bolma",
-	pvpFaction = "",
 	faction = "",
 	level = 47,
 	chanceHit = 0.47,
@@ -23,7 +22,7 @@ craggy_bolma = Creature:new {
 	ferocity = 5,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/bolma.iff"},

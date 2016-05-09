@@ -52,24 +52,27 @@ PistolMeleeDefense2Command = {
         accuracyBonus = 50,
 
 	stateEffects = {
-	  StateEffect( 
-		KNOCKDOWN_EFFECT, 
-		{ "knockdownRecovery", "lastKnockdown" }, 
-		{ "knockdown_defense" }, 
-		{}, 
-		30, 
-		100, 
-		0 
+	  StateEffect(
+		KNOCKDOWN_EFFECT,
+		{ "knockdownRecovery", "lastKnockdown" },
+		{ "knockdown_defense" },
+		{},
+		65,
+		0,
+		0
 	  )
 	},
 
 	poolsToDamage = RANDOM_ATTRIBUTE,
 
-	animationCRC = hashCode("ranged_melee_light"),
+	animation = "ranged_melee", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "pistolwhip",
 
-	range = 5
+	weaponType = PISTOLWEAPON,
+
+	range = 10
 }
 
 AddCommand(PistolMeleeDefense2Command)

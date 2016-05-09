@@ -14,6 +14,7 @@
 #include "server/login/account/Account.h"
 #include "server/login/objects/CharacterList.h"
 #include "server/zone/managers/player/PlayerManager.h"
+#include "server/login/account/AccountManager.h"
 
 #include "ClientPermissionsMessage.h"
 
@@ -24,7 +25,7 @@ class ClientIDMessageCallback : public MessageCallback {
 
 public:
 	ClientIDMessageCallback(ZoneClientSession* client, ZoneProcessServer* server) :
-		MessageCallback(client, server) {
+		MessageCallback(client, server), dataLen(0), sessionID(0), accountID(0) {
 
 		taskqueue = 8;
 
@@ -46,9 +47,6 @@ public:
 	}
 
 	void run() {
-		client->setSessionID(sessionID);
-		client->setAccountID(accountID);
-
 		StringBuffer query;
 		query << "SELECT session_id FROM sessions WHERE account_id = " << accountID;
 		query << " AND  ip = '"<< client->getSession()->getIPAddress() <<"' AND expires > NOW();";
@@ -63,6 +61,8 @@ public:
 			result = NULL;
 
 			if (sesskey == sessionID) {
+				client->setSessionID(sessionID);
+				client->setAccountID(accountID);
 
 				StringBuffer delQuery;
 				delQuery << "DELETE FROM sessions WHERE account_id = " << accountID << ";";
@@ -85,13 +85,15 @@ public:
 					//client->setAccount(account);
 					//account->addZoneSession(client);
 
-					ManagedReference<Account*> account = server->getPlayerManager()->getAccount(accountID);
+					ManagedReference<Account*> account = AccountManager::getAccount(accountID, true);
 					if (account == NULL)
 						return;
 
+					Locker alocker(account);
+
 					client->resetCharacters();
 
-					CharacterList* characters = account->getCharacterList();
+					Reference<CharacterList*> characters = account->getCharacterList();
 					GalaxyBanEntry* galaxyBan = account->getGalaxyBan(server->getZoneServer()->getGalaxyID());
 
 					if(galaxyBan != NULL) {

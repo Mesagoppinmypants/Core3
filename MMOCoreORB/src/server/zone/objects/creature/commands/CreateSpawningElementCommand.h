@@ -1,60 +1,21 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
- */
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions. */
 
 #ifndef CREATESPAWNINGELEMENTCOMMAND_H_
 #define CREATESPAWNINGELEMENTCOMMAND_H_
 
-#include "server/zone/managers/templates/TemplateManager.h"
+#include "templates/manager/TemplateManager.h"
 #include "server/zone/objects/scene/SceneObject.h"
 #include "server/zone/managers/player/PlayerManager.h"
 #include "server/zone/Zone.h"
 #include "server/zone/ZoneServer.h"
 #include "server/zone/managers/creature/CreatureManager.h"
 #include "server/zone/objects/tangible/TangibleObject.h"
-#include "server/zone/templates/mobile/LairTemplate.h"
+#include "templates/mobile/LairTemplate.h"
 #include "server/zone/managers/creature/CreatureTemplateManager.h"
 #include "server/zone/managers/structure/StructureManager.h"
+#include "templates/tangible/SharedStructureObjectTemplate.h"
 
 class CreateSpawningElementCommand : public QueueCommand {
 public:
@@ -64,7 +25,7 @@ public:
 
 	}
 
-	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments)
+	int doQueueCommand(CreatureObject* creature, const uint64& target, const UnicodeString& arguments) const
 	{
 
 		if (!checkStateMask(creature))
@@ -75,8 +36,6 @@ public:
 
 		if (!creature->isPlayerCreature())
 			return GENERALERROR;
-
-		StringTokenizer tokenizer(arguments.toString());
 
 		ManagedReference<SceneObject* > object = server->getZoneServer()->getObject(target);
 
@@ -89,7 +48,8 @@ public:
 			return GENERALERROR;
 
 		if (!args.hasMoreTokens()) {
-			creature->sendSystemMessage("Spawn: /createSpawningElement spawn lairTemplate/IffObjectPath <level>");
+			creature->sendSystemMessage("Spawn: /createSpawningElement spawn IffObjectPath [x z y heading]");
+			creature->sendSystemMessage("Spawn: /createSpawningElement lair lairTemplate [level]");
 			creature->sendSystemMessage("Delete: /createSpawningElement delete oid");
 			return INVALIDPARAMETERS;
 		}
@@ -103,7 +63,7 @@ public:
 			return GENERALERROR;
 
 		try {
-			if (action.toLowerCase() == "spawn") {
+			if (action.toLowerCase() == "lair") {
 				String objectTemplate;
 				args.getStringToken(objectTemplate);
 				float x = creature->getPositionX();
@@ -142,16 +102,35 @@ public:
 					}
 
 				}
+			} else if (action.toLowerCase() == "spawn") {
+				String objectTemplate;
+				args.getStringToken(objectTemplate);
+				float x = creature->getPositionX();
+				float z = creature->getPositionZ();
+				float y = creature->getPositionY();
+				float heading = creature->getDirectionAngle();
+
+				if (args.hasMoreTokens())
+					x = args.getFloatToken();
+
+				if (args.hasMoreTokens())
+					z = args.getFloatToken();
+
+				if (args.hasMoreTokens())
+					y = args.getFloatToken();
+
+				if (args.hasMoreTokens())
+					heading = args.getFloatToken();
 
 				SharedStructureObjectTemplate* serverTemplate = dynamic_cast<SharedStructureObjectTemplate*>(TemplateManager::instance()->getTemplate(objectTemplate.hashCode()));
 				if (serverTemplate != NULL) {
 					if (creature->getParent() != NULL) {
 						creature->sendSystemMessage("You need to be outside and unmounted to spawn a structure");
-
 						return GENERALERROR;
 					}
 
-					StructureObject* structure = StructureManager::instance()->placeStructure(creature, objectTemplate, x, y, creature->getDirectionAngle(), 0);
+					StructureObject* structure = StructureManager::instance()->placeStructure(creature, objectTemplate, x, y, heading, 0);
+
 					if (structure == NULL)
 						return GENERALERROR;
 
@@ -168,6 +147,8 @@ public:
 					return GENERALERROR;
 
 				ManagedReference<SceneObject*> parent = creature->getParent();
+
+				Locker clocker(object, creature);
 
 				object->initializePosition(x, z, y);
 				object->setDirection(creature->getDirectionW(), creature->getDirectionX(), creature->getDirectionY(), creature->getDirectionZ());
@@ -190,23 +171,24 @@ public:
 
 				ManagedReference<SceneObject*> object = zserv->getObject(oid);
 
-				if (object == NULL)
-				{
+				if (object == NULL) {
 					creature->sendSystemMessage("Error: Trying to delete invalid oid.");
 					return GENERALERROR;
 				}
 
 				for (int i = 0; i < object->getArrangementDescriptorSize(); ++i) {
-					Vector<String> descriptors = object->getArrangementDescriptor(i);
+					const Vector<String>* descriptors = object->getArrangementDescriptor(i);
 
-					for (int j = 0; j < descriptors.size(); ++j) {
-						String descriptor = descriptors.get(j);
+					for (int j = 0; j < descriptors->size(); ++j) {
+						const String& descriptor = descriptors->get(j);
 
 						if (descriptor == "inventory" || descriptor == "datapad" || descriptor == "default_weapon"
 							|| descriptor == "mission_bag" || descriptor == "ghost" || descriptor == "bank" || descriptor == "hair")
 						return GENERALERROR;
 					}
 				}
+
+				Locker clocker(object, creature);
 
 				object->destroyObjectFromWorld(true);
 
@@ -218,7 +200,8 @@ public:
 
 			}
 		} catch (Exception& e) {
-			creature->sendSystemMessage("Spawn: /createSpawningElement spawn lairTemplate/IffObjectPath <level>");
+			creature->sendSystemMessage("Spawn: /createSpawningElement spawn IffObjectPath [x z y heading]");
+			creature->sendSystemMessage("Spawn: /createSpawningElement lair lairTemplate [level]");
 			creature->sendSystemMessage("Delete: /createSpawningElement delete oid");
 		}
 

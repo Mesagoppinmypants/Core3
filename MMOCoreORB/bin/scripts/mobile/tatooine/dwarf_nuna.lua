@@ -1,7 +1,6 @@
 dwarf_nuna = Creature:new {
 	objectName = "@mob/creature_names:dwarf_nuna",
 	socialGroup = "nuna",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ dwarf_nuna = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dwarf_nuna.iff"},

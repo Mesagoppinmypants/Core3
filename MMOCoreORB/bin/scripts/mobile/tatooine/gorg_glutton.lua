@@ -1,7 +1,6 @@
 gorg_glutton = Creature:new {
 	objectName = "@mob/creature_names:gorg_glutton",
 	socialGroup = "gorg",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ gorg_glutton = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gorg.iff"},

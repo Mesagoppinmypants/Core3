@@ -1,7 +1,6 @@
 aujante_klee = Creature:new {
 	objectName = "@mob/creature_names:aujante_klee",
 	socialGroup = "mtn_clan",
-	pvpFaction = "mtn_clan",
 	faction = "mtn_clan",
 	level = 23,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ aujante_klee = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_aujante_klee.iff"},

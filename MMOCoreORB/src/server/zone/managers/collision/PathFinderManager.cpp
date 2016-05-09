@@ -8,10 +8,10 @@
 #include "PathFinderManager.h"
 #include "server/zone/objects/building/BuildingObject.h"
 #include "server/zone/objects/cell/CellObject.h"
-#include "server/zone/templates/SharedObjectTemplate.h"
-#include "server/zone/templates/appearance/PortalLayout.h"
-#include "server/zone/templates/appearance/FloorMesh.h"
-#include "server/zone/templates/appearance/PathGraph.h"
+#include "templates/SharedObjectTemplate.h"
+#include "templates/appearance/PortalLayout.h"
+#include "templates/appearance/FloorMesh.h"
+#include "templates/appearance/PathGraph.h"
 #include "CollisionManager.h"
 #include "engine/util/u3d/Funnel.h"
 #include "server/zone/objects/area/ActiveArea.h"
@@ -19,15 +19,21 @@
 #include <limits>
 #include <float.h>
 
+PathFinderManager::PathFinderManager() : Logger("PathFinderManager") {
+	setFileLogger("log/pathfinder.log");
+
+	setLogging(true);
+}
+
 Vector<WorldCoordinates>* PathFinderManager::findPath(const WorldCoordinates& pointA, const WorldCoordinates& pointB) {
-	if (isnan(pointA.getX()) || isnan(pointA.getY()) || isnan(pointA.getZ()))
+	if (std::isnan(pointA.getX()) || std::isnan(pointA.getY()) || std::isnan(pointA.getZ()))
 		return NULL;
 
-	if (isnan(pointB.getX()) || isnan(pointB.getY()) || isnan(pointB.getZ()))
+	if (std::isnan(pointB.getX()) || std::isnan(pointB.getY()) || std::isnan(pointB.getZ()))
 		return NULL;
 
-	SceneObject* cellA = pointA.getCell();
-	SceneObject* cellB = pointB.getCell();
+	CellObject* cellA = pointA.getCell();
+	CellObject* cellB = pointB.getCell();
 
 	if (cellA == NULL && cellB == NULL) { // world -> world
 		return findPathFromWorldToWorld(pointA, pointB);
@@ -35,7 +41,7 @@ Vector<WorldCoordinates>* PathFinderManager::findPath(const WorldCoordinates& po
 		return findPathFromCellToWorld(pointA, pointB);
 	} else if (cellA == NULL && cellB != NULL) { // world -> cell
 		return findPathFromWorldToCell(pointA, pointB);
-	} else if (cellA != NULL && cellB != NULL) { // cell -> cell
+	} else /* if (cellA != NULL && cellB != NULL) */ { // cell -> cell, the only left option
 		return findPathFromCellToCell(pointA, pointB);
 	}
 
@@ -96,7 +102,7 @@ Vector<WorldCoordinates>* PathFinderManager::findPathFromWorldToWorld(const Worl
 }
 
 Vector<WorldCoordinates>* PathFinderManager::findPathFromWorldToCell(const WorldCoordinates& pointA, const WorldCoordinates& pointB) {
-	CellObject* targetCell = cast<CellObject*>( pointB.getCell());
+	CellObject* targetCell = pointB.getCell();
 
 	if (targetCell == NULL)
 		return NULL;
@@ -183,7 +189,7 @@ Vector<WorldCoordinates>* PathFinderManager::findPathFromWorldToCell(const World
 
 			path->add(WorldCoordinates(coord.getWorldPosition(), NULL));
 		} else { // we are inside the building
-			SceneObject* pathCell = building->getCell(cellID);
+			CellObject* pathCell = building->getCell(cellID);
 
 			path->add(WorldCoordinates(pathNode->getPosition(), pathCell));
 
@@ -309,9 +315,13 @@ Vector3 PathFinderManager::transformToModelSpace(const Vector3& point, SceneObje
 
 Vector<WorldCoordinates>* PathFinderManager::findPathFromCellToWorld(const WorldCoordinates& pointA, const WorldCoordinates& pointB) {
 	Vector<WorldCoordinates>* path = new Vector<WorldCoordinates>(5, 1);
+
+	if (path == NULL)
+		return NULL;
+
 	path->add(pointA);
 
-	CellObject* ourCell = cast<CellObject*>( pointA.getCell());
+	CellObject* ourCell = pointA.getCell();
 	ManagedReference<BuildingObject*> building = cast<BuildingObject*>( ourCell->getParent().get().get());
 	int ourCellID = ourCell->getCellNumber();
 	SharedObjectTemplate* templateObject = ourCell->getParent().get()->getObjectTemplate();
@@ -329,10 +339,32 @@ Vector<WorldCoordinates>* PathFinderManager::findPathFromCellToWorld(const World
 	}
 
 	FloorMesh* sourceFloorMesh = portalLayout->getFloorMesh(ourCellID);
+
+	if (sourceFloorMesh == NULL) {
+		delete path;
+		return NULL;
+	}
+
 	PathGraph* sourcePathGraph = sourceFloorMesh->getPathGraph();
 
+	if (sourcePathGraph == NULL) {
+		delete path;
+		return NULL;
+	}
+
 	FloorMesh* exteriorFloorMesh = portalLayout->getFloorMesh(0);
+
+	if (exteriorFloorMesh == NULL) {
+		delete path;
+		return NULL;
+	}
+
 	PathGraph* exteriorPathGraph = exteriorFloorMesh->getPathGraph();
+
+	if (exteriorPathGraph == NULL) {
+		delete path;
+		return NULL;
+	}
 
 	// we need to move world position into model space
 	Vector3 transformedPosition = transformToModelSpace(pointB.getPoint(), building);
@@ -397,7 +429,7 @@ Vector<WorldCoordinates>* PathFinderManager::findPathFromCellToWorld(const World
 
 			path->add(WorldCoordinates(coord.getWorldPosition(), NULL));
 		} else { // we are inside the building
-			SceneObject* pathCell = building->getCell(cellID);
+			CellObject* pathCell = building->getCell(cellID);
 
 			path->add(WorldCoordinates(pathNode->getPosition(), pathCell));
 		}
@@ -411,7 +443,7 @@ Vector<WorldCoordinates>* PathFinderManager::findPathFromCellToWorld(const World
 	return path;
 }
 
-void PathFinderManager::addTriangleNodeEdges(const Vector3& source, const Vector3& goal, Vector<Triangle*>* trianglePath, Vector<WorldCoordinates>* path, SceneObject* cell) {
+void PathFinderManager::addTriangleNodeEdges(const Vector3& source, const Vector3& goal, Vector<Triangle*>* trianglePath, Vector<WorldCoordinates>* path, CellObject* cell) {
 	Vector3 startPoint = Vector3(source.getX(), source.getZ(), source.getY());
 	Vector3 goalPoint = Vector3(goal.getX(), goal.getZ(), goal.getY());
 
@@ -469,8 +501,8 @@ void PathFinderManager::addTriangleNodeEdges(const Vector3& source, const Vector
 Vector<WorldCoordinates>* PathFinderManager::findPathFromCellToDifferentCell(const WorldCoordinates& pointA, const WorldCoordinates& pointB) {
 	//info ("findPathFromCellToDifferentCell", true);
 
-	CellObject* ourCell = cast<CellObject*>( pointA.getCell());
-	CellObject* targetCell = cast<CellObject*>( pointB.getCell());
+	CellObject* ourCell = pointA.getCell();
+	CellObject* targetCell = pointB.getCell();
 
 	int ourCellID = ourCell->getCellNumber();
 	int targetCellID = targetCell->getCellNumber();
@@ -538,7 +570,12 @@ Vector<WorldCoordinates>* PathFinderManager::findPathFromCellToDifferentCell(con
 	Vector<PathNode*>* nodes = portalLayout->getPath(source, target);
 
 	if (nodes == NULL) {
-		error("NODES NULL");
+		StringBuffer str;
+		str << "Could not find path from node: " << source->getID()
+				<< " to node: " << target->getID() << " in building: "
+				<< templateObject->getFullTemplateString();
+
+		log(str.toString());
 
 		delete path;
 		return NULL;
@@ -582,7 +619,7 @@ Vector<WorldCoordinates>* PathFinderManager::findPathFromCellToDifferentCell(con
 
 			path->add(WorldCoordinates(coord.getWorldPosition(), NULL));
 		} else {
-			SceneObject* pathCell = building1->getCell(cellID);
+			CellObject* pathCell = building1->getCell(cellID);
 
 			WorldCoordinates coord(pathNode->getPosition(), pathCell);
 
@@ -624,8 +661,8 @@ Vector<WorldCoordinates>* PathFinderManager::findPathFromCellToDifferentCell(con
 }
 
 Vector<WorldCoordinates>* PathFinderManager::findPathFromCellToCell(const WorldCoordinates& pointA, const WorldCoordinates& pointB) {
-	CellObject* ourCell = cast<CellObject*>( pointA.getCell());
-	CellObject* targetCell = cast<CellObject*>( pointB.getCell());
+	CellObject* ourCell = pointA.getCell();
+	CellObject* targetCell = pointB.getCell();
 
 	if (ourCell != targetCell)
 		return findPathFromCellToDifferentCell(pointA, pointB);

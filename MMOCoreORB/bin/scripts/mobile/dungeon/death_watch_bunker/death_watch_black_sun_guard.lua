@@ -1,7 +1,8 @@
 death_watch_black_sun_guard = Creature:new {
 	objectName = "@mob/creature_names:mand_bunker_blksun_guard",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "death_watch",
-	pvpFaction = "",
 	faction = "",
 	level = 96,
 	chanceHit = 0.95,
@@ -23,8 +24,9 @@ death_watch_black_sun_guard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
+	scale = 1.15,
 
 	templates = {"object/mobile/dressed_black_sun_guard.iff"},
 	lootGroups = {

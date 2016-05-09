@@ -26,11 +26,9 @@ public:
 
 		ManagedReference<PlayerManager*> playerManager = player->getZoneServer()->getPlayerManager();
 
-		if(playerManager == NULL) {
-			if(creature != NULL) {
-				creature->sendSystemMessage("playerManager not found");
-				return 0;
-			}
+		if (playerManager == NULL) {
+			creature->sendSystemMessage("playerManager not found");
+			return 0;
 		}
 
 		//Parse the weather command.
@@ -44,7 +42,34 @@ public:
 		tokenizer.getStringToken(command);
 		command = command.toLowerCase();
 
-		if (command == "setxpmodifier") {
+		if (command == "listjedi") {
+			player->sendSystemMessage("Please wait. This may take a while.");
+
+			EXECUTE_TASK_2(playerManager, player, {
+				playerManager_p->sendAdminJediList(player_p);
+			});
+
+			return 0;
+
+		} else if (command == "listfrs") {
+			player->sendSystemMessage("Please wait. This may take a while.");
+
+			EXECUTE_TASK_2(playerManager, player, {
+					playerManager_p->sendAdminFRSList(player_p);
+			});
+
+			return 0;
+
+		} else if (command == "listadmins") {
+			player->sendSystemMessage("Please wait. This may take a while.");
+
+			EXECUTE_TASK_2(playerManager, player, {
+					playerManager_p->sendAdminList(player_p);
+			});
+
+			return 0;
+
+		} else if (command == "setxpmodifier") {
 			if (!tokenizer.hasMoreTokens()) {
 				sendSyntax(player);
 				return 1;
@@ -69,10 +94,13 @@ public:
 	}
 
 	static void sendSyntax(CreatureObject* player) {
-		if (player != NULL)
+		if (player != NULL) {
 			player->sendSystemMessage("Syntax: /server playermanager [setxpmodifier] [value]");
+			player->sendSystemMessage("Syntax: /server playermanager [listjedi]");
+			player->sendSystemMessage("Syntax: /server playermanager [list_frsjedi]");
+			player->sendSystemMessage("Syntax: /server playermanager [listadmins]");
+		}
 	}
-
 };
 
 #endif /* PLAYERMANAGERCOMMAND_H_ */

@@ -43,7 +43,7 @@
 
 object_weapon_ranged_grenade_grenade_fragmentation_light = object_weapon_ranged_grenade_shared_grenade_fragmentation_light:new {
 
-	objectMenuComponent = {"cpp", "ThrowGrenadeMenuComponent"},
+	objectMenuComponent = "ThrowGrenadeMenuComponent",
 
 	playerRaces = { "object/creature/player/bothan_male.iff",
 			"object/creature/player/bothan_female.iff",
@@ -70,7 +70,7 @@ object_weapon_ranged_grenade_grenade_fragmentation_light = object_weapon_ranged_
 	-- HEAVYLIGHTNINGBEAMATTACK, HEAVYPARTICLEBEAMATTACK, HEAVYROCKETLAUNCHERATTACK, HEAVYLAUNCHERATTACK
 	attackType = GENADEATTACK,
 
-	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, FORCE, LIGHTSABER
+	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, LIGHTSABER
 	damageType = BLAST,
 
 	-- NONE, LIGHT, MEDIUM, HEAVY
@@ -98,7 +98,7 @@ object_weapon_ranged_grenade_grenade_fragmentation_light = object_weapon_ranged_
 
 	useCount = 5,
 
-	combatSpam = "grenade_frag",
+	combatSpam = "throw_fragmentation",
 
 	healthAttackCost = 50,
 	actionAttackCost = 50,
@@ -119,6 +119,7 @@ object_weapon_ranged_grenade_grenade_fragmentation_light = object_weapon_ranged_
 	attackSpeed = 4,
 
 	woundsRatio = 10,
+	animationType = "fragmentation",
 
 
 	numberExperimentalProperties = {1, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2},

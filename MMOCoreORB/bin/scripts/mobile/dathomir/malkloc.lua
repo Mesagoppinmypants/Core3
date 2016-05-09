@@ -1,7 +1,6 @@
 malkloc = Creature:new {
 	objectName = "@mob/creature_names:malkloc",
 	socialGroup = "malkloc",
-	pvpFaction = "",
 	faction = "",
 	level = 22,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ malkloc = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/malkloc.iff"},
@@ -32,7 +31,7 @@ malkloc = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

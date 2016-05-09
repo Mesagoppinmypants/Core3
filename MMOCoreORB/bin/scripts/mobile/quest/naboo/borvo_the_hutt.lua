@@ -1,7 +1,6 @@
 borvo_the_hutt = Creature:new {
 	objectName = "@mob/creature_names:borvo_the_hutt",
 	socialGroup = "borvo",
-	pvpFaction = "borvo",
 	faction = "borvo",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ borvo_the_hutt = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/borvo.iff"},

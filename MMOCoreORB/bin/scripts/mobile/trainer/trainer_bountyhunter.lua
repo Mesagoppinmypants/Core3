@@ -1,6 +1,7 @@
 trainer_bountyhunter = Creature:new {
 	objectName = "@mob/creature_names:trainer_bountyhunter",
-	pvpFaction = "",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	faction = "",
 	level = 100,
 	chanceHit = 0.390000,
@@ -22,12 +23,18 @@ trainer_bountyhunter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
-	templates = {"object/mobile/dressed_bountyhunter_trainer_01.iff",
-			"object/mobile/dressed_bountyhunter_trainer_02.iff",
-			"object/mobile/dressed_bountyhunter_trainer_03.iff",
-			"object/mobile/dressed_bountyhunter_trainer_04.iff"},
+
+	templates = {
+		"object/mobile/dressed_bountyhunter_trainer_01.iff",
+		"object/mobile/dressed_bountyhunter_trainer_02.iff",
+		"object/mobile/dressed_bountyhunter_trainer_03.iff",
+		"object/mobile/dressed_bountyhunter_trainer_04.iff"
+	},
+	lootGroups = {},
+	weapons = {},
 	conversationTemplate = "trainer_bountyhunter_convotemplate",
-	optionsBitmask = 264
+	attacks = {}
 }
 CreatureTemplates:addCreatureTemplate(trainer_bountyhunter,"trainer_bountyhunter")

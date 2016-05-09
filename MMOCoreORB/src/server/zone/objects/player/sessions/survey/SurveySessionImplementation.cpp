@@ -13,7 +13,7 @@
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/tangible/tool/SurveyTool.h"
 #include "server/zone/packets/scene/PlayClientEffectLocMessage.h"
-#include "server/zone/objects/creature/CreatureAttribute.h"
+#include "templates/params/creature/CreatureAttribute.h"
 #include "server/zone/objects/player/sessions/survey/sui/SurveyGMinigameSuiCallback.h"
 #include "server/zone/objects/player/sessions/survey/sui/SurveyCMinigameSuiCallback.h"
 #include "server/zone/managers/resource/resourcespawner/SampleTask.h"
@@ -43,7 +43,7 @@ int SurveySessionImplementation::startSession() {
 		return false;
 	}
 
-	surveyer->addActiveSession(SessionFacadeType::SURVEY, _this.get());
+	surveyer->addActiveSession(SessionFacadeType::SURVEY, _this.getReferenceUnsafeStaticCast());
 
 	return true;
 }
@@ -106,7 +106,7 @@ void SurveySessionImplementation::startSurvey(const String& resname) {
 	}
 
 	//Get actual cost based upon player's Focus
-	int mindCost = surveyer->calculateCostAdjustment(CreatureAttribute::FOCUS, 100);
+	int mindCost = 100 - (int)(surveyer->getHAM(CreatureAttribute::FOCUS)/15.f);
 
 	if (surveyer->getHAM(CreatureAttribute::MIND) < mindCost) {
 		surveyer->setPosture(CreaturePosture::UPRIGHT, true);
@@ -119,7 +119,7 @@ void SurveySessionImplementation::startSurvey(const String& resname) {
 		return;
 	}
 
-	if(spawn->getSurveyToolType() != activeSurveyTool->getToolType()) {
+	if(spawn->getSurveyToolType() != activeSurveyTool->getToolType() && !(activeSurveyTool->getToolType() == SurveyTool::INORGANIC && spawn->isType("inorganic"))) {
 		StringIdChatParameter message("@survey:wrong_tool"); // %TO resources cannot be located with this tool
 		message.setTO(spawn->getFinalClass());
 		surveyer->sendSystemMessage(message);
@@ -176,19 +176,14 @@ void SurveySessionImplementation::startSample(const String& resname) {
 		return;
 	}
 
-	if (surveyer->isSwimming()) {
+	if (surveyer->isSwimming() || (surveyer->isRidingMount() && surveyer->isInWater())) {
 		surveyer->sendSystemMessage("@error_message:survey_swimming");
 		return;
 	}
 
-	if (surveyer->getParent() != NULL && surveyer->getParent().get()->isVehicleObject() ) {
-		surveyer->sendSystemMessage("You cannot perform that action while driving a vehicle.");
-		return;
-	}
-
 	// Force dismount from creature pets
-	if (surveyer->getParent() != NULL && surveyer->getParent().get()->isPet() ) {
-		surveyer->executeObjectControllerAction(String("dismount").hashCode());
+	if (surveyer->isRidingMount()) {
+		surveyer->executeObjectControllerAction(STRING_HASHCODE("dismount"));
 	}
 
 	// Verify dismount was successful
@@ -198,15 +193,15 @@ void SurveySessionImplementation::startSample(const String& resname) {
 	}
 
 	//Get actual cost based upon player's Quickness
-	int actionCost = surveyer->calculateCostAdjustment(CreatureAttribute::QUICKNESS, 200);
+	int actionCost = 124 - (int)(surveyer->getHAM(CreatureAttribute::QUICKNESS)/12.5f);
 
 	if (surveyer->getHAM(CreatureAttribute::ACTION) < actionCost) {
 		surveyer->setPosture(CreaturePosture::UPRIGHT, true);
-		surveyer->sendSystemMessage("@error_message:sample_mind"); //You are exhausted. You nee to clear your head before you can sample again.
+		surveyer->sendSystemMessage("@error_message:sample_mind"); //You are exhausted. You need to clear your head before you can sample again.
 		return;
 	}
 
-	if(resourceSpawn->getSurveyToolType() != activeSurveyTool->getToolType()) {
+	if(resourceSpawn->getSurveyToolType() != activeSurveyTool->getToolType() && !(activeSurveyTool->getToolType() == SurveyTool::INORGANIC && resourceSpawn->isType("inorganic"))) {
 		StringIdChatParameter message("@survey:wrong_tool"); // %TO resources cannot be located with this tool
 		message.setTO(resourceSpawn->getFinalClass());
 		surveyer->sendSystemMessage(message);
@@ -226,7 +221,7 @@ void SurveySessionImplementation::startSample(const String& resname) {
 		surveyer->setPosture(CreaturePosture::CROUCHED, true);
 	}
 
-	if(surveyer->getPendingTask("sample") != NULL) {
+	if (surveyer->getPendingTask("sample") != NULL) {
 		return;
 	}
 
@@ -305,9 +300,11 @@ void SurveySessionImplementation::surveyCnodeMinigame(int value) {
 	if (waypoint == NULL)
 		newwaypoint = ( surveyer->getZoneServer()->createObject(0xc456e788, 1)).castTo<WaypointObject*>();
 	else {
-		ghost->removeWaypoint(waypoint->getObjectID(), true);
+		ghost->removeWaypoint(waypoint->getObjectID(), true, false);
 		newwaypoint = waypoint.get();
 	}
+
+	Locker locker(newwaypoint);
 
 	// Update new waypoint
 	newwaypoint->setCustomObjectName(UnicodeString("Resource Survey"), false);

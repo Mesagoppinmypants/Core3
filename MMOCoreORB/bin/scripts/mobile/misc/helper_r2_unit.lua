@@ -1,7 +1,6 @@
 helper_r2_unit = Creature:new {
 	objectName = "@mob/creature_names:nhelper_droid",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,7 +22,7 @@ helper_r2_unit = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/nhelper_droid.iff"},

@@ -266,7 +266,7 @@ barada_missions =
 			},
 			secondarySpawns =
 			{
-				{ npcTemplate = "weak_mercenary", planetName = "tatooine", npcName = "Weak Mercenary" },
+				{ npcTemplate = "theme_park_jabba_weak_mercenary", planetName = "tatooine", npcName = "Weak Mercenary" },
 
 			},
 			itemSpawns = {
@@ -336,7 +336,7 @@ bib_missions =
 			missionType = "assassinate",
 			primarySpawns =
 			{
-				{ npcTemplate = "sennex_slaver", planetName = "tatooine", npcName = "Hizram Riean" }
+				{ npcTemplate = "theme_park_jabba_sennex_slaver", planetName = "tatooine", npcName = "Hizram Riean" }
 			},
 			secondarySpawns =
 			{

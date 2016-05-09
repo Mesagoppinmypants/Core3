@@ -9,6 +9,8 @@
 #include "SuiManager.h"
 #include "LuaSuiManager.h"
 #include "server/zone/objects/scene/SceneObject.h"
+#include "server/zone/objects/player/sui/SuiWindowType.h"
+#include "server/zone/objects/player/sui/SuiPageData.h"
 
 const char LuaSuiManager::className[] = "LuaSuiManager";
 
@@ -19,6 +21,7 @@ Luna<LuaSuiManager>::RegType LuaSuiManager::Register[] = {
 		{ "sendInputBox", &LuaSuiManager::sendInputBox },
 		{ "sendListBox", &LuaSuiManager::sendListBox },
 		{ "sendTransferBox", &LuaSuiManager::sendTransferBox },
+		{ "sendSuiPage", &LuaSuiManager::sendSuiPage },
 		{ 0, 0 }
 };
 
@@ -27,6 +30,24 @@ LuaSuiManager::LuaSuiManager(lua_State* L) {
 }
 
 LuaSuiManager::~LuaSuiManager(){
+}
+
+int LuaSuiManager::sendSuiPage(lua_State* L) {
+	if (lua_gettop(L) - 1 < 4) {
+		Logger::console.error("incorrect number of arguments for LuaSuiManager::sendSuiPage");
+		return 0;
+	}
+
+	String callback = lua_tostring(L, -1);
+	String play = lua_tostring(L, -2);
+	SuiPageData* page = (SuiPageData*) lua_touserdata(L, -3);
+	CreatureObject* creo = (CreatureObject*) lua_touserdata(L, -4);
+
+	int32 pageId = realObject->sendSuiPage(creo, page, play, callback);
+
+	lua_pushinteger(L, pageId);
+
+	return 1;
 }
 
 int LuaSuiManager::sendKeypadSui(lua_State* L) {
@@ -82,20 +103,27 @@ int LuaSuiManager::sendInputBox(lua_State* L) {
 }
 
 int LuaSuiManager::sendMessageBox(lua_State* L) {
-	if (lua_gettop(L) - 1 < 7) {
+        int argn = lua_gettop(L) - 1;
+	int index = 0;
+	if ( !(argn == 7 || argn == 8) ){
 		Logger::console.error("incorrect number of arguments for LuaSuiManager::sendMessageBox");
 		return 0;
 	}
+	unsigned int windowType = 0;
+	
+	if( argn == 8 ){
+	        windowType = (unsigned)lua_tointeger(L, --index);
+	}
 
-	SceneObject* usingObject = (SceneObject*) lua_touserdata(L, -7);
-	SceneObject* targetPlayer = (SceneObject*) lua_touserdata(L, -6);
-	String title = lua_tostring(L, -5);
-	String text = lua_tostring(L, -4);
-	String okButton = lua_tostring(L, -3);
-	String screenplay = lua_tostring(L, -2);
-	String callback = lua_tostring(L, -1);
+	String callback = lua_tostring(L, --index);
+	String screenplay = lua_tostring(L, --index);
+	String okButton = lua_tostring(L, --index );
+	String text = lua_tostring(L, --index);
+	String title = lua_tostring(L, --index);
+	SceneObject* targetPlayer = (SceneObject*) lua_touserdata(L, --index);
+	SceneObject* usingObject = (SceneObject*) lua_touserdata(L, --index);
 
-	realObject->sendMessageBox(usingObject, targetPlayer, title, text, okButton, screenplay, callback);
+	realObject->sendMessageBox(usingObject, targetPlayer, title, text, okButton, screenplay, callback, windowType );
 
 	return 0;
 }
@@ -143,3 +171,4 @@ int LuaSuiManager::sendTransferBox(lua_State* L) {
 
 	return 0;
 }
+

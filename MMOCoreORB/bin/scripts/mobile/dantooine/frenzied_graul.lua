@@ -1,7 +1,6 @@
 frenzied_graul = Creature:new {
 	objectName = "@mob/creature_names:frenzied_graul",
 	socialGroup = "graul",
-	pvpFaction = "",
 	faction = "",
 	level = 56,
 	chanceHit = 0.5,
@@ -23,7 +22,7 @@ frenzied_graul = Creature:new {
 	ferocity = 15,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/frenzied_graul.iff"},
@@ -34,7 +33,7 @@ frenzied_graul = Creature:new {
 	conversationTemplate = "",
 	attacks = {
 		{"creatureareableeding",""},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

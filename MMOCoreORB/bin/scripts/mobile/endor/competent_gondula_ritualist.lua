@@ -1,7 +1,8 @@
 competent_gondula_ritualist = Creature:new {
 	objectName = "@mob/creature_names:competent_gundula_ritualist",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "gondula_tribe",
-	pvpFaction = "gondula_tribe",
 	faction = "gondula_tribe",
 	level = 17,
 	chanceHit = 0.32,
@@ -23,7 +24,7 @@ competent_gondula_ritualist = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -32,11 +33,11 @@ competent_gondula_ritualist = Creature:new {
 		"object/mobile/dressed_ewok_f_11.iff",
 		"object/mobile/dressed_ewok_m_02.iff"},
 	lootGroups = {
-		 {
-	        groups = {
+		{
+			groups = {
 				{group = "ewok", chance = 10000000}
 			},
-			lootChance = 3000000
+			lootChance = 1340000
 		}
 	},
 	weapons = {"ewok_weapons"},

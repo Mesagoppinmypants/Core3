@@ -1,8 +1,7 @@
 ananda_dwyce = Creature:new {
 	objectName = "@mob/creature_names:commoner",
-	generateRandomName = true,
+	customName = "Ananda Dwyce",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 4,
 	chanceHit = 0.24,
@@ -24,7 +23,7 @@ ananda_dwyce = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {

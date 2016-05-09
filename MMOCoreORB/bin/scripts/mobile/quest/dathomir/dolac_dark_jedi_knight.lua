@@ -1,7 +1,6 @@
 dolac_dark_jedi_knight = Creature:new {
 	objectName = "@mob/creature_names:dark_jedi_knight",
 	socialGroup = "dark_jedi",
-	pvpFaction = "",
 	faction = "",
 	level = 265,
 	chanceHit = 235,
@@ -23,7 +22,7 @@ dolac_dark_jedi_knight = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {

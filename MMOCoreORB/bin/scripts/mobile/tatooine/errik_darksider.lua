@@ -1,7 +1,6 @@
 errik_darksider = Creature:new {
 	objectName = "@npc_name:tatooine_herald_01",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ errik_darksider = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_herald_tatooine_01.iff"},

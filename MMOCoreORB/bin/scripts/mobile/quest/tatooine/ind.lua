@@ -2,7 +2,6 @@ ind = Creature:new {
 	objectName = "@npc_name:gran_base_male",
 	customName = "Ind",
 	socialGroup = "valarian",
-	pvpFaction = "valarian",
 	faction = "valarian",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ ind = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_ind.iff"},

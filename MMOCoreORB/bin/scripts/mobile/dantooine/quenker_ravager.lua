@@ -1,7 +1,6 @@
 quenker_ravager = Creature:new {
 	objectName = "@mob/creature_names:quenker_ravager",
 	socialGroup = "quenker",
-	pvpFaction = "",
 	faction = "",
 	level = 38,
 	chanceHit = 0.43,
@@ -23,7 +22,7 @@ quenker_ravager = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/quenker_hue.iff"},
@@ -32,8 +31,8 @@ quenker_ravager = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"creatureareapoison",""},
-		{"dizzyattack","dizzyChance=50"}
+		{"dizzyattack",""},
+		{"creatureareapoison",""}
 	}
 }
 

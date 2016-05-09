@@ -1,7 +1,6 @@
 blood_drenched_merek_king = Creature:new {
 	objectName = "@mob/creature_names:blood_drenched_merek_king",
 	socialGroup = "merek",
-	pvpFaction = "",
 	faction = "",
 	level = 56,
 	chanceHit = 0.55,
@@ -23,7 +22,7 @@ blood_drenched_merek_king = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/blood_drenched_merek_king.iff"},
@@ -32,8 +31,8 @@ blood_drenched_merek_king = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"stunattack","stunChance=50"}
+		{"stunattack",""},
+		{"blindattack",""}
 	}
 }
 

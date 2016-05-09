@@ -1,7 +1,6 @@
 mature_snorbal_female = Creature:new {
 	objectName = "@mob/creature_names:mature_snorbal_female",
 	socialGroup = "snorbal",
-	pvpFaction = "",
 	faction = "",
 	level = 31,
 	chanceHit = 0.39,
@@ -24,7 +23,7 @@ mature_snorbal_female = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/elder_snorbal_female.iff"},
@@ -33,8 +32,8 @@ mature_snorbal_female = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"knockdownattack","knockdownChance=50"},
-		{"posturedownattack","postureDownChance=50"}
+		{"posturedownattack",""},
+		{"knockdownattack",""}
 	}
 }
 

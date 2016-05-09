@@ -1,7 +1,6 @@
 puny_stintaril = Creature:new {
 	objectName = "@mob/creature_names:puny_stintaril",
 	socialGroup = "stinaril",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.27,
@@ -23,7 +22,7 @@ puny_stintaril = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/puny_stintaril.iff"},
@@ -32,7 +31,7 @@ puny_stintaril = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"stunattack","stunChance=50"}
+		{"stunattack",""}
 	}
 }
 

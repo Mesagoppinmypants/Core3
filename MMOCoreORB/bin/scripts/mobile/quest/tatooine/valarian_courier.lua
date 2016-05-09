@@ -1,7 +1,6 @@
 valarian_courier = Creature:new {
 	objectName = "@mob/creature_names:valarian_assassin",
 	socialGroup = "valarian",
-	pvpFaction = "valarian",
 	faction = "valarian",
 	level = 16,
 	chanceHit = 0.31,
@@ -23,7 +22,7 @@ valarian_courier = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_valarian_assassin.iff"},

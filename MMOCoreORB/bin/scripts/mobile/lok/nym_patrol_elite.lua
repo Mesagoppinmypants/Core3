@@ -1,7 +1,8 @@
 nym_patrol_elite = Creature:new {
 	objectName = "@mob/creature_names:nym_patrol_elite",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "nym",
-	pvpFaction = "nym",
 	faction = "nym",
 	level = 41,
 	chanceHit = 0.44,
@@ -23,12 +24,12 @@ nym_patrol_elite = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_nym_patrol_elite_rod_m.iff",
-				"object/mobile/dressed_nym_patrol_elite_hum_m.iff",
-				"object/mobile/dressed_nym_patrol_elite_nikto_m.iff"},
+		"object/mobile/dressed_nym_patrol_elite_hum_m.iff",
+		"object/mobile/dressed_nym_patrol_elite_nikto_m.iff"},
 	lootGroups = {
 		{
 			groups = {
@@ -37,12 +38,12 @@ nym_patrol_elite = Creature:new {
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
 				{group = "tailor_components", chance = 500000}
-			},
-			lootChance = 3500000
+			}
 		}
 	},
 	weapons = {"pirate_weapons_heavy"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(bountyhuntermaster,marksmanmaster,brawlermaster)
 }
 

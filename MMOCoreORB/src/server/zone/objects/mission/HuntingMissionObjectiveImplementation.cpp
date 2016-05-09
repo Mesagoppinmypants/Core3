@@ -1,4 +1,5 @@
 /*
+
  * HuntingMissionObjectiveImplementation.cpp
  *
  *  Created on: 20/08/2010
@@ -13,13 +14,13 @@
 #include "server/zone/managers/object/ObjectManager.h"
 #include "server/zone/managers/mission/MissionManager.h"
 #include "server/zone/managers/planet/PlanetManager.h"
-#include "server/zone/managers/terrain/TerrainManager.h"
+#include "terrain/manager/TerrainManager.h"
 #include "server/chat/StringIdChatParameter.h"
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
 #include "server/zone/objects/mission/MissionObject.h"
 #include "server/zone/objects/mission/MissionObserver.h"
-#include "server/zone/templates/mobile/CreatureTemplate.h"
+#include "server/zone/objects/creature/ai/CreatureTemplate.h"
 
 void HuntingMissionObjectiveImplementation::activate() {
 	MissionObjectiveImplementation::activate();
@@ -31,7 +32,7 @@ void HuntingMissionObjectiveImplementation::activate() {
 
 	ManagedReference<CreatureObject*> player = getPlayerOwner();
 
-	ManagedReference<MissionObserver*> observer = new MissionObserver(_this.get());
+	ManagedReference<MissionObserver*> observer = new MissionObserver(_this.getReferenceUnsafeStaticCast());
 	addObserver(observer, true);
 
 	Locker locker(player);
@@ -63,6 +64,8 @@ void HuntingMissionObjectiveImplementation::complete() {
 
 int HuntingMissionObjectiveImplementation::notifyObserverEvent(MissionObserver* observer, uint32 eventType, Observable* observable, ManagedObject* arg1, int64 arg2) {
 	ManagedReference<MissionObject* > mission = this->mission.get();
+	if (mission == NULL)
+		return 1;
 
 	if (eventType == ObserverEventType::KILLEDCREATURE) {
 		if (cast<CreatureObject*>(observable) != getPlayerOwner().get())
@@ -105,6 +108,9 @@ Vector3 HuntingMissionObjectiveImplementation::getEndPosition() {
 	ManagedReference<MissionObject* > mission = this->mission.get();
 
 	Vector3 missionEndPoint;
+
+	if(mission == NULL)
+		return missionEndPoint;
 
 	missionEndPoint.setX(mission->getStartPositionX());
 	missionEndPoint.setY(mission->getStartPositionY());

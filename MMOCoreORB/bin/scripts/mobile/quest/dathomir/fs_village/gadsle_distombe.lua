@@ -1,7 +1,6 @@
 gadsle_distombe = Creature:new {
 	objectName = "@mob/creature_names:gadsle_distombe",
 	socialGroup = "sith_shadow",
-	pvpFaction = "sith_shadow",
 	faction = "sith_shadow",
 	level = 87,
 	chanceHit = 0.75,
@@ -23,7 +22,7 @@ gadsle_distombe = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + HEALER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_fs_village_enemy_gadsle.iff"},

@@ -1,7 +1,6 @@
 corellian_butterfly_drone = Creature:new {
 	objectName = "@mob/creature_names:corellian_butterfly_drone",
 	socialGroup = "butterfly",
-	pvpFaction = "",
 	faction = "",
 	level = 5,
 	chanceHit = 0.25,
@@ -23,7 +22,7 @@ corellian_butterfly_drone = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/corellian_butterfly_hue.iff"},

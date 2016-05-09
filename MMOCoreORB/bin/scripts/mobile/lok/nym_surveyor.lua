@@ -1,7 +1,8 @@
-nym_surveyer = Creature:new {
+nym_surveyor = Creature:new {
 	objectName = "@mob/creature_names:nym_surveyer",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "nym",
-	pvpFaction = "nym",
 	faction = "nym",
 	level = 21,
 	chanceHit = 0.33,
@@ -23,28 +24,29 @@ nym_surveyer = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_nym_surveyer_rod_m.iff",
-				"object/mobile/dressed_nym_surveyer_hum_m.iff",
-				"object/mobile/dressed_nym_surveyer_hum_f.iff",
-				"object/mobile/dressed_nym_surveyer_rod_f.iff"},
+		"object/mobile/dressed_nym_surveyer_hum_m.iff",
+		"object/mobile/dressed_nym_surveyer_hum_f.iff",
+		"object/mobile/dressed_nym_surveyer_rod_f.iff"},
 	lootGroups = {
-	    {
+		{
 			groups = {
-				{group = "junk", chance = 6500000},
+				{group = "junk", chance = 6000000},
 				{group = "nyms_common", chance = 1000000},
 				{group = "pistols", chance = 1000000},
 				{group = "carbines", chance = 1000000},
-				{group = "tailor_components", chance = 500000}
-			},
-			lootChance = 3500000
+				{group = "tailor_components", chance = 500000},
+				{group = "color_crystals", chance = 500000}
+			}
 		}
 	},
 	weapons = {"pirate_weapons_heavy"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 
-CreatureTemplates:addCreatureTemplate(nym_surveyer, "nym_surveyer")
+CreatureTemplates:addCreatureTemplate(nym_surveyor, "nym_surveyor")

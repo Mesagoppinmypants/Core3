@@ -1,7 +1,6 @@
 xarot_nightsister_in_training = Creature:new {
 	objectName = "",
 	socialGroup = "nightsister",
-	pvpFaction = "nightsister",
 	faction = "nightsister",
 	level = 60,
 	chanceHit = 0.5,
@@ -23,7 +22,7 @@ xarot_nightsister_in_training = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_dathomir_nightsister_initiate.iff"},

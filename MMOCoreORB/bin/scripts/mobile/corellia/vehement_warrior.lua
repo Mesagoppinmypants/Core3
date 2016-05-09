@@ -1,7 +1,6 @@
 vehement_warrior = Creature:new {
 	objectName = "@mob/creature_names:durni_vehement_warrior",
 	socialGroup = "durni",
-	pvpFaction = "",
 	faction = "",
 	level = 9,
 	chanceHit = 0.28,
@@ -23,7 +22,7 @@ vehement_warrior = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/durni.iff"},
@@ -33,7 +32,7 @@ vehement_warrior = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"intimidationattack","intimidationChance=50"}
+		{"intimidationattack",""}
 	}
 }
 

@@ -2,7 +2,6 @@ jatrian_lytus = Creature:new {
 	objectName = "@npc_name:human_base_male",
 	customName = "Cmdr. Jatrian Lytus",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -24,7 +23,7 @@ jatrian_lytus = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_jatrian_lytus.iff"},

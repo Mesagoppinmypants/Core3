@@ -1,7 +1,6 @@
 scholar_szingo = Creature:new {
 	objectName = "@mob/creature_names:scholar_szingo",
 	socialGroup = "endor_marauder",
-	pvpFaction = "endor_marauder",
 	faction = "endor_marauder",
 	level = 100,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ scholar_szingo = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 264,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_scholar_szingo.iff"},

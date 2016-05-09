@@ -1,17 +1,16 @@
 krayt_dragon_grand = Creature:new {
 	objectName = "@mob/creature_names:krayt_dragon_grand",
 	socialGroup = "krayt",
-	pvpFaction = "",
 	faction = "",
-	level = 306,
+	level = 336,
 	chanceHit = 30,
-	damageMin = 2170,
-	damageMax = 4150,
-	baseXp = 28049,
-	baseHAM = 390000,
-	baseHAMmax = 481000,
+	damageMin = 2270,
+	damageMax = 4250,
+	baseXp = 28549,
+	baseHAM = 410000,
+	baseHAMmax = 501000,
 	armor = 3,
-	resists = {90,90,90,100,65,90,90,90,-1},
+	resists = {195,195,195,195,165,195,195,195,-1},
 	meatType = "meat_carnivore",
 	meatAmount = 1000,
 	hideType = "hide_bristley",
@@ -23,7 +22,7 @@ krayt_dragon_grand = Creature:new {
 	ferocity = 30,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER + STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/krayt_dragon.iff"},
@@ -31,31 +30,20 @@ krayt_dragon_grand = Creature:new {
 	lootGroups = {
 		{
 	        groups = {
-				{group = "krayt_tissue_rare", chance = 3300000},
-				{group = "krayt_dragon_common", chance = 3300000},
-				{group = "pearls_flawless", chance = 3400000}				
+				{group = "krayt_tissue_rare", chance = 2000000},
+				{group = "krayt_dragon_common", chance = 2500000},
+				{group = "pearls_flawless", chance = 1500000},
+				{group = "armor_all", chance = 2000000},
+				{group = "weapons_all", chance = 2000000},
 			},
-			lootChance = 6500000
-		},
-		{
-	        groups = {
-				{group = "composite_armor", chance = 2000000},
-				{group = "ubese_armor", chance = 2000000},
-				{group = "melee_two_handed", chance = 2000000},
-				{group = "rifles", chance = 2000000},
-				{group = "wearables_all", chance = 2000000},				
-			},
-			lootChance = 3500000
+			lootChance = 7720000
 		}
 	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"creatureareacombo",""},
-		{"blindattack","blindChance=50"},
-		{"intimidationattack","intimidationChance=50"},
-		{"creatureareaknockdown","knockdownChance=50"},
-		{"stunattack","stunChance=50"}
+		{"creatureareacombo","stateAccuracyBonus=100"},
+		{"creatureareaknockdown","stateAccuracyBonus=100"},
 	}
 }
 

@@ -2,7 +2,6 @@ crix_yarrow = Creature:new {
 	objectName = "@npc_name:twilek_base_male",
 	customName = "Crix Yarrow",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ crix_yarrow = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_noble_fat_twilek_male_01.iff"},

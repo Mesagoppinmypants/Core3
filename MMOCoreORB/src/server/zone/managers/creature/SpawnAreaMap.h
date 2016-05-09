@@ -23,28 +23,28 @@ protected:
 
 	Vector<ManagedReference<SpawnArea*> > worldSpawnAreas;
 
-	Vector<Vector3> trainerObjects;
-
 	void readAreaObject(LuaObject& areaObj);
 	void loadStaticSpawns();
 
 public:
 
-	static const int UNDEFINEDAREA       = 0x00000000;
-	static const int SPAWNAREA           = 0x00000001;
-	static const int NOSPAWNAREA         = 0x00000002;
-	static const int WORLDSPAWNAREA      = 0x00000010;
-	static const int NOBUILDZONEAREA     = 0x00000100;
+	enum {
+		UNDEFINEDAREA       = 0x00000000,
+		SPAWNAREA           = 0x00000001,
+		NOSPAWNAREA         = 0x00000002,
+		WORLDSPAWNAREA      = 0x00000010,
+		NOBUILDZONEAREA     = 0x00000100
+	};
 
 	SpawnAreaMap() : Logger("SpawnAreaMap") {
 		lua = new Lua();
 		setAllowDuplicateInsertPlan();
 	}
 
-	SpawnAreaMap(const SpawnAreaMap& l) : VectorMap<uint32, ManagedReference<SpawnArea*> >(l) , Logger("SpawnAreaMap") {
-		lua = l.lua;
+	SpawnAreaMap(const SpawnAreaMap& l) : VectorMap<uint32, ManagedReference<SpawnArea*> >(l) , Logger("SpawnAreaMap"),
+			zone(l.zone), noSpawnAreas(l.noSpawnAreas), worldSpawnAreas(l.worldSpawnAreas) {
 
-		noSpawnAreas = l.noSpawnAreas;
+		lua = l.lua;
 	}
 
 	virtual ~SpawnAreaMap() {
@@ -55,8 +55,6 @@ public:
 	}
 
 	void loadMap(Zone* z);
-
-	Vector3 getRandomJediTrainer();
 
 	Vector<ManagedReference<SpawnArea*> >* getWorldSpawnAreas() {
 		return &worldSpawnAreas;

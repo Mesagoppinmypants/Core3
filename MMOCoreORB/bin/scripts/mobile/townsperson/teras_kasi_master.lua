@@ -1,8 +1,8 @@
 teras_kasi_master = Creature:new {
 	objectName = "@mob/creature_names:teras_kasi_master",
-	generateRandomName = true,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 21,
 	chanceHit = 0.33,
@@ -24,15 +24,25 @@ teras_kasi_master = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_unarmed_trainer_01.iff",
 				 "object/mobile/dressed_unarmed_trainer_02.iff",
 				 "object/mobile/dressed_unarmed_trainer_03.iff"},
-	lootGroups = {},
+	lootGroups = {
+		{
+			groups = {
+				{group = "junk", chance = 4000000},
+				{group = "wearables_common", chance = 3000000},
+				{group = "loot_kit_parts", chance = 2000000},
+				{group = "tailor_components", chance = 1000000},
+			}
+		}
+	},
 	weapons = {},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/townperson",
 	attacks = brawlermaster
 }
 

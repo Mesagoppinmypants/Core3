@@ -53,7 +53,8 @@ ActionShot1Command = {
 
 	poolsToDamage = ACTION_ATTRIBUTE,
 
-	animationCRC = hashCode("fire_3_single_light"),
+	animation = "fire_3_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "sapshot",
 	    
@@ -72,15 +73,17 @@ ActionShot1Command = {
 	dotEffects = {
 	  DotEffect( 
 		BLEEDING, 
-		{ "resistance_bleeding", "bleed_resist", "combat_bleeding_defense" },
+		{ "resistance_bleeding", "bleed_resist" },
 		ACTION,
 		true,
-		125,
+		0,
 		100,
 		60, 
 		60
 	  )	  
 	},
+	
+	weaponType = CARBINEWEAPON,
 
 	range = -1
 }

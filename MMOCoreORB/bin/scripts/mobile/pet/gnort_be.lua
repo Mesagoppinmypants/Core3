@@ -1,7 +1,6 @@
 gnort_be = Creature:new {
 	objectName = "@mob/creature_names:bio_engineered_gnort",
 	socialGroup = "gnort",
-	pvpFaction = "",
 	faction = "",
 	level = 2,
 	chanceHit = 0.2,
@@ -23,7 +22,7 @@ gnort_be = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/gnort_hue.iff"},

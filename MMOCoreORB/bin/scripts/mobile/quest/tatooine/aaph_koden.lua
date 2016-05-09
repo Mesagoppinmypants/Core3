@@ -2,7 +2,6 @@ aaph_koden = Creature:new {
 	objectName = "",
 	customName = "Aaph Koden",
 	socialGroup = "rebel",
-	pvpFaction = "rebel",
 	faction = "rebel",
 	level = 10,
 	chanceHit = 0.28,
@@ -24,7 +23,7 @@ aaph_koden = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,
+	optionsBitmask = AIENABLED + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_tatooine_aaph_koden.iff"},

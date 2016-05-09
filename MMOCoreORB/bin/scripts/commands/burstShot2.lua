@@ -55,9 +55,12 @@ BurstShot2Command = {
 
 	poolsToDamage = RANDOM_ATTRIBUTE,
 
-	animationCRC = hashCode("fire_7_single_medium"),
+	animation = "fire_7_single", 
+	animType = GENERATE_RANGED,
 
 	combatSpam = "burstblast",
+	
+	weaponType = CARBINEWEAPON,
 
 	range = -1
 }

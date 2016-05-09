@@ -52,9 +52,12 @@ UnarmedHit1Command = {
 	actionCostMultiplier = 1.0,
 	mindCostMultiplier = 1.0,
 
-	animationCRC = hashCode("combo_2d_light"),
+	animation = "combo_2d", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "steelhands",
+	
+	weaponType = UNARMEDWEAPON,
 
 	range = -1
 }

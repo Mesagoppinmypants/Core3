@@ -1,7 +1,8 @@
 corsec_traitor = Creature:new {
 	objectName = "@mob/creature_names:corsec_traitor",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "rogue_corsec",
-	pvpFaction = "rogue_corsec",
 	faction = "rogue_corsec",
 	level = 16,
 	chanceHit = 0.31,
@@ -23,7 +24,7 @@ corsec_traitor = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {
@@ -32,7 +33,7 @@ corsec_traitor = Creature:new {
 		"object/mobile/dressed_mercenary_destroyer_nikto_m.iff",
 		"object/mobile/dressed_mercenary_elite_hum_m.iff",
 		"object/mobile/dressed_mercenary_destroyer_hum_m.iff"
-		},
+	},
 	lootGroups = {
 		{
 			groups = {
@@ -40,12 +41,12 @@ corsec_traitor = Creature:new {
 				{group = "wearables_common", chance = 2000000},
 				{group = "corsec_weapons", chance = 2500000},
 				{group = "tailor_components", chance = 1500000}
-			},
-			lootChance = 3000000
+			}
 		}
 	},
 	weapons = {"corsec_police_weapons"},
 	conversationTemplate = "",
+	reactionStf = "@npc_reaction/slang",
 	attacks = merge(brawlermaster,marksmanmaster)
 }
 

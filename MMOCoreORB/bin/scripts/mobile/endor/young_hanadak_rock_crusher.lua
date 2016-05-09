@@ -1,7 +1,6 @@
 young_hanadak_rock_crusher = Creature:new {
 	objectName = "@mob/creature_names:young_hanadak_rock_crusher",
 	socialGroup = "hanadak",
-	pvpFaction = "",
 	faction = "",
 	level = 22,
 	chanceHit = 0.33,
@@ -23,7 +22,7 @@ young_hanadak_rock_crusher = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/young_hanadak_rock_crusher.iff"},
@@ -32,7 +31,8 @@ young_hanadak_rock_crusher = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"}
+		{"",""},
+		{"dizzyattack",""}
 	}
 }
 

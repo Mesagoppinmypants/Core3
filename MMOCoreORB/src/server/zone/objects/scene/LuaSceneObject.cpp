@@ -12,6 +12,7 @@
 #include "server/zone/objects/cell/CellObject.h"
 #include "server/zone/Zone.h"
 #include "server/zone/objects/area/ActiveArea.h"
+#include "server/zone/managers/director/ScreenPlayTask.h"
 
 const char LuaSceneObject::className[] = "LuaSceneObject";
 
@@ -23,6 +24,7 @@ Luna<LuaSceneObject>::RegType LuaSceneObject::Register[] = {
 		{ "getPositionX", &LuaSceneObject::getPositionX },
 		{ "getPositionY", &LuaSceneObject::getPositionY },
 		{ "getPositionZ", &LuaSceneObject::getPositionZ },
+		{ "getDirectionAngle", &LuaSceneObject::getDirectionAngle },
 		{ "getWorldPositionX", &LuaSceneObject::getWorldPositionX },
 		{ "getWorldPositionY", &LuaSceneObject::getWorldPositionY },
 		{ "getWorldPositionZ", &LuaSceneObject::getWorldPositionZ },
@@ -35,24 +37,30 @@ Luna<LuaSceneObject>::RegType LuaSceneObject::Register[] = {
 		{ "getServerObjectCRC", &LuaSceneObject::getServerObjectCRC },
 		{ "showFlyText", &LuaSceneObject::showFlyText },
 		{ "getContainerObject", &LuaSceneObject::getContainerObject },
-		{ "hasFullContainerObjects", &LuaSceneObject::hasFullContainerObjects },
+		{ "getContainerObjectById", &LuaSceneObject::getContainerObjectById },
 		{ "getContainerObjectsSize", &LuaSceneObject::getContainerObjectsSize },
+		{ "getCountableObjectsRecursive", &LuaSceneObject::getCountableObjectsRecursive },
 		{ "getContainerVolumeLimit", &LuaSceneObject::getContainerVolumeLimit },
+		{ "isContainerFull", &LuaSceneObject::isContainerFull },
+		{ "isContainerFullRecursive", &LuaSceneObject::isContainerFullRecursive },
 		{ "getSlottedObject", &LuaSceneObject::getSlottedObject },
 		{ "transferObject", &LuaSceneObject::transferObject },
 //		{ "removeObject", &LuaSceneObject::removeObject },
 		{ "getGameObjectType", &LuaSceneObject::getGameObjectType },
 		{ "faceObject", &LuaSceneObject::faceObject },
+		{ "isFacingObject", &LuaSceneObject::isFacingObject },
 		{ "destroyObjectFromWorld", &LuaSceneObject::destroyObjectFromWorld },
 		{ "destroyObjectFromDatabase", &LuaSceneObject::destroyObjectFromDatabase },
 		{ "isCreatureObject", &LuaSceneObject::isCreatureObject },
 		{ "isAiAgent", &LuaSceneObject::isAiAgent },
 		{ "isPlayerCreature", &LuaSceneObject::isPlayerCreature },
+		{ "isCreature", &LuaSceneObject::isCreature },
+		{ "isBuildingObject", &LuaSceneObject::isBuildingObject },
+		{ "isActiveArea", &LuaSceneObject::isActiveArea },
 		{ "sendTo", &LuaSceneObject::sendTo },
 		{ "getCustomObjectName", &LuaSceneObject::getCustomObjectName },
 		{ "getDisplayedName", &LuaSceneObject::getDisplayedName },
 		{ "getObjectName", &LuaSceneObject::getObjectName },
-		{ "getContainerObjectById", &LuaSceneObject::getContainerObjectById },
 		{ "setDirectionalHeading", &LuaSceneObject::setDirectionalHeading },
 		{ "getZoneName", &LuaSceneObject::getZoneName },
 		{ "getTemplateObjectPath", &LuaSceneObject::getTemplateObjectPath },
@@ -60,22 +68,29 @@ Luna<LuaSceneObject>::RegType LuaSceneObject::Register[] = {
 		{ "setObjectMenuComponent", &LuaSceneObject::setObjectMenuComponent },
 		{ "setContainerComponent", &LuaSceneObject::setContainerComponent },
 		{ "switchZone", &LuaSceneObject::switchZone },
-		{ "setContainerInheritPermissionsFromParent", &LuaSceneObject::setContainerInheritPermissionsFromParent},
-		{ "setContainerAllowPermission", &LuaSceneObject::setContainerAllowPermission},
-		{ "setContainerDenyPermission", &LuaSceneObject::setContainerDenyPermission},
-		{ "setContainerDefaultAllowPermission", &LuaSceneObject::setContainerDefaultAllowPermission},
-		{ "clearContainerDefaultAllowPermission", &LuaSceneObject::clearContainerDefaultAllowPermission},
-		{ "setContainerDefaultDenyPermission", &LuaSceneObject::setContainerDefaultDenyPermission},
-		{ "clearContainerDefaultDenyPermission", &LuaSceneObject::clearContainerDefaultDenyPermission},
-		{ "setContainerOwnerID", &LuaSceneObject::setContainerOwnerID},
-		{ "setObjectName", &LuaSceneObject::setObjectName},
-		{ "isASubChildOf", &LuaSceneObject::isASubChildOf},
+		{ "setContainerInheritPermissionsFromParent", &LuaSceneObject::setContainerInheritPermissionsFromParent },
+		{ "setContainerAllowPermission", &LuaSceneObject::setContainerAllowPermission },
+		{ "setContainerDenyPermission", &LuaSceneObject::setContainerDenyPermission },
+		{ "setContainerDefaultAllowPermission", &LuaSceneObject::setContainerDefaultAllowPermission },
+		{ "clearContainerDefaultAllowPermission", &LuaSceneObject::clearContainerDefaultAllowPermission },
+		{ "setContainerDefaultDenyPermission", &LuaSceneObject::setContainerDefaultDenyPermission },
+		{ "clearContainerDefaultDenyPermission", &LuaSceneObject::clearContainerDefaultDenyPermission },
+		{ "setContainerOwnerID", &LuaSceneObject::setContainerOwnerID },
+		{ "setObjectName", &LuaSceneObject::setObjectName },
+		{ "isASubChildOf", &LuaSceneObject::isASubChildOf },
+		{ "isOwned", &LuaSceneObject::isOwned },
+		{ "playEffect", &LuaSceneObject::playEffect },
+		{ "addPendingTask", &LuaSceneObject::addPendingTask },
+		{ "cancelPendingTask", &LuaSceneObject::cancelPendingTask },
+		{ "getChildObject", &LuaSceneObject::getChildObject },
+		{ "getContainerOwnerID", &LuaSceneObject::getContainerOwnerID },
+		{ "info", &LuaSceneObject::info },
 		{ 0, 0 }
 
 };
 
 LuaSceneObject::LuaSceneObject(lua_State *L) {
-	realObject = (SceneObject*)lua_touserdata(L, 1);
+	realObject = reinterpret_cast<SceneObject*>(lua_touserdata(L, 1));
 }
 
 LuaSceneObject::~LuaSceneObject(){
@@ -91,7 +106,7 @@ int LuaSceneObject::_getObject(lua_State* L) {
 }
 
 int LuaSceneObject::_setObject(lua_State* L) {
-	realObject = (SceneObject*)lua_touserdata(L, -1);
+	realObject = reinterpret_cast<SceneObject*>(lua_touserdata(L, -1));
 
 	return 0;
 }
@@ -122,8 +137,9 @@ int LuaSceneObject::setCustomObjectName(lua_State* L) {
 		String key = lua_tostring(L, -1);
 		String fullPath = "@" + file + ":" + key;
 		value = StringIdManager::instance()->getStringId(fullPath.hashCode()).toString();
-	} else
+	} else {
 		value = lua_tostring(L, -1);
+	}
 
 	realObject->setCustomObjectName(value, true);
 
@@ -187,6 +203,12 @@ int LuaSceneObject::getPositionX(lua_State* L) {
 
 int LuaSceneObject::getPositionZ(lua_State* L) {
 	lua_pushnumber(L, realObject->getPositionZ());
+
+	return 1;
+}
+
+int LuaSceneObject::getDirectionAngle(lua_State* L) {
+	lua_pushnumber(L, realObject->getDirectionAngle());
 
 	return 1;
 }
@@ -282,11 +304,28 @@ int LuaSceneObject::getServerObjectCRC(lua_State* L) {
 }
 
 int LuaSceneObject::faceObject(lua_State* L) {
-	SceneObject* obj = (SceneObject*)lua_touserdata(L, -1);
+	bool notifyClient = lua_toboolean(L, -1);
+	SceneObject* obj = (SceneObject*)lua_touserdata(L, -2);
 
-	realObject->faceObject(obj);
+	realObject->faceObject(obj, notifyClient);
 
 	return 0;
+}
+
+int LuaSceneObject::isFacingObject(lua_State* L) {
+	SceneObject* obj = (SceneObject*)lua_touserdata(L, -1);
+
+	if (obj == NULL) {
+		lua_pushboolean(L, false);
+
+		return 1;
+	}
+
+	bool res = realObject->isFacingObject(obj);
+
+	lua_pushboolean(L, res);
+
+	return 1;
 }
 
 int LuaSceneObject::isInRangeWithObject(lua_State* L) {
@@ -343,6 +382,46 @@ int LuaSceneObject::getContainerObjectById(lua_State* L) {
     return 1;
 }
 
+int LuaSceneObject::getContainerObjectsSize(lua_State* L) {
+	int num = realObject->getContainerObjectsSize();
+
+	lua_pushnumber(L, num);
+
+	return 1;
+}
+
+int LuaSceneObject::getCountableObjectsRecursive(lua_State* L) {
+	int num = realObject->getCountableObjectsRecursive();
+
+	lua_pushnumber(L, num);
+
+	return 1;
+}
+
+int LuaSceneObject::getContainerVolumeLimit(lua_State* L) {
+	int num = realObject->getContainerVolumeLimit();
+
+	lua_pushnumber(L, num);
+
+	return 1;
+}
+
+int LuaSceneObject::isContainerFull(lua_State* L) {
+	bool full = realObject->isContainerFull();
+
+	lua_pushboolean(L, full);
+
+	return 1;
+}
+
+int LuaSceneObject::isContainerFullRecursive(lua_State* L) {
+	bool full = realObject->isContainerFullRecursive();
+
+	lua_pushboolean(L, full);
+
+	return 1;
+}
+
 int LuaSceneObject::getSlottedObject(lua_State* L) {
 	String slot = lua_tostring(L, -1);
 
@@ -381,31 +460,6 @@ int LuaSceneObject::transferObject(lua_State* L) {
 	return 0;
 }*/
 
-int LuaSceneObject::getContainerObjectsSize(lua_State* L) {
-	int num = realObject->getContainerObjectsSize();
-
-	lua_pushnumber(L, num);
-
-	return 1;
-}
-
-int LuaSceneObject::getContainerVolumeLimit(lua_State* L) {
-	int num = realObject->getContainerVolumeLimit();
-
-	lua_pushnumber(L, num);
-
-	return 1;
-}
-
-
-int LuaSceneObject::hasFullContainerObjects(lua_State* L) {
-	bool full = realObject->hasFullContainerObjects();
-
-	lua_pushboolean(L, full);
-
-	return 1;
-}
-
 int LuaSceneObject::showFlyText(lua_State* L) {
 	//final string file, final string uax, byte red, byte green, byte blue
 
@@ -421,6 +475,18 @@ int LuaSceneObject::showFlyText(lua_State* L) {
 	return 0;
 }
 
+int LuaSceneObject::playEffect(lua_State* L) {
+	//public native void playEffect(final string file, final string aux);
+
+	String aux = lua_tostring(L, -1);
+	String file = lua_tostring(L, -2);
+
+	realObject->playEffect(file, aux);
+
+	return 0;
+}
+
+
 int LuaSceneObject::updateDirection(lua_State* L) {
 	//void updateDirection(float fw, float fx, float fy, float fz);
 
@@ -435,6 +501,8 @@ int LuaSceneObject::updateDirection(lua_State* L) {
 }
 
 int LuaSceneObject::destroyObjectFromWorld(lua_State* L) {
+	Locker locker(realObject);
+
 	realObject->destroyObjectFromWorld(true);
 
 	return 0;
@@ -464,6 +532,30 @@ int LuaSceneObject::isAiAgent(lua_State* L) {
 
 int LuaSceneObject::isPlayerCreature(lua_State* L) {
 	bool val = realObject->isPlayerCreature();
+
+	lua_pushboolean(L, val);
+
+	return 1;
+}
+
+int LuaSceneObject::isCreature(lua_State* L) {
+	bool val = realObject->isCreature();
+
+	lua_pushboolean(L, val);
+
+	return 1;
+}
+
+int LuaSceneObject::isBuildingObject(lua_State* L) {
+	bool val = realObject->isBuildingObject();
+
+	lua_pushboolean(L, val);
+
+	return 1;
+}
+
+int LuaSceneObject::isActiveArea(lua_State* L) {
+	bool val = realObject->isActiveArea();
 
 	lua_pushboolean(L, val);
 
@@ -523,6 +615,8 @@ int LuaSceneObject::setDirectionalHeading(lua_State* L) {
 int LuaSceneObject::setContainerInheritPermissionsFromParent(lua_State* L) {
 	bool val = lua_toboolean(L, -1);
 
+	Locker locker(realObject);
+
 	realObject->setContainerInheritPermissionsFromParent(val);
 
 	return 0;
@@ -531,6 +625,8 @@ int LuaSceneObject::setContainerInheritPermissionsFromParent(lua_State* L) {
 int LuaSceneObject::setContainerAllowPermission(lua_State* L) {
 	String group = lua_tostring(L, -2);
 	uint16 perm = lua_tointeger(L, -1);
+
+	Locker locker(realObject);
 
 	realObject->setContainerAllowPermission(group, perm);
 
@@ -541,6 +637,8 @@ int LuaSceneObject::setContainerDenyPermission(lua_State* L) {
 	String group = lua_tostring(L, -2);
 	uint16 perm = lua_tointeger(L, -1);
 
+	Locker locker(realObject);
+
 	realObject->setContainerDenyPermission(group, perm);
 
 	return 0;
@@ -548,6 +646,8 @@ int LuaSceneObject::setContainerDenyPermission(lua_State* L) {
 
 int LuaSceneObject::setContainerDefaultAllowPermission(lua_State* L) {
 	uint16 perm = lua_tointeger(L, -1);
+
+	Locker locker(realObject);
 
 	realObject->setContainerDefaultAllowPermission(perm);
 
@@ -557,6 +657,8 @@ int LuaSceneObject::setContainerDefaultAllowPermission(lua_State* L) {
 int LuaSceneObject::clearContainerDefaultAllowPermission(lua_State* L) {
 	uint16 perm = lua_tointeger(L, -1);
 
+	Locker locker(realObject);
+
 	realObject->clearContainerDefaultAllowPermission(perm);
 
 	return 0;
@@ -564,6 +666,8 @@ int LuaSceneObject::clearContainerDefaultAllowPermission(lua_State* L) {
 
 int LuaSceneObject::setContainerDefaultDenyPermission(lua_State* L) {
 	uint16 perm = lua_tointeger(L, -1);
+
+	Locker locker(realObject);
 
 	realObject->setContainerDefaultDenyPermission(perm);
 
@@ -573,6 +677,8 @@ int LuaSceneObject::setContainerDefaultDenyPermission(lua_State* L) {
 int LuaSceneObject::clearContainerDefaultDenyPermission(lua_State* L) {
 	uint16 perm = lua_tointeger(L, -1);
 
+	Locker locker(realObject);
+
 	realObject->clearContainerDefaultDenyPermission(perm);
 
 	return 0;
@@ -581,18 +687,21 @@ int LuaSceneObject::clearContainerDefaultDenyPermission(lua_State* L) {
 int LuaSceneObject::setContainerOwnerID(lua_State* L) {
 	uint64 ownerID = lua_tointeger(L, -1);
 
+	Locker locker(realObject);
+
 	realObject->setContainerOwnerID(ownerID);
 
 	return 0;
 }
 
 int LuaSceneObject::setObjectName(lua_State* L) {
-	String file = lua_tostring(L, -2);
-	String key = lua_tostring(L, -1);
+	String file = lua_tostring(L, -3);
+	String key = lua_tostring(L, -2);
+	bool notifyClient = lua_toboolean(L, -1);
 
 	StringId stringid(file, key);
 
-	realObject->setObjectName(stringid);
+	realObject->setObjectName(stringid, notifyClient);
 
 	return 0;
 }
@@ -603,4 +712,73 @@ int LuaSceneObject::isASubChildOf(lua_State* L) {
 	lua_pushboolean(L, realObject->isASubChildOf(obj));
 
 	return 1;
+}
+
+int LuaSceneObject::isOwned(lua_State* L) {
+	lua_pushboolean(L, realObject->isPet() || realObject->isVehicleObject());
+
+	return 1;
+}
+
+int LuaSceneObject::addPendingTask(lua_State* L) {
+	uint32 mili = lua_tonumber(L, -3);
+	String play = lua_tostring(L, -2);
+	String key = lua_tostring(L, -1);
+
+	Reference<ScreenPlayTask*> task = new ScreenPlayTask(realObject, key, play, "");
+
+	String name = play + ":" + key;
+
+	realObject->addPendingTask(name, task, mili);
+
+	return 0;
+}
+
+int LuaSceneObject::cancelPendingTask(lua_State* L) {
+	String play = lua_tostring(L, -2);
+	String key = lua_tostring(L, -1);
+
+	String name = play + ":" + key;
+
+	if (realObject->containsPendingTask(name)) {
+		Reference<ScreenPlayTask*> task = realObject->getPendingTask(name).castTo<ScreenPlayTask*>();
+
+		if (task != NULL && task->isScheduled()) {
+			task->cancel();
+		}
+
+		realObject->removePendingTask(name);
+	}
+
+	return 0;
+}
+
+int LuaSceneObject::getChildObject(lua_State* L) {
+	int index = lua_tonumber(L, -1);
+
+	SceneObject* obj = realObject->getChildObjects()->get(index);
+
+	if (obj == NULL) {
+		lua_pushnil(L);
+	} else {
+		obj->_setUpdated(true);
+		lua_pushlightuserdata(L, obj);
+	}
+
+	return 1;
+}
+
+int LuaSceneObject::getContainerOwnerID(lua_State *L) {
+
+	lua_pushnumber(L, realObject->getContainerPermissions()->getOwnerID());
+
+	return 1;
+}
+
+int LuaSceneObject::info(lua_State* L) {
+	String msg = lua_tostring(L, -1);
+
+	realObject->info(msg, true);
+
+	return 0;
 }

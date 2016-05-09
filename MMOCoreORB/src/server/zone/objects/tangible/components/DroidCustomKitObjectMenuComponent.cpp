@@ -13,12 +13,12 @@
 #include "server/zone/managers/objectcontroller/ObjectController.h"
 #include "server/zone/ZoneServer.h"
 #include "server/zone/Zone.h"
-#include "server/zone/templates/customization/AssetCustomizationManagerTemplate.h"
-#include "server/zone/objects/creature/DroidObject.h"
+#include "templates/customization/AssetCustomizationManagerTemplate.h"
+#include "server/zone/objects/creature/ai/DroidObject.h"
 #include "server/zone/objects/player/sui/listbox/SuiListBox.h"
 #include "server/zone/objects/player/sui/callbacks/CustomDroidSuiCallback.h"
 
-void DroidCustomKitObjectMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) {
+void DroidCustomKitObjectMenuComponent::fillObjectMenuResponse(SceneObject* sceneObject, ObjectMenuResponse* menuResponse, CreatureObject* player) const {
 
 	if(!sceneObject->isTangibleObject())
 		return;
@@ -30,7 +30,7 @@ void DroidCustomKitObjectMenuComponent::fillObjectMenuResponse(SceneObject* scen
 	TangibleObjectMenuComponent::fillObjectMenuResponse(sceneObject, menuResponse, player);
 }
 
-int DroidCustomKitObjectMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) {
+int DroidCustomKitObjectMenuComponent::handleObjectMenuSelect(SceneObject* sceneObject, CreatureObject* player, byte selectedID) const {
 
 	if (player == NULL)
 		return 0;
@@ -44,7 +44,9 @@ int DroidCustomKitObjectMenuComponent::handleObjectMenuSelect(SceneObject* scene
 	if(!sceneObject->isTangibleObject())
 		return 0;
 
-	ManagedReference<TangibleObject*> tano = cast<TangibleObject*>(sceneObject);
+	ManagedReference<TangibleObject*> kitTano = cast<TangibleObject*>(sceneObject);
+	if(kitTano == NULL)
+		return 0;
 
 	uint64 targetID = player->getTargetID();
 	ZoneServer* server = player->getZoneServer();
@@ -65,7 +67,7 @@ int DroidCustomKitObjectMenuComponent::handleObjectMenuSelect(SceneObject* scene
 		ManagedReference<CreatureObject*> targetOwner = server->getObject(ownerID, true).castTo<CreatureObject*>();
 		if (targetOwner != NULL)
 		{
-			Locker crossLock(targetOwner, sceneObject);
+			Locker crossLock(targetOwner, player);
 			ManagedReference<PlayerObject*> ghostOwner = targetOwner->getPlayerObject();
 			for (int i = 0; i < ghostOwner->getConsentListSize(); ++i) {
 				String entryName = ghostOwner->getConsentName(i);
@@ -82,6 +84,8 @@ int DroidCustomKitObjectMenuComponent::handleObjectMenuSelect(SceneObject* scene
 		}
 	}
 	//end permission check
+
+	Locker clocker(droid, player);
 
 	String appearanceFilename = target->getObjectTemplate()->getAppearanceFilename();
 	VectorMap<String, Reference<CustomizationVariable*> > variables;
@@ -101,7 +105,6 @@ int DroidCustomKitObjectMenuComponent::handleObjectMenuSelect(SceneObject* scene
 		return 0;
 	}
 
-	tano->decreaseUseCount();
 	DroidObject* painted = cast<DroidObject*>(droid);
 	if (painted != NULL){
 		painted->refreshPaint();
@@ -109,7 +112,7 @@ int DroidCustomKitObjectMenuComponent::handleObjectMenuSelect(SceneObject* scene
 
 	ManagedReference<SuiListBox*> frameTrimSelector = new SuiListBox(player, SuiWindowType::CUSTOMIZE_KIT);
 	frameTrimSelector->setUsingObject(player);
-	frameTrimSelector->setCallback(new CustomDroidSuiCallback(server, numPalette));
+	frameTrimSelector->setCallback(new CustomDroidSuiCallback(server, numPalette, kitTano));
 	frameTrimSelector->setUsingObject(target);
 	frameTrimSelector->setPromptTitle("Customize");
 	frameTrimSelector->setPromptText("Please select the customization action you would like to take");

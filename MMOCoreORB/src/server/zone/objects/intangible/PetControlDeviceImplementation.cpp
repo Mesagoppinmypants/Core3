@@ -1,16 +1,19 @@
 #include "server/zone/objects/intangible/PetControlDevice.h"
 #include "server/zone/objects/intangible/PetControlObserver.h"
+#include "server/zone/objects/intangible/tasks/EnqueuePetCommand.h"
 #include "server/zone/managers/objectcontroller/ObjectController.h"
 #include "server/zone/managers/group/GroupManager.h"
 #include "server/zone/managers/creature/PetManager.h"
 #include "server/zone/objects/creature/CreatureObject.h"
-#include "server/zone/objects/creature/AiAgent.h"
-#include "server/zone/objects/creature/Creature.h"
-#include "server/zone/objects/creature/DroidObject.h"
-#include "server/zone/objects/creature/CreatureAttribute.h"
+#include "server/zone/objects/creature/ai/AiAgent.h"
+#include "server/zone/objects/creature/ai/Creature.h"
+#include "server/zone/objects/creature/ai/DroidObject.h"
+#include "templates/params/creature/CreatureAttribute.h"
 #include "server/zone/objects/player/PlayerObject.h"
 #include "server/zone/objects/player/sui/listbox/SuiListBox.h"
+#include "server/zone/objects/player/sui/messagebox/SuiMessageBox.h"
 #include "server/zone/objects/player/sui/callbacks/MountGrowthArrestSuiCallback.h"
+#include "server/zone/objects/player/sui/callbacks/PetFixSuiCallback.h"
 #include "server/zone/objects/group/GroupObject.h"
 #include "server/zone/ZoneServer.h"
 #include "server/zone/Zone.h"
@@ -18,14 +21,14 @@
 #include "server/zone/objects/region/CityRegion.h"
 #include "server/zone/objects/player/sessions/TradeSession.h"
 #include "server/zone/managers/player/PlayerManager.h"
+#include "server/zone/objects/creature/events/DroidSkillModTask.h"
 #include "server/zone/objects/creature/events/DroidPowerTask.h"
 #include "server/zone/objects/tangible/weapon/WeaponObject.h"
 #include "server/zone/managers/stringid/StringIdManager.h"
 #include "tasks/StorePetTask.h"
+#include "server/chat/ChatManager.h"
 
 void PetControlDeviceImplementation::callObject(CreatureObject* player) {
-	assert(player->isLockedByCurrentThread());
-
 	if (player->isInCombat() || player->isDead() || player->isIncapacitated() || player->getPendingTask("tame_pet") != NULL) {
 		player->sendSystemMessage("@pet/pet_menu:cant_call"); // You cannot call this pet right now.
 		return;
@@ -37,8 +40,8 @@ void PetControlDeviceImplementation::callObject(CreatureObject* player) {
 	}
 
 	if (player->getParent() != NULL) {
-		ManagedReference<SceneObject*> strongRef = player->getParentRecursively(SceneObjectType::BUILDING);
-		ManagedReference<BuildingObject*> building;
+		ManagedReference<SceneObject*> strongRef = player->getRootParent().get();
+		ManagedReference<BuildingObject*> building = NULL;
 
 		if (strongRef != NULL)
 			building = strongRef.castTo<BuildingObject*>();
@@ -68,6 +71,13 @@ void PetControlDeviceImplementation::callObject(CreatureObject* player) {
 		return;
 	}
 
+	if (!pet->getCooldownTimerMap()->isPast("call_cooldown")) {
+		if (petType == PetManager::DROIDPET)
+			player->sendSystemMessage("@pet/droid_modules:droid_maint_on_maint_run"); //You cannot call that droid. It is currently on a maintenance run.
+		else
+			player->sendSystemMessage("@pet/pet_menu:cant_call"); // cant call pet right now
+		return;
+	}
 	assert(pet->isLockedByCurrentThread());
 
 	unsigned int petFaction = pet->getFaction();
@@ -102,6 +112,20 @@ void PetControlDeviceImplementation::callObject(CreatureObject* player) {
 
 	if (!growPet(player))
 		return;
+
+	if (petType == PetManager::CREATUREPET && !isValidPet(pet)) {
+		ManagedReference<SuiMessageBox*> box = new SuiMessageBox(player,SuiWindowType::PET_FIX_DIALOG);
+		box->setCallback(new PetFixSuiCallback(player->getZoneServer(), _this.getReferenceUnsafeStaticCast()));
+		box->setPromptText("@bio_engineer:pet_sui_text");
+		box->setPromptTitle("@bio_engineer:pet_sui_title");
+		box->setOkButton(true,"@bio_engineer:pet_sui_fix_stats");
+		box->setCancelButton(true,"@bio_engineer:pet_sui_abort");
+		box->setOtherButton(true,"@bio_engineer:pet_sui_fix_level");
+		box->setUsingObject(_this.getReferenceUnsafeStaticCast());
+		player->getPlayerObject()->addSuiBox(box);
+		player->sendMessage(box->generateMessage());
+		return;
+	}
 
 	int currentlySpawned = 0;
 	int spawnedLevel = 0;
@@ -190,7 +214,7 @@ void PetControlDeviceImplementation::callObject(CreatureObject* player) {
 
 	if(player->getCurrentCamp() == NULL && player->getCityRegion() == NULL) {
 
-		Reference<CallPetTask*> callPet = new CallPetTask(_this.get(), player, "call_pet");
+		Reference<CallPetTask*> callPet = new CallPetTask(_this.getReferenceUnsafeStaticCast(), player, "call_pet");
 
 		StringIdChatParameter message("pet/pet_menu", "call_pet_delay"); // Calling pet in %DI seconds. Combat will terminate pet call.
 		message.setDI(15);
@@ -199,7 +223,7 @@ void PetControlDeviceImplementation::callObject(CreatureObject* player) {
 		player->addPendingTask("call_pet", callPet, 15 * 1000);
 
 		if (petControlObserver == NULL) {
-			petControlObserver = new PetControlObserver(_this.get());
+			petControlObserver = new PetControlObserver(_this.getReferenceUnsafeStaticCast());
 			petControlObserver->deploy();
 		}
 
@@ -216,13 +240,14 @@ void PetControlDeviceImplementation::callObject(CreatureObject* player) {
 			return;
 		}
 
-		Locker clocker(controlledObject, player);
 		spawnObject(player);
 
 		// Set cooldown
 		player->getCooldownTimerMap()->updateToCurrentAndAddMili("petCallOrStoreCooldown", 1000); // 1 sec
 	}
 
+	EnqueuePetCommand* enqueueCommand = new EnqueuePetCommand(pet, String("petFollow").toLowerCase().hashCode(), String::valueOf(player->getObjectID()), player->getObjectID(), 1);
+	enqueueCommand->execute();
 }
 
 int PetControlDeviceImplementation::handleObjectMenuSelect(CreatureObject* player, byte selectedID) {
@@ -274,8 +299,6 @@ void PetControlDeviceImplementation::spawnObject(CreatureObject* player) {
 	if (controlledObject == NULL)
 		return;
 
-	assert(player->isLockedByCurrentThread());
-
 	assert(controlledObject->isLockedByCurrentThread());
 
 	if (!isASubChildOf(player))
@@ -293,7 +316,7 @@ void PetControlDeviceImplementation::spawnObject(CreatureObject* player) {
 	if (controlledObject->isCreatureObject()) {
 		creature = cast<CreatureObject*>(controlledObject.get());
 		creature->setCreatureLink(player);
-		creature->setControlDevice(_this.get());
+		creature->setControlDevice(_this.getReferenceUnsafeStaticCast());
 		creature->setFaction(player->getFaction());
 		creature->setObjectMenuComponent("PetMenuComponent");
 
@@ -301,6 +324,10 @@ void PetControlDeviceImplementation::spawnObject(CreatureObject* player) {
 			creature->setPvpStatusBitmask(player->getPvpStatusBitmask() - CreatureFlag::PLAYER, true);
 		else
 			creature->setPvpStatusBitmask(player->getPvpStatusBitmask(), true);
+
+		if (trainedAsMount && (creature->getOptionsBitmask() ^ 0x1000)) {
+			creature->setOptionBit(0x1000);
+		}
 	}
 
 	Zone* zone = player->getZone();
@@ -308,9 +335,9 @@ void PetControlDeviceImplementation::spawnObject(CreatureObject* player) {
 	if (zone == NULL)
 		return;
 
-	ManagedReference<SceneObject*> parent = player->getParent().get();
+	ManagedReference<CellObject*> parent = player->getParent().get().castTo<CellObject*>();
 
-	if (parent != NULL && parent->isCellObject())
+	if (parent != NULL)
 		parent->transferObject(controlledObject, -1, true);
 	else
 		zone->transferObject(controlledObject, -1, true);
@@ -335,28 +362,22 @@ void PetControlDeviceImplementation::spawnObject(CreatureObject* player) {
 		if( droid == NULL )
 			return;
 
-		// Sanity check that there isn't another power task outstanding
+		// Sanity check that there aren't outstanding power/skill mod tasks
 		droid->removePendingTask( "droid_power" );
+		droid->removePendingTask( "droid_skill_mod" );
 		droid->initDroidModules();
 		droid->onCall();
 		droid->loadSkillMods(player);
 		// Submit new power task
 		Reference<Task*> droidPowerTask = new DroidPowerTask( droid );
 		droid->addPendingTask("droid_power", droidPowerTask, 120000); // 2 min
-		if( droid->hasPower() ){
-			// TODO Temporarily set to autofollow player
-			droid->setFollowObject(player);
-			droid->storeFollowObject();
-		}
-		else{
-			droid->handleLowPower();
-		}
-	} else {
-		pet->setFollowObject(player);
-		pet->storeFollowObject();
+		// Submit new skill mod task
+		Reference<Task*> droidSkillModTask = new DroidSkillModTask( droid, player );
+		droid->addPendingTask("droid_skill_mod", droidSkillModTask, 3000); // 3 sec
 	}
-	pet->setHomeLocation(player->getPositionX(), player->getPositionZ(), player->getPositionY(), (parent != NULL && parent->isCellObject()) ? parent : NULL);
-	pet->setNextStepPosition(player->getPositionX(), player->getPositionZ(), player->getPositionY(), (parent != NULL && parent->isCellObject()) ? parent : NULL);
+
+	pet->setHomeLocation(player->getPositionX(), player->getPositionZ(), player->getPositionY(), parent);
+	pet->setNextStepPosition(player->getPositionX(), player->getPositionZ(), player->getPositionY(), parent);
 	pet->clearPatrolPoints();
 	if (petType == PetManager::CREATUREPET) {
 		pet->setCreatureBitmask(CreatureFlag::PET);
@@ -366,16 +387,19 @@ void PetControlDeviceImplementation::spawnObject(CreatureObject* player) {
 	}
 	if (petType == PetManager::FACTIONPET) {
 		pet->setCreatureBitmask(CreatureFlag::FACTION_PET);
+		/** dont know if npc faction pets trained via converse instead of radial
+		if (pet->isNonPlayerCreatureObject() && pet->getDiet() != CreatureFlag::NONE) // show converse to npcs that eat food i.e. not atst
+			pet->setOptionBit(OptionBitmask::CONVERSE,true);
+		**/
 	}
 	pet->activateLoad("");
 	pet->activateRecovery();
 	// Not training any commands
 	trainingCommand = 0;
+	clearPatrolPoints();
 }
 
 void PetControlDeviceImplementation::cancelSpawnObject(CreatureObject* player) {
-	assert(player->isLockedByCurrentThread());
-
 	Reference<Task*> petTask = player->getPendingTask("call_pet");
 
 	if(petTask != NULL) {
@@ -393,13 +417,11 @@ void PetControlDeviceImplementation::storeObject(CreatureObject* player, bool fo
 	if (controlledObject == NULL || !controlledObject->isAiAgent())
 		return;
 
-	assert(player->isLockedByCurrentThread());
-
 	ManagedReference<AiAgent*> pet = cast<AiAgent*>(controlledObject.get());
 
 	assert(pet->isLockedByCurrentThread());
 
-	if (!force && pet->isInCombat())
+	if (!force && (pet->isInCombat() || player->isInCombat()))
 		return;
 
 	if (player->isRidingMount() && player->getParent() == pet) {
@@ -407,7 +429,7 @@ void PetControlDeviceImplementation::storeObject(CreatureObject* player, bool fo
 		if (!force && !player->checkCooldownRecovery("mount_dismount"))
 			return;
 
-		player->executeObjectControllerAction(String("dismount").hashCode());
+		player->executeObjectControllerAction(STRING_HASHCODE("dismount"));
 
 		if (player->isRidingMount())
 			return;
@@ -425,10 +447,13 @@ void PetControlDeviceImplementation::storeObject(CreatureObject* player, bool fo
 	// Not training any commands
 	trainingCommand = 0;
 
+	//clear friend list
+	friends.removeAll();
+
 	Reference<StorePetTask*> task = new StorePetTask(player, pet);
 
 	// Store non-faction pets immediately.  Store faction pets after 60sec delay.
-	if( petType != PetManager::FACTIONPET || force){
+	if( petType != PetManager::FACTIONPET || force || player->getPlayerObject()->isPrivileged()){
 		task->execute();
 	}
 	else{
@@ -450,7 +475,7 @@ void PetControlDeviceImplementation::storeObject(CreatureObject* player, bool fo
 	player->getCooldownTimerMap()->updateToCurrentAndAddMili("petCallOrStoreCooldown", 1000); // 1 sec
 }
 
-bool PetControlDeviceImplementation::growPet(CreatureObject* player, bool force) {
+bool PetControlDeviceImplementation::growPet(CreatureObject* player, bool force, bool adult) {
 	if (petType != PetManager::CREATUREPET)
 		return true;
 
@@ -472,11 +497,12 @@ bool PetControlDeviceImplementation::growPet(CreatureObject* player, bool force)
 	if (petManager == NULL)
 		return true;
 
-	assert(player->isLockedByCurrentThread());
-
 	Time currentTime;
 	uint32 timeDelta = currentTime.getTime() - lastGrowth.getTime();
 	int stagesToGrow = timeDelta / 43200; // 12 hour
+
+	if (adult)
+		stagesToGrow = 10;
 
 	if (stagesToGrow == 0 && !force)
 		return true;
@@ -491,8 +517,8 @@ bool PetControlDeviceImplementation::growPet(CreatureObject* player, bool force)
 
 	float newHeight = creatureTemplate->getScale() * (0.46 + ((float)newStage * 0.06));
 
-	short preEligibility = petManager->checkMountEligibility(_this.get());
-	short postEligibility = petManager->checkMountEligibility(_this.get(), newHeight);
+	short preEligibility = petManager->checkMountEligibility(_this.getReferenceUnsafeStaticCast());
+	short postEligibility = petManager->checkMountEligibility(_this.getReferenceUnsafeStaticCast(), newHeight);
 
 	assert(pet->isLockedByCurrentThread());
 
@@ -511,21 +537,28 @@ bool PetControlDeviceImplementation::growPet(CreatureObject* player, bool force)
 		ManagedReference<SuiListBox*> box = new SuiListBox(player, SuiWindowType::MOUNT_GROWTH_ARREST);
 		box->setPromptTitle("@pet/pet_menu:mount_growth_title"); // Pet Growth Arrest
 		box->setPromptText("@pet/pet_menu:mount_growth_prompt"); // Your pet could be trained as a mount, but is about to grow too large to serve as one. If you ever plan on training this pet as a mount you must arrest it's growth now. Stop pet's growth?
-		box->setUsingObject(_this.get());
+		box->setUsingObject(_this.getReferenceUnsafeStaticCast());
 		box->setCancelButton(true, "@cancel");
 		box->setOkButton(true, "@yes");
 		box->setOtherButton(true, "@no");
-		box->setCallback(new MountGrowthArrestSuiCallback(player->getZoneServer(), _this.get()));
+		box->setCallback(new MountGrowthArrestSuiCallback(player->getZoneServer(), _this.getReferenceUnsafeStaticCast()));
 
 		ghost->addSuiBox(box);
 		player->sendMessage(box->generateMessage());
 		return false;
 	}
-	pet->setHeight(newHeight, false);
+
+	if (adult)
+		pet->setHeight(newHeight, true);
+	else
+		pet->setHeight(newHeight, false);
+
 	pet->setPetLevel(newLevel);
 
 	growthStage = newStage;
 	lastGrowth.updateToCurrentTime();
+
+	setVitality(getVitality());
 
 	return true;
 }
@@ -558,7 +591,7 @@ void PetControlDeviceImplementation::arrestGrowth() {
 	for (int i = (growthStage + 1); i < 11; i++) {
 		float newHeight = creatureTemplate->getScale() * (0.46 + ((float)i * 0.06));
 
-		short mountEligibility = petManager->checkMountEligibility(_this.get(), newHeight);
+		short mountEligibility = petManager->checkMountEligibility(_this.getReferenceUnsafeStaticCast(), newHeight);
 
 		if (mountEligibility == PetManager::TOOLARGE)
 			break;
@@ -577,6 +610,8 @@ void PetControlDeviceImplementation::arrestGrowth() {
 		pet->setPetLevel(newLevel);
 	}
 
+	setVitality(getVitality());
+
 	growthStage = 10;
 	lastGrowth.updateToCurrentTime();
 }
@@ -592,7 +627,7 @@ void PetControlDeviceImplementation::destroyObjectFromDatabase(bool destroyConta
 		if (object != NULL) {
 			Locker clocker(object, controlledObject);
 
-			object->executeObjectControllerAction(String("dismount").hashCode());
+			object->executeObjectControllerAction(STRING_HASHCODE("dismount"));
 
 			object = controlledObject->getSlottedObject("rider").castTo<CreatureObject*>();
 
@@ -740,6 +775,11 @@ void PetControlDeviceImplementation::fillAttributeList(AttributeListMessage* alm
 		ManagedReference<DroidObject*> droid = this->controlledObject.get().castTo<DroidObject*>();
 
 		if (droid != NULL) {
+			alm->insertAttribute("challenge_level", droid->getLevel());
+			alm->insertAttribute("creature_health", droid->getBaseHAM(0));
+			alm->insertAttribute("creature_action", droid->getBaseHAM(3));
+			alm->insertAttribute("creature_mind", droid->getBaseHAM(6));
+
 			droid->fillAttributeList(alm, object);
 		}
 	} else {
@@ -824,19 +864,31 @@ void PetControlDeviceImplementation::fillAttributeList(AttributeListMessage* alm
 
 			if (petType == PetManager::CREATUREPET) {
 				CreatureAttackMap* attMap = pet->getAttackMap();
-				if (attMap != NULL) {
-					if (attMap->size() > 0) {
-						String str = StringIdManager::instance()->getStringId(("@combat_effects:" + pet->getAttackMap()->getCommand(0)).hashCode()).toString();
-						alm->insertAttribute("spec_atk_1", str);
-					} else
-						alm->insertAttribute("spec_atk_1", " ---");
 
-					if (attMap->size() > 1) {
-						String str = StringIdManager::instance()->getStringId(("@combat_effects:" + pet->getAttackMap()->getCommand(1)).hashCode()).toString();
-						alm->insertAttribute("spec_atk_2", str);
-					} else
-						alm->insertAttribute("spec_atk_2", " ---");
+				if (attMap != NULL && attMap->size() > 0) {
+					String cmd = attMap->getCommand(0);
+					if (cmd.isEmpty()) {
+						alm->insertAttribute("spec_atk_1", " ---");
+					} else {
+						String str = StringIdManager::instance()->getStringId(("@combat_effects:" + cmd).hashCode()).toString();
+						alm->insertAttribute("spec_atk_1", str);
+					}
+				} else {
+					alm->insertAttribute("spec_atk_1", " ---");
 				}
+
+				if (attMap != NULL && attMap->size() > 1) {
+					String cmd = attMap->getCommand(1);
+					if (cmd.isEmpty()) {
+						alm->insertAttribute("spec_atk_1", " ---");
+					} else {
+						String str = StringIdManager::instance()->getStringId(("@combat_effects:" + cmd).hashCode()).toString();
+						alm->insertAttribute("spec_atk_2", str);
+					}
+				} else {
+					alm->insertAttribute("spec_atk_2", " ---");
+				}
+
 				// TODO set this up to check for the actual ranged weapon
 				if (pet->hasRangedWeapon())
 					alm->insertAttribute("dna_comp_ranged_attack", "Yes");
@@ -891,6 +943,14 @@ void PetControlDeviceImplementation::fillAttributeList(AttributeListMessage* alm
 		alm->insertAttribute("pet_command_5", trainedCommands.get(PetManager::PATROL) );
 	}
 
+	if( trainedCommands.contains(PetManager::GETPATROLPOINT) ){
+		alm->insertAttribute("pet_command_6", trainedCommands.get(PetManager::GETPATROLPOINT) );
+	}
+
+	if( trainedCommands.contains(PetManager::CLEARPATROLPOINTS) ){
+		alm->insertAttribute("pet_command_7", trainedCommands.get(PetManager::CLEARPATROLPOINTS) );
+	}
+
 	if( trainedCommands.contains(PetManager::FORMATION1) ){
 		alm->insertAttribute("pet_command_8", trainedCommands.get(PetManager::FORMATION1) );
 	}
@@ -927,21 +987,21 @@ void PetControlDeviceImplementation::fillAttributeList(AttributeListMessage* alm
 		alm->insertAttribute("pet_command_13", trainedCommands.get(PetManager::REPAIR) ); // Droid Repair really was listed as Trick 2
 	}
 	if( trainedCommands.contains(PetManager::THROWTRAP) ){
-		alm->insertAttribute("pet_command_22", trainedCommands.get(PetManager::THROWTRAP) ); // Droid Repair really was listed as Trick 2
+		alm->insertAttribute("pet_command_22", trainedCommands.get(PetManager::THROWTRAP) );
 	}
 	if( trainedCommands.contains(PetManager::HARVEST) ){
-		alm->insertAttribute("pet_command_21", trainedCommands.get(PetManager::HARVEST) ); // Droid Repair really was listed as Trick 2
+		alm->insertAttribute("pet_command_21", trainedCommands.get(PetManager::HARVEST) );
 	}
 }
 
-void PetControlDeviceImplementation::setDefaultCommands(){
-
+void PetControlDeviceImplementation::setDefaultCommands() {
 	trainedCommands.put(PetManager::STAY, "stay");
 	trainedCommands.put(PetManager::FOLLOW, "follow");
 	trainedCommands.put(PetManager::STORE, "store");
+
 	ManagedReference<DroidObject*> droid = this->controlledObject.get().castTo<DroidObject*>();
 	if (droid != NULL) {
-		if(droid->isCombatDroid()) {
+		if (droid->isCombatDroid()) {
 			trainedCommands.put(PetManager::ATTACK, "attack");
 			trainedCommands.put(PetManager::GUARD, "guard");
 		}
@@ -949,47 +1009,60 @@ void PetControlDeviceImplementation::setDefaultCommands(){
 		trainedCommands.put(PetManager::ATTACK, "attack");
 		trainedCommands.put(PetManager::GUARD, "guard");
 	}
+
 	trainedCommands.put(PetManager::FRIEND, "friend");
 	trainedCommands.put(PetManager::FOLLOWOTHER, "followother");
 	trainedCommands.put(PetManager::PATROL, "patrol");
+	trainedCommands.put(PetManager::GETPATROLPOINT, "getpatrolpoint");
+	trainedCommands.put(PetManager::CLEARPATROLPOINTS, "clearpatrolpoints");
 	trainedCommands.put(PetManager::FORMATION1, "formation1");
 	trainedCommands.put(PetManager::FORMATION2, "formation2");
-	if(droid != NULL) {
-		if(droid->isCombatDroid() && (droid->getSpecies() == DroidObject::R_SERIES || droid->getSpecies() == DroidObject::PROBOT))
+
+	if (droid != NULL) {
+		int species = droid->getSpecies();
+
+		if (droid->isCombatDroid() && (species == DroidObject::PROBOT || species == DroidObject::DZ70))
 			trainedCommands.put(PetManager::RANGED_ATTACK, "ranged attack");
 	} else {
 		trainedCommands.put(PetManager::RANGED_ATTACK, "ranged attack");
 	}
-	trainedCommands.put(PetManager::GROUP, "group");
 
+	trainedCommands.put(PetManager::GROUP, "group");
 }
 
-void PetControlDeviceImplementation::setTrainingCommand( unsigned int commandID ){
+void PetControlDeviceImplementation::setTrainingCommand(unsigned int commandID) {
+
+	// we set to 0 to flag completion so skip all this then.
+	if (commandID == 0) {
+		trainingCommand = 0;
+		return;
+	}
 
 	ManagedReference<TangibleObject*> controlledObject = this->controlledObject.get();
 	if (controlledObject == NULL || !controlledObject->isAiAgent())
 		return;
 
 	AiAgent* pet = cast<AiAgent*>(controlledObject.get());
-	if( pet == NULL )
+	if (pet == NULL)
 		return;
 
 	ManagedReference<CreatureObject*> owner = pet->getLinkedCreature().get();
 	if (owner == NULL || !owner->isPlayerCreature())
 		return;
 
-	if( petType == PetManager::DROIDPET) {
+	if (petType == PetManager::DROIDPET) {
 		ManagedReference<DroidObject*> droid = this->controlledObject.get().castTo<DroidObject*>();
 		if (droid == NULL)
 			return;
 
 		// Check power on droids
-		if( !droid->hasPower() ){
+		if (!droid->hasPower()) {
 			droid->showFlyText("npc_reaction/flytext","low_power", 204, 0, 0);  // "*Low Power*"
 			return;
 		}
 
-		if(((commandID == PetManager::ATTACK || commandID == PetManager::GUARD || commandID == PetManager::RANGED_ATTACK) && !droid->isCombatDroid()) ||
+		if (((commandID == PetManager::ATTACK || commandID == PetManager::GUARD) && !droid->isCombatDroid()) ||
+			(commandID == PetManager::RANGED_ATTACK && (!droid->isCombatDroid() || !droid->hasRangedWeapon())) ||
 			(commandID == PetManager::RECHARGEOTHER && !droid->isPowerDroid()) ||
 			(commandID == PetManager::TRANSFER) ||
 			(commandID == PetManager::SPECIAL_ATTACK1) ||
@@ -999,26 +1072,26 @@ void PetControlDeviceImplementation::setTrainingCommand( unsigned int commandID 
 			return;
 		}
 	}
-	else if(petType == PetManager::CREATUREPET){
-		if(((commandID == PetManager::ATTACK || commandID == PetManager::FOLLOW || commandID == PetManager::STORE) && !owner->hasSkill("outdoors_creaturehandler_novice") ) ||
+	else if (petType == PetManager::CREATUREPET) {
+		if (((commandID == PetManager::ATTACK || commandID == PetManager::FOLLOW || commandID == PetManager::STORE) && !owner->hasSkill("outdoors_creaturehandler_novice") ) ||
 			(commandID == PetManager::STAY && !owner->hasSkill("outdoors_creaturehandler_training_01")) ||
 			(commandID == PetManager::GUARD && !owner->hasSkill("outdoors_creaturehandler_training_02")) ||
 			(commandID == PetManager::FRIEND && !owner->hasSkill("outdoors_creaturehandler_support_03")) ||
-			(commandID == PetManager::PATROL && !owner->hasSkill("outdoors_creaturehandler_training_03")) ||
+			((commandID == PetManager::PATROL || commandID == PetManager::GETPATROLPOINT || commandID == PetManager::CLEARPATROLPOINTS) && !owner->hasSkill("outdoors_creaturehandler_training_03")) ||
 			((commandID == PetManager::FORMATION1 || commandID == PetManager::FORMATION2) && !owner->hasSkill("outdoors_creaturehandler_training_04")) ||
 			(commandID == PetManager::TRANSFER && !owner->hasSkill("outdoors_creaturehandler_master")) ||
 			(commandID == PetManager::TRICK1 && !owner->hasSkill("outdoors_creaturehandler_healing_01")) ||
 			(commandID == PetManager::TRICK2 && !owner->hasSkill("outdoors_creaturehandler_healing_03")) ||
 			(commandID == PetManager::GROUP && !owner->hasSkill("outdoors_creaturehandler_support_01")) ||
-			(commandID == PetManager::SPECIAL_ATTACK1 && !owner->hasSkill("outdoors_creaturehandler_taming_03")) ||
-			(commandID == PetManager::SPECIAL_ATTACK2 && !owner->hasSkill("outdoors_creaturehandler_taming_04")) ||
-			(commandID == PetManager::RANGED_ATTACK && !owner->hasSkill("outdoors_creaturehandler_master")) ||
+			(commandID == PetManager::SPECIAL_ATTACK1 && (!owner->hasSkill("outdoors_creaturehandler_taming_03") || !pet->hasSpecialAttack(1))) ||
+			(commandID == PetManager::SPECIAL_ATTACK2 && (!owner->hasSkill("outdoors_creaturehandler_taming_04") || !pet->hasSpecialAttack(2))) ||
+			(commandID == PetManager::RANGED_ATTACK && (!owner->hasSkill("outdoors_creaturehandler_master") || !pet->hasRangedWeapon())) ||
 			(commandID == PetManager::FOLLOWOTHER && !owner->hasSkill("outdoors_creaturehandler_support_02")) ||
 			(commandID == PetManager::RECHARGEOTHER))
 				return;
 	}
-	else if(petType == PetManager::FACTIONPET){
-		if(commandID == PetManager::RECHARGEOTHER ||
+	else if (petType == PetManager::FACTIONPET) {
+		if (commandID == PetManager::RECHARGEOTHER ||
 			(commandID == PetManager::TRANSFER) ||
 			(commandID == PetManager::SPECIAL_ATTACK1) ||
 			(commandID == PetManager::SPECIAL_ATTACK2) ||
@@ -1027,8 +1100,19 @@ void PetControlDeviceImplementation::setTrainingCommand( unsigned int commandID 
 				return;
 	}
 
+	/** Check for converse and if so, get its personalityStf**/
+	if (pet->getOptionsBitmask() & OptionBitmask::CONVERSE) {
+		String stf = pet->getPersonalityStf();
+		StringBuffer message;
+		message << stf << ":start_convo_4";
+		StringIdChatParameter chat;
+		chat.setStringId(message.toString());
+		pet->getZoneServer()->getChatManager()->broadcastChatMessage(pet, chat, 0, 0, 0);
+	} else {
+		pet->showFlyText("npc_reaction/flytext","alert", 204, 0, 0);  // "?"
+	}
+
 	trainingCommand = commandID;
-	pet->showFlyText("npc_reaction/flytext","alert", 204, 0, 0);  // "?"
 }
 
 void PetControlDeviceImplementation::trainAsMount(CreatureObject* player) {
@@ -1039,7 +1123,7 @@ void PetControlDeviceImplementation::trainAsMount(CreatureObject* player) {
 	if (petManager == NULL)
 		return;
 
-	if (petManager->checkMountEligibility(_this.get()) != PetManager::CANBEMOUNTTRAINED)
+	if (petManager->checkMountEligibility(_this.getReferenceUnsafeStaticCast()) != PetManager::CANBEMOUNTTRAINED)
 		return;
 
 	ManagedReference<TangibleObject*> controlledObject = this->controlledObject.get();
@@ -1047,11 +1131,13 @@ void PetControlDeviceImplementation::trainAsMount(CreatureObject* player) {
 		return;
 
 	AiAgent* pet = cast<AiAgent*>(controlledObject.get());
-	if( pet == NULL )
+	if (pet == NULL)
 		return;
 
+	assert(pet->isLockedByCurrentThread());
+
 	trainedAsMount = true;
-	pet->setOptionsBitmask(0x1080);
+	pet->setOptionBit(0x1000);
 }
 
 void PetControlDeviceImplementation::resetNamingCommands() {
@@ -1059,4 +1145,76 @@ void PetControlDeviceImplementation::resetNamingCommands() {
 		return;
 
 	namingCommands.removeAll();
+}
+
+void PetControlDeviceImplementation::addPatrolPoint(PatrolPoint& point) {
+	patrolPoints.add(point);
+}
+
+PatrolPoint PetControlDeviceImplementation::getPatrolPoint(int idx) {
+	return patrolPoints.get(idx);
+}
+
+bool PetControlDeviceImplementation::isValidPet(AiAgent* pet) {
+	PetDeed* deed = pet->getPetDeed();
+
+	if (deed != NULL) {
+		// time to calculate!
+		int calculatedLevel =  deed->calculatePetLevel();
+
+		if (pet->getTemplateLevel() >= (calculatedLevel * 0.85)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void PetControlDeviceImplementation::setVitality(int vit) {
+	vitality = vit;
+
+	if (petType == PetManager::CREATUREPET || petType == PetManager::DROIDPET) {
+		ManagedReference<TangibleObject*> controlledObject = this->controlledObject.get();
+		if (controlledObject == NULL || !controlledObject->isCreatureObject())
+			return;
+
+		CreatureObject* pet = cast<CreatureObject*>(controlledObject.get());
+		if (pet == NULL )
+			return;
+
+		float hamPenaltyModifier = 0;
+		if (vitality <= 75 && vitality > 50) {
+			hamPenaltyModifier = 0.25f;
+		}
+		else if (vitality <= 50 && vitality > 25) {
+			hamPenaltyModifier = 0.5f;
+		}
+		else if (vitality <= 25) {
+			hamPenaltyModifier = 0.75f;
+		}
+
+		int newVitalityHealthPenalty = pet->getBaseHAM(0) * hamPenaltyModifier;
+		int newVitalityActionPenalty = pet->getBaseHAM(3) * hamPenaltyModifier;
+		int newVitalityMindPenalty = pet->getBaseHAM(6) * hamPenaltyModifier;
+
+		if (newVitalityHealthPenalty != vitalityHealthPenalty) {
+			int change = vitalityHealthPenalty - newVitalityHealthPenalty;
+			pet->setMaxHAM(0, pet->getMaxHAM(0) + change, true);
+			vitalityHealthPenalty = newVitalityHealthPenalty;
+		}
+
+		if (newVitalityActionPenalty != vitalityActionPenalty) {
+			int change = vitalityActionPenalty - newVitalityActionPenalty;
+			pet->setMaxHAM(3, pet->getMaxHAM(3) + change, true);
+			vitalityActionPenalty = newVitalityActionPenalty;
+		}
+
+		if (newVitalityMindPenalty != vitalityMindPenalty) {
+			int change = vitalityMindPenalty - newVitalityMindPenalty;
+			pet->setMaxHAM(6, pet->getMaxHAM(6) + change, true);
+			vitalityMindPenalty = newVitalityMindPenalty;
+		}
+	}
 }

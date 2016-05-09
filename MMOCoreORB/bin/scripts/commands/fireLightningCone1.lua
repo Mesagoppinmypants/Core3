@@ -50,12 +50,15 @@ FireLightningCone1Command = {
 	actionCostMultiplier = 1,
 	mindCostMultiplier = 1,
 
-	animationCRC = hashCode("fire_area_medium"),
+	animation = "fire_acid_rifle_single_1", 
+	animType = GENERATE_INTENSITY,
 
 	combatSpam = "firelightningcone1",
 
 	coneAngle = 60,
 	coneAction = true,
+	
+	weaponType = SPECIALHEAVYWEAPON,
 
 	range = 16
 }

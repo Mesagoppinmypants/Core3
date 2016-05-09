@@ -1,7 +1,6 @@
 chiss_female = Creature:new {
 	objectName = "@mob/creature_names:patron_chiss_female",
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 100,
 	chanceHit = 1,
@@ -23,7 +22,7 @@ chiss_female = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_patron_chiss_f_01.iff"},

@@ -1,7 +1,6 @@
 nitra_vendallan_imp = Creature:new {
 	objectName = "",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 30,
 	chanceHit = 0.390000,
@@ -23,7 +22,7 @@ nitra_vendallan_imp = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 136,	
+	optionsBitmask = AIENABLED + CONVERSABLE,	
 	diet = HERBIVORE,
 
 	templates = {

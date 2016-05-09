@@ -52,7 +52,7 @@ UnarmedBlind1Command = {
 	actionCostMultiplier = 1.5,
 	mindCostMultiplier = 1.5,
 
-	animationCRC = hashCode("attack_high_center_light_1"),
+	animation = "attack_high_center_light_1",
 
 	combatSpam = "aryxslash",
 
@@ -63,10 +63,12 @@ UnarmedBlind1Command = {
 		{ "blind_defense", "resistance_states" }, 
 		{ "jedi_state_defense" }, 
 		100, 
-		100, 
+		0, 
 		50 
 	  )
 	},
+	
+	weaponType = UNARMEDWEAPON,
 
 	range = -1
 }

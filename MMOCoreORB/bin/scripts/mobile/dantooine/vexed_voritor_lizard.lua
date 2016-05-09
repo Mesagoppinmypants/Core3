@@ -1,7 +1,6 @@
 vexed_voritor_lizard = Creature:new {
 	objectName = "@mob/creature_names:vexed_voritor_lizard",
 	socialGroup = "voritor",
-	pvpFaction = "",
 	faction = "",
 	level = 52,
 	chanceHit = 0.5,
@@ -23,7 +22,7 @@ vexed_voritor_lizard = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK,
-	optionsBitmask = 0,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/vexed_voritor_lizard.iff"},
@@ -33,14 +32,14 @@ vexed_voritor_lizard = Creature:new {
 			groups = {
 				{group = "voritor_lizard_common", chance = 10000000}
 			},
-			lootChance = 2500000
+			lootChance = 2040000
 		}
 	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"},
-		{"knockdownattack","knockdownChance=50"}
+		{"knockdownattack",""},
+		{"dizzyattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 tybis = Creature:new {
 	objectName = "@mob/creature_names:tybis",
 	socialGroup = "tybis",
-	pvpFaction = "",
 	faction = "",
 	level = 24,
 	chanceHit = 0.35,
@@ -24,7 +23,7 @@ tybis = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/tybis.iff"},

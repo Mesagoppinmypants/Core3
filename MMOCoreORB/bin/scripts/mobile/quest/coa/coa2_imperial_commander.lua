@@ -1,7 +1,8 @@
 coa2_imperial_commander = Creature:new {
 	objectName = "@mob/creature_names:coa2_imperial_commander",
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 100,
 	chanceHit = 1,
@@ -23,15 +24,15 @@ coa2_imperial_commander = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = INVULNERABLE + CONVERSABLE,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_commander_m.iff"},
 	lootGroups = {},
-	weapons = {"imperial_weapons_medium"},
-	conversationTemplate = "",
+	weapons = {},
+	conversationTemplate = "imperialCommanderConvoTemplate",
 	attacks = merge(riflemanmaster,carbineermaster,brawlermaster)
-	
+
 }
 
 CreatureTemplates:addCreatureTemplate(coa2_imperial_commander, "coa2_imperial_commander")

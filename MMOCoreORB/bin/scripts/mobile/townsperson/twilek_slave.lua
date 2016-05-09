@@ -1,8 +1,8 @@
 twilek_slave = Creature:new {
 	objectName = "@mob/creature_names:slave_twilek_female",
-	generateRandomName = true,
+	randomNameType = NAME_GENERIC,
+	randomNameTag = true,
 	socialGroup = "townsperson",
-	pvpFaction = "townsperson",
 	faction = "townsperson",
 	level = 7,
 	chanceHit = 0.26,
@@ -24,7 +24,7 @@ twilek_slave = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = NONE,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/twilek_female.iff"},

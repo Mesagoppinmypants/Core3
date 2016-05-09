@@ -5,7 +5,6 @@ DathomirStaticSpawnsSeScreenPlay = ScreenPlay:new {
 	screenplayName = "DathomirStaticSpawnsSeScreenPlay",
 
 	lootContainers = {
-		
 
 	},
 
@@ -38,7 +37,6 @@ function DathomirStaticSpawnsSeScreenPlay:start()
 end
 
 function DathomirStaticSpawnsSeScreenPlay:spawnMobiles()
-
 
 	-- fenced building (50,-168)
 	spawnMobile("dathomir", "thug", 300, 76.6, 127.1, -164.5, -90, 0)
@@ -76,14 +74,17 @@ function DathomirStaticSpawnsSeScreenPlay:spawnMobiles()
 	spawnMobile("dathomir", "singing_mountain_clan_rancor", 360, 5179.3, 438.7, -6922.3, 44, 0)
 	spawnMobile("dathomir", "singing_mountain_clan_rancor", 360, 5196.2, 437.4, -6929.5, 14, 0)
 	spawnMobile("dathomir", "singing_mountain_clan_rancor", 360, 5214.4, 437.9, -6931.9, -24, 0)
-	
+
 	--spiderclan stone arch (7070,-6440)
+	spawnMobile("dathomir", "spiderclan_elder", 7200, 7076.7, 568.5, -6433.6, -136, 0)
+	spawnMobile("dathomir", "rancor_pygmy", 3400, getRandomNumber(5) + 7099.4, 576.2, getRandomNumber(5) + -6449.9, getRandomNumber(360), 0)
+	spawnMobile("dathomir", "rancor_pygmy", 3400, getRandomNumber(5) + 7099.4, 576.2, getRandomNumber(5) + -6449.9, getRandomNumber(360), 0)
 
 	--broken ship engine (6885,-4925)
-
-	--large rock formation (5355,-4705)
+	spawnMobile("dathomir", "mature_reptilian_flier", 3600, 6874.5, 404.3, -4925.9, 113, 0)
 
 	--floating rocks (3000,-5145)
+	spawnMobile("dathomir", "singing_mountain_clan_arch_witch", 3600, 3000.9, 80.0, -5141.1, -90, 0)
 
 	--ceremonial site (1072,-4485)
 	spawnMobile("dathomir", "nightsister_sentinel", 360, 1083.9, 101.7, -4495.8, -95, 0)
@@ -94,6 +95,7 @@ function DathomirStaticSpawnsSeScreenPlay:spawnMobiles()
 	spawnMobile("dathomir", "nightsister_slave", 360, 1068.0, 99.1, -4497.1, 35, 0)
 	spawnMobile("dathomir", "nightsister_slave", 360, 1075.5, 100.8, -4493.8, -5, 0)
 	spawnMobile("dathomir", "nightsister_elder", 3600, 1085.0, 103.0, -4485.2, -95, 0)
+	spawnMobile("dathomir", "rancor_pygmy", 3400, 1105.8, 82.1, -4549.8, -42, 0)
 
 	--giant bolma skeleton (1377,-3192)
 	spawnMobile("dathomir", "bull_rancor", 480, 1379.9, 98.3, -3193.3, -75, 0)
@@ -111,6 +113,5 @@ function DathomirStaticSpawnsSeScreenPlay:spawnMobiles()
 
 	--sining mountain clan hut (5556,-688)
 	spawnMobile("dathomir", "singing_mountain_clan_guardian", 360, 5556.5, 128.8, -688.6, -85, 0)
-
 
 end

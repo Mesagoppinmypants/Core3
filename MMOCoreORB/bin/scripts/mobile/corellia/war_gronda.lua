@@ -1,9 +1,8 @@
 war_gronda = Creature:new {
 	objectName = "@mob/creature_names:war_gronda",
 	socialGroup = "gronda",
-	pvpFaction = "",
 	faction = "",
-	level = 32,
+	level = 23,
 	chanceHit = 0.34,
 	damageMin = 200,
 	damageMax = 210,
@@ -21,10 +20,10 @@ war_gronda = Creature:new {
 	milk = 0,
 	tamingChance = 0.25,
 	ferocity = 0,
-	pvpBitmask = ATTACKABLE,
+	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = NONE,
-	optionsBitmask = 0,
-	diet = NONE,
+	optionsBitmask = AIENABLED,
+	diet = HERBIVORE,
 
 	templates = {"object/mobile/war_gronda.iff"},
 	controlDeviceTemplate = "object/intangible/pet/gronda_hue.iff",
@@ -33,8 +32,8 @@ war_gronda = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"knockdownattack","knockdownChance=50"},
-		{"stunattack","stunChance=50"}
+		{"knockdownattack",""},
+		{"stunattack",""}
 	}
 }
 

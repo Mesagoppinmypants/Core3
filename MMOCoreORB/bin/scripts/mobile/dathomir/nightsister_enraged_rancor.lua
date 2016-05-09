@@ -1,7 +1,6 @@
 nightsister_enraged_rancor = Creature:new {
 	objectName = "@mob/creature_names:nightsister_enraged_rancor",
 	socialGroup = "nightsister",
-	pvpFaction = "",
 	faction = "nightsister",
 	level = 80,
 	chanceHit = 0.75,
@@ -23,7 +22,7 @@ nightsister_enraged_rancor = Creature:new {
 	ferocity = 15,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = PACK + KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/rancor.iff"},
@@ -32,24 +31,18 @@ nightsister_enraged_rancor = Creature:new {
 		{
 			groups = {
 				{group = "rancor_common", chance = 4000000},
-				{group = "pistols", chance = 750000},
-				{group = "heavy_weapons", chance = 500000},
-				{group = "rifles", chance = 750000},
-				{group = "carbines", chance = 500000},
-				{group = "grenades_looted", chance = 500000},
-				{group = "armor_all", chance = 1000000},
-				{group = "melee_unarmed", chance = 1000000},
-				{group = "wearables_common", chance = 500000},
-				{group = "wearables_uncommon", chance = 500000}
+				{group = "armor_all", chance = 2000000},
+				{group = "weapons_all", chance = 2500000},
+				{group = "wearables_all", chance = 1500000}
 			},
-			lootChance = 2800000
+			lootChance = 2600000
 		}
 	},
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"creatureareaattack",""},
-		{"knockdownattack","knockdownChance=50"}
+		{"knockdownattack",""},
+		{"creatureareaattack",""}
 	}
 }
 

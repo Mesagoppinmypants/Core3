@@ -1,7 +1,6 @@
 kilnstrider = Creature:new {
 	objectName = "@npc_spawner_n:kilnstrider",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 178,
 	chanceHit = 12.25,
@@ -23,7 +22,7 @@ kilnstrider = Creature:new {
 	ferocity = 0,
 	pvpBitmask = NONE,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/space_imperial_tier4_tatooine_kilnstrider.iff"},

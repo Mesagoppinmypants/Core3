@@ -1,21 +1,26 @@
 --frequency of sanity check in seconds
-gcwCheckTimer = 7200
+gcwCheckTimer = 3600
 
 --Amount of time in seconds that a base will be vulnerable
-vulnerabilityDuration = 10800  
+vulnerabilityDuration = 10800
 
 -- Amount of time in seconds between base vulnerabilities.  
 vulnerabilityFrequency = 172800
 
+powerSwitchCount = 7
+
 -- amount of time before waiting to reset vulnerability
-resetTimer = 604800	
+resetTimer = 1209600
 
 -- amount of time in seconds to wait when a slice fails
 sliceCooldown = 120
 
+dnaNucleotides = { "A", "G", "C", "T" }
+dnaPairs = { "AT", "TA", "GC", "CG" }
+
 totalDNASamples = 44
 
-DNAMatchesRequired = 23
+dnaStrandLength = 23
 
 -- Amount of time in seconds that a base destructino takes after the countdown is initiated
 destructionTimer = 600
@@ -27,7 +32,7 @@ maxBases = 25
 overtCooldown = 300
 
 -- time in seconds to wait before reactivating the overload after the shutdown is aborted
-reactvationTimer = 300
+reactivationTimer = 300
 
 -- time that a player can maintain control of a turret before another player can take it
 --(removed)turretInactivityTimer = 15
@@ -41,8 +46,10 @@ maxBasesPerPlayer = 3
 -- xp bonus for faction controlling a planet
 bonusXP = 15
 
--- discount percentage for side losing the gcw.  negative value of increase in price.  positive for a decrease
-bonusDiscount = -30
+-- discount percentage for side losing&winning the gcw.  negative value of increase in price (penality).  positive for a decrease (Bonus)
+
+winnerBonus = 0
+loserBonus = -30
 
 -- Spawn turrets and minefields when base is placed 1=true 0=false 
 spawnDefenses = 1
@@ -93,4 +100,9 @@ imperial_racial_penalty = {
 		{33, 2}, --ithorian
 		{49, 2}, -- sullustan
 	
+}
+
+strongholdCities = {
+		imperial = {"bela_vistal", "deeja_peak", "bestine"},
+		rebel = {"vreni_island", "moenia", "anchorhead"}
 }

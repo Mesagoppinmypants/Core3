@@ -1,7 +1,6 @@
 theme_park_jabba_meatbeast = Creature:new {
 	objectName = "@mob/creature_names:dewback_cannibal",
 	socialGroup = "dewback",
-	pvpFaction = "",
 	faction = "",
 	level = 21,
 	chanceHit = 0.33,
@@ -21,9 +20,9 @@ theme_park_jabba_meatbeast = Creature:new {
 	milk = 0,
 	tamingChance = 0,
 	ferocity = 6,
-	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
+	pvpBitmask = ATTACKABLE,
 	creatureBitmask = STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/dewback_hue.iff"},
@@ -39,7 +38,8 @@ theme_park_jabba_meatbeast = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"dizzyattack","dizzyChance=50"}
+		{"",""},
+		{"dizzyattack",""}
 	}
 }
 

@@ -1,7 +1,6 @@
 shaupaut_hunter = Creature:new {
 	objectName = "@mob/creature_names:shaupaut_hunter",
 	socialGroup = "shaupaut",
-	pvpFaction = "",
 	faction = "",
 	level = 22,
 	chanceHit = 0.34,
@@ -23,7 +22,7 @@ shaupaut_hunter = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = STALKER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = CARNIVORE,
 
 	templates = {"object/mobile/shaupaut_hue.iff"},
@@ -33,8 +32,8 @@ shaupaut_hunter = Creature:new {
 	weapons = {},
 	conversationTemplate = "",
 	attacks = {
-		{"blindattack","blindChance=50"},
-		{"stunattack","stunChance=50"}
+		{"blindattack",""},
+		{"stunattack",""}
 	}
 }
 

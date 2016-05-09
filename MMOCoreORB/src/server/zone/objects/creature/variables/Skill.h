@@ -2,7 +2,7 @@
 #define SKILL_H_
 
 #include "engine/engine.h"
-#include "server/zone/templates/datatables/DataTableRow.h"
+#include "templates/datatables/DataTableRow.h"
 
 namespace server {
 namespace zone {
@@ -218,6 +218,10 @@ public:
 
 	inline String& getSkillName() {
 		return skillName;
+	}
+
+	inline int getJediStateRequired() {
+		return jediStateRequired;
 	}
 
 	inline bool isGodOnly() {

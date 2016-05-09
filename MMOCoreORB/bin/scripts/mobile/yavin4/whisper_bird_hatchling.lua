@@ -1,7 +1,6 @@
 whisper_bird_hatchling = Creature:new {
 	objectName = "@mob/creature_names:whisper_bird_hatchling",
 	socialGroup = "whisperbird",
-	pvpFaction = "",
 	faction = "",
 	level = 7,
 	chanceHit = 0.26,
@@ -23,7 +22,7 @@ whisper_bird_hatchling = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK + HERD,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/whisper_bird_hatchling.iff"},

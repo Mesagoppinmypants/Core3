@@ -8,7 +8,7 @@
 #ifndef STATEEFFECT_H_
 #define STATEEFFECT_H_
 
-#include "server/zone/objects/creature/CreatureState.h"
+#include "templates/params/creature/CreatureState.h"
 
 #include "engine/engine.h"
 
@@ -124,15 +124,15 @@ public:
         return stateStrength;
     }
 
-    void setDefenderExclusionTimers(Vector<String> defenderExclusionTimers) {
+    void setDefenderExclusionTimers(const Vector<String>& defenderExclusionTimers) {
         this->defenderExclusionTimers = defenderExclusionTimers;
     }
 
-    void setDefenderJediStateDefenseModifiers(Vector<String> defenderJediStateDefenseModifiers) {
+    void setDefenderJediStateDefenseModifiers(const Vector<String>& defenderJediStateDefenseModifiers) {
         this->defenderJediStateDefenseModifiers = defenderJediStateDefenseModifiers;
     }
 
-    void setDefenderStateDefenseModifiers(Vector<String> defenderStateDefenseModifiers) {
+    void setDefenderStateDefenseModifiers(const Vector<String>& defenderStateDefenseModifiers) {
         this->defenderStateDefenseModifiers = defenderStateDefenseModifiers;
     }
 

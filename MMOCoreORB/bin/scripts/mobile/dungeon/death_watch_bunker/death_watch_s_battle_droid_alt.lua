@@ -1,7 +1,6 @@
 death_watch_s_battle_droid_alt = Creature:new {
 	objectName = "@mob/creature_names:mand_bunker_super_battle_droid",
 	socialGroup = "death_watch",
-	pvpFaction = "",
 	faction = "",
 	level = 200,
 	chanceHit = 18,
@@ -23,8 +22,9 @@ death_watch_s_battle_droid_alt = Creature:new {
 	ferocity = 0,
 	pvpBitmask = AGGRESSIVE + ATTACKABLE + ENEMY,
 	creatureBitmask = KILLER,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = NONE,
+	scale = 1.40,
 
 	templates = {
 		"object/mobile/death_watch_s_battle_droid.iff",
@@ -33,7 +33,7 @@ death_watch_s_battle_droid_alt = Creature:new {
 	lootGroups = {},
 	conversationTemplate = "",
 	defaultWeapon = "object/weapon/ranged/droid/droid_droideka_ranged.iff",
-	defaultAttack = "creaturerangedattack"
+	defaultAttack = "attack"
 }
 
 CreatureTemplates:addCreatureTemplate(death_watch_s_battle_droid_alt, "death_watch_s_battle_droid_alt")

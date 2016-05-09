@@ -1,7 +1,6 @@
 theme_park_imperial_general_boize = Creature:new {
 	objectName = "@mob/creature_names:imperial_general",
 	socialGroup = "imperial",
-	pvpFaction = "imperial",
 	faction = "imperial",
 	level = 28,
 	chanceHit = 0.37,
@@ -23,7 +22,7 @@ theme_park_imperial_general_boize = Creature:new {
 	ferocity = 0,
 	pvpBitmask = ATTACKABLE,
 	creatureBitmask = PACK,
-	optionsBitmask = 128,
+	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
 	templates = {"object/mobile/dressed_imperial_general_m.iff"},

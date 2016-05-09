@@ -1,46 +1,6 @@
 /*
-Copyright (C) 2007 <SWGEmu>
-
-This File is part of Core3.
-
-This program is free software; you can redistribute
-it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software
-Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for
-more details.
-
-You should have received a copy of the GNU Lesser General
-Public License along with this program; if not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
-Linking Engine3 statically or dynamically with other modules
-is making a combined work based on Engine3.
-Thus, the terms and conditions of the GNU Lesser General Public License
-cover the whole combination.
-
-In addition, as a special exception, the copyright holders of Engine3
-give you permission to combine Engine3 program with free software
-programs or libraries that are released under the GNU LGPL and with
-code included in the standard release of Core3 under the GNU LGPL
-license (or modified versions of such code, with unchanged license).
-You may copy and distribute such a system following the terms of the
-GNU LGPL for Engine3 and the licenses of the other code concerned,
-provided that you include the source code of that other code when
-and as the GNU LGPL requires distribution of source code.
-
-Note that people who make modified versions of Engine3 are not obligated
-to grant this special exception for their modified versions;
-it is their choice whether to do so. The GNU Lesser General Public License
-gives permission to release a modified version without this exception;
-this exception also makes it possible to release a modified version
-which carries forward this exception.
-*/
+				Copyright <SWGEmu>
+		See file COPYING for copying conditions.*/
 
 #ifndef NAMEMANAGER_H_
 #define NAMEMANAGER_H_
@@ -48,7 +8,9 @@ which carries forward this exception.
 #include "engine/lua/Lua.h"
 #include "engine/lua/LuaObject.h"
 #include "engine/core/ManagedReference.h"
-#include "server/zone/managers/templates/TemplateManager.h"
+#include "server/zone/managers/name/NameData.h"
+#include "server/zone/managers/name/NameUnique.h"
+#include "templates/manager/TemplateManager.h"
 
 namespace server {
 	namespace zone {
@@ -74,7 +36,7 @@ namespace server {
 using namespace server::zone::objects::creature;
 
 class BannedNameSet : public HashSet<String> {
-	int hash(const String& str) {
+	int hash(const String& str) const {
 		return str.hashCode();
 	}
 
@@ -93,6 +55,29 @@ public:
 	static const uint8 DECLINED_SYNTAX = 5;
 	static const uint8 DECLINED_RESERVED = 6;
 	static const uint8 ACCEPTED	= 7;
+
+	static const uint8 DECLINED_GUILD_LENGTH = 11;
+};
+
+class NameManagerType {
+public:
+
+	static const int TAG = 0; // a mobile
+	static const int GENERIC = 1; // Name Generator
+
+	static const int STORMTROOPER = 11; // XX-123
+	static const int SCOUTTROOPER = 12; // XX-123
+	static const int DARKTROOPER = 13; // XX-123
+	static const int SWAMPTROOPER = 14; // XX-123
+
+	static const int GUILD_NAME = 31;
+	static const int GUILD_ABBREV = 32;
+	static const int GUILD_TITLE = 33;
+
+	static const int FRAG_CONSONANT = 41;
+	static const int FRAG_VOWEL = 42;
+	static const int FRAG_SPECIAL = 43;
+	static const int FRAG_MIXED = 44;
 };
 
 namespace server {
@@ -105,21 +90,32 @@ class NameManager : public Singleton<NameManager>, public Logger, public Object 
 
 	Lua* lua;
 
+	NameData* bothanData;
+	NameData* humanData;
+	NameData* ithorianData;
+	NameData* monCalData;
+	NameData* rodianData;
+	NameData* sullustanData;
+	NameData* trandoshanData;
+	NameData* twilekData;
+	NameData* wookieeData;
+	NameData* zabrakData;
+
+	NameData* energyResourceData;
+	NameData* mineralResourceData;
+	NameData* plainResourceData;
+	NameData* reactiveGasResourceData;
+
 	Vector<String>* profaneNames;
 	BannedNameSet* developerNames;
 	BannedNameSet* fictionNames;
 	BannedNameSet* reservedNames;
 
-	VectorMap<String, String> letterMappings;
+	Vector<String> stormtrooperPrefixes;
+	Vector<String> scouttrooperPrefixes;
+	Vector<String> darktrooperPrefixes;
+	Vector<String> swamptrooperPrefixes;
 
-	Vector<String> organicPrefixes;
-	Vector<String> organicSuffixes;
-
-	Vector<String> inorganicPrefixes;
-	Vector<String> inorganicSuffixes;
-
-	Vector<String> npcFirstNames;
-	Vector<String> npcSurnames;
 
 private:
 
@@ -141,15 +137,11 @@ private:
 
 	inline bool isFiction(String);
 
-	inline bool isVowel(const char);
+	String appendSyllable(const String& left, const String& right, NameData* data);
 
-	inline void addPrefix(String& name, bool isOrganic);
+	int getFragmentType(const String& frag, NameData* data);
 
-	inline void addSuffix(String& name, bool isOrganic);
-
-	char chooseLetterInclusive(String include);
-
-	String makeName(int nameLength);
+	String makeImperialTrooperName(int type);
 
 public:
 	NameManager();
@@ -163,12 +155,27 @@ public:
 
 	int validateName(CreatureObject * obj);
 	int validateName(const String& name, int species = -1);
-	int validateFirstName(const String& name, int species = -1);
-	int validateLastName(const String& name, int species = -1);
+	int validateGuildName(const String& name, int type = NameManagerType::GUILD_NAME);
+	int validateCityName(const String& name);
+	int validateVendorName(const String& name);
+	int validateChatRoomName(const String& name);
 
-	const String makeCreatureName(bool surname = true);
+	const String makeCreatureName(int type = 1, int species = 0);
 
-	const String makeResourceName(bool isOrganic);
+	String generateSingleName(NameData* nameData, NameRules* rules);
+
+	String generateUniqueName(NameData* nameData, NameRules* rules);
+
+	String generateRandomizedName(NameData* nameData, NameRules* nameRules);
+
+	String generateRandomName(NameData* nameData);
+
+	String generateResourceName(const String& randomNameClass);
+
+	String capitalizeName(String& name);
+
+	NameData* getSpeciesData(int species);
+
 };
 
 			}

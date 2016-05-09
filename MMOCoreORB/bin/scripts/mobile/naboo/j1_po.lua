@@ -1,7 +1,6 @@
 j1_po = Creature:new {
 	objectName = "@npc_spawner_n:j1_po",
 	socialGroup = "",
-	pvpFaction = "",
 	faction = "",
 	level = 30,
 	chanceHit = 0.390000,
@@ -30,7 +29,7 @@ j1_po = Creature:new {
 	weapons = {},
 	attacks = {},
 	conversationTemplate = "",
-	optionsBitmask = 128
+	optionsBitmask = AIENABLED
 }
 
 CreatureTemplates:addCreatureTemplate(j1_po, "j1_po")
