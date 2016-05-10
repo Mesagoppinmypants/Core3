@@ -57,7 +57,7 @@ DBUser = "swgemu"
 DBPass = "123456"
 DBSecret = "swgemus3cr37!" -- Change this! This value should be unique and of reasonable length.
 
-LoginPort = 44453
+LoginPort = 44420
 LoginProcessingThreads = 1
 LoginAllowedConnections = 3000
 LoginRequiredVersion = "20050408-18:00"
@@ -73,7 +73,7 @@ AutoReg = 1
 
 ProgressMonitors = "true"
 
-PingPort = 44462
+PingPort = 44422
 PingAllowedConnections = 3000
 
 ZoneProcessingThreads = 10
@@ -194,12 +194,12 @@ TreFiles = {
 }
 
 --Status Server Config
-StatusPort = 44455
+StatusPort = 44426
 StatusAllowedConnections = 500
 StatusInterval = 30 -- interval to check if zone is locked up (in seconds)
 
 --Web Server Config
-WebPorts = 44460 -- Can be multiple ports 44460,44461
+WebPorts = 44428 -- Can be multiple ports 44460,44461
 WebAccessLog = "../log/webaccess.log"
 WebErrorLog = "../log/weberror.log"
 WebSessionTimeout = 600 -- Length that inactive web sessions expire
