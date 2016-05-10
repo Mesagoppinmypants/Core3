@@ -9,8 +9,8 @@ master_prophet_of_the_dark_side = Creature:new {
 	damageMin = 1120,
 	damageMax = 1950,
 	baseXp = 15933,
-	baseHAM = 81000,
-	baseHAMmax = 99000,
+	baseHAM = 101000,
+	baseHAMmax = 120000,
 	armor = 0,
 	resists = {90,90,90,90,90,90,90,90,-1},
 	meatType = "",
@@ -33,15 +33,11 @@ master_prophet_of_the_dark_side = Creature:new {
 	lootGroups = {
 		{
 			groups = {
-				{group = "holocron_dark", chance = 600000},
-				{group = "holocron_light", chance = 600000},
-				{group = "crystals_premium", chance = 600000},
-				{group = "rifles", chance = 1500000},
-				{group = "pistols", chance = 1500000},
-				{group = "melee_weapons", chance = 1500000},
-				{group = "armor_attachments", chance = 1100000},
-				{group = "clothing_attachments", chance = 1100000},
-				{group = "carbines", chance = 1500000}
+				{group = "holocron_dark", chance = 2000000},
+				{group = "crystals_premium", chance = 2000000},
+				{group = "melee_weapons", chance = 2000000},
+				{group = "armor_attachments", chance = 2000000},
+				{group = "clothing_attachments", chance = 2000000},
 			}
 		}
 	},
