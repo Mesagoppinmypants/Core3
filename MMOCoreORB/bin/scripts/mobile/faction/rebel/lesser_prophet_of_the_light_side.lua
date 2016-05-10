@@ -1,5 +1,5 @@
 lesser_prophet_of_the_light_side = Creature:new {
-	objectName = "@mob/creature_names:lesser_prophet_of_the_dark_side",
+	customName = "a lesser prophet of the light side",
 	randomNameType = NAME_GENERIC,
 	randomNameTag = true,
 	socialGroup = "rebel",
@@ -9,8 +9,8 @@ lesser_prophet_of_the_light_side = Creature:new {
 	damageMin = 570,
 	damageMax = 850,
 	baseXp = 8130,
-	baseHAM = 13000,
-	baseHAMmax = 16000,
+	baseHAM = 33000,
+	baseHAMmax = 36000,
 	armor = 1,
 	resists = {40,40,40,40,40,40,40,40,-1},
 	meatType = "",
@@ -31,16 +31,11 @@ lesser_prophet_of_the_light_side = Creature:new {
 	lootGroups = {
 		{
 			groups = {
-				{group = "holocron_light", chance = 600000},
-				{group = "crystals_quality", chance = 600000},
-				{group = "color_crystals", chance = 1000000},
-				{group = "rifles", chance = 1300000},
-				{group = "pistols", chance = 1300000},
-				{group = "melee_weapons", chance = 1300000},
-				{group = "armor_attachments", chance = 900000},
-				{group = "clothing_attachments", chance = 900000},
-				{group = "carbines", chance = 1300000},
-				{group = "wearables_rare", chance = 800000}
+				{group = "holocron_light", chance = 2000000},
+				{group = "crystals_quality", chance = 2000000},
+				{group = "color_crystals", chance = 2000000},
+				{group = "armor_attachments", chance = 2000000},
+				{group = "clothing_attachments", chance = 2000000},
 			}
 		}
 	},
