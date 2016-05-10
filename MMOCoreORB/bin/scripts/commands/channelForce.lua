@@ -41,9 +41,9 @@
 --which carries forward this exception.
 --true = 1, false = 0
 
-ChannelForceCommand = {
-        name = "channelforce",
-}
-
-AddCommand(ChannelForceCommand)
+--ChannelForceCommand = {
+--       name = "channelforce",
+--}
+--HAM Bugs 
+--AddCommand(ChannelForceCommand)
 
