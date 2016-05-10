@@ -133,7 +133,7 @@ class FrsManager extends ManagedService implements Logger {
 	public VectorMap<unsigned long, int> getMemberList(int enclave) {
 		if (enclave == 4)
 			return lightMemberList;
-		else 
+		else
 			return darkMemberList;
 	}
 
