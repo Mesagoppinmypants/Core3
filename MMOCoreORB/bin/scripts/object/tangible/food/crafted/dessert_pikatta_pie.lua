@@ -46,6 +46,7 @@ object_tangible_food_crafted_dessert_pikatta_pie = object_tangible_food_crafted_
 
 	duration = 1800,
 	filling = 20,
+	useCount = 100,
 	nutrition = 50,
 
 	effectType = 2,

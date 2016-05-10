@@ -44,9 +44,10 @@
 object_tangible_food_crafted_drink_mandalorian_wine = object_tangible_food_crafted_shared_drink_mandalorian_wine:new {
 	templateType = CONSUMABLE,
 	
-	duration = 45,
-	filling = 10,
-	nutrition = 10,
+	duration = 1800,
+	filling = 35,
+	useCount = 100,
+	nutrition = 400,
 
 	effectType = 1,
 	

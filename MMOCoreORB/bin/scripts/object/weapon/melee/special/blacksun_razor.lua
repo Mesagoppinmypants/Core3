@@ -115,8 +115,8 @@ object_weapon_melee_special_blacksun_razor = object_weapon_melee_special_shared_
 	maxRange = 7,
 	maxRangeAccuracy = 3,
 
-	minDamage = 89,
-	maxDamage = 224,
+	minDamage = 120,
+	maxDamage = 324,
 	
 	attackSpeed = 3.0,
 

@@ -46,6 +46,7 @@ object_tangible_food_spice_spice_muon_gold = object_tangible_food_spice_shared_s
 
 	duration = 600,
 	filling = 0,
+	useCount = 100,
 	nutrition = 0,
 
 	effectType = 5,

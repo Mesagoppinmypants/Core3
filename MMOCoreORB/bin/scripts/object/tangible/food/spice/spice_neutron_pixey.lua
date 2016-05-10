@@ -46,6 +46,7 @@ object_tangible_food_spice_spice_neutron_pixey = object_tangible_food_spice_shar
 
 	duration = 800,
 	filling = 0,
+	useCount = 100,
 	nutrition = 0,
 
 	effectType = 5,

@@ -69,7 +69,7 @@ object_weapon_melee_knife_knife_stone = object_weapon_melee_knife_shared_knife_s
 	attackType = MELEEATTACK,
 	
 	-- ENERGY, KINETIC, ELECTRICITY, STUN, BLAST, HEAT, COLD, ACID, LIGHTSABER
-	damageType = LIGHTSABER,
+	damageType = Kinetic,
 	
 	-- NONE, LIGHT, MEDIUM, HEAVY
 	armorPiercing = HEAVY,
@@ -114,8 +114,8 @@ object_weapon_melee_knife_knife_stone = object_weapon_melee_knife_shared_knife_s
 	maxRange = 4,
 	maxRangeAccuracy = 5,
 
-	minDamage = 900,
-	maxDamage = 1200,
+	minDamage = 9,
+	maxDamage = 120,
 
 	attackSpeed = 3,5,
 	woundsRatio = 6

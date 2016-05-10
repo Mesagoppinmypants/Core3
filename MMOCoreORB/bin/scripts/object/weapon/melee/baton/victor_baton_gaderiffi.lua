@@ -117,8 +117,8 @@ object_weapon_melee_baton_victor_baton_gaderiffi = object_weapon_melee_baton_sha
 	maxRange = -13,
 	maxRangeAccuracy = 5,
 
-	minDamage = 700,
-	maxDamage = 900,
+	minDamage = 300,
+	maxDamage = 400,
 	
 	attackSpeed = 4,
 
