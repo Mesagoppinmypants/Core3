@@ -54,6 +54,7 @@ TotalHealOtherCommand = {
 	healBattleFatigue = 250,
 	healWoundAmount = 250,
 	forceCostDivisor = 0,
+	area = 32,
 	range = 32	
 }
 
