@@ -724,7 +724,6 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 						"Melee Speed IV", "force_sensitive_combat_prowess_melee_speed_04"
 					},
 					"Master", "force_sensitive_combat_prowess_master"
-					}
 				},
 				"Image Designer",
 				{
