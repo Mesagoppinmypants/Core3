@@ -1,29 +1,28 @@
---Copyright (C) 2010 <SWGEmu>
-
-
+--Copyright (C) 2007 <SWGEmu>
+ 
 --This File is part of Core3.
-
+ 
 --This program is free software; you can redistribute 
 --it and/or modify it under the terms of the GNU Lesser 
 --General Public License as published by the Free Software
 --Foundation; either version 2 of the License, 
 --or (at your option) any later version.
-
+ 
 --This program is distributed in the hope that it will be useful, 
 --but WITHOUT ANY WARRANTY; without even the implied warranty of 
 --MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
 --See the GNU Lesser General Public License for
 --more details.
-
+ 
 --You should have received a copy of the GNU Lesser General 
 --Public License along with this program; if not, write to
 --the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-
+ 
 --Linking Engine3 statically or dynamically with other modules 
 --is making a combined work based on Engine3. 
 --Thus, the terms and conditions of the GNU Lesser General Public License 
 --cover the whole combination.
-
+ 
 --In addition, as a special exception, the copyright holders of Engine3 
 --give you permission to combine Engine3 program with free software 
 --programs or libraries that are released under the GNU LGPL and with 
@@ -33,49 +32,38 @@
 --GNU LGPL for Engine3 and the licenses of the other code concerned, 
 --provided that you include the source code of that other code when 
 --and as the GNU LGPL requires distribution of source code.
-
+ 
 --Note that people who make modified versions of Engine3 are not obligated 
 --to grant this special exception for their modified versions; 
 --it is their choice whether to do so. The GNU Lesser General Public License 
 --gives permission to release a modified version without this exception; 
 --this exception also makes it possible to release a modified version 
+--which carries forward this exception.
 
+-- Determines the interval between Rank Maintenances
+-- Also known as "maintenance pulse"
+-- Default: 900000 (15 minutes)
 
-object_tangible_food_crafted_drink_bespin_port = object_tangible_food_crafted_shared_drink_bespin_port:new {
-	templateType = CONSUMABLE,
+maintenanceInterval = 900000
 
-	duration = 10000,
-	filling = 10,
-	useCount = 100,
-	nutrition = 1000,
+-- Determines the number of members allowed per seat (Rank, Max)
+-- Defaults:
+-- 	Rank 1-4 = 10
+-- 	Rank 5-7 = 9
+--	Rank 8-9 = 8
+--	Rank 10 (Council Member) = 11
+-- 	Rank 11 (Council Leader) = 1
 
-	effectType = 3, -- Event Based Buff
-	eventTypes = {CRAFTINGEXPERIMENTATION},
-
-	fillingMin = 25,
-	fillingMax = 15,
-	flavorMin = 1,
-	flavorMax = 1,
-	nutritionMin = 3,
-	nutritionMax = 12,
-	quantityMin = 5,
-	quantityMax = 8,
-
-	modifiers = { "experiment_bonus", 0 },
-
-	buffName = "food.experiment_bonus",
-	buffCRC = 0x9B38A4CB,
-	speciesRestriction = "",
-
-	numberExperimentalProperties = {1, 1, 1, 1, 2, 2, 2, 1},
-	experimentalProperties = {"XX", "XX", "XX", "XX", "DR", "OQ", "OQ", "PE", "FL", "OQ", "XX"},
-	experimentalWeights = {1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1},
-	experimentalGroupTitles = {"null", "null", "null", "null", "exp_nutrition", "exp_quantity", "exp_filling", "null"},
-	experimentalSubGroupTitles = {"null", "null", "hitpoints", "quantity_bonus", "nutrition", "quantity", "filling", "stomach"},
-	experimentalMin = {0, 0, 1000, 0, 120, 100, 120, 1},
-	experimentalMax = {0, 0, 1000, 0, 75, 60, 80, 1},
-	experimentalPrecision = {0, 0, 0, 0, 10, 10, 10, 0},
-	experimentalCombineType = {0, 0, 4, 1, 1, 1, 1, 1},
+max_members_per_rank = {
+	{1, 5},
+	{2, 5},
+	{3, 5},
+	{4, 5},
+	{5, 4},
+	{6, 4},
+	{7, 4},
+	{8, 3}, 
+	{9, 3},
+	{10, 4},
+	{11, 1},
 }
-
-ObjectTemplates:addTemplate(object_tangible_food_crafted_drink_bespin_port, "object/tangible/food/crafted/drink_bespin_port.iff")

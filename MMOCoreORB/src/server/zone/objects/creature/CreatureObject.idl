@@ -46,6 +46,8 @@ import system.lang.Long;
 import engine.service.proto.BasePacket;
 import server.zone.packets.scene.AttributeListMessage;
 import system.thread.Mutex;
+import server.zone.objects.forcerank.ForceRankObject;
+
 
 @mock
 class CreatureObject extends TangibleObject {
@@ -113,6 +115,8 @@ class CreatureObject extends TangibleObject {
 	@weakReference
 	protected GuildObject guild;
 
+	protected ForceRankObject frsObject;
+	
 	protected unsigned long targetID;
 	protected byte moodID;
 	protected int performanceCounter;
@@ -2155,5 +2159,13 @@ class CreatureObject extends TangibleObject {
 
 	@preLocked
 	public abstract void reloadTemplate() {
+	}
+	
+	public ForceRankObject getForceRankObject() {
+	return frsObject;
+	}
+
+	public void setForceRankObject(ForceRankObject obj) {
+	frsObject = obj;
 	}
 }
