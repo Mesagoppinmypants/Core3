@@ -46,6 +46,7 @@ object_tangible_food_crafted_dish_vercupti_of_agazza_boleruuee = object_tangible
 
 	duration = 900,
 	filling = 50,
+	useCount = 100,
 	nutrition = 750,
 
 	effectType = 1,
