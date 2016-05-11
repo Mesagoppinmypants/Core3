@@ -324,6 +324,7 @@ includeFile("groups/weapon/weapons_all.lua")
 
 -- wearables sub-folder
 includeFile("groups/wearables/wearables_all.lua")
+includeFile("groups/wearables/masterynecklaces.lua")
 includeFile("groups/wearables/wearables_common.lua")
 includeFile("groups/wearables/wearables_rare.lua")
 includeFile("groups/wearables/wearables_scarce.lua")
