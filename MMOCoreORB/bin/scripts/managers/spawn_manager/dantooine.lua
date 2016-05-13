@@ -230,6 +230,7 @@ dantooine_regions = {
 
 dantooine_static_spawns = {
 	{"dark_jedi_master",3600,-738.2,1.7,2103.9,55,0, "", "", "stationary"},
+	{"world_boss_asajj_ventress",3600,5461,2.0,5838,50,0, "", "", "stationary"},
 	{"quich_marae",60,1579.04,4,-6374.52,48.4898,0, "calm", "Quich Marae", "stationary",JUNKJEDI,JUNKCONVQUICHDANTOOINE},
 	{"r2",60,-635.747,3,2503.81,353.861,0, "calm", "R2-H5", "stationary"},
 	{"r2",60,1583.12,4,-6407.59,69.2539,0, "calm", "R2-Y8", "stationary"},

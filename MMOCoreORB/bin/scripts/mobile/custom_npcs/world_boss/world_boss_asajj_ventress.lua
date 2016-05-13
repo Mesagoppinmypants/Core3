@@ -1,6 +1,6 @@
 world_boss_asajj_ventress = Creature:new {
 	customName = "Asajj Ventress (Drommund Kaas World Boss)",
-	socialGroup = "self",
+	socialGroup = "dark_jedi",
 	faction = "",
 	level = 500,
 	chanceHit = 30,
@@ -25,8 +25,7 @@ world_boss_asajj_ventress = Creature:new {
 	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
-	templates = {
-		"object/mobile/dressed_dark_jedi_human_female_01.iff"},
+	templates = {"object/mobile/dressed_dathomir_spider_nightsister_spellweaver.iff"},
 	lootGroups = {
 		{
 		groups = {
