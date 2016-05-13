@@ -25,8 +25,7 @@ world_boss_kanan_jarrus = Creature:new {
 	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
-	templates = {
-		"object/mobile/dressed_jedi_trainer_old_human_male_01.iff",
+	templates = {"object/mobile/dressed_jedi_trainer_old_human_male_01.iff"},
 	lootGroups = {
 		{
 		groups = {
@@ -51,8 +50,9 @@ world_boss_kanan_jarrus = Creature:new {
 				{group = "melee_weapons", chance = 3500000},
 				{group = "carbines", chance = 2500000},
 				},
+				lootChance = 10000000
 		}
-		lootChance = 10000000
+		
 	},
 	weapons = {"dark_jedi_weapons_gen4"},
 	conversationTemplate = "",
