@@ -1,5 +1,5 @@
 light_jedi_knight = Creature:new {
-	customName = "a Light Jedi Knight"
+	customName = "a Light Jedi Knight",
 	randomNameType = NAME_GENERIC,
 	randomNameTag = true,
 	socialGroup = "rebel",
