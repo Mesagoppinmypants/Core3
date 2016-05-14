@@ -9,7 +9,8 @@ bool GalaxyAccountInfoMap::toBinaryStream(ObjectOutputStream* stream) {
 	
 	TypeInfo<uint32>::toBinaryStream(&count, stream);
 	
-	for (auto& element : *this) {
+	for (int i=0; i<size(); i++) {
+		auto element = elementAt(i);
 		GalaxyAccountInfo *value = element.getValue();
 		String& key = element.getKey();
 		

@@ -50,8 +50,8 @@ world_boss_asajj_ventress = Creature:new {
 				{group = "melee_weapons", chance = 3500000},
 				{group = "carbines", chance = 2500000},
 				},
-		}
-		lootChance = 10000000
+				lootChance = 10000000
+				}
 	},
 	weapons = {"dark_jedi_weapons_gen4"},
 	conversationTemplate = "",
