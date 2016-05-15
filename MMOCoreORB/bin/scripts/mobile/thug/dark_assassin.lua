@@ -1,18 +1,18 @@
-keeper_of_dark = Creature:new {
-	customName = "Ancient Keeper of Dark Knowledge",
+dark_assassin = Creature:new {
+	customName = "Dark Jedi Assassin",
 	randomNameType = NAME_GENERIC,
 	randomNameTag = true,
 	socialGroup = "imperial",
 	faction = "imperial",
-	level = 265,
-	chanceHit = 23.5,
-	damageMin = 645,
-	damageMax = 1000,
-	baseXp = 25266,
-	baseHAM = 461000,
-	baseHAMmax = 520000,
+	level = 300,
+	chanceHit = 30,
+	damageMin = 1045,
+	damageMax = 1290,
+	baseXp = 28532,
+	baseHAM = 1106000,
+	baseHAMmax = 1352000,
 	armor = 3,
-	resists = {90,90,90,90,90,90,90,90,-1},
+	resists = {95,95,95,95,95,95,95,95,-1},
 	meatType = "",
 	meatAmount = 0,
 	hideType = "",
@@ -23,7 +23,7 @@ keeper_of_dark = Creature:new {
 	tamingChance = 0,
 	ferocity = 50,
 	pvpBitmask = ATTACKABLE,
-	creatureBitmask = KILLER + STALKER,
+	creatureBitmask = PACK + KILLER + STALKER,
 	optionsBitmask = AIENABLED,
 	diet = HERBIVORE,
 
@@ -35,6 +35,7 @@ keeper_of_dark = Creature:new {
 			groups = {
 				{group = "holocron_dark", chance = 5000000},
 				{group = "holocron_light", chance = 5000000},
+			
 			},
 			lootChance = 10000000
 		}
@@ -43,6 +44,7 @@ keeper_of_dark = Creature:new {
 			groups = {
 				{group = "named_color_crystals", chance = 3000000},
 				{group = "crystals_premium", chance = 7000000},
+			
 			},
 			lootChance = 10000000
 		}
@@ -51,6 +53,7 @@ keeper_of_dark = Creature:new {
 			groups = {
 				{group = "named_color_crystals", chance = 3000000},
 				{group = "crystals_premium", chance = 7000000},
+			
 			},
 			lootChance = 10000000
 		}
@@ -70,10 +73,11 @@ keeper_of_dark = Creature:new {
 			},
 			lootChance = 10000000
 		}
+		
 	},
-	weapons = {""},
+	weapons = {"dark_jedi_weapons_gen4"},
 	conversationTemplate = "",
-	attacks = merge(forcepowermaster)
+	attacks = merge(lightsabermaster,forcepowermaster)
 }
 
-CreatureTemplates:addCreatureTemplate(keeper_of_dark, "keeper_of_dark")
+CreatureTemplates:addCreatureTemplate(dark_assassin, "dark_assassin")
