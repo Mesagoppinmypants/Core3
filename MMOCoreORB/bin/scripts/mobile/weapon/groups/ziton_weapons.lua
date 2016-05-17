@@ -1,8 +1,8 @@
-xizor_weapons = {
-	"object/weapon/melee/2h_sword/2h_sword_blacksun_hack.iff"
+ziton_weapons = {
+	"object/weapon/melee/special/blacksun_razor.iff"
 }
 
-addWeapon("xizor_weapons", xizor_weapons)
+addWeapon("ziton_weapons", ziton_weapons)
 --To facilitate the correctness to Weapons groups
 --please include comments under here that point to your source
 --such as links to screenshots from wiki's that show pre-cu creature holding specific weapons

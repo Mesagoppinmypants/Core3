@@ -89,6 +89,7 @@ includeFile("groups/forage/forage_medical_component.lua")
 includeFile("groups/forage/forage_rare.lua")
 
 -- geonosian_lab sub-folder
+includeFile("groups/geonosian_lab/world_boss_acklay.lua")
 includeFile("groups/geonosian_lab/acklay.lua")
 includeFile("groups/geonosian_lab/enhanced_kwi.lua")
 includeFile("groups/geonosian_lab/fire_breathing_spider.lua")

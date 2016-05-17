@@ -1,3 +1,4 @@
+includeFile("faction/rebel/rebel_droideka.lua")
 includeFile("faction/rebel/alliance_intelligence_case.lua")
 includeFile("faction/rebel/alliance_intelligence_case_officer.lua")
 includeFile("faction/rebel/apprentice_creature_handler.lua")

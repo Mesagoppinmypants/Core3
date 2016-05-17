@@ -1,15 +1,15 @@
-world_boss_xizor = Creature:new {
+world_boss_xomit = Creature:new {
 	objectName = "",
-	customName = "Xizor (Black Sun Prince)",
+	customName = "Xomit Grunseit, Black Sun Underlord",
 	socialGroup = "death_watch",
 	faction = "",
-	level = 500,
+	level = 300,
 	chanceHit = 19,
-	damageMin = 2000,
-	damageMax = 2500,
+	damageMin = 1500,
+	damageMax = 2000,
 	baseXp = 120948,
-	baseHAM = 8350000,
-	baseHAMmax = 8550000,
+	baseHAM = 3350000,
+	baseHAMmax = 3550000,
 	armor = 3,
 	resists = {80,80,90,80,45,45,100,70,-1},
 	meatType = "",
@@ -27,7 +27,7 @@ world_boss_xizor = Creature:new {
 	diet = HERBIVORE,
 	scale = 1.15,
 
-	templates = {"object/mobile/dressed_death_watch_silver.iff"},
+	templates = {"object/mobile/dressed_black_sun_guard.iff"},
 	lootGroups = {
 		{
 		groups = {
@@ -78,9 +78,9 @@ world_boss_xizor = Creature:new {
 			lootChance = 10000000
 		}
 	},
-	weapons = {"xizor_weapons"},
+	weapons = {"xomit_weapons"},
 	conversationTemplate = "",
 	attacks = merge(swordsmanmaster,brawlermaster)
 }
 
-CreatureTemplates:addCreatureTemplate(world_boss_xizor, "world_boss_xizor")
+CreatureTemplates:addCreatureTemplate(world_boss_xomit, "world_boss_xomit")

@@ -1,5 +1,5 @@
 dark_assassin = Creature:new {
-	customName = "Dark Jedi Assassin",
+	customName = "Imperial Assassin",
 	randomNameType = NAME_GENERIC,
 	randomNameTag = true,
 	socialGroup = "imperial",

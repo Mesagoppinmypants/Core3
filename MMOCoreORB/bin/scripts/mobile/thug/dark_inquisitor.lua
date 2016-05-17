@@ -1,5 +1,5 @@
 dark_inquisitor = Creature:new {
-	customName = "Dark Inquisitor",
+	customName = "Imperial Inquisitor",
 	randomNameType = NAME_GENERIC,
 	randomNameTag = true,
 	socialGroup = "imperial",
