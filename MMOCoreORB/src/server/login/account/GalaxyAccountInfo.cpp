@@ -10,7 +10,8 @@ void GalaxyAccountInfo::updateVetRewardsFromPlayer(const VectorMap<unsigned int,
 
 	if (chosenVeteranRewards.size() == 0) {
 		
-		for (const auto& element : newRewards) {
+		{for (int i=0; i<newRewards.size(); i++) {
+			auto element = newRewards.elementAt(i);
 			chosenVeteranRewards.put(element.getKey(), element.getValue());
 		}
 	}

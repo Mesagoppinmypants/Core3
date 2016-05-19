@@ -757,7 +757,6 @@ object_tangible_terminal_terminal_character_builder = object_tangible_terminal_s
 						"Markings IV", "social_imagedesigner_markings_04"
 					},
 					"Master", "social_imagedesigner_master"
-					}
 				},
 				"Jedi",
 				{

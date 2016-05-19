@@ -260,9 +260,6 @@ class PlayerObject extends IntangibleObject {
 	protected string spouseName;
 
 	@dereferenced
-	protected Time lastFRSMaintenance;
-	
-	@dereferenced
 	protected VectorMap<unsigned int, string> chosenVeteranRewards; // milestone, templateFile
 
 	@dereferenced
@@ -360,9 +357,6 @@ class PlayerObject extends IntangibleObject {
 		installedHoloEmote = "";
 
 		holoEmoteUseCount = 0;
-		
-		lastFRSMaintenance.updateToCurrentTime();
-		
 
 		spouseName = "";
 
@@ -1826,14 +1820,6 @@ class PlayerObject extends IntangibleObject {
 			rating = PVP_RATING_FLOOR;
 
 		pvpRating = rating;
-	}
-	
-	public void updateLastFRSMaintenance() {
-		lastFRSMaintenance.updateToCurrentTime();
-	}
-
-	public unsigned long getLastFRSMaintenance() {
-		return lastFRSMaintenance.getMiliTime();
 	}
 }
 
