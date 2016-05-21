@@ -41,48 +41,15 @@
 --which carries forward this exception.
 --true = 1, false = 0
 
-Melee2hArea3Command = {
-        name = "melee2harea3",
-	damageMultiplier = 3.25,
-	speedMultiplier = 2.5,
-	healthCostMultiplier = 1.5,
-	actionCostMultiplier = 2.5,
-	mindCostMultiplier = 1.5,
-        accuracyBonus = 10,
+HealAllSelf2npcCommand = {
+        name = "healallself2",
+	forceCost = (1500 * 3)/9.5,
+	healAmount = 15000,
+	forceCostDivisor = 9.5,
+	healAttributes = HEALTH_ATTRIBUTE + MIND_ATTRIBUTE + ACTION_ATTRIBUTE,
+	range = 0
 
-	stateEffects = {
-	  StateEffect( 
-               --documentation clearly defines dizzy instead of blind
-		DIZZY_EFFECT, 
-		{}, 
-		{ "dizzy_defense", "resistance_states" }, 
-		{ "jedi_state_defense" }, 
-		30, 
-		0, 
-		30
-	  ),
-	  StateEffect( 
-		POSTUREDOWN_EFFECT, 
-		{ "postureDownRecovery" }, 
-		{ "posture_change_down_defense" }, 
-		{}, 
-		100, 
-		0, 
-		0 
-	  )
-	},
-
-	areaRange = 16,
-	areaAction = true,
-
-	animation = "lower_posture_2hmelee_5",
-
-	combatSpam = "domination",
-	
-	weaponType = TWOHANDMELEEWEAPON,
-
-	range = -1
 }
 
-AddCommand(Melee2hArea3Command)
+AddCommand(HealAllSelf2npcCommand)
 

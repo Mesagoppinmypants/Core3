@@ -1,3 +1,7 @@
+includeFile("thug/dark_assassin.lua")
+includeFile("thug/light_jedi_guardian_hard.lua")
+includeFile("thug/light_jedi_force_master.lua")
+includeFile("thug/dark_inquisitor.lua")
 includeFile("thug/assassin.lua")
 includeFile("thug/assassin_twilek_mate.lua")
 includeFile("thug/bandit.lua")

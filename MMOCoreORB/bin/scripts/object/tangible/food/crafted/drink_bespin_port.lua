@@ -44,10 +44,10 @@
 object_tangible_food_crafted_drink_bespin_port = object_tangible_food_crafted_shared_drink_bespin_port:new {
 	templateType = CONSUMABLE,
 
-	duration = 10000,
+	duration = 1000,
 	filling = 10,
-	useCount = 100,
-	nutrition = 1000,
+	useCount 100,
+	nutrition = 10000,
 
 	effectType = 3, -- Event Based Buff
 	eventTypes = {CRAFTINGEXPERIMENTATION},

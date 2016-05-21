@@ -12,6 +12,7 @@ includeFile("groups/crystals_poor.lua")
 includeFile("groups/crystals_premium.lua")
 includeFile("groups/crystals_quality.lua")
 includeFile("groups/crystals_select.lua")
+includeFile("groups/named_color_crystals.lua")
 includeFile("groups/data_storage_unit_parts.lua")
 includeFile("groups/fenri_dalso_drop.lua")
 includeFile("groups/holocron_dark.lua")
@@ -88,6 +89,7 @@ includeFile("groups/forage/forage_medical_component.lua")
 includeFile("groups/forage/forage_rare.lua")
 
 -- geonosian_lab sub-folder
+includeFile("groups/geonosian_lab/world_boss_acklay.lua")
 includeFile("groups/geonosian_lab/acklay.lua")
 includeFile("groups/geonosian_lab/enhanced_kwi.lua")
 includeFile("groups/geonosian_lab/fire_breathing_spider.lua")
@@ -324,6 +326,7 @@ includeFile("groups/weapon/weapons_all.lua")
 
 -- wearables sub-folder
 includeFile("groups/wearables/wearables_all.lua")
+includeFile("groups/wearables/masterynecklaces.lua")
 includeFile("groups/wearables/wearables_common.lua")
 includeFile("groups/wearables/wearables_rare.lua")
 includeFile("groups/wearables/wearables_scarce.lua")

@@ -3,7 +3,7 @@ crystals_ancient = {
 	minimumLevel = 0,
 	maximumLevel = -1,
 	lootItems = {
-		{itemTemplate = "crystal_ancient", weight = 10000000},
+		{itemTemplate = "force_crystal_ancient", weight = 10000000},
 	}
 }
 
