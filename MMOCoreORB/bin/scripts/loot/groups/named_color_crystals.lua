@@ -2,7 +2,7 @@ named_color_crystals =
 {
 	description = "",
 	minimumlevel =0,
-	maximumLevel = -1,
+	maximumLevel =0,
 	lootitems = 
 				{
 				{itemTemplate = "force_crystal_bass_wisdom", chance = 500000},
@@ -30,4 +30,4 @@ named_color_crystals =
 				}
 
 }
-addLootGroupTemplet("named_color_crystals", named_color_crystals)
+addLootGroupTemplate("named_color_crystals", named_color_crystals)
