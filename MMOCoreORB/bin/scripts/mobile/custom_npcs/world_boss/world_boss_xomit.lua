@@ -70,7 +70,7 @@ world_boss_xomit = Creature:new {
 				{group = "weapons_all", chance = 10000000},
 				},
 			lootChance = 10000000
-		}
+		},
 				{
 		groups = {
 				{group = "weapons_all", chance = 10000000},

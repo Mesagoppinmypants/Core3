@@ -117,6 +117,17 @@ int ForceHealQueueCommand::checkWoundAttributes(CreatureObject* creature, Creatu
 int ForceHealQueueCommand::doHealWounds(CreatureObject* creature, CreatureObject* targetCreature, int healableWounds, healedAttributes_t& attrs) const {
 	if (targetCreature == NULL) return GENERALERROR;
 #ifdef DEBUG_FORCE_HEALS
+	/*//FRS Mods
+	int fcLight = creature->getSkillMod("force_control_light");
+	int fcDark = creature->getSkillMod("force_control_dark");
+	if (fcLight > 0 || fcDark > 0){
+		if (fcLight > 0){
+		healWoundAmount *= 1.f + (fcLight / 100.f);
+		}
+		if (fcDark > 0){
+		healWoundAmount *= 1.f + (fcDark / 100.f);
+		}
+	}*/
 	creature->sendSystemMessage(name + "[doHealWounds] Healing wounds " + String::valueOf(healWoundAmount) + " " + String::valueOf(healableWounds));
 #endif
 	if (healableWounds & HEALTH) {
@@ -174,6 +185,17 @@ int ForceHealQueueCommand::doHealHAM(CreatureObject* creature, CreatureObject* t
 #ifdef DEBUG_FORCE_HEALS
 	creature->sendSystemMessage("[doHealHAM] Healable HAM:" + String::valueOf(healableHAM));
 #endif
+	/*//FRS Mods SWGEmu Devs didn't see this one coming? --Can't modify the values here...	
+	int fcLight = creature->getSkillMod("force_control_light");
+	int fcDark = creature->getSkillMod("force_control_dark");
+	if (fcLight > 0 || fcDark > 0){
+		if (fcLight > 0){
+		healAmount *= 1.f + (fcLight / 100.f);
+		}
+		if (fcDark > 0){
+		healAmount *= 1.f + (fcDark / 100.f);
+		}
+	}*/
 	if (healableHAM & HEALTH) {
 		attrs.healedHealth = target->healDamage(creature, CreatureAttribute::HEALTH, healAmount);
 	}
@@ -751,7 +773,15 @@ int ForceHealQueueCommand::doQueueCommand(CreatureObject* creature, const uint64
 void ForceHealQueueCommand::applyForceCost(CreatureObject* creature, int calculatedForceCost) const {
 	ManagedReference<PlayerObject*> playerObject = creature->getPlayerObject();
 	if (playerObject == NULL) return;
-
+	int fmLight = creature->getSkillMod("force_manipulation_light");
+	int fmDark = creature->getSkillMod("force_manipulation_dark");
+	if (fmLight > 0 || fmDark > 0){
+	if (fmLight > 0){
+		calculatedForceCost *= (1.f - (fmLight / 100.f));
+	} else if (fmDark > 0){
+		calculatedForceCost *= (1.f - (fmDark / 100.f));
+		}
+	}
 	int currentForce = playerObject->getForcePower();
 	if (currentForce < calculatedForceCost) {
 		// this sucks, we did all this healing and now he suddenly doesn't

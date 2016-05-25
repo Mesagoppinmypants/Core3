@@ -1090,6 +1090,16 @@ int CombatManager::getArmorReduction(TangibleObject* attacker, WeaponObject* wea
 		float rawDamage = damage;
 
 		int forceArmor = defender->getSkillMod("force_armor");
+		int fcLight = defender->getSkillMod("force_control_light");
+		int fcDark = defender->getSkillMod("force_control_dark");
+
+		if (fcLight > 0 || fcDark > 0) {
+			if (fcLight > 0) {			
+			forceArmor *= (1.f + (fcLight / 100.f));
+			} else if (fcDark > 0) {
+			forceArmor *= (1.f + (fcDark / 100.f));
+			}
+		}
 		if (forceArmor > 0) {
 			float dmgAbsorbed = rawDamage - (damage *= 1.f - (forceArmor / 100.f));
 			defender->notifyObservers(ObserverEventType::FORCEBUFFHIT, attacker, dmgAbsorbed);
@@ -1101,6 +1111,16 @@ int CombatManager::getArmorReduction(TangibleObject* attacker, WeaponObject* wea
 
 		// Force Shield
 		int forceShield = defender->getSkillMod("force_shield");
+		int fcLight = defender->getSkillMod("force_control_light");
+		int fcDark = defender->getSkillMod("force_control_dark");
+
+		if (fcLight > 0 || fcDark > 0) {
+			if (fcLight > 0) {			
+			forceShield *= (1.f + (fcLight / 100.f));
+			} else if (fcDark > 0) {
+			forceShield *= (1.f + (fcDark / 100.f));
+			}
+		}
 		if (forceShield > 0) {
 			jediBuffDamage = rawDamage - (damage *= 1.f - (forceShield / 100.f));
 			sendMitigationCombatSpam(defender, NULL, (int)jediBuffDamage, FORCESHIELD);
@@ -1108,6 +1128,14 @@ int CombatManager::getArmorReduction(TangibleObject* attacker, WeaponObject* wea
 
 		// Force Feedback
 		int forceFeedback = defender->getSkillMod("force_feedback");
+
+		if (fcLight > 0 || fcDark > 0) {
+			if (fcLight > 0) {			
+			forceFeedback *= (1.f + (fcLight / 100.f));
+			} else if (fcDark > 0) {
+			forceFeedback *= (1.f + (fcDark / 100.f));
+			}
+		}
 		if (forceFeedback > 0 && (defender->hasBuff(BuffCRC::JEDI_FORCE_FEEDBACK_1) || defender->hasBuff(BuffCRC::JEDI_FORCE_FEEDBACK_2))) {
 			float feedbackDmg = rawDamage * (forceFeedback / 100.f);
 			float splitDmg = feedbackDmg / 3;
@@ -1242,7 +1270,18 @@ float CombatManager::calculateDamage(CreatureObject* attacker, WeaponObject* wea
 
 	if (attacker->isPlayerCreature())
 		damage *= 1.5;
+	if (data.isForceAttack()){
+		int fpLight = attacker->getSkillMod("force_power_light");
+		int fpDark = attacker->getSkillMod("force_power_dark");
 
+		if (fpLight > 0) {
+		int forceDamageLight = damage *= (1.f + (fpLight / 100.f));
+		damage = forceDamageLight * 1.5;
+		} else if (fpDark > 0) {
+		int forceDamageDark = damage *= (1.f + (fpDark / 100.f));
+		damage = forceDamageDark * 1.5;
+		}
+	}
 	if (!data.isForceAttack() && weapon->getAttackType() == SharedWeaponObjectTemplate::MELEEATTACK)
 		damage *= 1.25;
 
@@ -1387,9 +1426,20 @@ float CombatManager::calculateDamage(CreatureObject* attacker, WeaponObject* wea
 
 	if (attacker->isPlayerCreature())
 		damage *= 1.5;
-
+	
 	if (!data.isForceAttack() && weapon->getAttackType() == SharedWeaponObjectTemplate::MELEEATTACK)
 		damage *= 1.25;
+	if (data.isForceAttack()){
+	int fpLight = attacker->getSkillMod("force_power_light");
+	int fpDark = attacker->getSkillMod("force_power_dark");
+	if (fpLight > 0) {
+	int forceDamageLight = damage *= (1.f + (fpLight / 100.f));
+	damage = forceDamageLight * 1.5;
+	} else if (fpDark > 0) {
+	int forceDamageDark = damage *= (1.f + (fpDark / 100.f));
+	damage = forceDamageDark * 1.5;
+		}
+	}
 
 	if (defender->isKnockedDown())
 		damage *= 1.5f;

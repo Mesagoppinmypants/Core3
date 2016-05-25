@@ -30,6 +30,17 @@ public:
 	void handleBuff(SceneObject* creature, ManagedObject* object, int64 param) {
 
 		ManagedReference<CreatureObject*> creo = cast<CreatureObject*>( creature);
+		//FRS Test... The long way.
+
+		int fmLight = creo->getSkillMod("force_manipulation_light");
+		int fmDark = creo->getSkillMod("force_manipulation_dark");
+		if (fmLight > 0 || fmDark > 0) {
+		 if (fmLight > 0){
+			forceCost *= 1.f - (fmLight / 100.f);
+		} else if (fmDark > 0) {
+			forceCost *= 1.f - (fmDark / 100.f);
+			}		
+		}
 		if (creo == NULL)
 			return;
 

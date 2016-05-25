@@ -42,7 +42,7 @@ light_jedi_force_master = Creature:new {
 			
 			},
 			lootChance = 10000000
-		}
+		},
 		
 		{
 			groups = {
@@ -51,26 +51,26 @@ light_jedi_force_master = Creature:new {
 			
 			},
 			lootChance = 10000000
-		}
+		},
 		
-				{
+		{
 			groups = {
 				{group = "named_color_crystals", chance = 3000000},
 				{group = "crystals_premium", chance = 7000000},
 			
 			},
 			lootChance = 10000000
-		}
+		},
 		
-				{
+		{
 			groups = {
 				{group = "armor_attachments", chance = 5000000},
 				{group = "clothing_attachments", chance = 5000000},			
 			},
 			lootChance = 10000000
-		}
+		},
 		
-						{
+		{
 			groups = {
 				{group = "armor_attachments", chance = 5000000},
 				{group = "clothing_attachments", chance = 5000000},			

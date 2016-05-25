@@ -29,47 +29,50 @@ world_boss_acklay = Creature:new {
 
 	templates = {"object/mobile/acklay_hue.iff"},
 	lootGroups = {
+		{
 			groups = {
 				{group = "armor_attachments", chance = 5000000},
 				{group = "clothing_attachments", chance = 5000000},			
 			},
 			lootChance = 10000000
-		}
+		},
 		
-						{
+		{
 			groups = {
 				{group = "armor_attachments", chance = 5000000},
 				{group = "clothing_attachments", chance = 5000000},			
 			},
 			lootChance = 10000000
-		}
+		},
+		{
 				groups = {
 				{group = "armor_attachments", chance = 5000000},
 				{group = "clothing_attachments", chance = 5000000},			
 			},
 			lootChance = 10000000
-		}
+		},
 		
-						{
+		{
 			groups = {
 				{group = "armor_attachments", chance = 5000000},
 				{group = "clothing_attachments", chance = 5000000},			
 			},
 			lootChance = 10000000
+		},
+		
+		{
+			groups = {
+				{group = "world_boss_acklay", chance = 10000000},
+			},
+			lootChance = 10000000
+		},
+			{
+			groups = {
+				{group = "world_boss_acklay", chance = 10000000},
+			},
+			lootChance = 10000000
 		}
 		
-			{
-			groups = {
-				{group = "world_boss_acklay", chance = 10000000},
-			},
-			lootChance = 10000000
-		}
-			{
-			groups = {
-				{group = "world_boss_acklay", chance = 10000000},
-			},
-			lootChance = 10000000
-		}
 	},
 	weapons = {},
 	conversationTemplate = "",

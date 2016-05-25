@@ -377,6 +377,7 @@ public:
 	void setSpeed(int s) {
 		speed = s;
 	}
+	
 
 	void setAllowedTarget(unsigned int t) {
 		allowedTarget = t;
